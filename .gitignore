@@ -6,3 +6,4 @@
 *.iml
 out
 gen
+pacific-ui/node_modules/
