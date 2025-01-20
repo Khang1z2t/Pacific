@@ -1,3 +1,6 @@
+import {Navbar} from "~/component/Layout/Navbar";
+import ScrollOnTop from '~/component/ui/ScrollOnTop';
+
 const MainLayout = ({children}) => {
     const scrollToTop = () => {
         window.scrollTo({
@@ -8,7 +11,9 @@ const MainLayout = ({children}) => {
     };
     return (
         <div className={"flex flex-col min-h-screen"}>
-        {/*Footer*/}
+        {/*navbar*/}
+            <ScrollOnTop/>
+            <Navbar/>
         {/*    Main Content    */}
             <main className={"flex-grow"}>{children}</main>
         {/*    Footer*/}
