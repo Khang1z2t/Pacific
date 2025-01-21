@@ -10,7 +10,7 @@ export const AboutSection = () => {
             <div className={"container mx-auto py-8 px-40"}>
                 <div className={"ms-96 grid grid-cols-1 md:grid-cols-2"}>
                     <div className={"text-balance"}>
-                        <h2 className={"text-4xl font-bold mb-4"}>Về chúng tôi</h2>
+                        <h2 className={"text-5xl font-bold mb-4 text-orange-500"}>Về chúng tôi</h2>
                         <p className={"text-xl font-bold"}>
                             Hãy biến chuyến tham quan của bạn trở nên đáng nhớ và an toàn với Pacific Tour.
                         </p>
