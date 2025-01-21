@@ -1,6 +1,9 @@
 import {Navbar} from "~/component/Layout/Navbar";
-import ScrollOnTop from '~/component/ui/ScrollOnTop';
+import { FloatButton } from 'antd';
 import Footer from '~/component/Layout/Footer';
+import { CommentOutlined, CustomerServiceOutlined } from '@ant-design/icons';
+import { faHeadset } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const MainLayout = ({children}) => {
     const scrollToTop = () => {
@@ -13,7 +16,19 @@ const MainLayout = ({children}) => {
     return (
         <div className={"flex flex-col min-h-screen"}>
         {/*navbar*/}
-            <ScrollOnTop/>
+            <FloatButton.BackTop />
+            <FloatButton.Group
+                trigger="hover"
+                type="primary"
+                style={{
+
+                    insetInlineEnd: 94,
+                }}
+                icon={<FontAwesomeIcon icon={faHeadset} />}
+            >
+                <FloatButton />
+                <FloatButton icon={<CommentOutlined />} />
+            </FloatButton.Group>
             <Navbar/>
         {/*    Main Content    */}
             <main className={"flex-grow"}>{children}</main>
