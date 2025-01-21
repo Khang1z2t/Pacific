@@ -5,6 +5,9 @@ import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';
 import Vacations from '~/pages/Home/sections/Vacations';
 import { AboutSection } from '~/pages/Home/sections/AboutSection';
+import { TourLists } from '~/pages/Home/sections/TourLists';
+import BlogCards from '~/pages/Home/components/BlogCards';
+import { BlogSection } from '~/pages/Home/sections/BlogSection';
 
 function Home() {
     useEffect(() => {
@@ -78,21 +81,32 @@ function Home() {
                 </div>
             </div>
             <div className={"container mx-auto py-12"}>
-                <Divider className={"font-bold uppercase text-2xl"}
+                <Divider className={"font-bold uppercase"}
                          style={{
                             borderColor: '#7cb305',
                         }}
-                         orientation="center">Cùng khám phá với pacific
+                         orientation="center">
+                    <p className={"text-3xl"}>Cùng khám phá với pacific</p>
                 </Divider>
                 <TravelCardLists/>
-                <Divider className={"font-bold uppercase text-2xl"}
+                <Divider className={"font-bold uppercase"}
                             style={{
                                 borderColor: '#7cb305',
                             }}
-                            orientation="center">Lựa chọn điểm đến của chính mình
+                            orientation="center">
+                    <p className={"text-3xl"}>Lựa chọn điểm đến của chính mình</p>
                 </Divider>
                 <Vacations/>
                 <AboutSection/>
+                <TourLists/>
+                <Divider className={"font-bold uppercase"}
+                            style={{
+                                borderColor: '#7cb305',
+                            }}
+                            orientation="center">
+                        <p className={"text-3xl"}>Blog của chúng tôi</p>
+                </Divider>
+                <BlogSection/>
             </div>
         </div>
     );

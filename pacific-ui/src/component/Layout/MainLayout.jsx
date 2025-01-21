@@ -1,5 +1,6 @@
 import {Navbar} from "~/component/Layout/Navbar";
 import ScrollOnTop from '~/component/ui/ScrollOnTop';
+import Footer from '~/component/Layout/Footer';
 
 const MainLayout = ({children}) => {
     const scrollToTop = () => {
@@ -17,6 +18,7 @@ const MainLayout = ({children}) => {
         {/*    Main Content    */}
             <main className={"flex-grow"}>{children}</main>
         {/*    Footer*/}
+            <Footer/>
         </div>
     )
 }
