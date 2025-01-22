@@ -1,0 +1,110 @@
+export const tours = [
+    {
+        src: "/img/Pages/TourLists/card1.jpg",
+        title: "Tour Hà Nội",
+        location: "Hà Nội",
+        date: "10/10/2021",
+        description: "Tour du lịch Hà Nội",
+        rate: 5,
+        price: "1.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card2.jpg",
+        title: "Tour Sapa",
+        location: "Sapa",
+        date: "15/10/2021",
+        description: "Tour du lịch Sapa",
+        rate: 4,
+        price: "2.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card3.jpg",
+        title: "Tour Hạ Long",
+        location: "Hạ Long",
+        date: "20/10/2021",
+        description: "Tour du lịch Hạ Long",
+        rate: 3,
+        price: "3.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card4.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card5.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card6.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card7.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card8.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card9.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card10.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card11.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+    {
+        src: "/img/Pages/TourLists/card12.jpg",
+        title: "Tour Hà Giang",
+        location: "Hà Giang",
+        date: "25/10/2021",
+        description: "Tour du lịch Hà Giang",
+        rate: 2,
+        price: "4.000.000 VND"
+    },
+];

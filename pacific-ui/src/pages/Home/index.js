@@ -11,7 +11,7 @@ import { BlogSection } from '~/pages/Home/sections/BlogSection';
 
 function Home() {
     useEffect(() => {
-        document.title = "Home";
+        document.title = "Pacific - Hành trình khám phá mọi nơi.";
     }, []);
     const FloatBtnItems = [
         {

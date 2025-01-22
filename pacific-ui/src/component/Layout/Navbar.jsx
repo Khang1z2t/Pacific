@@ -7,11 +7,11 @@ export const Navbar = () => {
     const navItems = [
         {
             title: 'TRANG CHỦ',
-            href: '#'
+            href: '/'
         },
         {
             title: 'TOUR TRONG NƯỚC',
-            href: '#insidetour'
+            href: '/tour-trong-nuoc'
         },
         {
             title: 'TOUR NƯỚC NGOÀI',
@@ -29,7 +29,7 @@ export const Navbar = () => {
     const NavItemsElm = ({title,href}) => {
      return (
          <div className={''}>
-         <Link to={href} className={"text-gray-700 hover:text-indigo-600 transition duration-300 uppercase font-bold"}>{title}</Link>
+         <Link to={href} className={"text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"}>{title}</Link>
      </div>)
     }
     return (
@@ -52,8 +52,8 @@ export const Navbar = () => {
                         ))}
                     </div>
                     <div className={"hidden md:flex space-x-4"}>
-                        <Link to={'/login'} className={"text-gray-700 hover:text-indigo-600 transition duration-300 uppercase font-bold"}>Login</Link>
-                        <Link to={'/register'} className={"text-gray-700 hover:text-indigo-600 transition duration-300 uppercase font-bold"}>Register</Link>
+                        <Link to={'/dang-nhap'} className={"text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"}>Login</Link>
+                        <Link to={'/dang-ky'} className={"text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"}>Register</Link>
                     </div>
                     {/* Mobile Menu Button */}
                     <div className="md:hidden">
