@@ -86,7 +86,8 @@ function Home() {
                             borderColor: '#7cb305',
                         }}
                          orientation="center">
-                    <p className={"text-3xl"}>Cùng khám phá với pacific</p>
+                    <h2 className={"lg:text-3xl text-md"}>Cùng khám phá với pacific</h2>
+                    <p className={"lg:text-xl text-sm"}>Những điểm đến phổ biến</p>
                 </Divider>
                 <TravelCardLists/>
                 <Divider className={"font-bold uppercase"}
@@ -94,7 +95,8 @@ function Home() {
                                 borderColor: '#7cb305',
                             }}
                             orientation="center">
-                    <p className={"text-3xl"}>Lựa chọn điểm đến của chính mình</p>
+                    <h2 className={"lg:text-3xl text-md"}>Lựa chọn điểm đến của chính mình</h2>
+                    <p className={"lg:text-xl text-sm"}>Đặt chân tới địa điểm mới</p>
                 </Divider>
                 <Vacations/>
                 <AboutSection/>
@@ -104,7 +106,8 @@ function Home() {
                                 borderColor: '#7cb305',
                             }}
                             orientation="center">
-                        <p className={"text-3xl"}>Blog của chúng tôi</p>
+                        <h2 className={"lg:text-3xl text-md"}>Blog của chúng tôi</h2>
+                        <p className={"lg:text-xl text-sm"}>Những bài viết mới nhất</p>
                 </Divider>
                 <BlogSection/>
             </div>

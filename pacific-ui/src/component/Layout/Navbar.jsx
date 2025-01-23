@@ -1,36 +1,50 @@
-import React from "react";
+import React from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
+import { useAuth } from '~/config/firebase/AuthContext';
+import { Dropdown } from 'antd';
+import {auth} from '~/config/firebase/firebase';
 
 export const Navbar = () => {
     const navItems = [
         {
             title: 'TRANG CHỦ',
-            href: '/'
+            href: '/',
         },
         {
             title: 'TOUR TRONG NƯỚC',
-            href: '/tour-trong-nuoc'
+            href: '/tour-trong-nuoc',
         },
         {
             title: 'TOUR NƯỚC NGOÀI',
-            href: '#outsidetour'
+            href: '#outsidetour',
         },
         {
             title: 'tin tức',
-            href: '#news'
+            href: '#news',
         },
         {
             title: 'giới thiệu',
-            href: '#aboutus'
+            href: '#aboutus',
         },
-    ]
-    const NavItemsElm = ({title,href}) => {
-     return (
-         <div className={''}>
-         <Link to={href} className={"text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"}>{title}</Link>
-     </div>)
+    ];
+    const NavItemsElm = ({ title, href }) => {
+        return (
+            <div className={''}>
+                <Link to={href}
+                      className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}>{title}</Link>
+            </div>);
+    };
+
+    const { currentUser } = useAuth();
+
+    const handleLogout = async () => {
+        try {
+            await auth.signOut();
+        } catch (error) {
+            console.log(error);
+        }
     }
     return (
         <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -48,12 +62,38 @@ export const Navbar = () => {
                         {navItems.map((item, index) => (
                             <NavItemsElm key={index}
                                          title={item.title}
-                                            href={item.href}/>
+                                         href={item.href} />
                         ))}
                     </div>
-                    <div className={"hidden md:flex space-x-4"}>
-                        <Link to={'/dang-nhap'} className={"text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"}>Login</Link>
-                        <Link to={'/dang-ky'} className={"text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"}>Register</Link>
+                    <div className={'hidden md:flex space-x-4'}>
+                        {currentUser ? (
+                            <>
+                                <Dropdown
+                                    overlay={
+                                        <div className="bg-white shadow-lg rounded-md">
+                                            <Link to="/account"
+                                                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Account</Link>
+                                            <button onClick={handleLogout
+                                            }
+                                                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout
+                                            </button>
+                                        </div>
+                                    }
+                                >
+                                    <a className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"
+                                       onClick={e => e.preventDefault()}>
+                                        Chào mừng {currentUser.displayName}
+                                    </a>
+                                </Dropdown>
+                            </>
+                        ) : (
+                            <>
+                                <Link to={'/dang-nhap'}
+                                      className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}>Login</Link>
+                                <Link to={'/dang-ky'}
+                                      className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}>Register</Link>
+                            </>
+                        )}
                     </div>
                     {/* Mobile Menu Button */}
                     <div className="md:hidden">

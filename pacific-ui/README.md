@@ -6,3 +6,9 @@ Sau khi Pull về lần đầu,
 - Để deploy project, chạy lệnh `npm run deploy`.
 - Để kiểm tra lỗi, chạy lệnh `npm run lint`.
 - Để fix lỗi, chạy lệnh `npm run lint:fix`.
+
+# CÁC THƯ VIỆN SỬ DỤNG
+- ReactJS
+- Antd(https://ant.design/)
+- TailwindCSS(https://tailwindcss.com/)
+- TailwindUI(https://tailwindui.com/)

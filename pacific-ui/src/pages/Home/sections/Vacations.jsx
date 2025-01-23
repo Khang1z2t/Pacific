@@ -26,7 +26,7 @@ const Vacations = () => {
             <Swiper
                 onSwiper={setSwiper}
                 spaceBetween={20}
-                slidesPerView={4}
+                slidesPerView={1}
                 navigation={false}
                 pagination={{ clickable: true }}
                 breakpoints={{
@@ -37,6 +37,9 @@ const Vacations = () => {
                         slidesPerView: 2,
                     },
                     1024: {
+                        slidesPerView: 3,
+                    },
+                    1280: {
                         slidesPerView: 4,
                     },
                 }}

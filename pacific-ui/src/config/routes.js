@@ -1,7 +1,7 @@
 const routes = {
     home: "/",
     login: "/dang-nhap",
-    register: "/dang-ly",
+    register: "/dang-ky",
     dashboard: "/dashboard",
     profile: "/tai-khoan",
     settings: "/settings",

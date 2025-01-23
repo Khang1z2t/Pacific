@@ -6,6 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import GlobalStyles from '~/component/GlobalStyles';
 import { DevSupport } from '@react-buddy/ide-toolbox';
 import { ComponentPreviews, useInitial } from '~/dev';
+import { AuthProvider } from './config/firebase/AuthContext';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,7 +16,9 @@ root.render(
             <DevSupport ComponentPreviews={ComponentPreviews}
                         useInitialHook={useInitial}
             >
-                <App />
+                <AuthProvider>
+                    <App />
+                </AuthProvider>
             </DevSupport>
         </GlobalStyles>
     </React.StrictMode>,
