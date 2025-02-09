@@ -4,7 +4,7 @@ import {createUserWithEmailAndPassword, signInWithEmailAndPassword,FacebookAuthP
 import { doc, setDoc } from 'firebase/firestore';
 
 
-export const register = async (email, password) => {
+export const register = async (email, password,username) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;

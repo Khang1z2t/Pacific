@@ -82,7 +82,7 @@ export const Navbar = () => {
                                 >
                                     <a className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"
                                        onClick={e => e.preventDefault()}>
-                                        Chào mừng {currentUser.displayName}
+                                        Chào mừng {currentUser.displayName || currentUser.username}
                                     </a>
                                 </Dropdown>
                             </>

@@ -35,8 +35,8 @@ export const TourLists = () => {
             <div className="relative z-10 container mx-auto mt-8">
                 <SearchBar onSearch={handleSearch}/>
                 <h1 className={"text-2xl font-bold uppercase shadow-lg text-orange-500 text-center mt-8"}>Danh sách tour</h1>
-                <div className="mt-24 container mx-auto justify-center min-h-[800px]">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="mt-24 min-h-[800px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-center gap-4 mx-auto max-w-7xl">
                         {page.map((tour, index) => (
                             <TourCards
                                 key={index}

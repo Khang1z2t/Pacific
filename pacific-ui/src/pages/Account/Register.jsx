@@ -2,10 +2,9 @@ import { Form, Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
-import { doSignInWithFacebook, doSignInWithGoogle, register } from '~/config/firebase/auth';
+import { register } from '~/config/firebase/auth';
 
 export const Register = () => {
-    const [passwordVisible, setPasswordVisible] = useState(false);
     //
     const [messageApi, contextHolder] = message.useMessage();
     //
