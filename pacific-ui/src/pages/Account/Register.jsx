@@ -1,10 +1,16 @@
 import { Form, Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { register } from '~/config/firebase/auth';
+import { signOut } from 'firebase/auth';
+import { auth } from '~/config/firebase/firebase';
+
 
 export const Register = () => {
+    //healing async
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     //
     const [messageApi, contextHolder] = message.useMessage();
     //
@@ -20,18 +26,29 @@ export const Register = () => {
             messageApi.error('Mật khẩu không trùng khớp', 1);
             return;
         }
+        if (!email || !username || !password || !confirmPassword) {
+            messageApi.error('Vui lòng điền đầy đủ thông tin', 1);
+            return;
+        }
+
+        setLoading(true);
 
         try {
-            const user = await register(email, password);
+            const user = await register(email, password,username);
             if (user.code) {
                 // Nếu có lỗi từ Firebase (code: error từ Firebase)
                 messageApi.error(`Lỗi: ${user.message}`, 1);
             } else {
                 messageApi.success('Đăng ký thành công!', 1);
-                console.log({ email, password, confirmPassword });
+                navigate('/dang-nhap');
             }
+            //disable auto login firebase
+            await signOut(auth);
+
         } catch (error) {
             messageApi.error(`Đăng ký thất bại: ${error.message}`, 1);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -116,7 +133,7 @@ export const Register = () => {
                             onClick={handleRegister}
                             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
-                            Đăng ký
+                            {loading ? 'Đang tạo tài khoản...' : 'Đăng ký'}
                         </button>
                     </div>
                     {/*<h2 className={'text-center text-indigo-500'}>Hoặc đăng nhập bằng</h2>*/}

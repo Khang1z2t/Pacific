@@ -3,6 +3,7 @@ import Home from "~/pages/Home";
 import { TourLists } from '~/pages/TourLists/TourLists';
 import { Login } from '~/pages/Account/Login';
 import { Register } from '~/pages/Account/Register';
+import { TourDetail } from '~/pages/TourLists/TourDetail/TourDetail';
 
 export const RouterContent = [
     {
@@ -20,5 +21,10 @@ export const RouterContent = [
     {
       path: config.routes.register,
       element: <Register/>
+    },
+    {
+        path: config.routes.tourDetail+':id',
+        element: <TourDetail/>
     }
+
 ]

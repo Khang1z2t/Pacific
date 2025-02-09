@@ -4,15 +4,13 @@ import Footer from '~/component/Layout/Footer';
 import { CommentOutlined, CustomerServiceOutlined } from '@ant-design/icons';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect } from 'react';
 
 const MainLayout = ({children}) => {
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: "smooth", // Thêm thuộc tính này để cuộn mượt
-        });
-    };
+    useEffect(() => {
+        document.title = "Pacific Travel";
+    }, []);
+
     return (
         <div className={"flex flex-col min-h-screen"}>
         {/*navbar*/}

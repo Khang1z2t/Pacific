@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 
-export const TourCards = ({ src, title, location, date, description, rate, price, ...props }) => {
+export const TourCards = ({id, src, title, location, date, description, rate, price, ...props }) => {
     return (
         <Link
-            to={"#"}
+            to={`/tour-chi-tiet/${id}`}
             className={
                 "w-72 max-h-full rounded-lg shadow-lg hover:scale-105 overflow-hidden transition-transform hover:cursor-pointer hover:border-orange-500 hover:border-2"
             }

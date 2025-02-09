@@ -2,14 +2,15 @@ import '~/pages/j.css';
 import React, { useState } from 'react';
 import { Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { doSignInWithFacebook, doSignInWithGoogle } from '~/config/firebase/auth';
 import { login } from '~/config/firebase/auth';
 
 export const Login = () => {
-    const [passwordVisible, setPasswordVisible] = useState(false);
+    //healing async
+    const [loading, setLoading] = useState(false);
     //
-    const [messageApi, contextHolder] = message.useMessage();
+    const navigate = useNavigate();
     //
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -18,9 +19,24 @@ export const Login = () => {
     //
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (!isSignIn) {
-            setIsSignIn(true);
-            await login(username, password);
+        try{
+            if (!username || !password) {
+                message.error('Vui lòng điền đầy đủ thông tin', 1);
+                return;
+            }
+            setLoading(true);
+            const user = await login(username, password);
+            if (user.code) {
+                // Nếu có lỗi từ Firebase (code: error từ Firebase)
+                message.error(`Lỗi: ${user.message}`, 1);
+            } else {
+                message.success('Đăng nhập thành công!', 1);
+                navigate('/');
+            }
+        }catch (error){
+            message.error(`Đăng nhập thất bại: ${error.message}`, 1);
+        }finally {
+            setLoading(false);
         }
     };
 
@@ -29,7 +45,7 @@ export const Login = () => {
         if (!isSignIn) {
             setIsSignIn(true);
             doSignInWithGoogle().then(() => {
-                window.location.href = '/';
+                navigate('/');
             }).catch(() => {
                 message.error('Đăng nhập thất bại', 1);
             });
@@ -52,7 +68,7 @@ export const Login = () => {
 
     return (
         <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 relative ">
-            {contextHolder}
+
             {/* Animated Background with Blur */}
             <div
                 className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-unique-gradient blur-lg opacity-75" />
@@ -65,7 +81,7 @@ export const Login = () => {
                     className="mx-auto h-10 w-auto"
                 />
                 <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                    Sign in to your account
+                    Đăng nhập
                 </h2>
             </div>
 
@@ -76,7 +92,7 @@ export const Login = () => {
                             Email address
                         </label>
                         <div className="mt-2">
-                            <Input placeholder="Username"
+                            <Input placeholder="Email"
                                    rootClassName={'p-2 px-3 py-1.5'}
                                    onChange={(e) => setUsername(e.target.value)}
                             />
@@ -109,7 +125,7 @@ export const Login = () => {
                             type="submit"
                             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
-                            Sign in
+                            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                         </button>
                     </div>
                     <h2 className={'text-center text-indigo-500'}>Hoặc đăng nhập bằng</h2>

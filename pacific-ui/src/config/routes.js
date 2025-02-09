@@ -8,6 +8,8 @@ const routes = {
     notFound: "/404",
     serverError: "/500",
     tourTrongNuoc: "/tour-trong-nuoc",
+    tourNgoaiNuoc: "/tour-ngoai-nuoc",
+    tourDetail: "/tour-chi-tiet/",
 };
 
 export default routes;

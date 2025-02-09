@@ -11,7 +11,10 @@ export const register = async (email, password,username) => {
 
         //save
         await saveUser(user);
-
+        //setUsername
+        await user.updateProfile({
+            displayName: username,
+        });
         return user;
     } catch (error) {
         return error;
