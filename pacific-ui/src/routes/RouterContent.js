@@ -4,6 +4,7 @@ import { TourLists } from '~/pages/TourLists/TourLists';
 import { Login } from '~/pages/Account/Login';
 import { Register } from '~/pages/Account/Register';
 import { TourDetail } from '~/pages/TourLists/TourDetail/TourDetail';
+import { TourLists_outside } from '~/pages/TourLists/TourLists_outside';
 
 export const RouterContent = [
     {
@@ -25,6 +26,10 @@ export const RouterContent = [
     {
         path: config.routes.tourDetail+':id',
         element: <TourDetail/>
+    },
+    {
+        path: config.routes.tourNgoaiNuoc,
+        element: <TourLists_outside/>
     }
 
 ]

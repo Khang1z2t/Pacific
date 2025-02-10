@@ -1,11 +1,11 @@
 import { SearchBar } from '~/pages/TourLists/components/SearchBar';
 import { TourCards } from '~/pages/TourLists/components/TourCards';
 import { tours } from '~/pages/TourLists/data/tours';
-import { useState } from 'react';
-import { Divider, Pagination, Popover, Rate, Tag } from 'antd';
+import { useEffect, useState } from 'react';
+import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
+import { Aside } from '~/pages/TourLists/components/Aside';
 
 export const TourLists = () => {
-
     const ITEM_PER_PAGE = 8;
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState('');
@@ -15,49 +15,65 @@ export const TourLists = () => {
         // setSearch(e.target.value);
         setCurrentPage(e);
     };
-    const handleSearch = (e) => {
-        setSearch(e.target.value);
-        const filtered = tours.filter((tour) => {
-            return tour.title.toLowerCase().includes(e.target.value.toLowerCase());
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filteredTours]);
+
+    const handleSearch = (query) => {
+        const SearchFiltered = tours.filter((tour) => {
+            const searchText = query.searchText
+                ? tour.title.toLowerCase().includes(query.searchText.toLowerCase()) : true;
+            const side = query.side !== 'All' ? tour.side === query.side : true;
+            return searchText && side;
         });
-        setFilteredTours(filtered);
+        setFilteredTours(SearchFiltered);
     };
 
+    const handleFilter = (query) => {
+        let Filtered = [...tours]; // Proper initialization
+
+        if (query.prices === "HighToLow") {
+            Filtered.sort((a, b) => b.price - a.price);
+        } else if (query.prices === "LowToHigh") {
+            Filtered.sort((a, b) => a.price - b.price);
+        }
+
+        // Handle additional filters
+        if (query.times.length > 0) {
+            Filtered = Filtered.filter(tour => query.times.includes(tour.time));
+        }
+
+        if (query.ratings.length > 0) {
+            Filtered = Filtered.filter(tour => tour.rating >= Math.min(...query.ratings));
+        }
+
+        setFilteredTours(Filtered);
+    };
+
+
     return (
-        <div className="relative w-full h-full ">
-            <img
-                src="/img/Pages/TourLists/bg.jpg"
-                alt="Background"
-                className="absolute top-0 left-0 w-full h-[300px] object-cover brightness-75"
-            />
-            <div className="relative container mx-auto py-10 text-center text-white">
-                <h1 className="text-4xl font-bold uppercase">Tour Miền Bắc</h1>
-            </div>
-            <div className="relative z-10 container mx-auto mt-8">
-                <SearchBar onSearch={handleSearch} />
-                <h1 className={'text-2xl font-bold uppercase shadow-lg text-orange-500 text-center mt-8'}>Danh sách
-                    tour</h1>
-                <div className="mt-24 min-h-[800px]">
-                    <div
-                        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-center gap-4 mx-auto max-w-7xl">
-                        {page.map((tour, index) => (
-                            <TourCards
-                                key={index}
-                                id={tour.id}
-                                src={tour.src}
-                                title={tour.title}
-                                location={tour.location}
-                                date={tour.date}
-                                description={tour.description}
-                                rate={tour.rate}
-                                price={tour.price}
-                            />
-                        ))}
-                    </div>
+        <div className="w-full h-full">
+            <img src={'/img/Pages/TourLists/bg.jpg'} alt={'bg'} className="w-full h-96 object-cover" />
+            <SearchBar onSearch={handleSearch} />
+            <div className="mt-24 mx-24 justify-center min-h-[800px]">
+                <Divider orientation={'center'}><p className={"text-orange-400 text-2xl font-bold"}>Danh sách tour du lịch</p></Divider>
+                <div className="flex">
+                    <Aside onFilter={handleFilter} />
+                    {page.length > 0 ?
+                        <div className="flex flex-wrap gap-4 w-full px-4">
+                            {page.map((tour) => (
+                                <TourCards key={tour.id} {...tour} />
+                            ))}
+                        </div>
+                        :
+                        <div className={'w-full flex justify-center items-center'}>
+                            <Empty description={'Không tìm thấy tour du lịch'} image={"/img/empty.jpg"} />
+                        </div>
+                    }
                 </div>
-                <Pagination rootClassName={'my-10'} align={'center'} defaultCurrent={1} total={tours.length}
-                            pageSize={ITEM_PER_PAGE} onChange={(e) => onChange(e)} />
             </div>
+            <Pagination rootClassName={'my-10'} align={'center'} defaultCurrent={1} total={tours.length}
+                        pageSize={ITEM_PER_PAGE} onChange={(e) => onChange(e)} />
         </div>
     );
 };

@@ -19,7 +19,7 @@ export const Navbar = () => {
         },
         {
             title: 'TOUR NƯỚC NGOÀI',
-            href: '#outsidetour',
+            href: '/tour-nuoc-ngoai',
         },
         {
             title: 'tin tức',
