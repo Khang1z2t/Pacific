@@ -5,6 +5,7 @@ import { tours } from '../data/tours';
 import DetailSection from '~/pages/TourLists/TourDetail/sections/DetailSection';
 import "tailwindcss/tailwind.css";
 import { CalendarSection } from '~/pages/TourLists/TourDetail/sections/CalendarSection/CalendarSection';
+import { OtherToursList } from '~/pages/TourLists/TourDetail/sections/OtherTours/OtherToursList';
 
 export const TourDetail = () => {
     const { id } = useParams();
@@ -22,6 +23,8 @@ export const TourDetail = () => {
             <DetailSection {...tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Lịch trình khởi hành</p></Divider>
             <CalendarSection {...tour}/>
+            <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Tour khác liên quan</p></Divider>
+            <OtherToursList/>
         </div>
     );
 };

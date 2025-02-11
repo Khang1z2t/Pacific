@@ -97,7 +97,7 @@ export const CalendarSection = ({ ...tour }) => {
             {/*/>*/}
             {/* Main Content */}
             <div className="w-4/5 px-4">
-                <Card className="">
+                <Card className="h-fit">
                     <div className={'flex gap-4 items-center'}>
                         <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold flex items-center justify-center"}>
                             27/9/2024
@@ -120,6 +120,14 @@ export const CalendarSection = ({ ...tour }) => {
                     </div>
                     <ReviewSection/>
                     <LocationDetails/>
+                    <div className={'mt-8'}>
+                        <h2 className={'text-2xl font-semibold'}>Liên hệ</h2>
+                        <div className={'mt-4'}>
+                            <p className={'text-lg font-medium'}>Địa chỉ: 114/188/2 Tô Ngọc Vân, Gò Vấp, TP.HCM</p>
+                            <p className={'text-lg font-medium'}>Số điện thoại: 0909 999 999</p>
+                            <p className={'text-lg font-medium'}>Email: abc@fpt.edu.vn</p>
+                        </div>
+                    </div>
                 </Card>
             </div>
             {/*SIDE CONTENT*/}

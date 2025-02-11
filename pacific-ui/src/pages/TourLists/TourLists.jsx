@@ -17,6 +17,7 @@ export const TourLists = () => {
         // setSearch(e.target.value);
         setCurrentPage(e);
     };
+
     useEffect(() => {
         config.getAllTour().then((res) => {
             setTours(res)
