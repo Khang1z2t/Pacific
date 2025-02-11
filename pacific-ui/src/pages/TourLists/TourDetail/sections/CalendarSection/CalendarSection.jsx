@@ -99,27 +99,31 @@ export const CalendarSection = ({ ...tour }) => {
             <div className="w-4/5 px-4">
                 <Card className="h-fit">
                     <div className={'flex gap-4 items-center'}>
-                        <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold flex items-center justify-center"}>
+                        <button
+                            className={'w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold flex items-center justify-center'}>
                             27/9/2024
                         </button>
-                        <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center"}>
+                        <button
+                            className={'w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center'}>
                             22/9/2024
                         </button>
-                        <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center"}>
+                        <button
+                            className={'w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center'}>
                             22/9/2024
                         </button>
-                        <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center"}>
+                        <button
+                            className={'w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center'}>
                             22/9/2024
                         </button>
                     </div>
-                    <Divider/>
-                    <TourDescription/>
-                    <Divider/>
+                    <Divider />
+                    <TourDescription />
+                    <Divider />
                     <div className={''}>
-                        <Timelines/>
+                        <Timelines />
                     </div>
-                    <ReviewSection/>
-                    <LocationDetails/>
+                    <ReviewSection />
+                    <LocationDetails />
                     <div className={'mt-8'}>
                         <h2 className={'text-2xl font-semibold'}>Liên hệ</h2>
                         <div className={'mt-4'}>
@@ -149,11 +153,12 @@ export const CalendarSection = ({ ...tour }) => {
                     ))}
                 </div>
                 <Card className={'rounded-2xl h-fit shadow-lg mt-4'}>
-                    <CardInfo title={'Giá tour'}>
-                        {currentData.map((data, index) => (
-                            <PriceInfo key={index} {...data} />
-                        ))}
-                    </CardInfo>
+                    <CardInfo title={'Giá tour'} children={(
+                        <>
+                            <p className={'text-lg font-medium'}>Người lớn: 3,290,000 đ</p>
+                            <p className={'text-lg font-medium'}>Trẻ em: 1,645,000 đ</p>
+                        </>
+                    )} />
                 </Card>
             </div>
         </div>
