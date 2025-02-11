@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, Rate, Tag, Divider, Button, Row, Col } from 'antd';
-import { EnvironmentOutlined, CalendarOutlined, DollarOutlined } from '@ant-design/icons';
 import { tours } from '../data/tours';
 import DetailSection from '~/pages/TourLists/TourDetail/sections/DetailSection';
 import "tailwindcss/tailwind.css";

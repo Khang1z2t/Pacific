@@ -1,9 +1,9 @@
 import routes from "~/config/routes";
-import api from "~/config/api";
+import getAllTour from "~/config/api";
 
 const config = {
     routes,
-    api,
+    getAllTour,
 };
 
 export default config;

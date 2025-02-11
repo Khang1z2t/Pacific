@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import TabPane from 'antd/es/tabs/TabPane';
-import { Card, Divider, Menu, Slider, Tabs } from 'antd';
+import { Button, Card, Divider, Menu, Slider, Tabs, Timeline } from 'antd';
 import clsx from 'clsx';
-import { Bus } from 'lucide-react';
-import { BusCard } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/BusCard';
 import { CardInfo } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/CardInfo';
 import PriceInfo from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/PriceInfo';
+import { Timelines } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/Timelines';
+import { TourDescription } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/TourDescription';
+import { ReviewSection } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/ReviewSection';
+import { LocationDetails } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/LocationDetails';
 
 export const CalendarSection = ({ ...tour }) => {
     const [currentTab, setCurrentTab] = useState('9/2024');
+
     const tourData = {
         '9/2024': [
             {
@@ -83,10 +85,46 @@ export const CalendarSection = ({ ...tour }) => {
     const currentData = tourData[currentTab];
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-full p-4">
             {/* Custom Tabs */}
+
+            {/*<Divider*/}
+            {/*    style={{*/}
+            {/*        borderColor: '#656565',*/}
+            {/*    }}*/}
+            {/*    className="h-28"*/}
+            {/*    type="vertical"*/}
+            {/*/>*/}
+            {/* Main Content */}
+            <div className="w-4/5 px-4">
+                <Card className="">
+                    <div className={'flex gap-4 items-center'}>
+                        <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold flex items-center justify-center"}>
+                            27/9/2024
+                        </button>
+                        <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center"}>
+                            22/9/2024
+                        </button>
+                        <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center"}>
+                            22/9/2024
+                        </button>
+                        <button className={"w-36 h-12 bg-blue-500 text-white rounded-lg hover:bg-blue-800 transition-all text-xl uppercase font-semibold  flex items-center justify-center"}>
+                            22/9/2024
+                        </button>
+                    </div>
+                    <Divider/>
+                    <TourDescription/>
+                    <Divider/>
+                    <div className={''}>
+                        <Timelines/>
+                    </div>
+                    <ReviewSection/>
+                    <LocationDetails/>
+                </Card>
+            </div>
+            {/*SIDE CONTENT*/}
             <div className="w-1/5 bg-gray-50">
-                <div className="flex flex-col">
+                <div className="flex flex-col rounded-2xl shadow-lg">
                     {Object.keys(tourData).map((month) => (
                         <button
                             key={month}
@@ -102,44 +140,12 @@ export const CalendarSection = ({ ...tour }) => {
                         </button>
                     ))}
                 </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="w-4/5 px-4">
-                <Card className="rounded-2xl shadow-lg">
-                    <CardInfo title={"Phương tiện di chuyển"} children1={<BusCard {...currentData} />} />
-                    <CardInfo title={"Giá vé"} children1={<PriceInfo child={(
-                        <>
-                            <div>
-                                <p>Người lớn</p>
-                                <p className="text-red-500 font-bold">{currentData.adultPrice}</p>
-                                <p className="text-sm text-gray-500">(Từ 12 tuổi trở lên)</p>
-                            </div>
-                            <div>
-                                <p>Trẻ em</p>
-                                <p className="text-red-500 font-bold">{currentData.childPrice}</p>
-                                <p className="text-sm text-gray-500">(Từ 5 - 11 tuổi)</p>
-                            </div>
-                            <div>
-                                <p>Trẻ nhỏ</p>
-                                <p className="text-red-500 font-bold">0 đ</p>
-                                <p className="text-sm text-gray-500">(Từ 2 - 4 tuổi)</p>
-                            </div>
-                        </>
-                    )} {...currentData}/>} children2={<PriceInfo child={(
-                        <>
-                            <div>
-                                <p>Trẻ em</p>
-                                <p className="text-red-500 font-bold">{currentData.childPrice}</p>
-                                <p className="text-sm text-gray-500">(Từ 5 - 11 tuổi)</p>
-                            </div>
-                            <div>
-                                <p>Trẻ nhỏ</p>
-                                <p className="text-red-500 font-bold">0 đ</p>
-                                <p className="text-sm text-gray-500">(Từ 2 - 4 tuổi)</p>
-                            </div>
-                        </>
-                    )} {...currentData} />} />
+                <Card className={'rounded-2xl h-fit shadow-lg mt-4'}>
+                    <CardInfo title={'Giá tour'}>
+                        {currentData.map((data, index) => (
+                            <PriceInfo key={index} {...data} />
+                        ))}
+                    </CardInfo>
                 </Card>
             </div>
         </div>

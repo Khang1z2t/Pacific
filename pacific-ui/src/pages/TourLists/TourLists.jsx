@@ -1,24 +1,33 @@
 import { SearchBar } from '~/pages/TourLists/components/SearchBar';
 import { TourCards } from '~/pages/TourLists/components/TourCards';
-import { tours } from '~/pages/TourLists/data/tours';
+// import { tours } from '~/pages/TourLists/data/tours';
 import { useEffect, useState } from 'react';
 import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
+import config from '~/config';
 
 export const TourLists = () => {
     const ITEM_PER_PAGE = 8;
     const [currentPage, setCurrentPage] = useState(1);
+    const [tours, setTours] = useState([]);
     const [search, setSearch] = useState('');
-    const [filteredTours, setFilteredTours] = useState(tours);
-    const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
+    // const [filteredTours, setFilteredTours] = useState(tours);
+    const page = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
     const onChange = (e) => {
         // setSearch(e.target.value);
         setCurrentPage(e);
     };
     useEffect(() => {
-        setCurrentPage(1);
-    }, [filteredTours]);
+        config.getAllTour().then((res) => {
+            setTours(res)
+        }).catch((err) => {
+            console.error(err);
+        });
 
+        //
+        setCurrentPage(1);
+    }, []);
+    // console.log("aasdadsa", tours);
     const handleSearch = (query) => {
         const SearchFiltered = tours.filter((tour) => {
             const searchText = query.searchText
@@ -26,7 +35,7 @@ export const TourLists = () => {
             const side = query.side !== 'All' ? tour.side === query.side : true;
             return searchText && side;
         });
-        setFilteredTours(SearchFiltered);
+        setTours(SearchFiltered);
     };
 
     const handleFilter = (query) => {
@@ -47,7 +56,7 @@ export const TourLists = () => {
             Filtered = Filtered.filter(tour => tour.rating >= Math.min(...query.ratings));
         }
 
-        setFilteredTours(Filtered);
+        setTours(Filtered);
     };
 
 
