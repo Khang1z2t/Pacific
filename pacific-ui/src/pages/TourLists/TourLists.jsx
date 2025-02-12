@@ -1,6 +1,5 @@
 import { SearchBar } from '~/pages/TourLists/components/SearchBar';
 import { TourCards } from '~/pages/TourLists/components/TourCards';
-// import { tours } from '~/pages/TourLists/data/tours';
 import { useEffect, useState } from 'react';
 import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
@@ -20,7 +19,7 @@ export const TourLists = () => {
 
     useEffect(() => {
         config.getAllTour().then((res) => {
-            setTours(res)
+            setTours(res.data)
         }).catch((err) => {
             console.error(err);
         });

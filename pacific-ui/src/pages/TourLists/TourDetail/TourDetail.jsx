@@ -1,20 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, Rate, Tag, Divider, Button, Row, Col } from 'antd';
-import { tours } from '../data/tours';
+// import { tours } from '../data/tours';
 import DetailSection from '~/pages/TourLists/TourDetail/sections/DetailSection';
 import "tailwindcss/tailwind.css";
 import { CalendarSection } from '~/pages/TourLists/TourDetail/sections/CalendarSection/CalendarSection';
 import { OtherToursList } from '~/pages/TourLists/TourDetail/sections/OtherTours/OtherToursList';
+import config from '~/config';
+import { Loading } from '~/component/ui/Loading';
 
 export const TourDetail = () => {
+    const [loading, setLoading] = useState(true);
     const { id } = useParams();
     const [tour, setTour] = useState({});
 
     useEffect(() => {
-        setTour(tours.find((tour) => tour.id === +id));
+        // setTour(tours.find((tour) => tour.id === +id));
+        config.getById(id).then((res) => {
+            setTour(res.data);
+            setTimeout(() => {
+                setLoading(false);
+            },1000);
+        }).catch((err) => {
+            console.error(err);
+            setLoading(false);
+        });
     }, [id]);
 
+    if (loading) {
+        return <Loading/>
+    }
     if (!tour) return <p className="text-center mt-10 text-gray-500">Tour not found!</p>;
 
     return (
