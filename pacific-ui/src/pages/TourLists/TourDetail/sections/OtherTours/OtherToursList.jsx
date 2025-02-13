@@ -1,46 +1,22 @@
+import { tours } from '~/pages/TourLists/data/tours';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { TourCard } from '~/pages/TourLists/TourDetail/sections/OtherTours/Components/TourCard';
 import { Pagination } from 'antd';
-import config from '~/config';
-import { Loading } from '~/component/ui/Loading';
-
 export const OtherToursList = () => {
-    const [tours, setTours] = useState([]);
-    const [loading, setLoading] = useState(false);
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
-    const navigate = useNavigate();
-
     const page = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
     const onChange = (e) => {
         setCurrentPage(e);
     };
-
     useEffect(() => {
-        config.getAllTour().then((res) => {
-            setTours(res.data);
-        }).catch((err) => {
-            console.error(err);
-        });
-
         setCurrentPage(1);
     }, []);
-
-    const handleTourClick = (id) => {
-        setLoading(true);
-        navigate(`/tour-chi-tiet/${id}`, {replace: true});
-        setTimeout(() => {
-            setLoading(false);
-        },1000);
-    };
-
     return (
         <div className={"container mx-8 w-11/12 px-8 justify-start bg-white py-8 border rounded-lg"}>
-            {loading && <Loading />}
             <div className={"grid grid-cols-3 gap-4"}>
                 {page.map((tour, index) => (
-                    <TourCard key={index} {...tour} tag1={"Tour trong nước"} tag2={"Được đề xuất"} onClick={handleTourClick} />
+                    <TourCard key={index} {...tour} tag1={"Tour trong nước"} tag2={"Được đề xuất"} />
                 ))}
             </div>
             <Pagination rootClassName={'my-10'} align={'center'} defaultCurrent={1} total={tours.length}

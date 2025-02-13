@@ -7,12 +7,6 @@ import { Login } from '~/pages/Account/Login';
 import { Register } from '~/pages/Account/Register';
 import { TourDetail } from '~/pages/TourLists/TourDetail/TourDetail';
 import { TourLists_outside } from '~/pages/TourLists/TourLists_outside';
-import { ProfileUI } from '~/pages/Account/ProfileUI/ProfileUI';
-import { Booking } from '~/pages/Booking/Booking';
-import { HistoryBooked } from '~/pages/Account/ProfileUI/sections/HistoryBooked';
-import { HistoryPayment } from '~/pages/Account/ProfileUI/sections/HistoryPayment';
-import { ForgetPassword } from '~/pages/Account/ForgetPassword';
-import { ChangePassword } from '~/pages/Account/ChangePassword';
 
 export const RouterContent = [
     {
@@ -46,35 +40,6 @@ export const RouterContent = [
     {
       path: config.routes.about,
       element: <About/>
-    },
-
-    {
-        path: config.routes.tourDetail,
-
-        element: <TourLists/>
-    },
-    {
-        path: config.routes.profile,
-        element: <ProfileUI/>
-    },
-    {
-        path: config.routes.booking+':id',
-        element: <Booking/>
-    },
-    {
-        path: config.routes.historyBooked,
-        element: <HistoryBooked/>
-    },
-    {
-        path: config.routes.historyPayment,
-        element: <HistoryPayment/>
-    },
-    {
-        path:config.routes.forgotPassword,
-        element: <ForgetPassword/>
-    },
-    {
-        path:config.routes.changePassword,
-        element: <ChangePassword/>
     }
+
 ]
