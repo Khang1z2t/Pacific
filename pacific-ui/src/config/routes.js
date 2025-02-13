@@ -8,10 +8,16 @@ const routes = {
     notFound: "/404",
     serverError: "/500",
     tourTrongNuoc: "/tour-trong-nuoc",
-    tourNgoaiNuoc: "/tour-ngoai-nuoc",
+    tourNgoaiNuoc: "/tour-nuoc-ngoai",
     tourDetail: "/tour-chi-tiet/",
     contacts: "/lien-he",
     about: "/gioi-thieu",
+    booking: "/dat-tour/",
+    bookedTour: "/dat-tour/thanhcong",
+    historyBooked: "/lich-su-dat-tour",
+    historyPayment: "/lich-su-thanh-toan",
+    forgotPassword: "/quen-mat-khau",
+    changePassword: "/doi-mat-khau",
 };
 
 export default routes;

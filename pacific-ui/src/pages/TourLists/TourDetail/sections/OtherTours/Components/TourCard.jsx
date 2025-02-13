@@ -2,14 +2,20 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Tag } from "antd";
 
-export const TourCard = ({title,href,image,tag1,tag2}) => {
+export const TourCard = ({title,id,image,tag1,tag2,onClick}) => {
+    const handleClick = () => {
+        window.scrollTo({ top:0, behavior: 'smooth' });
+        onClick(id);
+    }
+
     return (
         <Link
-            to={href}
+            to={`/tour-chi-tiet/${id}`}
             className="grid relative grid-cols-5 h-full items-center border border-orange-300 bg-orange-50 p-2 rounded-lg hover:border-orange-600 hover:bg-orange-100 transition-all hover:cursor-pointer"
             style={{
                 padding: "0",
             }}
+            onClick={handleClick}
         >
             {/* Hình ảnh */}
             <div className="col-span-1 lg:mb-0 p-2">

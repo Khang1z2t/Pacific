@@ -1,43 +1,31 @@
 import { Checkbox, Divider, Rate, Select } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { prices } from '~/pages/TourLists/data/prices';
 import { times } from '~/pages/TourLists/data/times';
 import { ratings } from '~/pages/TourLists/data/ratings';
 
-export const Aside = ({ onFilter }) => {
-
-
-    const [filters, setFilters] = useState({
+export const Aside = ({setSort}) => {
+    const [query, setQuery] = useState({
         prices: "All",
         times: [],
         ratings: [],
     });
 
-    const handleChange = (type, value) => {
-        setFilters((prev) => {
-            const newFilters = { ...prev };
-            if (type === 'prices') {
-                newFilters[type] = value;
-            } else {
-                if (newFilters[type].includes(value)) {
-                    newFilters[type] = newFilters[type].filter((item) => item !== value);
-                } else {
-                    newFilters[type].push(value);
-                }
-            }
-            onFilter(newFilters);
-            return newFilters;
-        });
-    };
-
-
+    const handleCheckboxChange = (field, value) => {
+        setQuery({...query, [field]: value});
+    }
+    const handleSelectChange = (value) => {
+        setQuery({...query, prices: value});
+        setSort(value);
+    }
     return (
         <aside className="w-3/12 h-fit border p-4 bg-gray-50 shadow-md rounded-md">
             <Divider>Chọn lọc giá</Divider>
             <Select
                 className="w-full"
                 placeholder="Chọn giá"
-                onChange={(value) => handleChange('prices', value)}
+                optionFilterProp={'children'}
+                onChange={(value,option) => handleSelectChange(option.value)}
                 options={[
                     { label: 'Tất cả', value: 'All' },
                     { label: 'Cao nhất', value: 'HighToLow' },
@@ -49,14 +37,14 @@ export const Aside = ({ onFilter }) => {
             <Divider>Giờ trong ngày</Divider>
             {times.map((timed) => (
                 <Checkbox
-                    key={timed.label} onChange={() => handleChange('times', timed.value)}>
+                    key={timed.label} onChange={(value) => handleCheckboxChange('times', value)}>
                     {timed.label}
                 </Checkbox>
             ))}
             <Divider>Điểm đánh giá</Divider>
             {ratings.map((rating) => (
                 <div key={rating}>
-                    <Checkbox onChange={() => handleChange('ratings', rating)}>
+                    <Checkbox onChange={(value) => handleCheckboxChange('rating',value)}>
                         <Rate allowHalf defaultValue={rating} disabled /> trở lên
                     </Checkbox>
                 </div>
