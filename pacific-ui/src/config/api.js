@@ -10,5 +10,13 @@ const getAllTour = async () => {
         return Promise.reject(error);
     }
 };
-
-export default getAllTour;
+const getById = async (id) => {
+    try{
+        const response = await axiosConfig.get(`/api/tours/${id}`);
+        return response.data;
+    }catch (error){
+        console.error('Error:', error);
+        return Promise.reject(error);
+    }
+}
+export { getAllTour, getById };
