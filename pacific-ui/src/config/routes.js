@@ -10,6 +10,8 @@ const routes = {
     tourTrongNuoc: "/tour-trong-nuoc",
     tourNgoaiNuoc: "/tour-ngoai-nuoc",
     tourDetail: "/tour-chi-tiet/",
+    contacts: "/lien-he",
+    about: "/gioi-thieu",
 };
 
 export default routes;

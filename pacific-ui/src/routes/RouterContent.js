@@ -1,5 +1,7 @@
 import config from "~/config";
 import Home from "~/pages/Home";
+import Contacts from "~/pages/News/Contacts";
+import About from "~/pages/Introduce/About";
 import { TourLists } from '~/pages/TourLists/TourLists';
 import { Login } from '~/pages/Account/Login';
 import { Register } from '~/pages/Account/Register';
@@ -30,6 +32,14 @@ export const RouterContent = [
     {
         path: config.routes.tourNgoaiNuoc,
         element: <TourLists_outside/>
+    },
+    {
+      path: config.routes.contacts,
+      element: <Contacts/>
+    },
+    {
+      path: config.routes.about,
+      element: <About/>
     }
 
 ]

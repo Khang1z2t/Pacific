@@ -23,11 +23,15 @@ export const Navbar = () => {
         },
         {
             title: 'tin tức',
-            href: '#news',
+            href: '#News',
+        },
+        {
+            title: 'liên hệ',
+            href: '/lien-he',
         },
         {
             title: 'giới thiệu',
-            href: '#aboutus',
+            href: '/gioi-thieu',
         },
     ];
     const NavItemsElm = ({ title, href }) => {

@@ -44,6 +44,7 @@ const Vacations = () => {
                     },
                 }}
             >
+                
                 {carouselItems.map((item, index) => (
                     <SwiperSlide key={index}>
                         <div className="relative group">
