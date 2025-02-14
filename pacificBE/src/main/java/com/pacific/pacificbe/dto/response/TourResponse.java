@@ -24,4 +24,5 @@ public class TourResponse {
     String status;
     List<?> tourImages;
     List<?> guides;
+
 }

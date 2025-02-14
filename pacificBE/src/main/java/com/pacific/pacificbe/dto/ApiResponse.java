@@ -3,7 +3,6 @@ package com.pacific.pacificbe.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import lombok.Builder;
 
 @Data
 @Builder
@@ -14,10 +13,7 @@ import lombok.Builder;
 public class ApiResponse<T> {
     @Builder.Default
     private int code = 200;
+
     private String message;
     private T data;
-
-    public static <T> ApiResponseBuilder<T> builder() {
-        return new ApiResponseBuilder<>();
-    }
 }
