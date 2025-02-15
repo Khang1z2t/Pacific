@@ -16,6 +16,7 @@ import { ChangePassword } from '~/pages/Account/ChangePassword';
 import { MienBac } from '~/pages/Blog/MienBac';
 import { MienTrung } from '~/pages/Blog/MienTrung';
 import { MienNam } from '~/pages/Blog/MienNam';
+import {TourInfo} from "~/pages/TourInfo/TourInfo";
 
 export const RouterContent = [
     {
@@ -50,7 +51,6 @@ export const RouterContent = [
         path: config.routes.about,
         element: <About />,
     },
-
     {
         path: config.routes.tourDetail,
 
@@ -92,4 +92,8 @@ export const RouterContent = [
         path: config.routes.blogMienNam,
         element: <MienNam />,
     },
+    {
+        path: config.routes.tourInfo,
+        element: <TourInfo />
+    }
 ];
