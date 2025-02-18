@@ -9,14 +9,13 @@ import { TourDetail } from '~/pages/TourLists/TourDetail/TourDetail';
 import { TourLists_outside } from '~/pages/TourLists/TourLists_outside';
 import { ProfileUI } from '~/pages/Account/ProfileUI/ProfileUI';
 import { Booking } from '~/pages/Booking/Booking';
-import { HistoryBooked } from '~/pages/Account/ProfileUI/sections/HistoryBooked';
-import { HistoryPayment } from '~/pages/Account/ProfileUI/sections/HistoryPayment';
+import HistoryPayment from '~/pages/Account/HistoryPayment/HistoryPayment';
 import { ForgetPassword } from '~/pages/Account/ForgetPassword';
 import { ChangePassword } from '~/pages/Account/ChangePassword';
 import { MienBac } from '~/pages/Blog/MienBac';
 import { MienTrung } from '~/pages/Blog/MienTrung';
 import { MienNam } from '~/pages/Blog/MienNam';
-import {TourInfo} from "~/pages/TourInfo/TourInfo";
+import {BookedTour} from "~/pages/Account/historyBooked/BookedTour";
 
 export const RouterContent = [
     {
@@ -66,7 +65,7 @@ export const RouterContent = [
     },
     {
         path: config.routes.historyBooked,
-        element: <HistoryBooked />,
+        element: <BookedTour/>,
     },
     {
         path: config.routes.historyPayment,
@@ -91,9 +90,5 @@ export const RouterContent = [
     {
         path: config.routes.blogMienNam,
         element: <MienNam />,
-    },
-    {
-        path: config.routes.tourInfo,
-        element: <TourInfo />
     }
 ];

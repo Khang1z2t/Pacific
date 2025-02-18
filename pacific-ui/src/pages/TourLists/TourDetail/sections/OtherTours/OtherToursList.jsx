@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { TourCard } from '~/pages/TourLists/TourDetail/sections/OtherTours/Components/TourCard';
 import { Pagination } from 'antd';
 import config from '~/config';
@@ -11,6 +11,7 @@ export const OtherToursList = () => {
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
+    const { id: currentTourId } = useParams();
 
     const page = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
     const onChange = (e) => {
@@ -19,13 +20,14 @@ export const OtherToursList = () => {
 
     useEffect(() => {
         config.getAllTour().then((res) => {
-            setTours(res.data);
+            const filteredTours = res.data.filter(tour => tour.id !== currentTourId);
+            setTours(filteredTours);
         }).catch((err) => {
             console.error(err);
         });
 
         setCurrentPage(1);
-    }, []);
+    }, [currentTourId]);
 
     const handleTourClick = (id) => {
         setLoading(true);

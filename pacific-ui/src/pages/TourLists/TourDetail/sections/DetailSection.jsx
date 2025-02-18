@@ -37,14 +37,14 @@ const DetailSection = ({...tour}) => {
 
             {/* Right Section: Booking Info */}
             <Card className="max-w-sm p-4 shadow-xl ms-10 rounded-2xl">
-                <h2 className="text-2xl font-semibold mb-4 text-red-600">Giá: {tour.basePrice} / Khách</h2>
+                <h2 className="text-2xl font-semibold mb-4 text-red-600">Giá: {tour.priceAdults} / Khách</h2>
                 <p className="bg-red-100 text-red-600 p-2 rounded mb-2">
                     Đặt ngay để nhận ưu đãi giờ chót tiết kiệm thêm 300K
                 </p>
                 <div className="space-y-2">
                     <p><strong>Mã tour:</strong> NDSGN841-017-270924XE-H</p>
                     <p><strong>Khởi hành:</strong> {tour.destination}</p>
-                    <p><strong>Ngày khởi hành:</strong> {tour.created_at}</p>
+                    <p><strong>Ngày khởi hành:</strong> {tour.createdAt}</p>
                     <p><strong>Thời gian:</strong> 3N2Đ</p>
                     <p><strong>Số chỗ còn:</strong> 9 chỗ</p>
                 </div>

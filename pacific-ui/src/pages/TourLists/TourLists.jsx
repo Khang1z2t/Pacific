@@ -30,9 +30,9 @@ export const TourLists = () => {
     useEffect(() => {
         let sortedTours = [...tours];
         if(sort === "HighToLow") {
-            sortedTours.sort((a,b) => b.basePrice - a.basePrice);
+            sortedTours.sort((a,b) => b.priceAdults - a.priceAdults);
         }else if (sort === "LowToHigh") {
-            sortedTours.sort((a,b) => a.basePrice - b.basePrice);
+            sortedTours.sort((a,b) => a.priceAdults - b.priceAdults);
         }
         setFilteredTours(sortedTours);
     }, [sort,tours]);

@@ -109,13 +109,13 @@ export const Navbar = () => {
     return (
         <header className="sticky top-0 z-50 bg-white shadow-md">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-1 justify-between items-center h-16">
+                <div className="flex justify-between items-center h-16">
                     {/* Logo */}
                     <div className="flex-shrink-0">
                         <Link to={config.routes.home} className="flex items-center text-xl font-bold text-indigo-600">
-                            {/*<img className={'h-12 w-full'}*/}
-                            {/*        src="/img/logo.jpg"*/}
-                            {/*        alt="Pacific Travel"/>*/}
+                            <img className={'h-12 w-full hidden object-cover lg:block'}
+                                    src="/img/logo.jpg"
+                                    alt="Pacific Travel"/>
                             <span className={'text-black font-light'}>Pacific</span>
                         </Link>
                     </div>
@@ -134,7 +134,7 @@ export const Navbar = () => {
                                 <Dropdown overlay={menuGroup}>
                                     <a onClick={(e) => e.preventDefault()}
                                        className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold">
-                                        Chào mừng {currentUser?.displayName || currentUser?.email}
+                                        {currentUser?.displayName || currentUser?.email}
                                     </a>
                                 </Dropdown>
                             </>
