@@ -5,6 +5,7 @@ import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import {doSignInWithFacebook, doSignInWithGoogle, loginWithUsername} from '~/config/firebase/auth';
 import { loginWEmail } from '~/config/firebase/auth';
+import config from "~/config";
 
 export const Login = () => {
     //healing async
@@ -43,6 +44,7 @@ export const Login = () => {
     // };
 
     //
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try{
@@ -89,7 +91,7 @@ export const Login = () => {
         if (!isSignIn) {
             setIsSignIn(true);
             doSignInWithFacebook().then(() => {
-                window.location.href = '/';
+                navigate('/');
             }).catch(() => {
                 message.error('Đăng nhập thất bại', 1);
             });
@@ -108,7 +110,7 @@ export const Login = () => {
                     <div className={"space-y-2"}>
                         <div className={"flex justify-between"}>
                             <label className="block text-sm font-medium">Mật khẩu<span className="text-red-500">*</span></label>
-                            <Link to="/quen-mat-khau" className="text-sm text-blue-500">Quên mật khẩu?</Link>
+                            <Link to={config.routes.forgotPassword} className="text-sm text-blue-500">Quên mật khẩu?</Link>
                         </div>
                         <Input.Password
                             placeholder="Mật khẩu"
@@ -123,7 +125,15 @@ export const Login = () => {
                             className="px-6 py-2 w-1/2 bg-black text-white rounded-md font-semibold hover:bg-gray-800"
                         >
                             {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-                        </button></div>
+                        </button>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-gray-600">Chưa có tài khoản?{' '}
+                            <Link to={config.routes.register} className="text-blue-500 hover:text-blue-400 font-semibold">
+                                Đăng ký
+                            </Link>
+                        </p>
+                    </div>
                 </Form>
                 <Divider />
                 <div className="flex gap-4 justify-between">

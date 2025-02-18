@@ -5,38 +5,42 @@ import React, { useState } from 'react';
 import { register } from '~/config/firebase/auth';
 import { signOut } from 'firebase/auth';
 import { auth } from '~/config/firebase/firebase';
+import config from "~/config";
 
 export const Register = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [messageApi, contextHolder] = message.useMessage();
     const [password, setPassword] = useState('');
-    const [username, setUsername] = useState('');
+    // const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+
 
     const handleRegister = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
-            messageApi.error('Mật khẩu không trùng khớp', 1);
+            message.error('Mật khẩu không trùng khớp', 1);
             return;
         }
-        if (!email || !username || !password || !confirmPassword) {
-            messageApi.error('Vui lòng điền đầy đủ thông tin', 1);
+        if (!email || !firstName || !lastName || !password || !confirmPassword) {
+            message.error('Vui lòng điền đầy đủ thông tin', 1);
             return;
         }
         setLoading(true);
         try {
+            const username = `${firstName} ${lastName}`;
             const user = await register(email, password, username);
             if (user.code) {
-                messageApi.error(`Lỗi: ${user.message}`, 1);
+                message.error(`Lỗi: ${user.message}`, 1);
             } else {
-                messageApi.success('Đăng ký thành công!', 1);
-                navigate('/dang-nhap');
+                message.success('Đăng ký thành công!', 1);
+                navigate(config.routes.login);
             }
             await signOut(auth);
         } catch (error) {
-            messageApi.error(`Đăng ký thất bại: ${error.message}`, 1);
+            message.error(`Đăng ký thất bại: ${error.message}`, 1);
         } finally {
             setLoading(false);
         }
@@ -44,18 +48,17 @@ export const Register = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            {contextHolder}
             <div className="bg-white p-8 rounded-lg shadow-lg w-full uppercase max-w-2xl">
                 <h2 className="text-2xl font-bold text-center mb-6 text-orange-400">Đăng ký</h2>
                 <Divider />
                 <Form className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium">Tên<span className={"text-red-500"}>*</span></label>
-                        <Input placeholder="Tên" onChange={(e) => setUsername(e.target.value)} />
+                        <Input placeholder="Tên" onChange={(e) => setFirstName(e.target.value)} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium">Họ</label>
-                        <Input placeholder="Họ" />
+                        <label className="block text-sm font-medium">Họ<span className={"text-red-500"}>*</span></label>
+                        <Input placeholder="Họ" onChange={(e) => setLastName(e.target.value)} />
                     </div>
                     <div className="col-span-2">
                         <label className="block text-sm font-medium">Email<span className={"text-red-500"}>*</span></label>
@@ -89,7 +92,7 @@ export const Register = () => {
                 </Form>
                 <div className={'text-center mt-4'}>
                     <p className="text-gray-600">Đã có tài khoản?{' '}
-                        <Link to={'/dang-nhap'} className="text-indigo-600 hover:text-indigo-500 font-semibold">
+                        <Link to={config.routes.login} className="text-indigo-600 hover:text-indigo-500 font-semibold">
                             Đăng nhập
                         </Link>
                     </p>

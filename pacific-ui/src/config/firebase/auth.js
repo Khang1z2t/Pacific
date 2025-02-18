@@ -10,7 +10,13 @@ export const register = async (email, password,username) => {
         const user = userCredential.user;
 
         //save
-        await saveUser(user);
+        await setDoc(doc(db, 'users', user.uid), {
+            email: user.email,
+            username: username,
+            uid: user.uid,
+            provider: user.providerData[0]?.providerId, // Google/Facebook/Email
+            createdAt: new Date().toISOString(),
+        });
         //setUsername
         await user.updateProfile({
             displayName: username,
