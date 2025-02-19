@@ -21,6 +21,8 @@ const routes = {
     blogMienBac: '/MienBac',
     blogMienTrung: '/MienTrung',
     blogMienNam: '/MienNam',
+    tourInfo: "/thong-tin-tour",
+    adminbooking: '/admin-dat',
 };
 
 export default routes;
