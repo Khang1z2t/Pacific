@@ -3,19 +3,30 @@ import {BrowserRouter as Router, Routes, Route, useLocation} from 'react-router-
 import MainLayout from '~/component/Layout/MainLayout';
 import 'font-awesome/css/font-awesome.min.css';
 import NotFound from '~/pages/NotFound';
+import {Fragment} from "react";
 
 function App() {
 
     return (
         <Router>
-            <MainLayout>
-                <Routes>
-                    {RouterContent.map((route, index) => (
-                        <Route key={index} path={route.path} element={route.element} />
-                    ))}
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
-            </MainLayout>
+            <Routes>
+                {RouterContent.map((route, index) => {
+                    const isAdminRoute = route.path.startsWith('/admin');
+                    const Layout = isAdminRoute ? Fragment : MainLayout;
+                    return (
+                        <Route
+                            key={index}
+                            path={route.path}
+                            element={
+                                <Layout>
+                                    {route.element}
+                                </Layout>
+                            }
+                        />
+                    );
+                })}
+                <Route path="*" element={<NotFound />} />
+            </Routes>
         </Router>
     );
 }
