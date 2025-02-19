@@ -19,29 +19,6 @@ export const Login = () => {
     const [identifier, setIdentifier] = useState('');
     const [isSignIn, setIsSignIn] = useState(false);
 
-    //
-    // const handleLogin = async (e) => {
-    //     e.preventDefault();
-    //     try{
-    //         if (!username || !password) {
-    //             message.error('Vui lòng điền đầy đủ thông tin', 1);
-    //             return;
-    //         }
-    //         setLoading(true);
-    //         const user = await loginWEmail(username, password);
-    //         if (user.code) {
-    //             // Nếu có lỗi từ Firebase (code: error từ Firebase)
-    //             message.error(`Lỗi: ${user.message}`, 1);
-    //         } else {
-    //             message.success('Đăng nhập thành công!', 1);
-    //             navigate('/');
-    //         }
-    //     }catch (error){
-    //         message.error(`Đăng nhập thất bại: ${error.message}`, 1);
-    //     }finally {
-    //         setLoading(false);
-    //     }
-    // };
 
     //
 

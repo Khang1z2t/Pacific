@@ -1,4 +1,4 @@
-import { Checkbox, Divider, Rate, Select } from 'antd';
+import {Checkbox, Divider, Radio, Rate, Select} from 'antd';
 import { useEffect, useState } from 'react';
 import { prices } from '~/pages/TourLists/data/prices';
 import { times } from '~/pages/TourLists/data/times';
@@ -10,6 +10,8 @@ export const Aside = ({setSort}) => {
         times: [],
         ratings: [],
     });
+    const [checkedTour, setCheckedTour] = useState();
+
 
     const handleCheckboxChange = (field, value) => {
         setQuery({...query, [field]: value});
@@ -49,6 +51,11 @@ export const Aside = ({setSort}) => {
                     </Checkbox>
                 </div>
             ))}
+            <Divider>Loại tour</Divider>
+            <Radio.Group>
+                <Radio value={1}>Tour trong nước</Radio>
+                <Radio value={2}>Tour nước ngoài</Radio>
+            </Radio.Group>
         </aside>
     );
 };
