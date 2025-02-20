@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 const locations = [
     {
         id: 1,
-        title: 'Du Lịch Thủ Đô Hà Nội',
+        title: 'Du Lịch Thủ Đô Hà Nội,',
         img: '/img/Blog/ha-noi.jpg',
         description:
             'Hà Nội, thủ đô của Việt Nam, là một trong những điểm đến không thể bỏ qua ở miền Bắc. Với lịch sử hơn 1.000 năm, Hà Nội có nhiều điểm đặc sắc như Hoàng thành Thăng Long, Văn Miếu - Quốc Tử Giám, Hồ Gươm, Phố cổ Hà Nội, Chùa Một Cột. Đây cũng là thiên đường ẩm thực với những món như phở, bún chả, bánh mì, nem rán.',
