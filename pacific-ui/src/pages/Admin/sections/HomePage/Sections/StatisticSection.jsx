@@ -58,9 +58,9 @@ const visitRanking = [
 
 // Cấu trúc cột cho bảng
 const columns = [
-    { title: "排名", dataIndex: "rank", key: "rank" },
-    { title: "门店", dataIndex: "name", key: "name" },
-    { title: "数值", dataIndex: "value", key: "value" },
+    { title: "Số thứ tự", dataIndex: "rank", key: "rank" },
+    { title: "Tên tour", dataIndex: "name", key: "name" },
+    { title: "Doanh thu", dataIndex: "value", key: "value" },
 ];
 
 export const StatisticSection = () => {
@@ -70,8 +70,8 @@ export const StatisticSection = () => {
         <Card className="p-4">
             <div className="flex justify-between items-center mb-4">
                 <Tabs defaultActiveKey="1" onChange={setActiveTab}>
-                    <Tabs.TabPane tab="销售额" key="1" />
-                    <Tabs.TabPane tab="访问量" key="2" />
+                    <Tabs.TabPane tab="Theo năm" key="1" />
+                    <Tabs.TabPane tab="Theo tháng" key="2" />
                 </Tabs>
                 <div className="flex space-x-4">
                     <button className="text-gray-500">今天</button>
@@ -98,8 +98,8 @@ export const StatisticSection = () => {
 
                 {/* Bảng dữ liệu */}
                 <div>
-                    <h3 className="mb-2 font-semibold">
-                        {activeTab === "1" ? "门店销售额排名" : "门店访问量排名"}
+                    <h3 className="mb-2 uppercase font-semibold">
+                        {activeTab === "1" ? "Danh sách tour được book nhiều nhất" : "Danh sách tour được xem nhiều nhất"}
                     </h3>
                     <Table
                         columns={columns}
