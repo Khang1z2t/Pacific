@@ -13,6 +13,7 @@ export const register = async (email, password,username) => {
         await setDoc(doc(db, 'users', user.uid), {
             email: user.email,
             username: username,
+            role: 'user',
             uid: user.uid,
             provider: user.providerData[0]?.providerId, // Google/Facebook/Email
             createdAt: new Date().toISOString(),
