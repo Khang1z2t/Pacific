@@ -1,28 +1,30 @@
 import { RouterContent } from '~/routes/RouterContent';
-import {BrowserRouter as Router, Routes, Route, useLocation} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from '~/component/Layout/MainLayout';
 import 'font-awesome/css/font-awesome.min.css';
 import NotFound from '~/pages/NotFound';
-import {Fragment} from "react";
+import { Fragment } from 'react';
+import PrivateRoute from '~/config/PrivateRoute';
 
 function App() {
-
     return (
         <Router>
             <Routes>
                 {RouterContent.map((route, index) => {
                     const isAdminRoute = route.path.startsWith('/admin');
+                    // const isPublicRoute = route.path === '/';
                     const Layout = isAdminRoute ? Fragment : MainLayout;
                     return (
                         <Route
                             key={index}
                             path={route.path}
                             element={
-                                <Layout>
-                                    {route.element}
-                                </Layout>
+                                <PrivateRoute adminOnly={isAdminRoute}>
+                                    <Layout>{route.element}</Layout>
+                                </PrivateRoute>
                             }
                         />
+
                     );
                 })}
                 <Route path="*" element={<NotFound />} />
