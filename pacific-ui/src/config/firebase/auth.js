@@ -95,16 +95,27 @@ export const doSendEmailVerification = () => {
 }
 
 export const saveUser = async (user) => {
-    try{
+    try {
         const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', user.uid)));
+
+        let role = 'user';
+
+        if (!userDoc.empty) {
+            const existingUser = userDoc.docs[0].data();
+            role = existingUser.role || 'user';
+        }
+
         await setDoc(userRef, {
             email: user.email,
             username: user.displayName,
+            role: role,
             uid: user.uid,
-            provider: user.providerData[0]?.providerId, // Google/Facebook/Email
+            provider: user.providerData[0]?.providerId,
             createdAt: new Date().toISOString(),
-        },{merge: true}); //Ghi de len tai khoan da ton tai
-    }catch (error) {
+        }, { merge: true });
+
+    } catch (error) {
         return error;
     }
-}
+};
