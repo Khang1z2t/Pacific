@@ -32,3 +32,4 @@ build/
 # Other
 pacific-ui/node_modules/
 pacificBE/target/
+/.metadata/

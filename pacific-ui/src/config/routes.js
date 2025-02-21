@@ -22,7 +22,8 @@ const routes = {
     blogMienTrung: '/MienTrung',
     blogMienNam: '/MienNam',
     adminBooking: '/admin-dat',
-    adminHome: '/admin'
+    adminHome: '/admin',
+    news: '/news',
 };
 
 export default routes;
