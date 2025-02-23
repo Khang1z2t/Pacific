@@ -21,6 +21,7 @@ import { BookedTour } from '~/pages/Account/historyBooked/BookedTour';
 import { AdminLayout } from '~/component/Layout/Admin/AdminLayout';
 import AdminHome from '~/pages/Admin/AdminHome';
 import { News } from '~/pages/News/News';
+import AdminUsers from '~/pages/Admin/AdminUsers';
 
 export const RouterContent = [
     {
@@ -114,5 +115,13 @@ export const RouterContent = [
     {
         path: config.routes.news,
         element: <News />,
+    },
+    {
+        path: config.routes.adminUsers,
+        element: (
+            <AdminLayout>
+                <AdminUsers />
+            </AdminLayout>
+        ),
     },
 ];

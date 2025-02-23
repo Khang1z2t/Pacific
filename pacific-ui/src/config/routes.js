@@ -24,6 +24,7 @@ const routes = {
     adminBooking: '/admin-dat',
     adminHome: '/admin',
     news: '/news',
+    adminUsers: '/admin-users',
 };
 
 export default routes;

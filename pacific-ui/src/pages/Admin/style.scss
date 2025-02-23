@@ -1,0 +1,114 @@
+@use 'sass:map';
+
+$theme-colors: (
+    'normal': #3498db,
+    'normal-test': #2ecc71,
+    'active': #2ecc71,
+    'inactive': #e74c3c,
+);
+
+.users {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+
+    h2 {
+        margin-bottom: 20px;
+        color: map-get($theme-colors, 'normal');
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    &_content {
+        overflow-x: auto;
+    }
+
+    &_table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+
+        th,
+        td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            font-weight: bold;
+            font-size: 16px;
+            background: #f5f5f5;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+
+            &.active {
+                background: map-get($theme-colors, 'active');
+            }
+
+            &.inactive {
+                background: map-get($theme-colors, 'inactive');
+            }
+        }
+    }
+
+    &_footer {
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    &_pagination {
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    &_page-numbers {
+        display: flex;
+        gap: 5px;
+    }
+
+    &_page-btn {
+        height: 36px;
+        min-width: 36px;
+        padding: 0 12px;
+        font-size: 14px;
+        color: map-get($theme-colors, 'normal-text');
+        background: #ffffff;
+        border: 1px solid #ebebeb;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        &hover:not(&--active) {
+            color: #ffffff;
+            background: map-get($theme-colors, 'main');
+        }
+
+        &--active {
+            color: #ffffff;
+            background: map-get($theme-colors, 'main');
+            border-color: map-get($theme-colors, 'main');
+        }
+    }
+}
