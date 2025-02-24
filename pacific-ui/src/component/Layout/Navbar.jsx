@@ -1,13 +1,13 @@
 import React from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Link} from 'react-router-dom';
-import {useAuth} from '~/config/firebase/AuthContext';
-import {Dropdown, Menu, message} from 'antd';
-import {auth} from '~/config/firebase/firebase';
-import {logout} from '~/config/firebase/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
+import { useAuth } from '~/config/firebase/AuthContext';
+import { Dropdown, Menu, message } from 'antd';
+import { auth } from '~/config/firebase/firebase';
+import { logout } from '~/config/firebase/auth';
 import config from '~/config';
-import {MenuItemsElm} from '~/component/ui/MenuItemsElm';
+import { MenuItemsElm } from '~/component/ui/MenuItemsElm';
 
 export const Navbar = () => {
     const navItems = [
@@ -25,7 +25,7 @@ export const Navbar = () => {
         },
         {
             title: 'tin tức',
-            href: '#News',
+            href: '/news',
         },
         {
             title: 'liên hệ',
@@ -36,12 +36,17 @@ export const Navbar = () => {
             href: '/gioi-thieu',
         },
     ];
-    const NavItemsElm = ({title, href}) => {
+    const NavItemsElm = ({ title, href }) => {
         return (
             <div className={''}>
-                <Link to={href}
-                      className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}>{title}</Link>
-            </div>);
+                <Link
+                    to={href}
+                    className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}
+                >
+                    {title}
+                </Link>
+            </div>
+        );
     };
 
     const handleLogout = async () => {
@@ -73,38 +78,40 @@ export const Navbar = () => {
             title: 'Đổi mật khẩu',
             href: config.routes.changePassword,
         },
-    ]
+    ];
 
     const menuItemsTour = [
         {
             key: 'thong-tin-tour',
             title: 'Thông tin tour',
             href: config.routes.tourInfo,
-        }
-    ]
+        },
+    ];
     const menuGroup = (
         <Menu>
             <Menu.ItemGroup title="Tài khoản">
                 {menuItems.map((item, index) => (
-                    <MenuItemsElm key={index} title={item.title} href={item.href}/>
+                    <MenuItemsElm key={index} title={item.title} href={item.href} />
                 ))}
             </Menu.ItemGroup>
             <Menu.ItemGroup title="Booking">
                 {menuItemsTour.map((item, index) => (
-                    <MenuItemsElm key={index} title={item.title} href={item.href}/>
+                    <MenuItemsElm key={index} title={item.title} href={item.href} />
                 ))}
             </Menu.ItemGroup>
             <Menu.ItemGroup title="Khác">
                 <Menu.Item key="logout">
-                    <button onClick={handleLogout}
-                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
                         Đăng xuất
                     </button>
                 </Menu.Item>
             </Menu.ItemGroup>
         </Menu>
     );
-    const {currentUser} = useAuth();
+    const { currentUser } = useAuth();
 
     return (
         <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -113,9 +120,11 @@ export const Navbar = () => {
                     {/* Logo */}
                     <div className="flex-shrink-0">
                         <Link to={config.routes.home} className="flex items-center text-xl font-bold text-indigo-600">
-                            <img className={'h-12 w-full hidden object-cover lg:block'}
-                                    src="/img/logo.jpg"
-                                    alt="Pacific Travel"/>
+                            <img
+                                className={'h-12 w-full hidden object-cover lg:block'}
+                                src="/img/logo.jpg"
+                                alt="Pacific Travel"
+                            />
                             <span className={'text-black font-light'}>Pacific</span>
                         </Link>
                     </div>
@@ -123,35 +132,45 @@ export const Navbar = () => {
                     {/* Menu Items */}
                     <div className="hidden md:flex space-x-8">
                         {navItems.map((item, index) => (
-                            <NavItemsElm key={index}
-                                         title={item.title}
-                                         href={item.href}/>
+                            <NavItemsElm key={index} title={item.title} href={item.href} />
                         ))}
                     </div>
                     <div className={'hidden md:flex space-x-4'}>
                         {currentUser ? (
                             <>
                                 <Dropdown overlay={menuGroup}>
-                                    <a onClick={(e) => e.preventDefault()}
-                                       className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold">
+                                    <a
+                                        onClick={(e) => e.preventDefault()}
+                                        className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"
+                                    >
                                         {currentUser?.displayName || currentUser?.email}
                                     </a>
                                 </Dropdown>
                             </>
                         ) : (
                             <>
-                                <Link to={config.routes.login}
-                                      className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}>Đăng
-                                    nhập</Link>
-                                <Link to={config.routes.register}
-                                      className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}>Đăng
-                                    ký</Link>
+                                <Link
+                                    to={config.routes.login}
+                                    className={
+                                        'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
+                                    }
+                                >
+                                    Đăng nhập
+                                </Link>
+                                <Link
+                                    to={config.routes.register}
+                                    className={
+                                        'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
+                                    }
+                                >
+                                    Đăng ký
+                                </Link>
                             </>
                         )}
                     </div>
                     {/* Mobile Menu Button */}
                     <div className="md:hidden">
-                        <NavbarMB/>
+                        <NavbarMB />
                     </div>
                 </div>
             </nav>

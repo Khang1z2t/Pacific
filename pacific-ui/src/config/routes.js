@@ -23,6 +23,10 @@ const routes = {
     blogMienNam: '/MienNam',
     adminBooking: '/admin-dat',
     adminHome: '/admin',
+    news: '/news',
+    adminUsers: '/admin-users',
+    infoGuide: '/info-guide',
+    addGuide: '/add-guide',
     checkOutSuccess: '/checkout/success/',
 };
 
