@@ -19,6 +19,7 @@ import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';
 import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
 import AdminUsers from './AdminUsers';
+import InfoGuide from './InfoGuide';
 
 const { Content } = Layout;
 
@@ -32,7 +33,7 @@ const AdminHome = () => {
             icon: <TeamOutlined />,
             children: [
                 { label: 'Danh sách tài khoản', key: '3', content: <AdminUsers /> },
-                { label: 'Hướng dẫn viên', key: '4', content: 'Team 1 works on React.' },
+                { label: 'Hướng dẫn viên', key: '4', content: <InfoGuide /> },
             ],
         },
         {

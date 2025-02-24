@@ -25,6 +25,8 @@ const routes = {
     adminHome: '/admin',
     news: '/news',
     adminUsers: '/admin-users',
+    infoGuide: '/info-guide',
+    addGuide: '/add-guide',
 };
 
 export default routes;

@@ -22,6 +22,8 @@ import { AdminLayout } from '~/component/Layout/Admin/AdminLayout';
 import AdminHome from '~/pages/Admin/AdminHome';
 import { News } from '~/pages/News/News';
 import AdminUsers from '~/pages/Admin/AdminUsers';
+import InfoGuide from '~/pages/Admin/InfoGuide';
+import AddGuide from '~/pages/Admin/AddGuide';
 
 export const RouterContent = [
     {
@@ -121,6 +123,22 @@ export const RouterContent = [
         element: (
             <AdminLayout>
                 <AdminUsers />
+            </AdminLayout>
+        ),
+    },
+    {
+        path: config.routes.infoGuide,
+        element: (
+            <AdminLayout>
+                <InfoGuide />
+            </AdminLayout>
+        ),
+    },
+    {
+        path: config.routes.addGuide,
+        element: (
+            <AdminLayout>
+                <AddGuide />
             </AdminLayout>
         ),
     },
