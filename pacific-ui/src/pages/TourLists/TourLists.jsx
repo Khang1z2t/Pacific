@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import config from '~/config';
+import TourServices from '~/services/TourServices';
 
 export const TourLists = () => {
     const ITEM_PER_PAGE = 8;
@@ -19,7 +20,7 @@ export const TourLists = () => {
     };
 
     useEffect(() => {
-        config.getAllTour().then((res) => {
+        TourServices.getAllTour().then((res) => {
             setTours(res.data);
             setFilteredTours(res.data); // Initialize filteredTours with all tours
         }).catch((err) => {

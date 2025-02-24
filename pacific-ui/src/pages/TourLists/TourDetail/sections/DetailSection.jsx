@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Card } from 'antd';
 import { PhoneOutlined } from '@ant-design/icons';
+import BookingServices from '~/services/BookingServices';
+import { useNavigate } from 'react-router-dom';
+import config from '~/config';
+
 
 const DetailSection = ({...tour}) => {
     const imgItems = [
@@ -21,6 +25,22 @@ const DetailSection = ({...tour}) => {
             alt: "Thumbnail 4"
         },
     ]
+    const [quantity, setQuantity] =  useState('');
+    const [orderInfo, setOrderInfo] = useState('');
+
+    const price = tour.priceAdults;
+    const navigate = useNavigate();
+
+    // const BookTour = (price,quantity,orderInfo) => {
+    //     let amount = quantity * price;
+    //     BookingServices.checkOut(amount,orderInfo).then((res) => {
+    //        window.location.href = res;
+    //        console.log("redirect: ",res)
+    //     }).catch((err) => {
+    //         console.error(err);
+    //     });
+    // }
+
     return (
         <div className="flex justify-between px-8 py-6">
             {/* Left Section: Image Gallery and Title */}
@@ -49,7 +69,9 @@ const DetailSection = ({...tour}) => {
                     <p><strong>Số chỗ còn:</strong> 9 chỗ</p>
                 </div>
                 <div className="flex space-x-4 mt-4">
-                    <Button type="primary" className="bg-red-500 hover:bg-red-700 w-full">
+                    <Button
+                        onClick={() => navigate(config.routes.booking + `${tour.id}`)}
+                        type="primary" className="bg-red-500 hover:bg-red-700 w-full">
                         Đặt tour
                     </Button>
                     <Button className="bg-blue-500 text-white hover:bg-blue-700 w-full">

@@ -20,6 +20,7 @@ import {MienNam} from '~/pages/Blog/MienNam';
 import {BookedTour} from "~/pages/Account/historyBooked/BookedTour";
 import {AdminLayout} from "~/component/Layout/Admin/AdminLayout";
 import AdminHome from "~/pages/Admin/AdminHome";
+import { Success } from '~/pages/Booking/status/Success';
 
 export const RouterContent = [
     {
@@ -102,6 +103,10 @@ export const RouterContent = [
     {
         path: config.routes.adminBooking,
         element: <Tour/>
+    },
+    {
+        path: config.routes.checkOutSuccess,
+        element: <Success/>
     },
     {
         path: config.routes.adminHome,
