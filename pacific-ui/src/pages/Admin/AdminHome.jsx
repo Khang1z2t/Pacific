@@ -20,6 +20,7 @@ import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
 import AdminUsers from './AdminUsers';
 import InfoGuide from './InfoGuide';
+import { Link } from 'react-router-dom';
 
 const { Content } = Layout;
 
@@ -84,11 +85,19 @@ const AdminHome = () => {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    const header = (
+        <>
+            <div className={'flex items-center justify-between gap-4'}>
+                <h2 className={'text-lg font-semibold'}>Admin Dashboard</h2>
+                <Link className={'text-blue-500'} to={'/'}>Go back to User HomePage</Link>
+            </div>
+        </>
+    )
     return (
         <Layout className={'min-h-screen bg-gray-100'}>
             <AdminSidebar onSelect={handleMenuSelect} menuItems={menuItems} />
             <Layout className="site-layout">
-                <AdminHeader children={'Admin dashboard'} />
+                <AdminHeader children={header} />
                 <Content className="p-4">
                     <Breadcrumb className="mb-4">
                         <Breadcrumb.Item>Home</Breadcrumb.Item>

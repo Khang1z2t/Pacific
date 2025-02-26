@@ -4,7 +4,7 @@ import {createUserWithEmailAndPassword, signInWithEmailAndPassword,FacebookAuthP
 import {collection, doc, getDocs, query, setDoc,where} from 'firebase/firestore';
 
 
-export const register = async (email, password,username) => {
+export const register = async (email, password) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -12,16 +12,15 @@ export const register = async (email, password,username) => {
         //save
         await setDoc(doc(db, 'users', user.uid), {
             email: user.email,
-            username: username,
+            // username: username,
+            // firstname: firstName,
+            // lastname: lastName,
             role: 'user',
             uid: user.uid,
             provider: user.providerData[0]?.providerId, // Google/Facebook/Email
-            createdAt: new Date().toISOString(),
+            // createdAt: new Date().toISOString(),
         });
-        //setUsername
-        await user.updateProfile({
-            displayName: username,
-        });
+
         return user;
     } catch (error) {
         return error;

@@ -61,7 +61,7 @@ export const TourLists = () => {
                     {page.length > 0 ?
                         <div className="flex flex-wrap gap-4 w-full px-4">
                             {page.map((tour) => (
-                                <TourCards key={tour.id} {...tour} />
+                                <TourCards key={tour.id} tour={tour} />
                             ))}
                         </div>
                         :

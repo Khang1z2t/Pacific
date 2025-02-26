@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {doSignInWithFacebook, doSignInWithGoogle, loginWithUsername} from '~/config/firebase/auth';
 import { loginWEmail } from '~/config/firebase/auth';
 import config from "~/config";
+import UserServices from '~/services/UserServices';
 
 export const Login = () => {
     //healing async
@@ -39,6 +40,7 @@ export const Login = () => {
             if (user.code) {
                 message.error(`Lỗi: ${user.message}`,1);
             } else {
+                await UserServices.login(identifier, password);
                 message.success('Đăng nhập thành công!', 1);
                 navigate('/');
             }
