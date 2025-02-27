@@ -5,10 +5,12 @@ import 'font-awesome/css/font-awesome.min.css';
 import NotFound from '~/pages/NotFound';
 import { Fragment } from 'react';
 import PrivateRoute from '~/config/PrivateRoute';
+import ScrollToTop from '~/component/Animation/ScrollToTop';
 
 function App() {
     return (
         <Router>
+            <ScrollToTop/>
             <Routes>
                 {RouterContent.map((route, index) => {
                     const isAdminRoute = route.path.startsWith('/admin');

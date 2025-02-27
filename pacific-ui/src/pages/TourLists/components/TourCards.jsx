@@ -12,7 +12,7 @@ export const TourCards = ({tour}) => {
         >
             <img
                 alt={tour.title}
-                src={tour.tourImages}
+                src={`${config.imageConfig.getImage(tour.images[0])}`}
                 className={"w-full h-48 object-cover rounded-t-lg"}
             />
             <div className={"p-4"}>

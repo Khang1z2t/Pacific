@@ -8,7 +8,6 @@ import { TourLists } from '~/pages/TourLists/TourLists';
 import { Login } from '~/pages/Account/Login';
 import { Register } from '~/pages/Account/Register';
 import { TourDetail } from '~/pages/TourLists/TourDetail/TourDetail';
-import { TourLists_outside } from '~/pages/TourLists/TourLists_outside';
 import { ProfileUI } from '~/pages/Account/ProfileUI/ProfileUI';
 import { Booking } from '~/pages/Booking/Booking';
 import HistoryPayment from '~/pages/Account/HistoryPayment/HistoryPayment';
@@ -33,7 +32,7 @@ export const RouterContent = [
     },
     {
         path: config.routes.tourTrongNuoc,
-        element: <TourLists />,
+        element: <TourLists titleType={"trong nước"} />,
     },
     {
         path: config.routes.login,
@@ -49,47 +48,43 @@ export const RouterContent = [
     },
     {
         path: config.routes.tourNgoaiNuoc,
-        element: <TourLists_outside/>,
+        element: <TourLists titleType={"ngoài nước"} />,
     },
     {
         path: config.routes.contacts,
-        element: <Contacts/>,
+        element: <Contacts />,
     },
     {
         path: config.routes.about,
-        element: <About/>,
-    },
-    {
-        path: config.routes.tourDetail,
-        element: <TourLists/>,
+        element: <About />,
     },
     {
         path: config.routes.profile,
-        element: <ProfileUI/>,
+        element: <ProfileUI />,
     },
     {
         path: config.routes.booking + ':id',
-        element: <Booking/>,
+        element: <Booking />,
     },
     {
         path: config.routes.historyBooked,
-        element: <BookedTour/>,
+        element: <BookedTour />,
     },
     {
         path: config.routes.historyPayment,
-        element: <HistoryPayment/>,
+        element: <HistoryPayment />,
     },
     {
         path: config.routes.forgotPassword,
-        element: <ForgetPassword/>,
+        element: <ForgetPassword />,
     },
     {
         path: config.routes.changePassword,
-        element: <ChangePassword/>,
+        element: <ChangePassword />,
     },
     {
         path: config.routes.blogMienBac,
-        element: <MienBac/>,
+        element: <MienBac />,
     },
     {
         path: config.routes.blogMienTrung,
@@ -109,7 +104,7 @@ export const RouterContent = [
     },
     {
         path: config.routes.checkOutSuccess,
-        element: <Success/>
+        element: <Success />,
     },
     {
         path: config.routes.adminHome,

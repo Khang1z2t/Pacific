@@ -3,16 +3,14 @@ import { TourCards } from '~/pages/TourLists/components/TourCards';
 import { useEffect, useState } from 'react';
 import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
-import config from '~/config';
 import TourServices from '~/services/TourServices';
 
-export const TourLists = () => {
+export const TourLists = ({titleType}) => {
     const ITEM_PER_PAGE = 8;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
     const [filteredTours, setFilteredTours] = useState([]);
     const [sort, setSort] = useState('All');
-
 
     const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
     const onChange = (e) => {
@@ -55,9 +53,9 @@ export const TourLists = () => {
             <SearchBar onSearch={handleSearch} />
             <div className="mt-24 mx-24 justify-center min-h-[800px]">
                 <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold'}>Danh sách tour du
-                    lịch</p></Divider>
+                    lịch {titleType} </p></Divider>
                 <div className="flex">
-                    <Aside setSort={setSort} />
+                    <Aside setSort={setSort} titleType={titleType} />
                     {page.length > 0 ?
                         <div className="flex flex-wrap gap-4 w-full px-4">
                             {page.map((tour) => (
