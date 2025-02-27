@@ -3,11 +3,15 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from '~/component/Layout/MainLayout';
 import 'font-awesome/css/font-awesome.min.css';
 import NotFound from '~/pages/NotFound';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import PrivateRoute from '~/config/PrivateRoute';
 import ScrollToTop from '~/component/Animation/ScrollToTop';
+import webConfig from '~/config/webConfig';
 
 function App() {
+    useEffect(() => {
+        window.title = webConfig.defaultTitle;
+    }, []);
     return (
         <Router>
             <ScrollToTop/>

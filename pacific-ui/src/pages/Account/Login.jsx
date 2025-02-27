@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {Divider, Form, Input, message} from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import {doSignInWithFacebook, doSignInWithGoogle, loginWithUsername} from '~/config/firebase/auth';
+import { doSignInWithFacebook, doSignInWithGoogle, getUser, loginWithUsername } from '~/config/firebase/auth';
 import { loginWEmail } from '~/config/firebase/auth';
 import config from "~/config";
 import UserServices from '~/services/UserServices';
@@ -57,11 +57,11 @@ export const Login = () => {
         if (!isSignIn) {
             setIsSignIn(true);
             doSignInWithGoogle().then(() => {
+
                 navigate('/');
             }).catch(() => {
                 message.error('Đăng nhập thất bại', 1);
             });
-            // document.location.href = '/';
         }
     };
 
@@ -80,7 +80,7 @@ export const Login = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full uppercase max-w-md border">
-                <h2 className="text-xl font-bold mb-2 text-center">Đăng nhập</h2><Divider />
+                <h2 className="text-2xl font-bold mb-2 text-center text-orange-400">Đăng nhập</h2><Divider />
                 <Form className="space-y-4">
                     <div className={"space-y-2"}>
                         <label className="block text-sm font-medium">Email/Tên tài khoản<span className="text-red-500">*</span></label>

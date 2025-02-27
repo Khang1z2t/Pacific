@@ -1,7 +1,16 @@
-import {auth, db} from './firebase';
+import { auth, db } from './firebase';
 
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword,FacebookAuthProvider , GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged} from 'firebase/auth';
-import {collection, doc, getDocs, query, setDoc,where} from 'firebase/firestore';
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    FacebookAuthProvider,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged,
+} from 'firebase/auth';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import UserServices from '~/services/UserServices';
 
 
 export const register = async (email, password) => {
@@ -25,6 +34,31 @@ export const register = async (email, password) => {
     } catch (error) {
         return error;
     }
+};
+
+
+export const getUser = async (email) => {
+    try {
+        const userDoc = await getDocs(query(collection(db, 'users'), where('email', '==', email)));
+        if (userDoc.empty) {
+            throw new Error('User không tồn tại');
+        }
+        return userDoc.docs[0].data();
+    } catch (error) {
+        return error;
+    }
+};
+
+export const getUserByUsername = async (username) => {
+    try {
+        const userDoc = await getDocs(query(collection(db, 'users'), where('username', '==', username)));
+        if (userDoc.empty) {
+            throw new Error('User không tồn tại');
+        }
+        return userDoc.docs[0].data();
+    } catch (error) {
+        return error;
+    }
 }
 
 export const loginWEmail = async (email, password) => {
@@ -34,7 +68,7 @@ export const loginWEmail = async (email, password) => {
     } catch (error) {
         return error;
     }
-}
+};
 
 export const loginWithUsername = async (username, password) => {
     try {
@@ -61,20 +95,23 @@ export const logout = async () => {
     } catch (error) {
         return error;
     }
-}
+};
 
 export const doSignInWithGoogle = async () => {
     try {
         const provider = new GoogleAuthProvider();
         const userCredential = await signInWithPopup(auth, provider);
         const user = userCredential.user;
-        //save
+        //save firestore
         await saveUser(user);
+        const userDoc = await getUser(user.email);
+        // Save to database
+        await UserServices.register(userDoc.username, '', '', '', user.email);
         return user;
     } catch (error) {
         return error;
     }
-}
+};
 export const doSignInWithFacebook = async () => {
     try {
         const provider = new FacebookAuthProvider();
@@ -82,17 +119,23 @@ export const doSignInWithFacebook = async () => {
         const user = userCredential.user;
         //save
         await saveUser(user);
+        const userDoc = await getUserByUsername(user.displayName);
+
+        const [firstName, ...lastNameParts] = userDoc.displayName.split(' ');
+        const lastName = lastNameParts.join(' ');
+        // Save to database
+        await UserServices.register(userDoc.displayName, '', firstName, lastName, user.email);
         return user;
     } catch (error) {
         return error;
     }
-}
+};
 
 export const doSendEmailVerification = () => {
     return doSendEmailVerification(auth.currentUser, {
         url: '${window.location.origin}',
     });
-}
+};
 
 export const saveUser = async (user) => {
     try {
@@ -119,3 +162,23 @@ export const saveUser = async (user) => {
         return error;
     }
 };
+
+export const resetPassword = async (email, password) => {
+    try {
+        // Find user through email
+        const query = query(collection(db, 'users'), where('email', '==', email));
+        const querySnapshot = await getDocs(query);
+        if (querySnapshot.empty) {
+            throw new Error('Email không tồn tại');
+        } else {
+            const userDoc = querySnapshot.docs[0];
+            const user = userDoc.data();
+            await setDoc(doc(db, 'users', user.uid), {
+                password: password,
+            }, { merge: true });
+        }
+    } catch (error) {
+        return error;
+    }
+};
+

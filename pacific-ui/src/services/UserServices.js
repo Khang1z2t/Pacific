@@ -33,9 +33,9 @@ const UserServices = {
 
     sendVerifyEmail : async (email) => {
         try{
-            const response = await AxiosConfig.post(config.api.user + '/send-verify-email', {
-                email,
-            });
+            const response = await AxiosConfig.post(config.api.user + `/send-reset-password-mail?email=${email}`, {} , {
+                timeout : 5000,
+            })
             return response.data;
         }catch (error){
             console.error('Error:', error);
@@ -45,7 +45,7 @@ const UserServices = {
 
     verifyEmail : async (email,otp) => {
         try{
-            const response = await AxiosConfig.post(config.api.user + '/verify-email', {
+            const response = await AxiosConfig.post(config.api.user + '/verify-reset-password', {
                 email,
                 otp,
             });
@@ -56,9 +56,10 @@ const UserServices = {
         }
     },
 
-    resetPasword : async (newPassword,confirmPaswword) => {
+    resetPassword : async (email,newPassword,confirmPaswword) => {
         try{
             const response = await AxiosConfig.post(config.api.user + '/reset-password', {
+                email,
                 newPassword,
                 confirmPaswword,
             });
