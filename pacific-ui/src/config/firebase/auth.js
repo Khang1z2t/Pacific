@@ -119,12 +119,12 @@ export const doSignInWithFacebook = async () => {
         const user = userCredential.user;
         //save
         await saveUser(user);
-        const userDoc = await getUserByUsername(user.displayName);
+        const userDoc = await getUser(user.email);
 
-        const [firstName, ...lastNameParts] = userDoc.displayName.split(' ');
+        const [firstName, ...lastNameParts] = userDoc.username.split(' ');
         const lastName = lastNameParts.join(' ');
         // Save to database
-        await UserServices.register(userDoc.displayName, '', firstName, lastName, user.email);
+        await UserServices.register(userDoc.username, '', firstName, lastName, user.email);
         return user;
     } catch (error) {
         return error;
