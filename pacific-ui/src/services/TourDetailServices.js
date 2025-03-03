@@ -1,15 +1,24 @@
 import AxiosConfig from '~/config/axiosConfig';
-
+import config from '~/config';
 const TourDetailServices = {
-    getTourDetail: async (tourId) => {
+    getTourDetail: async () => {
         try{
-            const response = await AxiosConfig.get(`/api/tours/${tourId}`);
+            const response = await AxiosConfig.get(config.api.tourDetail + '/all');
             return response.data;
         }catch (error){
             console.error('Error:', error);
             return Promise.reject(error);
         }
-    }
+    },
+    getTourDetailById: async (id) => {
+        try{
+            const response = await AxiosConfig.get(config.api.tourDetail + `/${id}`);
+            return response.data;
+        }catch (error){
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 }
 
 export default TourDetailServices;

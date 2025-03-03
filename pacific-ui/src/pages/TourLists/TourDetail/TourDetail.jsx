@@ -9,23 +9,35 @@ import { OtherToursList } from '~/pages/TourLists/TourDetail/sections/OtherTours
 import config from '~/config';
 import { Loading } from '~/component/ui/Loading';
 import TourServices from '~/services/TourServices';
+import TourDetailServices from '~/services/TourDetailServices';
 
 export const TourDetail = () => {
     const [loading, setLoading] = useState(true);
     const { id } = useParams();
     const [tour, setTour] = useState({});
 
+    // useEffect(() => {
+    //     // setTour(tours.find((tour) => tour.id === +id));
+    //     TourServices.getById(id).then((res) => {
+    //         setTour(res.data);
+    //         setTimeout(() => {
+    //             setLoading(false);
+    //         },1000);
+    //     }).catch((err) => {
+    //         console.error(err);
+    //         setLoading(false);
+    //     });
+    // }, [id]);
     useEffect(() => {
-        // setTour(tours.find((tour) => tour.id === +id));
-        TourServices.getById(id).then((res) => {
+        TourDetailServices.getTourDetailById(id).then((res) => {
             setTour(res.data);
             setTimeout(() => {
                 setLoading(false);
-            },1000);
+            }, 1000);
         }).catch((err) => {
             console.error(err);
             setLoading(false);
-        });
+        })
     }, [id]);
 
     if (loading) {
@@ -36,9 +48,9 @@ export const TourDetail = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-5">
             <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.title}</h1>
-            <DetailSection {...tour}/>
+            <DetailSection tourDT={tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Lịch trình khởi hành</p></Divider>
-            <CalendarSection {...tour}/>
+            <CalendarSection tourDT={tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Tour khác liên quan</p></Divider>
             <OtherToursList/>
         </div>

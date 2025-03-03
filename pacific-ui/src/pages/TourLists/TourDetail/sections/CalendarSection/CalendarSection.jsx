@@ -8,7 +8,7 @@ import { TourDescription } from '~/pages/TourLists/TourDetail/sections/CalendarS
 import { ReviewSection } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/ReviewSection';
 import { LocationDetails } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/LocationDetails';
 
-export const CalendarSection = ({ ...tour }) => {
+export const CalendarSection = ({ tourDT }) => {
     const [currentTab, setCurrentTab] = useState('9/2024');
 
     const tourData = {
