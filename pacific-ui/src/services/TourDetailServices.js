@@ -19,6 +19,15 @@ const TourDetailServices = {
             return Promise.reject(error);
         }
     },
+    getTourDetailByTourId: async (tourId) => {
+        try{
+            const response = await AxiosConfig.get(config.api.tourDetail + `/tour/${tourId}`);
+            return response.data;
+        }catch (error){
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 }
 
 export default TourDetailServices;

@@ -47,10 +47,10 @@ export const TourDetail = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-5">
-            <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.title}</h1>
-            <DetailSection tourDT={tour}/>
+            <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.tour.title}</h1>
+            <DetailSection {...tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Lịch trình khởi hành</p></Divider>
-            <CalendarSection tourDT={tour}/>
+            <CalendarSection {...tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Tour khác liên quan</p></Divider>
             <OtherToursList/>
         </div>

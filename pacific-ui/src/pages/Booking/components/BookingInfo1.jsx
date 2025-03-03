@@ -23,7 +23,6 @@ export const BookingInfo1 = ({ tourInfo, setStep }) => {
     const pricePerPerson = tourInfo.priceAdults;
     const [totalPrice, setTotalPrice] = useState(pricePerPerson * numPeople);
 
-
     const handlePeopleChange = (value) => {
         if (value < 1) {
             setNumPeople(1);
@@ -68,11 +67,11 @@ export const BookingInfo1 = ({ tourInfo, setStep }) => {
 
                     </Form.Item>
 
-                    <Form.Item label="Tên Tour" name="tourName" initialValue={tourInfo.title}>
+                    <Form.Item label="Tên Tour" name="tourName" initialValue={tourInfo.tour.title}>
                         <Input disabled />
                     </Form.Item>
 
-                    <Form.Item label="Ngày khởi hành" name="departureDate" initialValue={tour.departureDate}
+                    <Form.Item label="Ngày khởi hành" name="departureDate"
                                rules={[{ required: true, message: 'Chọn ngày khởi hành' }]}>
                         <DatePicker className="w-full" format="YYYY-MM-DD"
                                     onChange={(date, dateString) => setDate(dateString)} />
@@ -102,7 +101,7 @@ export const BookingInfo1 = ({ tourInfo, setStep }) => {
 
                     <Form.Item>
                         <Button
-                            onClick={() => BookTour(totalPrice, tourInfo.id)}
+                            onClick={() => BookTour(totalPrice, 'A')}
                             type="primary" htmlType="submit" className="bg-orange-500 w-full">
                             Xác nhận đặt tour
                         </Button>

@@ -5,7 +5,7 @@ import config from '~/config';
 export const TourCards = ({tourDT}) => {
     return (
         <Link
-            to={config.routes.tourDetail + `${tourDT.tour.id}`}
+            to={config.routes.tourDetail + `${tourDT.id}`}
             className={
                 "w-72 max-h-full rounded-lg shadow-lg hover:scale-105 overflow-hidden transition-transform hover:cursor-pointer hover:border-orange-500 hover:border-2"
             }

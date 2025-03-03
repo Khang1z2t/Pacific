@@ -8,7 +8,6 @@ export const Success = () => {
     const queryParams = new URLSearchParams(location.search);
     const orderInfo = queryParams.get('vnp_OrderInfo');
 
-
     useEffect(() => {
         setTimeout(() => {
             navigate('/');

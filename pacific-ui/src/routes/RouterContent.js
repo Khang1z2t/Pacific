@@ -24,6 +24,7 @@ import { News } from '~/pages/News/News';
 import AdminUsers from '~/pages/Admin/AdminUsers';
 import InfoGuide from '~/pages/Admin/InfoGuide';
 import AddGuide from '~/pages/Admin/AddGuide';
+import { Error } from '~/pages/Booking/status/Error';
 
 export const RouterContent = [
     {
@@ -105,6 +106,10 @@ export const RouterContent = [
     {
         path: config.routes.checkOutSuccess,
         element: <Success />,
+    },
+    {
+      path: config.routes.checkoutFail,
+        element: <Error />,
     },
     {
         path: config.routes.adminHome,

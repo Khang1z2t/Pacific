@@ -28,6 +28,7 @@ const routes = {
     infoGuide: '/info-guide',
     addGuide: '/add-guide',
     checkOutSuccess: '/checkout/success/',
+    checkoutFail: '/checkout/fail/',
 };
 
 export default routes;
