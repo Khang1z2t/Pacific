@@ -1,4 +1,4 @@
-import { Card, Divider } from "antd";
+import { Card, Divider, Pagination } from 'antd';
 import { BookedTourCard } from "~/pages/Account/historyBooked/components/BookedTourCard";
 
 const tourInfos = [
@@ -33,8 +33,8 @@ const tourInfos = [
 
 export const BookedTour = () => {
     return (
-        <div className="container mx-auto px-4 py-14 bg-gray-100">
-            <h2 className="text-4xl text-center font-bold text-orange-400">Thông tin tour đã đặt</h2>
+        <div className="container mx-auto px-4 py-14">
+            <h2 className="text-4xl text-center font-bold text-orange-400">Lịch sử đặt tour</h2>
             <Divider className="w-1/4 mx-auto my-4" />
             <div className="flex justify-center mt-16">
                 <div className="w-full md:w-3/4">
@@ -42,6 +42,7 @@ export const BookedTour = () => {
                         {tourInfos.map((item) => (
                             <BookedTourCard key={item.id} {...item} />
                         ))}
+                        <Pagination align="center" defaultCurrent={1} total={50} />
                     </div>
                 </div>
             </div>

@@ -1,41 +1,44 @@
-import { Card, DatePicker, Input } from 'antd';
+import { Card, DatePicker, Input, Tabs } from 'antd';
+import { useState } from 'react';
+import { ProfileCard } from '~/pages/Account/ProfileUI/components/ProfileCard';
+import { EmptyProfileCard } from '~/pages/Account/ProfileUI/components/EmptyProfileCard';
+
+const { TabPane } = Tabs;
 
 export const ProfileUI = () => {
+    const [active, setActive] = useState(true);
+    const profile = {
+        name: "NguoiDungDepTrai",
+        job: "Frontend Developer",
+        about: "I'm a frontend developer",
+        location: "Hanoi",
+        phone: "123456789",
+        email: "abc@fpt.edu.vn",
+    }
     return (
-        <div className={'container mx-auto px-4 py-8 flex flex-col gap-4'}>
-            <Card className={'p-4 border rounded-lg shadow-md'}>
-                <h1 className={'text-2xl font-semibold'}>Thông tin cá nhân</h1>
-                <div className={'grid grid-cols-2 gap-4'}>
-                    <div>
-                        <label className={'text-sm font-medium'}>Họ và tên</label>
-                        <Input placeholder={'VD: Nguyễn Văn A'} />
-                    </div>
-                    <div>
-                        <label className={'text-sm font-medium'}>Ngày sinh</label>
-                        <DatePicker className={'w-full'} format={'MM/DD/YYYY'} />
-                    </div>
-                </div>
-                <div className={'grid grid-cols-2 gap-4'}>
-                    <div>
-                        <label className={'text-sm font-medium'}>Email</label>
-                        <Input placeholder={'VD: abc@gmail.com'} />
-                    </div>
-                    <div>
-                        <label className={'text-sm font-medium'}>Số điện thoại</label>
-                        <Input placeholder={'VD: 0123456789'} />
-                    </div>
-                </div>
-                <div className={'grid grid-cols-2 gap-4'}>
-                    <div>
-                        <label className={'text-sm font-medium'}>Địa chỉ</label>
-                        <Input placeholder={'VD: 123 Đường ABC, Quận XYZ'} />
-                    </div>
-                    <div>
-                        <label className={'text-sm font-medium'}>Giới tính</label>
-                        <Input placeholder={'VD: Nam/Nữ'} />
-                    </div>
-                </div>
-            </Card>
+        <div className="flex gap-6 p-6 bg-gray-100 min-h-screen">
+            {/* Sidebar */}
+            <div className="w-1/4">
+                {active ? (
+                    <ProfileCard profile={profile}/>
+                ) : (
+                    <EmptyProfileCard/>
+                )}
+            </div>
+            {/* Main Content */}
+            <div className="flex-1 ">
+                <Tabs rootClassName={"bg-white p-4 rounded-lg shadow-md"} defaultActiveKey="1">
+                    <TabPane tab="Bảo mật tài khoản" key="1">
+                        HI
+                    </TabPane>
+                    <TabPane tab="Xác minh thông tin" key="2">
+                        HELLO
+                    </TabPane>
+                    <TabPane tab="Chỉnh sửa thông tin" key="3">
+                        KAKAKA
+                    </TabPane>
+                </Tabs>
+            </div>
         </div>
     );
 };

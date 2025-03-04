@@ -1,6 +1,7 @@
-import { Card, Modal, Button } from "antd";
+import { Card, Modal, Button, Avatar } from 'antd';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import config from "~/config";
 
 export const BookedTourCard = ({ id, title, quantity, bookingStatus, paymentMethod, createAt, totalAmount }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,7 +16,6 @@ export const BookedTourCard = ({ id, title, quantity, bookingStatus, paymentMeth
             {/* Card hiển thị danh sách tour */}
             <Card
                 className="w-full justify-center rounded-lg shadow-lg hover:cursor-pointer hover:shadow-xl hover:border-orange-600 border-2 transition-all duration-500"
-                onClick={showModal}
             >
                 <div className="flex flex-1 justify-between gap-4">
                     <div>
@@ -29,6 +29,14 @@ export const BookedTourCard = ({ id, title, quantity, bookingStatus, paymentMeth
                         <p className="text-lg font-bold">Trạng thái: {bookingStatus}</p>
                         <p className="text-lg font-bold">Phương thức thanh toán: {paymentMethod}</p>
                     </div>
+                    <div className={""}>
+                        <img src={config.imageConfig.getImage(config.webConfig.defaultQrCode)} alt={"QRCODE"} className={"aspect-square size-32"}/>
+                    </div>
+                </div>
+                <div className={"flex py-2 flex-1"}>
+                    <Button className={"w-1/2"} type="primary" onClick={showModal}>
+                        Chi tiết
+                    </Button>
                 </div>
             </Card>
 
