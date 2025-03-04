@@ -2,8 +2,6 @@ import config from '~/config';
 import Home from '~/pages/Home';
 import Contacts from '~/pages/News/Contacts';
 import About from '~/pages/Introduce/About';
-import Booking1 from '~/pages/Admin/sections/Booking1';
-import Tour from '~/pages/Admin/sections/Tour';
 import { TourLists } from '~/pages/TourLists/TourLists';
 import { Login } from '~/pages/Account/Login';
 import { Register } from '~/pages/Account/Register';
@@ -93,14 +91,6 @@ export const RouterContent = [
     {
         path: config.routes.blogMienNam,
         element: <MienNam />,
-    },
-    {
-        path: config.routes.adminBooking,
-        element: <Booking1 />,
-    },
-    {
-        path: config.routes.adminBooking,
-        element: <Tour />,
     },
     {
         path: config.routes.checkOutSuccess,
