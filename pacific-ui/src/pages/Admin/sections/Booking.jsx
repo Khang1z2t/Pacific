@@ -1,31 +1,57 @@
+// Booking.jsx
 import React, { useState } from "react";
-import { Typography, Card, Row, Col } from "antd";
+import { Typography, Card, Table, Button, Input, Space, Tag } from "antd";
+import { SearchOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import BookingCard from "../components/BookingCard";
 
 const { Title } = Typography;
 
 const Booking = () => {
+    const [searchText, setSearchText] = useState("");
     const [bookings, setBookings] = useState([
-        { id: 1, name: "Nguyễn Văn A", tour: "Tour Đà Nẵng", date: "2024-07-30", status: "Đã xác nhận", details: "Tour Đà Nẵng 3 ngày 2 đêm, bao gồm vé máy bay, khách sạn 4 sao, và tham quan Bà Nà Hills." },
-        { id: 2, name: "Trần Thị B", tour: "Tour Nha Trang", date: "2024-08-10", status: "Chờ xác nhận", details: "Tour Nha Trang 4 ngày 3 đêm, trải nghiệm Vinpearl Land, đảo Hòn Mun, và bãi biển đẹp nhất." },
-        { id: 3, name: "Lê Văn C", tour: "Tour Phú Quốc", date: "2024-09-05", status: "Đã xác nhận", details: "Tour Phú Quốc 5 ngày 4 đêm, nghỉ dưỡng tại resort 5 sao, khám phá Bãi Sao và làng chài Hàm Ninh." },
+        { id: 1, name: "Tí Ní", bookingId: "ID21", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Tiền mặt", status: "Đã thanh toán", price: "9.000.000 đ", discount: 0 },
+        { id: 2, name: "Long Đại", bookingId: "ID98", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Thanh toán online", status: "Chưa thanh toán", price: "9.000.000 đ", discount: 0 },
+        { id: 3, name: "Tí Đẹp", bookingId: "ID26", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Thanh toán online", status: "Đã thanh toán", price: "9.000.000 đ", discount: 0 },
     ]);
 
     const handleDelete = (id) => {
         setBookings(bookings.filter((b) => b.id !== id));
     };
 
+    const columns = [
+        { title: "ID", dataIndex: "id", key: "id" },
+        { title: "Tên người dùng", dataIndex: "name", key: "name" },
+        { title: "Booking ID", dataIndex: "bookingId", key: "bookingId" },
+        { title: "Tên Tour", dataIndex: "tour", key: "tour" },
+        { title: "Ngày khởi hành", dataIndex: "date", key: "date" },
+        { title: "PTTT", dataIndex: "payment", key: "payment" },
+        { title: "Trạng thái", dataIndex: "status", key: "status", render: (status) => (
+                <Tag color={status === "Đã thanh toán" ? "green" : "red"}>{status}</Tag>
+            )},
+        { title: "Giá tour", dataIndex: "price", key: "price" },
+        { title: "Giảm giá", dataIndex: "discount", key: "discount" },
+        { title: "Thao tác", key: "action", render: (_, record) => (
+                <Space>
+                    <Button icon={<EditOutlined />} />
+                    <Button icon={<DeleteOutlined />} danger onClick={() => handleDelete(record.id)} />
+                </Space>
+            )},
+    ];
+
     return (
         <div className="container">
-            <Card className="booking-container">
-                <Title level={2} className="booking-title">Quản lý Đặt Tour</Title>
-                <Row gutter={[16, 16]}>
-                    {bookings.map((booking) => (
-                        <Col xs={24} sm={12} md={8} key={booking.id}>
-                            <BookingCard booking={booking} onDelete={handleDelete} />
-                        </Col>
-                    ))}
-                </Row>
+            <Title level={2}>QUẢN LÝ BOOKING</Title>
+            <Space style={{ marginBottom: 16 }}>
+                <Input
+                    placeholder="Tìm kiếm"
+                    prefix={<SearchOutlined />}
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                />
+                <Button> Sắp xếp theo </Button>
+            </Space>
+            <Card>
+                <Table columns={columns} dataSource={bookings} rowKey="id" />
             </Card>
         </div>
     );

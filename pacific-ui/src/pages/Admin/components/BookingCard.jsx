@@ -2,18 +2,11 @@ import React, { useState } from "react";
 import { Card, Button, Space, Tag, Modal } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
-const BookingCard = ({ booking, onDelete }) => {
+const BookingCard = ({ booking, onEdit, onDelete }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const getStatusTag = (status) => {
-        switch (status) {
-            case "Đã xác nhận":
-                return <Tag color="green">Đã xác nhận</Tag>;
-            case "Chờ xác nhận":
-                return <Tag color="orange">Chờ xác nhận</Tag>;
-            default:
-                return <Tag color="blue">{status}</Tag>;
-        }
+        return status === "Đã thanh toán" ? <Tag color="green">Đã thanh toán</Tag> : <Tag color="red">Chưa thanh toán</Tag>;
     };
 
     return (
@@ -26,12 +19,14 @@ const BookingCard = ({ booking, onDelete }) => {
             >
                 <p>🗺️ <strong>Tour:</strong> {booking.tour}</p>
                 <p>📅 <strong>Ngày:</strong> {booking.date}</p>
+                <p>💳 <strong>PTTT:</strong> {booking.method}</p>
+                <p>💰 <strong>Giá:</strong> {booking.price.toLocaleString()} đ</p>
 
                 <Space style={{ marginTop: "10px" }}>
                     <Button icon={<EyeOutlined />} type="primary" onClick={() => setIsModalVisible(true)}>
                         Xem
                     </Button>
-                    <Button icon={<EditOutlined />} type="default">
+                    <Button icon={<EditOutlined />} type="default" onClick={() => onEdit(booking)}>
                         Sửa
                     </Button>
                     <Button icon={<DeleteOutlined />} type="danger" onClick={() => onDelete(booking.id)}>
@@ -40,9 +35,9 @@ const BookingCard = ({ booking, onDelete }) => {
                 </Space>
             </Card>
 
-            {/* Popup Modal */}
+            {/* Popup Modal Chi Tiết */}
             <Modal
-                title={`Chi tiết đặt chỗ - ${booking.name}`}
+                title={`Chi tiết Booking - ${booking.name}`}
                 open={isModalVisible}
                 onCancel={() => setIsModalVisible(false)}
                 footer={null}
@@ -51,7 +46,8 @@ const BookingCard = ({ booking, onDelete }) => {
                 <p>🗺️ <strong>Tour:</strong> {booking.tour}</p>
                 <p>📅 <strong>Ngày khởi hành:</strong> {booking.date}</p>
                 <p>📌 <strong>Trạng thái:</strong> {getStatusTag(booking.status)}</p>
-                <p>📜 <strong>Chi tiết:</strong> {booking.details}</p>
+                <p>💳 <strong>Phương thức thanh toán:</strong> {booking.method}</p>
+                <p>💰 <strong>Giá tour:</strong> {booking.price.toLocaleString()} đ</p>
             </Modal>
         </>
     );

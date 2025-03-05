@@ -22,6 +22,7 @@ import AdminUsers from './AdminUsers';
 import InfoGuide from './InfoGuide';
 import TourList from '~/pages/Admin/sections/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
+import Promotion from '~/pages/Admin/sections/Promotion';
 import { Link } from 'react-router-dom';
 
 const { Content } = Layout;
@@ -60,7 +61,7 @@ const AdminHome = () => {
             key: 'sub3',
             icon: <MoneyCollectOutlined />,
             children: [
-                { label: 'Danh sách khuyến mãi', key: '9', content: 'Team 1 works on React.' },
+                { label: 'Danh sách khuyến mãi', key: '9', content: <Promotion /> },
                 { label: 'Tạo khuyến mãi', key: '10', content: 'lorem asadadadadada' },
             ],
         },
