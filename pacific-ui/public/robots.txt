@@ -1,4 +1,4 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
-Sitemap: https://pacific-ui.com/sitemap.xml
+Sitemap: https://pacific-vn.vercel.app/sitemap.xml
