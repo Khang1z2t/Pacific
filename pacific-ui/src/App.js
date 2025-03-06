@@ -32,6 +32,32 @@ function App() {
                 keywords="du lịch, tour giá rẻ, điểm đến đẹp, Pacific travel"
                 author="TunzDev"
                 breadcrumbs={breadcrumbs()} // Truyền breadcrumbs động
+                children={
+                    <>
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <meta name="description" content="Website giúp bạn tìm kiếm những điểm đến tuyệt vời." />
+                        <meta name="keywords" content="du lịch, tour giá rẻ, điểm đến đẹp, Pacific travel" />
+                        <meta name="author" content="TunzDev" />
+                        <link rel="canonical" href={`https://pacific-vn.vercel.app${location.pathname}`} />
+                        <meta property="og:title" content="Pacific - Hành trình khám phá mọi nơi" />
+                        <meta property="og:description" content="Website giúp bạn tìm kiếm những điểm đến tuyệt vời." />
+                        <meta property="og:url" content={`https://pacific-vn.vercel.app${location.pathname}`} />
+                        <meta property="og:type" content="website" />
+                        <meta name="twitter:card" content="summary_large_image" />
+                        <meta name="twitter:title" content="Pacific - Hành trình khám phá mọi nơi" />
+                        <meta name="twitter:description"
+                              content="Website giúp bạn tìm kiếm những điểm đến tuyệt vời." />
+                        <script type="application/ld+json">
+                            {JSON.stringify({
+                                '@context': 'https://schema.org',
+                                '@type': 'WebSite',
+                                url: `https://pacific-vn.vercel.app${location.pathname}`,
+                                name: 'Pacific - Hành trình khám phá mọi nơi',
+                            })}
+                            <meta name="theme-color" content="#000000" />
+                        </script>
+                    </>
+                }
             />
             <ScrollToTop />
             <Routes>
