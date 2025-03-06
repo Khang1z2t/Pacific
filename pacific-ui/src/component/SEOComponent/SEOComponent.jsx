@@ -1,8 +1,7 @@
 import { Helmet } from "react-helmet";
 
-export const SEOComponent = ({ title, description, href, keywords, author, children }) => {
+export const SEOComponent = ({ title, description, href, keywords, author, children,breadcrumbs }) => {
     return (
-        <div>
             <Helmet>
                 <title>{title}</title>
                 <meta name="description" content={description} />
@@ -26,7 +25,23 @@ export const SEOComponent = ({ title, description, href, keywords, author, child
                         "description": description,
                     })}
                 </script>
+                <meta property="og:image" content="https://pacific-vn.vercel.app" />
+                <meta property="og:image:alt" content="Pacific - Hành trình khám phá" />
+                {/* Breadcrumbs JSON-LD Schema */}
+                {breadcrumbs && (
+                    <script type="application/ld+json">
+                        {JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@type": "BreadcrumbList",
+                            "itemListElement": breadcrumbs.map((item, index) => ({
+                                "@type": "ListItem",
+                                "position": index + 1,
+                                "name": item.name,
+                                "item": item.url,
+                            })),
+                        })}
+                    </script>
+                )}
             </Helmet>
-        </div>
     );
 };

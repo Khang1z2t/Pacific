@@ -59,7 +59,7 @@ function Home() {
                 title="Pacific - Hành trình khám phá mọi nơi"
                 description="Trang chủ của Pacific, nơi bạn có thể khám phá những điểm đến tuyệt vời."
                 href="https://pacific-vn.vercel.app"
-                keywords="travel, tours, vacations, destinations"
+                keywords="du lịch, tour giá rẻ, điểm đến đẹp, du lịch châu Á, Pacific travel"
                 author="TunzDev"
             />
             <AnimatedHomeBanner />
