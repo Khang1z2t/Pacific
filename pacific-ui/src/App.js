@@ -12,19 +12,19 @@ import { SEOComponent } from '~/component/SEOComponent/SEOComponent';
 function App() {
     const location = useLocation();
     const breadcrumbs = () => {
-        if (location.pathname === "/tours") {
+        if (location.pathname === '/tours') {
             return [
-                { name: "Trang chủ", url: "https://pacific-vn.vercel.app" },
-                { name: "Du lịch", url: "https://pacific-vn.vercel.app/tours" }
+                { name: 'Trang chủ', url: 'https://pacific-vn.vercel.app' },
+                { name: 'Du lịch', url: 'https://pacific-vn.vercel.app/tours' },
             ];
         }
-        return [{ name: "Trang chủ", url: "https://pacific-vn.vercel.app" }];
+        return [{ name: 'Trang chủ', url: 'https://pacific-vn.vercel.app' }];
     };
     useEffect(() => {
         window.title = webConfig.defaultTitle;
     }, []);
     return (
-        <Router>
+        <>
             <SEOComponent
                 title="Pacific - Hành trình khám phá mọi nơi"
                 description="Website giúp bạn tìm kiếm những điểm đến tuyệt vời."
@@ -33,7 +33,7 @@ function App() {
                 author="TunzDev"
                 breadcrumbs={breadcrumbs()} // Truyền breadcrumbs động
             />
-            <ScrollToTop/>
+            <ScrollToTop />
             <Routes>
                 {RouterContent.map((route, index) => {
                     const isAdminRoute = route.path.startsWith('/admin');
@@ -54,7 +54,7 @@ function App() {
                 })}
                 <Route path="*" element={<NotFound />} />
             </Routes>
-        </Router>
+        </>
     );
 }
 

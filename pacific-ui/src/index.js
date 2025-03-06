@@ -4,8 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import GlobalStyles from '~/component/GlobalStyles';
-import { DevSupport } from '@react-buddy/ide-toolbox';
 import { AuthProvider } from './config/firebase/AuthContext';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -13,7 +13,9 @@ root.render(
     <React.StrictMode>
         <GlobalStyles>
             <AuthProvider>
-                <App />
+                <Router>
+                    <App />
+                </Router>
             </AuthProvider>
         </GlobalStyles>
     </React.StrictMode>,
