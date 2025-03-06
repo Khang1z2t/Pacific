@@ -5,7 +5,6 @@ const api = {
     booking: '/api/bookings',
     user : '/api/user',
     tourDetail: '/api/tour-details',
-
 };
 
 export default api;
