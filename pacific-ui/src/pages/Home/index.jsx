@@ -61,6 +61,10 @@ function Home() {
                 href="https://pacific-vn.vercel.app"
                 keywords="du lịch, tour giá rẻ, điểm đến đẹp, du lịch châu Á, Pacific travel"
                 author="TunzDev"
+                breadcrumbs={[
+                    { name: "Trang chủ", url: "https://pacific-vn.vercel.app" },
+                    { name: "Du lịch", url: "https://pacific-vn.vercel.app/tours" }
+                ]}
             />
             <AnimatedHomeBanner />
             <div className={'container mx-auto py-12'}>
