@@ -60,7 +60,11 @@ function App() {
                             path={route.path}
                             element={
                                 <PrivateRoute adminOnly={isAdminRoute}>
-                                    <Layout>{route.element}</Layout>
+                                    <Layout>
+                                        {route.path === "/" && <SEOComponent title={route.title} description={route.description} keywords={route.keywords} /> }
+                                        {route.element}
+
+                                    </Layout>
                                 </PrivateRoute>
                             }
                         />

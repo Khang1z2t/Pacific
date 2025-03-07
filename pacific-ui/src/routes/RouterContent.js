@@ -28,22 +28,37 @@ export const RouterContent = [
     {
         path: config.routes.home,
         element: <Home />,
+        title: "Pacific - Hành trình khám phá mọi nơi",
+        description: "Trang chủ của Pacific, nơi bạn có thể khám phá những điểm đến tuyệt vời.",
+        keywords: "du lịch, tour giá rẻ, điểm đến đẹp, du lịch châu Á, Pacific travel",
     },
     {
         path: config.routes.tourTrongNuoc,
         element: <TourLists titleType={"trong nước"} />,
+        title: "Pacific - Danh sách các tour du lịch trong nước",
+        description: "Danh sách các tour du lịch trong nước của Pacific Travel",
+        keywords: "tour du lịch, tour trong nước, tour du lịch giá rẻ, tour du lịch chất lượng",
     },
     {
         path: config.routes.login,
         element: <Login />,
+        title: "Pacific - Đăng Nhập",
+        description: "Đây là trang đăng nhập của Pacific Travel",
+        keywords: "đăng nhập, đăng nhập tài khoản, đăng nhập Pacific Travel",
     },
     {
         path: config.routes.register,
         element: <Register />,
+        title: "Pacific - Đăng Ký",
+        description: "Đây là trang đăng ký tài khoản của Pacific Travel",
+        keywords: "đăng ký, đăng ký tài khoản, đăng ký Pacific Travel",
     },
     {
         path: config.routes.tourDetail + ':id',
         element: <TourDetail />,
+        title: "Pacific - Chi tiết tour",
+        description: "Chi tiết tour du lịch của Pacific Travel",
+        keywords: "chi tiết tour, tour du lịch, tour du lịch giá rẻ, tour du lịch chất lượng",
     },
     {
         path: config.routes.tourNgoaiNuoc,
