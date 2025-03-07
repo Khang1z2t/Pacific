@@ -1,12 +1,14 @@
 import '~/pages/j.css';
 import React, { useState } from 'react';
-import {Divider, Form, Input, message} from 'antd';
+import { Divider, Form, Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { doSignInWithFacebook, doSignInWithGoogle, getUser, loginWithUsername } from '~/config/firebase/auth';
 import { loginWEmail } from '~/config/firebase/auth';
-import config from "~/config";
+import config from '~/config';
 import UserServices from '~/services/UserServices';
+import Balatro from '~/component/Animation/AnimatedUI/Background/Balatro';
+import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
 
 export const Login = () => {
     //healing async
@@ -25,31 +27,31 @@ export const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        try{
-            if(!identifier || !password){
+        try {
+            if (!identifier || !password) {
                 message.error('Vui lòng điền đầy đủ thông tin', 1);
                 return;
             }
             setLoading(true);
             let user;
-            if(identifier.includes("@")){
+            if (identifier.includes('@')) {
                 user = await loginWEmail(identifier, password);
-            }else{
+            } else {
                 user = await loginWithUsername(identifier, password);
             }
             if (user.code) {
-                message.error(`Lỗi: ${user.message}`,1);
+                message.error(`Lỗi: ${user.message}`, 1);
             } else {
                 await UserServices.login(identifier, password);
                 message.success('Đăng nhập thành công!', 1);
                 navigate('/');
             }
-        }catch(er){
+        } catch (er) {
             message.error(`Đăng nhập thất bại: ${er.message}`, 1);
-        }finally {
+        } finally {
             setLoading(false);
         }
-    }
+    };
 
 
     const handleGoogleLogin = async (e) => {
@@ -78,17 +80,27 @@ export const Login = () => {
         }
     };
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full uppercase max-w-md border">
+        <div className="min-h-screen flex items-center justify-center">
+            <Iridescence
+                color={[1, 1, 1]}
+                mouseReact={false}
+                amplitude={0.1}
+                speed={1.0}
+                className="absolute inset-0 z-0"
+            />
+            <div className="bg-white relative p-8 rounded-lg shadow-lg w-full uppercase max-w-md border">
                 <h2 className="text-2xl font-bold mb-2 text-center text-orange-400">Đăng nhập</h2><Divider />
                 <Form className="space-y-4">
-                    <div className={"space-y-2"}>
-                        <label className="block text-sm font-medium">Email/Tên tài khoản<span className="text-red-500">*</span></label>
-                        <Input placeholder="Nhập Email hoặc Tên tài khoản" onChange={(e) => setIdentifier(e.target.value)} />
+                    <div className={'space-y-2'}>
+                        <label className="block text-sm font-medium">Email/Tên tài khoản<span
+                            className="text-red-500">*</span></label>
+                        <Input placeholder="Nhập Email hoặc Tên tài khoản"
+                               onChange={(e) => setIdentifier(e.target.value)} />
                     </div>
-                    <div className={"space-y-2"}>
-                        <div className={"flex justify-between"}>
-                            <label className="block text-sm font-medium">Mật khẩu<span className="text-red-500">*</span></label>
+                    <div className={'space-y-2'}>
+                        <div className={'flex justify-between'}>
+                            <label className="block text-sm font-medium">Mật khẩu<span
+                                className="text-red-500">*</span></label>
                             <Link to={config.routes.forgotPassword} className="text-sm text-blue-500">Quên mật khẩu?</Link>
                         </div>
                         <Input.Password
@@ -97,7 +109,8 @@ export const Login = () => {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
-                    <p className="col-span-2 text-sm text-red-500"><span className={"text-red-500"}>(*)</span> là bắt buộc</p>
+                    <p className="col-span-2 text-sm text-red-500"><span className={'text-red-500'}>(*)</span> là bắt buộc
+                    </p>
                     <div className="flex justify-center">
                         <button
                             onClick={handleLogin}
