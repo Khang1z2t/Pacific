@@ -11,15 +11,6 @@ import { SEOComponent } from '~/component/SEOComponent/SEOComponent';
 import { Helmet } from 'react-helmet';
 
 function App() {
-    const breadcrumbs = () => {
-        if (location.pathname === '/tours') {
-            return [
-                { name: 'Trang chủ', url: 'https://pacific-vn.vercel.app' },
-                { name: 'Du lịch', url: 'https://pacific-vn.vercel.app/tours' },
-            ];
-        }
-        return [{ name: 'Trang chủ', url: 'https://pacific-vn.vercel.app' }];
-    };
     useEffect(() => {
         window.title = webConfig.defaultTitle;
     }, []);
@@ -57,20 +48,6 @@ function App() {
                         'description': 'Trang chủ của Pacific, nơi bạn có thể khám phá những điểm đến tuyệt vời.',
                     })}
                 </script>
-                {breadcrumbs && (
-                    <script type="application/ld+json">
-                        {JSON.stringify({
-                            '@context': 'https://schema.org',
-                            '@type': 'BreadcrumbList',
-                            'itemListElement': breadcrumbs.map((item, index) => ({
-                                '@type': 'ListItem',
-                                'position': index + 1,
-                                'name': item.name,
-                                'item': item.url,
-                            })),
-                        })}
-                    </script>
-                )}
             </Helmet>
             <ScrollToTop />
             <Routes>
