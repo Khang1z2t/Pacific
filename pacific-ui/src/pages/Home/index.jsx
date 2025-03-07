@@ -10,7 +10,6 @@ import BlogCards from '~/pages/Home/components/BlogCards';
 import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { AnimatedHomeBanner } from '~/pages/Home/components/AnimatedHomeBanner/AnimatedHomeBanner';
 import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
-import { SEOComponent } from '~/component/SEOComponent/SEOComponent';
 
 function Home() {
     useEffect(() => {
@@ -55,17 +54,6 @@ function Home() {
             easing="ease-out"
             initialOpacity={0}
         >
-            <SEOComponent
-                title="Pacific - Hành trình khám phá mọi nơi"
-                description="Trang chủ của Pacific, nơi bạn có thể khám phá những điểm đến tuyệt vời."
-                href="https://pacific-vn.vercel.app"
-                keywords="du lịch, tour giá rẻ, điểm đến đẹp, du lịch châu Á, Pacific travel"
-                author="TunzDev"
-                breadcrumbs={[
-                    { name: "Trang chủ", url: "https://pacific-vn.vercel.app" },
-                    { name: "Du lịch", url: "https://pacific-vn.vercel.app/tours" }
-                ]}
-            />
             <AnimatedHomeBanner />
             <div className={'container mx-auto py-12'}>
                 <Divider className={'font-bold uppercase'}
