@@ -21,7 +21,6 @@ const routes = {
     blogMienBac: '/MienBac',
     blogMienTrung: '/MienTrung',
     blogMienNam: '/MienNam',
-    adminBooking: '/admin-dat',
     adminHome: '/admin',
     news: '/news',
     adminUsers: '/admin-users',
