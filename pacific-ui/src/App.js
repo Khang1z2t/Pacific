@@ -7,8 +7,6 @@ import { Fragment, useEffect } from 'react';
 import PrivateRoute from '~/config/PrivateRoute';
 import ScrollToTop from '~/component/Animation/ScrollToTop';
 import webConfig from '~/config/webConfig';
-import { SEOComponent } from '~/component/SEOComponent/SEOComponent';
-import { Helmet } from 'react-helmet';
 
 function App() {
     useEffect(() => {
@@ -16,38 +14,6 @@ function App() {
     }, []);
     return (
         <Router>
-            <Helmet>
-                <title>Pacific Travel - Khám phá đến mọi nơi</title>
-                <meta name="description"
-                      content="Trang chủ của Pacific, nơi bạn có thể khám phá những điểm đến tuyệt vời." />
-                <meta name="keywords" content="du lịch, tour giá rẻ, điểm đến đẹp, du lịch châu Á, Pacific travel" />
-                <meta name="author" content="TunzDev" />
-                <link rel="canonical" href="https://pacific-vn.vercel.app" />
-                <meta property="og:title" content="Pacific Travel - Khám phá đến mọi nơi" />
-                <meta property="og:description"
-                      content="Trang chủ của Pacific, nơi bạn có thể khám phá những điểm đến tuyệt vời." />
-                <meta property="og:url" content="https://pacific-vn.vercel.app" />
-                <meta property="og:type" content="website" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content="Pacific Travel - Khám phá đến mọi nơi" />
-                <meta name="twitter:description"
-                      content="Trang chủ của Pacific, nơi bạn có thể khám phá những điểm đến tuyệt vời." />
-                <meta property="og:image" content="https://pacific-vn.vercel.app" />
-                <meta property="og:image:alt" content="Pacific - Hành trình khám phá" />
-                <meta name="twitter:image" content="https://pacific-vn.vercel.app" />
-                <meta name="twitter:image:alt" content="Pacific - Hành trình khám phá" />
-                <meta name="robots" content="index, follow" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <script type="application/ld+json">
-                    {JSON.stringify({
-                        '@context': 'https://schema.org',
-                        '@type': 'WebSite',
-                        'url': 'https://pacific-vn.vercel.app',
-                        'name': 'Pacific Travel - Khám phá đến mọi nơi',
-                        'description': 'Trang chủ của Pacific, nơi bạn có thể khám phá những điểm đến tuyệt vời.',
-                    })}
-                </script>
-            </Helmet>
             <ScrollToTop />
             <Routes>
                 {RouterContent.map((route, index) => {
@@ -61,9 +27,7 @@ function App() {
                             element={
                                 <PrivateRoute adminOnly={isAdminRoute}>
                                     <Layout>
-                                        {route.path === "/" && <SEOComponent title={route.title} description={route.description} keywords={route.keywords} /> }
                                         {route.element}
-
                                     </Layout>
                                 </PrivateRoute>
                             }
