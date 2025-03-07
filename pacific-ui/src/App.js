@@ -38,7 +38,6 @@ function App() {
                 <meta name="twitter:image:alt" content="Pacific - Hành trình khám phá" />
                 <meta name="robots" content="index, follow" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                {children}
                 <script type="application/ld+json">
                     {JSON.stringify({
                         '@context': 'https://schema.org',
