@@ -216,3 +216,123 @@ import dayjs from "dayjs";
 };
 
 export default AdminUsers;
+
+
+// import React, { useState, useEffect } from "react";
+// import { Table, Tag, Switch, Button, Space } from "antd";
+// import axiosInstance, { getAllUsers } from "~/config/axiosConfig";
+//
+//
+// const AdminUsers = () => {
+//     const [users, setUsers] = useState([]);
+//     const [loading, setLoading] = useState(false); // Thêm state loading
+//
+//     useEffect(() => {
+//         const fetchUsers = async () => {
+//             setLoading(true); // Bắt đầu loading
+//             try {
+//                 const response = await getAllUsers(); // Gọi API từ axiosConfig.js
+//                 console.log(response.data);
+//                 // setUsers(response.data);
+//             } catch (error) {
+//                 console.error("Lỗi khi gọi API:", error);
+//             }
+//             setLoading(false); // Dừng loading
+//         };
+//
+//         fetchUsers();
+//     }, []);
+//
+//     // Cập nhật trạng thái người dùng
+//     const handleSwitchChange = async (id, checked) => {
+//         const newStatus = checked ? "active" : "inactive";
+//         try {
+//             await axiosInstance.patch(`/users/${id}/status`, { status: newStatus });
+//             setUsers(users.map(user => (user.id === id ? { ...user, status: newStatus } : user)));
+//             console.log(`✅ Cập nhật trạng thái User ${id}: ${newStatus}`);
+//         } catch (error) {
+//             console.error(`Lỗi cập nhật trạng thái user ${id}:`, error);
+//         }
+//     };
+//
+//     // Cấu hình cột hiển thị trên bảng
+//     const columns = [
+//         { title: "ID", dataIndex: "id", key: "id" },
+//         { title: "Tên tài khoản", dataIndex: "username", key: "username" },
+//         {
+//             title: "Họ & tên",
+//             key: "fullname",
+//             render: (record) => `${record.firstname || ''} ${record.lastname || ''}`.trim()
+//         },
+//         { title: "Email", dataIndex: "email", key: "email" },
+//         { title: "SĐT", dataIndex: "phone", key: "phone" },
+//         { title: "Địa chỉ", dataIndex: "address", key: "address" },
+//         { title: "Giới tính", dataIndex: "gender", key: "gender" },
+//         { title: "Ngày sinh", dataIndex: "birthday", key: "birthday" },
+//         { title: "Số dư (VNĐ)", dataIndex: "deposit", key: "deposit" },
+//         {
+//             title: "Mật khẩu",
+//             dataIndex: "password",
+//             key: "password",
+//             render: () => "******" // Ẩn mật khẩu
+//         },
+//         {
+//             title: "Ảnh đại diện",
+//             dataIndex: "avatarUrl",
+//             key: "avatarUrl",
+//             render: (avatarUrl) => (
+//                 avatarUrl ? <img src={avatarUrl} alt="Avatar" style={{ width: 40, borderRadius: "50%" }} />
+//                     : "N/A"
+//             )
+//         },
+//         {
+//             title: "Vai trò",
+//             dataIndex: "role",
+//             key: "role",
+//             render: (role) => (
+//                 <Tag color={role === "admin" ? "blue" : role === "guide" ? "purple" : "gray"}>
+//                     {role.toUpperCase()}
+//                 </Tag>
+//             )
+//         },
+//         {
+//             title: "Trạng thái",
+//             dataIndex: "status",
+//             key: "status",
+//             render: (status) => (
+//                 <Tag color={status === "active" ? "green" : status === "pending" ? "gold" : "volcano"}>
+//                     {status.toUpperCase()}
+//                 </Tag>
+//             )
+//         },
+//         {
+//             title: "Hành động",
+//             key: "action",
+//             render: (_, record) => (
+//                 <Space size="middle">
+//                     <Button type="link" onClick={() => console.log("Xem chi tiết user:", record)}>Xem chi tiết</Button>
+//                     <Switch
+//                         checked={record.status === "active"}
+//                         onChange={(checked) => handleSwitchChange(record.id, checked)}
+//                     />
+//                 </Space>
+//             ),
+//         },
+//     ];
+//
+//     return (
+//         <div className="container mx-auto p-4">
+//             <h2 className="text-xl font-bold mb-4">QUẢN LÝ TÀI KHOẢN</h2>
+//             <Table
+//                 dataSource={users || []}
+//                 columns={columns}
+//                 rowKey="id"
+//                 loading={loading} // Đã định nghĩa biến loading
+//                 pagination={{ pageSize: 5 }}
+//             />
+//         </div>
+//     );
+// };
+//
+// export default AdminUsers;
+//
