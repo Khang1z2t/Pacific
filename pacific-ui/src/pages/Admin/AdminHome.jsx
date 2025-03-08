@@ -58,7 +58,7 @@ const AdminHome = () => {
         },
         {
             label: 'Quản lý Khuyến mãi',
-            key: 'sub3',
+            key: 'sub4',
             icon: <MoneyCollectOutlined />,
             children: [
                 { label: 'Danh sách khuyến mãi', key: '9', content: <Promotion /> },
@@ -67,7 +67,7 @@ const AdminHome = () => {
         },
         {
             label: 'Quản lý Blogs',
-            key: 'sub3',
+            key: 'sub5',
             icon: <BlockOutlined />,
             children: [
                 { label: 'Danh sách Blogs', key: '11', content: 'Team 1 works on React.' },

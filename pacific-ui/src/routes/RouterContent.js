@@ -113,28 +113,4 @@ export const RouterContent = [
         path: config.routes.news,
         element: <News />,
     },
-    {
-        path: config.routes.adminUsers,
-        element: (
-            <AdminLayout>
-                <AdminUsers />
-            </AdminLayout>
-        ),
-    },
-    {
-        path: config.routes.infoGuide,
-        element: (
-            <AdminLayout>
-                <InfoGuide />
-            </AdminLayout>
-        ),
-    },
-    {
-        path: config.routes.addGuide,
-        element: (
-            <AdminLayout>
-                <AddGuide />
-            </AdminLayout>
-        ),
-    },
 ];
