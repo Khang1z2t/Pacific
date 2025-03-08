@@ -1,10 +1,13 @@
 import routes from "~/config/routes";
-import { getAllTour, getById } from "~/config/api";
+import api from "~/config/api";
+import imageConfig from '~/config/imageConfig';
+import webConfig from '~/config/webConfig';
 
 const config = {
     routes,
-    getAllTour,
-    getById,
+    api,
+    imageConfig,
+    webConfig,
 };
 
 export default config;

@@ -4,11 +4,12 @@ import { Card } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import config from '~/config';
+import TourServices from '~/services/TourServices';
 
 export const StatisticTourSection = () => {
     const [tours, setTours] = useState([]);
     useEffect(() => {
-        config.getAllTour().then((res) => {
+        TourServices.getAllTour().then((res) => {
             setTours(res.data);
         }).catch((err) => {
             console.error(err);

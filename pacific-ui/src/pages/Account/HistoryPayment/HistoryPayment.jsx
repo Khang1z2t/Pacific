@@ -15,7 +15,7 @@ const historyData = [
         transactionId: "TXN67890",
         date: "2024-01-19",
         amount: "$50",
-        status: "Completed",
+        status: "Sắp khởi hành",
         details: "Thanh toán tiền phòng tháng 1."
     }
 ];
@@ -23,7 +23,7 @@ const historyData = [
 export default function HistoryPayment() {
     const [visible, setVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
-
+    const [status, setStatus] = useState("Completed");
     const columns = [
         {
             title: "Mã giao dịch",
@@ -49,9 +49,23 @@ export default function HistoryPayment() {
             title: "Hành động",
             key: "action",
             render: (record) => (
-                <Button type="link" onClick={() => showDetails(record)}>
-                    Xem chi tiết
-                </Button>
+                <>
+                    {record.status === "Completed" ? (
+                        <div className={"flex flex-row"}>
+                            <Button type="link" onClick={() => showDetails(record)}>
+                                Xem chi tiết
+                            </Button>
+                            <span>/</span>
+                            <Button type="link" onClick={() => showDetails(record)}>
+                                Đánh giá
+                            </Button>
+                        </div>
+                    ) : (
+                        <Button type="link" onClick={() => showDetails(record)}>
+                            Xem chi tiết
+                        </Button>
+                    )}
+                </>
             )
         }
     ];
@@ -63,9 +77,9 @@ export default function HistoryPayment() {
 
     return (
         <div className="p-16 container mx-auto">
-            <h2 className="text-2xl text-orange-400 text-center font-bold mb-4">Lịch sử thanh toán</h2>
+            <h2 className="text-4xl text-center font-bold text-orange-400">Lịch sử thanh toán</h2>
             <Divider />
-            <Table columns={columns} dataSource={historyData} pagination={false} />
+            <Table columns={columns} dataSource={historyData} pagination={true} />
             <Modal
                 title="Chi tiết thanh toán"
                 visible={visible}

@@ -6,6 +6,7 @@ import { Loading } from '~/component/ui/Loading';
 import { BookingInfo1 } from '~/pages/Booking/components/BookingInfo1';
 import { BookingInfo2 } from '~/pages/Booking/components/BookingInfo2';
 import { Success } from '~/pages/Booking/status/Success';
+import TourDetailServices from '~/services/TourDetailServices';
 
 const { TextArea } = Input;
 
@@ -18,7 +19,7 @@ export const Booking = () => {
     const navigate = useNavigate();
     useEffect(() => {
         // setTour(tours.find((tour) => tour.id === +id));
-        config.getById(id).then((res) => {
+        TourDetailServices.getTourDetailById(id).then((res) => {
             setTour(res.data);
             setTimeout(() => {
                 setLoading(false);
@@ -28,24 +29,20 @@ export const Booking = () => {
             setLoading(false);
         });
     }, [id]);
-    useEffect(() => {
-        if (step === 3) {
-            setTimeout(() => {
-                navigate('/');
-            }, 5000);
-        }
-    }, [step, navigate]);
+
     if (loading) {
         return <Loading />;
     }
 
 
     return (
-        <div className={"container mx-auto my-12"}>
-            <p className={"text-gray-500"}>{step} /2 Bước</p>
+        <div className={"container mx-auto px-6 my-12"}>
+            <p className={"text-gray-500"}>{step < 2 && (
+                <p className={"text-gray-500"}>Bước {step} / 2</p>
+            )}</p>
             {step === 1 && <BookingInfo1 tourInfo={tour} setStep={setStep} />}
-            {step === 2 && <BookingInfo2 tourInfo={tour} setStep={setStep} />}
-            {step === 3 && <Success/>}
+            {/*{step === 2 && <BookingInfo2 tourInfo={tour} setStep={setStep} />}*/}
+            {/*{step === 2 && <Success/>}*/}
         </div>
     );
 };

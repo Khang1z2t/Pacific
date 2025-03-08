@@ -2,16 +2,14 @@ import config from '~/config';
 import Home from '~/pages/Home';
 import Contacts from '~/pages/News/Contacts';
 import About from '~/pages/Introduce/About';
-import Booking1 from '~/pages/Admin/sections/Booking1';
-import Tour from '~/pages/Admin/sections/Tour';
 import { TourLists } from '~/pages/TourLists/TourLists';
 import { Login } from '~/pages/Account/Login';
 import { Register } from '~/pages/Account/Register';
 import { TourDetail } from '~/pages/TourLists/TourDetail/TourDetail';
-import { TourLists_outside } from '~/pages/TourLists/TourLists_outside';
 import { ProfileUI } from '~/pages/Account/ProfileUI/ProfileUI';
 import { Booking } from '~/pages/Booking/Booking';
 import HistoryPayment from '~/pages/Account/HistoryPayment/HistoryPayment';
+import { Success } from '~/pages/Booking/status/Success';
 import { ForgetPassword } from '~/pages/Account/ForgetPassword';
 import { ChangePassword } from '~/pages/Account/ChangePassword';
 import { MienBac } from '~/pages/Blog/MienBac';
@@ -24,6 +22,7 @@ import { News } from '~/pages/News/News';
 import AdminUsers from '~/pages/Admin/AdminUsers';
 import InfoGuide from '~/pages/Admin/InfoGuide';
 import AddGuide from '~/pages/Admin/AddGuide';
+import { Error } from '~/pages/Booking/status/Error';
 
 export const RouterContent = [
     {
@@ -32,7 +31,7 @@ export const RouterContent = [
     },
     {
         path: config.routes.tourTrongNuoc,
-        element: <TourLists />,
+        element: <TourLists titleType={"trong nước"} />,
     },
     {
         path: config.routes.login,
@@ -48,7 +47,7 @@ export const RouterContent = [
     },
     {
         path: config.routes.tourNgoaiNuoc,
-        element: <TourLists_outside />,
+        element: <TourLists titleType={"ngoài nước"} />,
     },
     {
         path: config.routes.contacts,
@@ -57,10 +56,6 @@ export const RouterContent = [
     {
         path: config.routes.about,
         element: <About />,
-    },
-    {
-        path: config.routes.tourDetail,
-        element: <TourLists />,
     },
     {
         path: config.routes.profile,
@@ -99,12 +94,12 @@ export const RouterContent = [
         element: <MienNam />,
     },
     {
-        path: config.routes.adminBooking,
-        element: <Booking1 />,
+        path: config.routes.checkOutSuccess,
+        element: <Success />,
     },
     {
-        path: config.routes.adminBooking,
-        element: <Tour />,
+      path: config.routes.checkoutFail,
+        element: <Error />,
     },
     {
         path: config.routes.adminHome,

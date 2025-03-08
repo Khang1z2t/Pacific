@@ -20,6 +20,10 @@ import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
 import AdminUsers from './AdminUsers';
 import InfoGuide from './InfoGuide';
+import TourList from '~/pages/Admin/sections/TourList';
+import Booking from '~/pages/Admin/sections/Booking';
+import Promotion from '~/pages/Admin/sections/Promotion';
+import { Link } from 'react-router-dom';
 
 const { Content } = Layout;
 
@@ -41,7 +45,7 @@ const AdminHome = () => {
             key: 'sub2',
             icon: <FileOutlined />,
             children: [
-                { label: 'Danh sách tour', key: '5', content: 'Tom is a developer.' },
+                { label: 'Danh sách tour', key: '5', content: <TourList /> },
                 { label: 'Đánh giá tour', key: '6', content: 'Bill is a cat.' },
                 { label: 'Quản lý combo tour', key: '7', content: 'Alex is a designer.' },
             ],
@@ -50,14 +54,14 @@ const AdminHome = () => {
             label: 'Quản lý Booking',
             key: 'sub3',
             icon: <PaperClipOutlined />,
-            children: [{ label: 'Danh sách đặt tour', key: '8', content: 'Team 1 works on React.' }],
+            children: [{ label: 'Danh sách đặt tour', key: '8', content: <Booking /> }],
         },
         {
             label: 'Quản lý Khuyến mãi',
             key: 'sub3',
             icon: <MoneyCollectOutlined />,
             children: [
-                { label: 'Danh sách khuyến mãi', key: '9', content: 'Team 1 works on React.' },
+                { label: 'Danh sách khuyến mãi', key: '9', content: <Promotion /> },
                 { label: 'Tạo khuyến mãi', key: '10', content: 'lorem asadadadadada' },
             ],
         },
@@ -84,11 +88,19 @@ const AdminHome = () => {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    const header = (
+        <>
+            <div className={'flex items-center justify-between gap-4'}>
+                <h2 className={'text-lg font-semibold'}>Admin Dashboard</h2>
+                <Link className={'text-blue-500'} to={'/'}>Go back to User HomePage</Link>
+            </div>
+        </>
+    )
     return (
         <Layout className={'min-h-screen bg-gray-100'}>
             <AdminSidebar onSelect={handleMenuSelect} menuItems={menuItems} />
             <Layout className="site-layout">
-                <AdminHeader children={'Admin dashboard'} />
+                <AdminHeader children={header} />
                 <Content className="p-4">
                     <Breadcrumb className="mb-4">
                         <Breadcrumb.Item>Home</Breadcrumb.Item>

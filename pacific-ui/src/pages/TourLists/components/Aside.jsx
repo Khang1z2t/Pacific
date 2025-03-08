@@ -4,14 +4,16 @@ import { prices } from '~/pages/TourLists/data/prices';
 import { times } from '~/pages/TourLists/data/times';
 import { ratings } from '~/pages/TourLists/data/ratings';
 
-export const Aside = ({setSort}) => {
+export const Aside = ({setSort, titleType}) => {
     const [query, setQuery] = useState({
         prices: "All",
         times: [],
         ratings: [],
     });
-    const [checkedTour, setCheckedTour] = useState();
-
+    const [checkedTour, setCheckedTour] = useState(titleType === "trong nước" ? 1: 2);
+    useEffect(() => {
+        setCheckedTour(titleType === "trong nước" ? 1 : 2);
+    }, [titleType]);
 
     const handleCheckboxChange = (field, value) => {
         setQuery({...query, [field]: value});
@@ -52,7 +54,7 @@ export const Aside = ({setSort}) => {
                 </div>
             ))}
             <Divider>Loại tour</Divider>
-            <Radio.Group>
+            <Radio.Group value={checkedTour}>
                 <Radio value={1}>Tour trong nước</Radio>
                 <Radio value={2}>Tour nước ngoài</Radio>
             </Radio.Group>

@@ -1,17 +1,18 @@
-import {Divider, Form, Input, message} from 'antd';
+import { Divider, Form, Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { register } from '~/config/firebase/auth';
 import { signOut } from 'firebase/auth';
 import { auth } from '~/config/firebase/firebase';
-import config from "~/config";
+import config from '~/config';
+import UserServices from '~/services/UserServices';
 
 export const Register = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [password, setPassword] = useState('');
-    // const [username, setUsername] = useState('');
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -20,6 +21,7 @@ export const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
         if (password !== confirmPassword) {
             message.error('Mật khẩu không trùng khớp', 1);
             return;
@@ -30,11 +32,11 @@ export const Register = () => {
         }
         setLoading(true);
         try {
-            const username = `${firstName} ${lastName}`;
-            const user = await register(email, password, username);
+            const user = await register(email, password);
             if (user.code) {
                 message.error(`Lỗi: ${user.message}`, 1);
             } else {
+                await UserServices.register(username, password, firstName, lastName, email);
                 message.success('Đăng ký thành công!', 1);
                 navigate(config.routes.login);
             }
@@ -53,19 +55,27 @@ export const Register = () => {
                 <Divider />
                 <Form className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium">Tên<span className={"text-red-500"}>*</span></label>
-                        <Input placeholder="Tên" onChange={(e) => setFirstName(e.target.value)} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Họ<span className={"text-red-500"}>*</span></label>
+                        <label className="block text-sm font-medium">Họ<span className={'text-red-500'}>*</span></label>
                         <Input placeholder="Họ" onChange={(e) => setLastName(e.target.value)} />
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium">Tên<span
+                            className={'text-red-500'}>*</span></label>
+                        <Input placeholder="Tên" onChange={(e) => setFirstName(e.target.value)} />
+                    </div>
+                    <div className={'col-span-2'}>
+                        <label className={'block text-sm font-medium'}>Tên đăng nhập<span
+                            className={'text-red-500'}>*</span></label>
+                        <Input placeholder="Tên đăng nhập" onChange={(e) => setUsername(e.target.value)} />
+                    </div>
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium">Email<span className={"text-red-500"}>*</span></label>
+                        <label className="block text-sm font-medium">Email<span
+                            className={'text-red-500'}>*</span></label>
                         <Input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium">Mật khẩu<span className={"text-red-500"}>*</span></label>
+                        <label className="block text-sm font-medium">Mật khẩu<span
+                            className={'text-red-500'}>*</span></label>
                         <Input.Password
                             placeholder="Mật khẩu"
                             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
@@ -80,7 +90,8 @@ export const Register = () => {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </div>
-                    <p className="col-span-2 text-sm text-red-500"><span className={"text-red-500"}>(*)</span> là bắt buộc</p>
+                    <p className="col-span-2 text-sm text-red-500"><span className={'text-red-500'}>(*)</span> là bắt
+                        buộc</p>
                     <div className="col-span-2 justify-center w-1/2 mx-auto">
                         <button
                             onClick={handleRegister}
