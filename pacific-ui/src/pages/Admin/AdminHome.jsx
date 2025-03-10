@@ -6,8 +6,7 @@ import {
     LogoutOutlined,
     PaperClipOutlined,
     PieChartOutlined,
-    TeamOutlined,
-} from '@ant-design/icons';
+    TeamOutlined, } from '@ant-design/icons';
 import { Breadcrumb, Layout, theme } from 'antd';
 import { AdminSidebar } from '~/pages/Admin/components/AdminHome/AdminSidebar';
 import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';

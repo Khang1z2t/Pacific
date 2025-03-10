@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Upload, Select, DatePicker, Typography, Space, Input, Modal, Form
-} from "antd";
+import { Table, Button, Upload, Select, DatePicker, Typography, Space, Input, Modal, Form } from "antd";
 import { SearchOutlined, UploadOutlined, EditOutlined, DeleteOutlined, InfoOutlined } from '@ant-design/icons';
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
