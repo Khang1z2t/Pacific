@@ -2,6 +2,9 @@ import { Card, DatePicker, Input, Tabs } from 'antd';
 import { useState } from 'react';
 import { ProfileCard } from '~/pages/Account/ProfileUI/components/ProfileCard';
 import { EmptyProfileCard } from '~/pages/Account/ProfileUI/components/EmptyProfileCard';
+import { AccountSecurity } from '~/pages/Account/ProfileUI/sections/ProfileInformation/components/AccountSecurity';
+import { ProfileInformation } from '~/pages/Account/ProfileUI/sections/ProfileInformation/ProfileInformation';
+import { PaymentHistory } from '~/pages/Account/ProfileUI/components/PaymentHistory';
 
 const { TabPane } = Tabs;
 
@@ -28,14 +31,11 @@ export const ProfileUI = () => {
             {/* Main Content */}
             <div className="flex-1 ">
                 <Tabs rootClassName={"bg-white p-4 rounded-lg shadow-md"} defaultActiveKey="1">
-                    <TabPane tab="Bảo mật tài khoản" key="1">
-                        HI
+                    <TabPane tab="Chỉnh sửa thông tin" key="1">
+                        <ProfileInformation/>
                     </TabPane>
-                    <TabPane tab="Xác minh thông tin" key="2">
-                        HELLO
-                    </TabPane>
-                    <TabPane tab="Chỉnh sửa thông tin" key="3">
-                        KAKAKA
+                    <TabPane tab={"Lịch sử thanh toán"} key={"2"}>
+                        <PaymentHistory/>
                     </TabPane>
                 </Tabs>
             </div>

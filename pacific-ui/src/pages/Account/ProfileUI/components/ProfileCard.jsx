@@ -4,7 +4,7 @@ import { PhoneCall } from 'lucide-react';
 
 export const ProfileCard = ({profile}) => {
     return (
-        <Card className="shadow-md">
+        <Card className="shadow-md sticky top-20">
             <div className="flex flex-col items-center">
                 <Avatar size={80} src="/img/logo.jpg"/>
                 <h2 className="mt-2 text-lg font-semibold">{profile.name}</h2>

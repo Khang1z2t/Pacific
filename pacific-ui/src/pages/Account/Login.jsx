@@ -7,8 +7,8 @@ import { doSignInWithFacebook, doSignInWithGoogle, getUser, loginWithUsername } 
 import { loginWEmail } from '~/config/firebase/auth';
 import config from '~/config';
 import UserServices from '~/services/UserServices';
-import Balatro from '~/component/Animation/AnimatedUI/Background/Balatro';
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
+import { Oauth2LoginButtons } from '~/pages/Account/components/Oauth2LoginButtons';
 
 export const Login = () => {
     //healing async
@@ -141,6 +141,8 @@ export const Login = () => {
                     >
                         Đăng nhập với Facebook
                     </button>
+                    <Divider/>
+                    <Oauth2LoginButtons/>
                 </div>
             </div>
         </div>
