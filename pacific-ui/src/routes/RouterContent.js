@@ -23,6 +23,7 @@ import AdminUsers from '~/pages/Admin/AdminUsers';
 import InfoGuide from '~/pages/Admin/InfoGuide';
 import AddGuide from '~/pages/Admin/AddGuide';
 import { Error } from '~/pages/Booking/status/Error';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export const RouterContent = [
     {
@@ -35,7 +36,11 @@ export const RouterContent = [
     },
     {
         path: config.routes.login,
-        element: <Login />,
+        element: (
+            <GoogleOAuthProvider clientId={config.webConfig.googleClientId}>
+                <Login />
+            </GoogleOAuthProvider>
+        )
     },
     {
         path: config.routes.register,
