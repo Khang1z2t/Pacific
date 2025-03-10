@@ -1,80 +1,107 @@
 import React, { useState } from 'react';
 import {
-    BellOutlined,
-    BlockOutlined,
-    BuildOutlined,
-    DesktopOutlined,
-    FileOutlined,
-    LockOutlined,
+    BlockOutlined, CommentOutlined,
+    DesktopOutlined, DollarCircleOutlined,
+    FileOutlined, HistoryOutlined,
     LogoutOutlined,
-    MoneyCollectOutlined,
     PaperClipOutlined,
     PieChartOutlined,
     TeamOutlined,
-    UserOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { AdminSidebar } from '~/pages/Admin/components/AdminHome/AdminSidebar';
 import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';
 import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
-import AdminUsers from './AdminUsers';
-import InfoGuide from './InfoGuide';
+import Users from './Users';
+import Guide from './Guide';
 import TourList from '~/pages/Admin/sections/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
 import Promotion from '~/pages/Admin/sections/Promotion';
 import { Link } from 'react-router-dom';
+import { Category } from '@react-buddy/ide-toolbox';
+import UsedPromotion from '~/pages/Admin/UsedPromotion';
+import BookingCancel from '~/pages/Admin/sections/BookingCancel';
+import BookingDone from '~/pages/Admin/sections/BookingDone';
+import Rating from '~/pages/Admin/Rating';
+import ConfirmRating from '~/pages/Admin/ConfirmRating';
+import InfoBlog from '~/pages/Admin/InfoBlog';
+import Blog from '~/pages/Admin/Blog';
+import Support from '~/pages/Admin/Support';
+
 
 const { Content } = Layout;
 
 const AdminHome = () => {
     const menuItems = [
         { label: 'Trang chủ', key: '1', icon: <DesktopOutlined />, content: <HomePage /> },
-        { label: 'Thống kê', key: '2', icon: <PieChartOutlined />, content: 'This is Option 2 content.' },
         {
-            label: 'Quản lý Tài khoản',
+            label: 'Thống kê',
             key: 'sub1',
+            icon: <PieChartOutlined />,
+            children: [
+                { label: 'Booking', key: '2', content: 'Bill is a cat.' },
+                { label: 'Tour', key: '3', content: 'Bill is a cat.' },
+                { label: 'Doanh thu', key: '4', content: 'Bill is a cat.' },
+            ],
+        },
+        {
+            label: 'Tài khoản',
+            key: 'sub2',
             icon: <TeamOutlined />,
             children: [
-                { label: 'Danh sách tài khoản', key: '3', content: <AdminUsers /> },
-                { label: 'Hướng dẫn viên', key: '4', content: <InfoGuide /> },
+                { label: 'Danh sách tài khoản', key: '5', content: <Users /> },
+                { label: 'Hướng dẫn viên', key: '6', content: <Guide /> },
             ],
         },
         {
-            label: 'Quản lý Tour',
-            key: 'sub2',
+            label: 'Tour',
+            key: 'sub3',
             icon: <FileOutlined />,
             children: [
-                { label: 'Danh sách tour', key: '5', content: <TourList /> },
-                { label: 'Đánh giá tour', key: '6', content: 'Bill is a cat.' },
-                { label: 'Quản lý combo tour', key: '7', content: 'Alex is a designer.' },
+                { label: 'Danh sách danh mục', key: '7', content: <Category /> },
+                { label: 'Danh sách tour', key: '8', content: <TourList /> },
+                { label: 'Thông tin chi tiết tour', key: '9', content: 'Bill is a cat.' },
             ],
         },
         {
-            label: 'Quản lý Booking',
-            key: 'sub3',
+            label: 'Booking',
+            key: 'sub4',
             icon: <PaperClipOutlined />,
-            children: [{ label: 'Danh sách đặt tour', key: '8', content: <Booking /> }],
+            children: [{ label: 'Đang chờ xác nhận', key: '10', content: <Booking /> },
+            { label: 'Đã hoàn thành', key: '11', content: <BookingDone /> },
+            { label: 'Đã hủy', key: '12', content: <BookingCancel /> }],
         },
         {
-            label: 'Quản lý Khuyến mãi',
-            key: 'sub3',
-            icon: <MoneyCollectOutlined />,
+            label: 'Khuyến mãi',
+            key: 'sub5',
+            icon: <DollarCircleOutlined />,
             children: [
-                { label: 'Danh sách khuyến mãi', key: '9', content: <Promotion /> },
-                { label: 'Tạo khuyến mãi', key: '10', content: 'lorem asadadadadada' },
+                { label: 'Danh sách khuyến mãi', key: '13', content: <Promotion /> },
+                { label: 'Danh sách khách hàng sử dụng khuyến mãi', key: '14', content: <UsedPromotion /> },
             ],
         },
         {
-            label: 'Quản lý Blogs',
-            key: 'sub3',
+            label: 'Đánh giá',
+            key: 'sub6',
+            icon: <HistoryOutlined />,
+            children: [
+                { label: 'Đang chờ duyệt', key: '15', content: <Rating />  },
+                { label: 'Đã duyệt', key: '16', content: <ConfirmRating /> },
+            ],
+        },
+        {
+            label: 'Blogs',
+            key: 'sub7',
             icon: <BlockOutlined />,
             children: [
-                { label: 'Danh sách Blogs', key: '11', content: 'Team 1 works on React.' },
-                { label: 'Tạo Blogs', key: '12', content: 'lorem asadadadadada' },
+
+                { label: 'Danh sách Blogs', key: '17', content: <Blog />},
+                { label: 'Tông tin chi tiết Blogs', key: '18', content: <InfoBlog /> },
             ],
         },
-        { label: 'Logout', key: '13', icon: <LogoutOutlined />, content: 'File management system.' },
+        { label: 'Hỗ trợ', key: '19', icon: <CommentOutlined />, content: <Support /> },
+        { label: 'Logout', key: '20', icon: <LogoutOutlined />, content: 'File management system.' },
     ];
     const [selectedContent, setSelectedContent] = useState(menuItems[0].content);
     const [selectedLabel, setSelectedLabel] = useState(menuItems[0].label);
@@ -92,7 +119,7 @@ const AdminHome = () => {
         <>
             <div className={'flex items-center justify-between gap-4'}>
                 <h2 className={'text-lg font-semibold'}>Admin Dashboard</h2>
-                <Link className={'text-blue-500'} to={'/'}>Go back to User HomePage</Link>
+                <Link className={'text-blue-500'} to={'/'}>HomePage</Link>
             </div>
         </>
     )

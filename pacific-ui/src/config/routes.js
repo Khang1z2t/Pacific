@@ -26,8 +26,10 @@ const routes = {
     adminUsers: '/admin-users',
     infoGuide: '/info-guide',
     addGuide: '/add-guide',
+    addUser: '/add-user',
     checkOutSuccess: '/checkout/success/',
     checkoutFail: '/checkout/fail/',
+    infoBlog: '/info-blog',
 };
 
 export default routes;

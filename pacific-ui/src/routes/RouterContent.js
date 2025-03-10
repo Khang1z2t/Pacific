@@ -19,9 +19,10 @@ import { BookedTour } from '~/pages/Account/historyBooked/BookedTour';
 import { AdminLayout } from '~/component/Layout/Admin/AdminLayout';
 import AdminHome from '~/pages/Admin/AdminHome';
 import { News } from '~/pages/News/News';
-import AdminUsers from '~/pages/Admin/AdminUsers';
-import InfoGuide from '~/pages/Admin/InfoGuide';
+import Users from '~/pages/Admin/Users';
+import Guide from '~/pages/Admin/Guide';
 import AddGuide from '~/pages/Admin/AddGuide';
+import AddUser from '~/pages/Admin/AddUser';
 import { Error } from '~/pages/Booking/status/Error';
 
 export const RouterContent = [
@@ -117,7 +118,7 @@ export const RouterContent = [
         path: config.routes.adminUsers,
         element: (
             <AdminLayout>
-                <AdminUsers />
+                <Users />
             </AdminLayout>
         ),
     },
@@ -125,7 +126,7 @@ export const RouterContent = [
         path: config.routes.infoGuide,
         element: (
             <AdminLayout>
-                <InfoGuide />
+                <Guide />
             </AdminLayout>
         ),
     },
@@ -137,4 +138,12 @@ export const RouterContent = [
             </AdminLayout>
         ),
     },
+    {
+        path: config.routes.addUser,
+        element: (
+            <AdminLayout>
+                <AddUser />
+            </AdminLayout>
+        ),
+    }
 ];

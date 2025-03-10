@@ -125,7 +125,7 @@ export const Navbar = () => {
                                 src="/img/logo.jpg"
                                 alt="Pacific Travel"
                             />
-                            <span className={'text-black font-light'}>Pacific</span>
+                            {/*<span className={'text-black font-light'}>Pacific</span>*/}
                         </Link>
                     </div>
 

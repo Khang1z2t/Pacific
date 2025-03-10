@@ -1,8 +1,8 @@
-import {useState} from "react";
-import {Menu} from "antd";
+import React, { useState } from "react";
+import { Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 
-export const AdminSidebar = ({ onSelect,menuItems }) => {
+export const AdminSidebar = ({ onSelect, menuItems }) => {
     const [collapsed, setCollapsed] = useState(false);
     const siderStyle = {
         overflow: 'auto',
@@ -16,10 +16,24 @@ export const AdminSidebar = ({ onSelect,menuItems }) => {
     };
 
     return (
-        <Sider style={siderStyle} collapsible collapsed={collapsed} onCollapse={setCollapsed}>
-            <div className="h-12 bg-gray-800 text-white flex items-center justify-center text-lg font-bold">
-                {collapsed ? <a onClick={() => onSelect('1')}>P</a> : <a onClick={() => onSelect('1')}>Pacific</a>}
+        <Sider
+            style={siderStyle}
+            collapsible
+            collapsed={collapsed}
+            onCollapse={setCollapsed}
+            width={250} // Mở rộng sidebar
+            collapsedWidth={80} // Kích thước khi thu nhỏ
+        >
+
+            <div className="flex items-center justify-center py-4 bg-white">
+                <img
+                    className={collapsed ? "w-20 h-10" : "w-40 h-10"}
+                    src="/img/logo.jpg"
+                    alt="Pacific Travel"
+                />
             </div>
+            <br/>
+
             <Menu theme="dark" mode="inline" items={menuItems} onClick={(e) => onSelect(e.key)} />
         </Sider>
     );
