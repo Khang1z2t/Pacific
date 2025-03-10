@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Row, DatePicker, Button, message, Upload, Radio, Col } from 'antd';
 import { useNavigate } from "react-router-dom";
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, DownOutlined } from '@ant-design/icons';
 
 const AddUser = () => {
     const navigate = useNavigate();

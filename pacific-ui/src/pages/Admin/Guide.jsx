@@ -14,7 +14,7 @@ const Guide = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [users, setUsers] = useState([]);
     const [searchText, setSearchText] = useState("");
-    const [selectedSort, setSelectedSort] = useState("Sp xếp theo");
+    const [selectedSort, setSelectedSort] = useState("Sắp xếp theo");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [form] = Form.useForm();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { Space, Table, Tag, Pagination, Switch, Modal, Button, Form, Input, Radio, Select, Upload, Row, Col, Dropdown, Menu } from "antd";
+import { Space, Table, Tag, Switch, Modal, Button, Form, Input, Radio, Select, Upload, Row, Col, Dropdown, Menu } from "antd";
 import { SearchOutlined, DownOutlined, InfoCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 

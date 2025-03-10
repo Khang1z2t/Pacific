@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Row, Col, Select, DatePicker, Button, message, Upload } from 'antd';
 import { useNavigate } from "react-router-dom";
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, DownOutlined } from '@ant-design/icons';
 
 
 const AddGuide = () => {

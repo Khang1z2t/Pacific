@@ -8,7 +8,7 @@ import {
     PieChartOutlined,
     TeamOutlined,
 } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Breadcrumb, Layout, theme } from 'antd';
 import { AdminSidebar } from '~/pages/Admin/components/AdminHome/AdminSidebar';
 import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';
 import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
