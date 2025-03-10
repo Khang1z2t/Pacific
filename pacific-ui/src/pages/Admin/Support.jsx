@@ -32,7 +32,6 @@ const Support = () => {
         setLoading(false);
     };
 
-
     const filteredSupport = support.filter((item) =>
         item.name.toLowerCase().includes(searchName.toLowerCase()) ||
         item.email.toLowerCase().includes(searchName.toLowerCase())

@@ -16,7 +16,7 @@ const InfoBlog = () => {
         formData.append("content", values.content);
         formData.append("description", values.description);
 
-        // Thêm ảnh vào formData
+
         values.images?.forEach((file, index) => {
             formData.append(`images[${index}]`, file.originFileObj);
         });

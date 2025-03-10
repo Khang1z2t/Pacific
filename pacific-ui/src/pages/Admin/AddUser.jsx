@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Input, Row, DatePicker, Button, message, Upload, Radio, Col } from 'antd';
+import { Form, Input, Row, DatePicker, Button, message, Upload, Radio, Col
+} from 'antd';
 import { useNavigate } from "react-router-dom";
 import { UploadOutlined } from '@ant-design/icons';
 

@@ -21,8 +21,8 @@ export const AdminSidebar = ({ onSelect, menuItems }) => {
             collapsible
             collapsed={collapsed}
             onCollapse={setCollapsed}
-            width={250} // Mở rộng sidebar
-            collapsedWidth={80} // Kích thước khi thu nhỏ
+            width={250}
+            collapsedWidth={80} 
         >
 
             <div className="flex items-center justify-center py-4 bg-white">

@@ -4,6 +4,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import PromotionCard from '~/pages/Admin/components/PromotionCard';
 import { Space, Input } from "antd";
 
+
 const UsedPromotion = () => {
     const [promotions, setPromotions] = useState([]);
     const [searchText, setSearchText] = useState("");
