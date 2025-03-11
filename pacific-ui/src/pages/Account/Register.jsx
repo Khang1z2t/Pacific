@@ -1,12 +1,13 @@
-import { Divider, Form, Input, message } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
-import { register } from '~/config/firebase/auth';
-import { signOut } from 'firebase/auth';
-import { auth } from '~/config/firebase/firebase';
+import {Button, Divider, Form, Input, message} from 'antd';
+import {EyeInvisibleOutlined, EyeTwoTone, FacebookFilled, FacebookOutlined, GoogleOutlined} from '@ant-design/icons';
+import {Link, useNavigate} from 'react-router-dom';
+import React, {useState} from 'react';
+import {doSignInWithFacebook, register} from '~/config/firebase/auth';
+import {signOut} from 'firebase/auth';
+import {auth} from '~/config/firebase/firebase';
 import config from '~/config';
 import UserServices from '~/services/UserServices';
+import AuthService from "~/services/AuthServices";
 
 export const Register = () => {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ export const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [isSignIn, setIsSignIn] = useState(false);
 
 
     const handleRegister = async (e) => {
@@ -48,37 +50,52 @@ export const Register = () => {
         }
     };
 
+    const handleGoogleLogin = async (e) => {
+        e.preventDefault();
+        if (!isSignIn) {
+            setIsSignIn(true);
+            await AuthService.loginGoogle();
+        }
+    };
+
+    const handleFacebookLogin = async (e) => {
+        e.preventDefault();
+        if (!isSignIn) {
+
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full uppercase max-w-2xl">
                 <h2 className="text-2xl font-bold text-center mb-6 text-orange-400">Đăng ký</h2>
-                <Divider />
+                <Divider/>
                 <Form className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium">Họ<span className={'text-red-500'}>*</span></label>
-                        <Input placeholder="Họ" onChange={(e) => setLastName(e.target.value)} />
+                        <Input placeholder="Họ" onChange={(e) => setLastName(e.target.value)}/>
                     </div>
                     <div>
                         <label className="block text-sm font-medium">Tên<span
                             className={'text-red-500'}>*</span></label>
-                        <Input placeholder="Tên" onChange={(e) => setFirstName(e.target.value)} />
+                        <Input placeholder="Tên" onChange={(e) => setFirstName(e.target.value)}/>
                     </div>
                     <div className={'col-span-2'}>
                         <label className={'block text-sm font-medium'}>Tên đăng nhập<span
                             className={'text-red-500'}>*</span></label>
-                        <Input placeholder="Tên đăng nhập" onChange={(e) => setUsername(e.target.value)} />
+                        <Input placeholder="Tên đăng nhập" onChange={(e) => setUsername(e.target.value)}/>
                     </div>
                     <div className="col-span-2">
                         <label className="block text-sm font-medium">Email<span
                             className={'text-red-500'}>*</span></label>
-                        <Input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+                        <Input placeholder="Email" onChange={(e) => setEmail(e.target.value)}/>
                     </div>
                     <div>
                         <label className="block text-sm font-medium">Mật khẩu<span
                             className={'text-red-500'}>*</span></label>
                         <Input.Password
                             placeholder="Mật khẩu"
-                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            iconRender={(visible) => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
@@ -86,7 +103,7 @@ export const Register = () => {
                         <label className="block text-sm font-medium">Xác nhận mật khẩu *</label>
                         <Input.Password
                             placeholder="Xác nhận mật khẩu"
-                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            iconRender={(visible) => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </div>
@@ -107,6 +124,27 @@ export const Register = () => {
                             Đăng nhập
                         </Link>
                     </p>
+                </div>
+                <Divider plain children={'Hoặc đăng nhập với'}/>
+                <div className="flex justify-around">
+                    <Button
+                        onClick={handleGoogleLogin}
+                        color={'danger'}
+                        variant={'solid'}
+                        size={'large'}
+                        icon={<GoogleOutlined/>}
+                    >
+                        Đăng nhập với Google
+                    </Button>
+                    <Button
+                        onClick={handleFacebookLogin}
+                        color={'primary'}
+                        variant={'solid'}
+                        size={'large'}
+                        icon={<FacebookFilled/>}
+                    >
+                        Đăng nhập với Facebook
+                    </Button>
                 </div>
             </div>
         </div>

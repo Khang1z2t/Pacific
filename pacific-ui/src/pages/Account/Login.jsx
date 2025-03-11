@@ -1,14 +1,14 @@
 import '~/pages/j.css';
-import React, { useState } from 'react';
-import { Divider, Form, Input, message } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import { doSignInWithFacebook, doSignInWithGoogle, getUser, loginWithUsername } from '~/config/firebase/auth';
-import { loginWEmail } from '~/config/firebase/auth';
+import React, {useState} from 'react';
+import {Divider, Form, Input, message} from 'antd';
+import {EyeInvisibleOutlined, EyeTwoTone} from '@ant-design/icons';
+import {Link, useNavigate} from 'react-router-dom';
+import {doSignInWithFacebook, doSignInWithGoogle, getUser, loginWithUsername} from '~/config/firebase/auth';
+import {loginWEmail} from '~/config/firebase/auth';
 import config from '~/config';
 import UserServices from '~/services/UserServices';
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
-import { Oauth2LoginButtons } from '~/pages/Account/components/Oauth2LoginButtons';
+import {Oauth2LoginButtons} from '~/pages/Account/components/Oauth2LoginButtons';
 import AuthServices from "~/services/AuthServices";
 import AuthService from "~/services/AuthServices";
 
@@ -91,27 +91,29 @@ export const Login = () => {
                 className="absolute inset-0 z-0"
             />
             <div className="bg-white relative p-8 rounded-lg shadow-lg w-full uppercase max-w-md border">
-                <h2 className="text-2xl font-bold mb-2 text-center text-orange-400">Đăng nhập</h2><Divider />
+                <h2 className="text-2xl font-bold mb-2 text-center text-orange-400">Đăng nhập</h2><Divider/>
                 <Form className="space-y-4">
                     <div className={'space-y-2'}>
                         <label className="block text-sm font-medium">Email/Tên tài khoản<span
                             className="text-red-500">*</span></label>
                         <Input placeholder="Nhập Email hoặc Tên tài khoản"
-                               onChange={(e) => setIdentifier(e.target.value)} />
+                               onChange={(e) => setIdentifier(e.target.value)}/>
                     </div>
                     <div className={'space-y-2'}>
                         <div className={'flex justify-between'}>
                             <label className="block text-sm font-medium">Mật khẩu<span
                                 className="text-red-500">*</span></label>
-                            <Link to={config.routes.forgotPassword} className="text-sm text-blue-500">Quên mật khẩu?</Link>
+                            <Link to={config.routes.forgotPassword} className="text-sm text-blue-500">Quên mật
+                                khẩu?</Link>
                         </div>
                         <Input.Password
                             placeholder="Mật khẩu"
-                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            iconRender={(visible) => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
-                    <p className="col-span-2 text-sm text-red-500"><span className={'text-red-500'}>(*)</span> là bắt buộc
+                    <p className="col-span-2 text-sm text-red-500"><span className={'text-red-500'}>(*)</span> là bắt
+                        buộc
                     </p>
                     <div className="flex justify-center">
                         <button
@@ -123,13 +125,14 @@ export const Login = () => {
                     </div>
                     <div className="text-center">
                         <p className="text-gray-600">Chưa có tài khoản?{' '}
-                            <Link to={config.routes.register} className="text-blue-500 hover:text-blue-400 font-semibold">
+                            <Link to={config.routes.register}
+                                  className="text-blue-500 hover:text-blue-400 font-semibold">
                                 Đăng ký
                             </Link>
                         </p>
                     </div>
                 </Form>
-                <Divider />
+                <Divider plain children={'Hoặc đăng nhập với'}/>
                 <div className="flex gap-4 justify-between">
                     <button
                         onClick={handleGoogleLogin}
