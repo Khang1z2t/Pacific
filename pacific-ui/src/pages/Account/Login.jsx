@@ -9,6 +9,8 @@ import config from '~/config';
 import UserServices from '~/services/UserServices';
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
 import { Oauth2LoginButtons } from '~/pages/Account/components/Oauth2LoginButtons';
+import AuthServices from "~/services/AuthServices";
+import AuthService from "~/services/AuthServices";
 
 export const Login = () => {
     //healing async
@@ -58,12 +60,12 @@ export const Login = () => {
         e.preventDefault();
         if (!isSignIn) {
             setIsSignIn(true);
-            doSignInWithGoogle().then(() => {
-
-                navigate('/');
-            }).catch(() => {
-                message.error('Đăng nhập thất bại', 1);
-            });
+            await AuthService.loginGoogle();
+            // doSignInWithGoogle().then(() => {
+            //     navigate('/');
+            // }).catch(() => {
+            //     message.error('Đăng nhập thất bại', 1);
+            // });
         }
     };
 
@@ -141,8 +143,8 @@ export const Login = () => {
                     >
                         Đăng nhập với Facebook
                     </button>
-                    <Divider/>
-                    <Oauth2LoginButtons/>
+                    {/*<Divider/>*/}
+                    {/*<Oauth2LoginButtons/>*/}
                 </div>
             </div>
         </div>

@@ -30,6 +30,7 @@ const routes = {
     checkOutSuccess: '/checkout/success/',
     checkoutFail: '/checkout/fail/',
     infoBlog: '/info-blog',
+    googleRedirect: '/google/redirect',
 };
 
 export default routes;

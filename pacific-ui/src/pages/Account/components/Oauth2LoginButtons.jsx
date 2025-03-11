@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { GoogleLogin } from '@react-oauth/google';
+// import { GoogleLogin } from '@react-oauth/google';
 
 export const Oauth2LoginButtons = () => {
 
@@ -18,8 +18,8 @@ export const Oauth2LoginButtons = () => {
     }
     return (
         <>
-            <GoogleLogin onSuccess={handleGoogleLoginSuccess}
-                            onFailure={handleGoogleLoginFailure}/>
+            {/*<GoogleLogin onSuccess={handleGoogleLoginSuccess}*/}
+            {/*                onFailure={handleGoogleLoginFailure}/>*/}
 
         </>
     );
