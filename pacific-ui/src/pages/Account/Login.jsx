@@ -60,12 +60,12 @@ export const Login = () => {
         e.preventDefault();
         if (!isSignIn) {
             setIsSignIn(true);
-            await AuthService.loginGoogle();
-            // doSignInWithGoogle().then(() => {
-            //     navigate('/');
-            // }).catch(() => {
-            //     message.error('Đăng nhập thất bại', 1);
-            // });
+            await AuthService.loginGoogle().then(() => {
+                navigate('/')
+                message.success('Đăng nhập thành công', 2)
+            }).catch(() => {
+                message.error('Đăng nhập Google thất bại', 5)
+            })
         }
     };
 

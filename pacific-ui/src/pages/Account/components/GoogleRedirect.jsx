@@ -10,11 +10,25 @@ export const GoogleRedirect = () => {
         const urlParams = new URLSearchParams(location.search);
         const accessToken = urlParams.get('access_token');
         const refreshToken = urlParams.get('refresh_token');
+        const error = urlParams.get('error');
+
+        if (error) {
+            if (window.opener) {
+                window.opener.postMessage({error: "google_auth_failed"}, window.location.origin);
+                window.close();
+            } else {
+                navigate("/login?error=google_auth_failed");
+            }
+            return;
+        }
 
         if (accessToken) {
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', refreshToken);
-            navigate('/');
+            if (window.opener) {
+                window.opener.postMessage({accessToken, refreshToken}, window.location.origin);
+                window.close();
+            } else {
+                navigate("/");
+            }
         } else {
             navigate('/login?error=google_auth_failed');
         }

@@ -54,7 +54,12 @@ export const Register = () => {
         e.preventDefault();
         if (!isSignIn) {
             setIsSignIn(true);
-            await AuthService.loginGoogle();
+            await AuthService.loginGoogle().then(() => {
+                navigate('/')
+                message.success('Đăng nhập thành công', 2)
+            }).catch(() => {
+                message.error('Đăng nhập Google thất bại', 5)
+            })
         }
     };
 
