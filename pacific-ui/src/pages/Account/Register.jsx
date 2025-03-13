@@ -1,13 +1,9 @@
-import {Button, Divider, Form, Input, message} from 'antd';
-import {EyeInvisibleOutlined, EyeTwoTone, FacebookFilled, FacebookOutlined, GoogleOutlined} from '@ant-design/icons';
-import {Link, useNavigate} from 'react-router-dom';
-import React, {useState} from 'react';
-import {doSignInWithFacebook, register} from '~/config/firebase/auth';
-import {signOut} from 'firebase/auth';
-import {auth} from '~/config/firebase/firebase';
+import { Button, Divider, Form, Input, message } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone, FacebookFilled, FacebookOutlined, GoogleOutlined } from '@ant-design/icons';
+import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import config from '~/config';
-import UserServices from '~/services/UserServices';
-import AuthService from "~/services/AuthServices";
+import AuthService from '~/services/AuthServices';
 
 export const Register = () => {
     const navigate = useNavigate();
@@ -34,15 +30,9 @@ export const Register = () => {
         }
         setLoading(true);
         try {
-            const user = await register(email, password);
-            if (user.code) {
-                message.error(`Lỗi: ${user.message}`, 1);
-            } else {
-                await UserServices.register(username, password, firstName, lastName, email);
-                message.success('Đăng ký thành công!', 1);
-                navigate(config.routes.login);
-            }
-            await signOut(auth);
+            await AuthService.register(username, password, firstName, lastName, email);
+            message.success('Đăng ký thành công!', 1);
+            navigate(config.routes.login);
         } catch (error) {
             message.error(`Đăng ký thất bại: ${error.message}`, 1);
         } finally {
@@ -55,11 +45,11 @@ export const Register = () => {
         if (!isSignIn) {
             setIsSignIn(true);
             await AuthService.loginGoogle().then(() => {
-                navigate('/')
-                message.success('Đăng nhập thành công', 2)
+                navigate('/');
+                message.success('Đăng nhập thành công', 2);
             }).catch(() => {
-                message.error('Đăng nhập Google thất bại', 5)
-            })
+                message.error('Đăng nhập Google thất bại', 5);
+            });
         }
     };
 
@@ -74,33 +64,33 @@ export const Register = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full uppercase max-w-2xl">
                 <h2 className="text-2xl font-bold text-center mb-6 text-orange-400">Đăng ký</h2>
-                <Divider/>
+                <Divider />
                 <Form className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium">Họ<span className={'text-red-500'}>*</span></label>
-                        <Input placeholder="Họ" onChange={(e) => setLastName(e.target.value)}/>
+                        <Input placeholder="Họ" onChange={(e) => setLastName(e.target.value)} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium">Tên<span
                             className={'text-red-500'}>*</span></label>
-                        <Input placeholder="Tên" onChange={(e) => setFirstName(e.target.value)}/>
+                        <Input placeholder="Tên" onChange={(e) => setFirstName(e.target.value)} />
                     </div>
                     <div className={'col-span-2'}>
                         <label className={'block text-sm font-medium'}>Tên đăng nhập<span
                             className={'text-red-500'}>*</span></label>
-                        <Input placeholder="Tên đăng nhập" onChange={(e) => setUsername(e.target.value)}/>
+                        <Input placeholder="Tên đăng nhập" onChange={(e) => setUsername(e.target.value)} />
                     </div>
                     <div className="col-span-2">
                         <label className="block text-sm font-medium">Email<span
                             className={'text-red-500'}>*</span></label>
-                        <Input placeholder="Email" onChange={(e) => setEmail(e.target.value)}/>
+                        <Input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium">Mật khẩu<span
                             className={'text-red-500'}>*</span></label>
                         <Input.Password
                             placeholder="Mật khẩu"
-                            iconRender={(visible) => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
+                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
@@ -108,7 +98,7 @@ export const Register = () => {
                         <label className="block text-sm font-medium">Xác nhận mật khẩu *</label>
                         <Input.Password
                             placeholder="Xác nhận mật khẩu"
-                            iconRender={(visible) => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
+                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </div>
@@ -130,14 +120,14 @@ export const Register = () => {
                         </Link>
                     </p>
                 </div>
-                <Divider plain children={'Hoặc đăng nhập với'}/>
+                <Divider plain children={'Hoặc đăng nhập với'} />
                 <div className="flex justify-around">
                     <Button
                         onClick={handleGoogleLogin}
                         color={'danger'}
                         variant={'solid'}
                         size={'large'}
-                        icon={<GoogleOutlined/>}
+                        icon={<GoogleOutlined />}
                     >
                         Đăng nhập với Google
                     </Button>
@@ -146,7 +136,7 @@ export const Register = () => {
                         color={'primary'}
                         variant={'solid'}
                         size={'large'}
-                        icon={<FacebookFilled/>}
+                        icon={<FacebookFilled />}
                     >
                         Đăng nhập với Facebook
                     </Button>

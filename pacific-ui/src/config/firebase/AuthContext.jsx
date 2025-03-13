@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, signOut, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from './firebase';
-import { getDoc, doc } from 'firebase/firestore';
+import AuthService from '~/services/AuthServices';
+import { message } from 'antd';
 
 const AuthContext = createContext();
 
@@ -11,67 +10,43 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
-    const [userLoggedIn, setUserLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
     const [role, setRole] = useState(null);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                setCurrentUser(user);
-                setUserLoggedIn(true);
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                setRole(userDoc.get('role'));
-            } else {
-                setCurrentUser(null);
-                setUserLoggedIn(false);
-                setRole('user');
-            }
+        AuthService.authToken(localStorage.getItem('accessToken')).then((res) => {
+            setCurrentUser(res?.data);
+            setRole(res?.data.role);
             setLoading(false);
-        });
-
-        return unsubscribe;
+        }).catch((err) => {
+            console.log(err);
+        })
     }, []);
-
-    const login = async (email, password) => {
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
-
-            setCurrentUser(user);
-            setUserLoggedIn(true);
-
-            // Kiểm tra nếu role đã có, thì không cần lấy lại từ Firestore
-            if (!role) {
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (userDoc.exists()) {
-                    setRole(userDoc.get('role'));
-                }
-            }
-        } catch (error) {
-            console.error('Login failed: ', error.message);
-            throw error;
-        }
-    };
-
 
     const logout = async () => {
         try {
-            await signOut(auth);
+            localStorage.removeItem('accessToken');
             setCurrentUser(null);
-            setUserLoggedIn(false);
             setRole(null);
+            message.success('Đăng xuất thành công', 1);
         } catch (error) {
             console.error('Logout failed: ', error.message);
             throw error;
         }
     };
 
+    const getToken = async () => {
+        try {
+            return localStorage.getItem('accessToken');
+        } catch (error) {
+            console.error('Get token failed: ', error.message);
+            throw error;
+        }
+    }
 
     const value = {
+        getToken,
         currentUser,
-        userLoggedIn,
-        login,
         logout,
         loading,
         role,

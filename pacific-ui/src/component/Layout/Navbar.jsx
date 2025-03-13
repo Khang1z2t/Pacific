@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useAuth } from '~/config/firebase/AuthContext';
 import { Dropdown, Menu, message } from 'antd';
-import { auth } from '~/config/firebase/firebase';
-import { logout } from '~/config/firebase/auth';
 import config from '~/config';
 import { MenuItemsElm } from '~/component/ui/MenuItemsElm';
+import AuthService from '~/services/AuthServices';
 
 export const Navbar = () => {
     const navItems = [
@@ -48,6 +47,10 @@ export const Navbar = () => {
             </div>
         );
     };
+    const { logout,currentUser } = useAuth();
+    useLayoutEffect(() => {
+
+    }, [currentUser]);
 
     const handleLogout = async () => {
         try {
@@ -111,8 +114,6 @@ export const Navbar = () => {
             </Menu.ItemGroup>
         </Menu>
     );
-    const { currentUser } = useAuth();
-
     return (
         <header className="sticky top-0 z-50 bg-white shadow-md">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -143,7 +144,7 @@ export const Navbar = () => {
                                         onClick={(e) => e.preventDefault()}
                                         className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"
                                     >
-                                        {currentUser?.displayName || currentUser?.email}
+                                        {currentUser?.username || currentUser?.email}
                                     </a>
                                 </Dropdown>
                             </>

@@ -8,7 +8,7 @@ function PrivateRoute({ children, adminOnly = false }) {
 
     if (loading) return <Loading />;
 
-    if (adminOnly && (!currentUser || role !== 'admin')) {
+    if (adminOnly && (!currentUser || role !== 'ADMIN')) {
         return <Navigate to={config.routes.home} />;
     }
 
