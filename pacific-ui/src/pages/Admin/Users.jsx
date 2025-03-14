@@ -55,7 +55,7 @@ const Users = () => {
         if (!selectedUser) return;
         try {
             const values = form.getFieldsValue();
-            const response = await fetch(`http://localhost:3000/api/users/${selectedUser.id}`, {
+            const response = await fetch(`http://localhost:3000/api/admin/users/update/${selectedUser.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(values),
@@ -103,7 +103,7 @@ const Users = () => {
     const handleSwitchChange = async (id, checked) => {
         const newStatus = checked ? "active" : "inactive";
         try {
-            const response = await fetch(`http://localhost:3000/api/users/${id}/status`, {
+            const response = await fetch(`http://localhost:3000/api/admin/users/updateStatus/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: newStatus }),
