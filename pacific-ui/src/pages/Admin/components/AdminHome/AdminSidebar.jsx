@@ -16,24 +16,10 @@ export const AdminSidebar = ({ onSelect, menuItems }) => {
     };
 
     return (
-        <Sider
-            style={siderStyle}
-            collapsible
-            collapsed={collapsed}
-            onCollapse={setCollapsed}
-            width={250}
-            collapsedWidth={80} 
-        >
-
-            <div className="flex items-center justify-center py-4 bg-white">
-                <img
-                    className={collapsed ? "w-20 h-10" : "w-40 h-10"}
-                    src="/img/logo.jpg"
-                    alt="Pacific Travel"
-                />
+        <Sider style={siderStyle} collapsible collapsed={collapsed} onCollapse={setCollapsed}>
+            <div className="h-12 bg-gray-800 text-white flex items-center justify-center text-lg font-bold">
+                {collapsed ? <a onClick={() => onSelect('1')}>P</a> : <a onClick={() => onSelect('1')}>Pacific</a>}
             </div>
-            <br/>
-
             <Menu theme="dark" mode="inline" items={menuItems} onClick={(e) => onSelect(e.key)} />
         </Sider>
     );

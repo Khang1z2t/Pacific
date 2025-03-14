@@ -3,13 +3,9 @@ import React, {useState} from 'react';
 import {Divider, Form, Input, message} from 'antd';
 import {EyeInvisibleOutlined, EyeTwoTone} from '@ant-design/icons';
 import {Link, useNavigate} from 'react-router-dom';
-import {doSignInWithFacebook, doSignInWithGoogle, getUser, loginWithUsername} from '~/config/firebase/auth';
-import {loginWEmail} from '~/config/firebase/auth';
 import config from '~/config';
 import UserServices from '~/services/UserServices';
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
-import {Oauth2LoginButtons} from '~/pages/Account/components/Oauth2LoginButtons';
-import AuthServices from "~/services/AuthServices";
 import AuthService from "~/services/AuthServices";
 
 export const Login = () => {
@@ -19,13 +15,8 @@ export const Login = () => {
     const navigate = useNavigate();
     //
     const [password, setPassword] = useState('');
-    // const [email, setEmail] = useState('');
-    // const [username, setUsername] = useState('');
     const [identifier, setIdentifier] = useState('');
     const [isSignIn, setIsSignIn] = useState(false);
-
-
-    //
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -35,19 +26,14 @@ export const Login = () => {
                 return;
             }
             setLoading(true);
-            let user;
-            if (identifier.includes('@')) {
-                user = await loginWEmail(identifier, password);
-            } else {
-                user = await loginWithUsername(identifier, password);
-            }
-            if (user.code) {
-                message.error(`Lỗi: ${user.message}`, 1);
-            } else {
-                await UserServices.login(identifier, password);
-                message.success('Đăng nhập thành công!', 1);
-                navigate('/');
-            }
+            // if (identifier.includes('@')) {
+            //     user = await loginWEmail(identifier, password);
+            // } else {
+            //     user = await loginWithUsername(identifier, password);
+            // }
+            await AuthService.login(identifier, password);
+            message.success('Đăng nhập thành công!', 1);
+            window.location.href = '/';
         } catch (er) {
             message.error(`Đăng nhập thất bại: ${er.message}`, 1);
         } finally {
@@ -60,26 +46,18 @@ export const Login = () => {
         e.preventDefault();
         if (!isSignIn) {
             setIsSignIn(true);
-            await AuthService.loginGoogle();
-            // doSignInWithGoogle().then(() => {
-            //     navigate('/');
-            // }).catch(() => {
-            //     message.error('Đăng nhập thất bại', 1);
-            // });
+            await AuthService.loginGoogle().then(() => {
+                navigate('/')
+                message.success('Đăng nhập thành công', 2)
+            }).catch(() => {
+                message.error('Đăng nhập Google thất bại', 5)
+            })
         }
     };
 
     const handleFacebookLogin = async (e) => {
         e.preventDefault();
-        if (!isSignIn) {
-            setIsSignIn(true);
-            doSignInWithFacebook().then(() => {
-                navigate('/');
-            }).catch(() => {
-                message.error('Đăng nhập thất bại', 1);
-            });
-            // document.location.href = '/';
-        }
+        message.warning('Chức năng đang phát triển', 2)
     };
     return (
         <div className="min-h-screen flex items-center justify-center">

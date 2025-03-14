@@ -1,28 +1,20 @@
 import React, { useState } from 'react';
 import { Form, Input, message, notification } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '~/config/firebase/firebase';
 import config from '~/config';
 import anhBien from '~/pages/Account/imgAC/anh-bien.jpg';
 import logo from '~/pages/Account/imgAC/logo.jpg';
-import UserServices from '~/services/UserServices';
-import AxiosConfig from '~/config/axiosConfig';
 import { resetPassword } from '~/config/firebase/auth';
+import AuthServices from '~/services/AuthServices';
 
 export const ForgetPassword = () => {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [showResetForm, setShowResetForm] = useState(false);
     const [verificationCode, setVerificationCode] = useState('');
-    // const [generatedCode, setGeneratedCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
-
-    // const generateCode = () => {
-    //     return Math.floor(100000 + Math.random() * 900000).toString();
-    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,7 +26,7 @@ export const ForgetPassword = () => {
 
         setLoading(true);
         try {
-            await UserServices.sendVerifyEmail(email);
+            await AuthServices.sendVerifyEmail(email);
             notification.success({
                 message: 'Gửi mã xác nhận thành công',
                 description: `Mã xác nhận đã được gửi đến email của bạn: ${email}`,
@@ -53,16 +45,16 @@ export const ForgetPassword = () => {
     };
 
     const handleResetPassword = async () => {
-        const verify = await UserServices.verifyEmail(email, verificationCode);
-        if (!verify) {
-            message.error('Mã xác nhận không chính xác', 1);
-            return;
-        }
         if (newPassword !== confirmPassword) {
             message.error('Mật khẩu xác nhận không khớp', 1);
             return;
         }
-        await UserServices.resetPassword(email,newPassword, confirmPassword);
+        const verify = await AuthServices.verifyEmail(email, verificationCode);
+        if (!verify) {
+            message.error('Mã xác nhận không chính xác', 1);
+            return;
+        }
+        await AuthServices.resetPassword(email,newPassword, confirmPassword);
         await resetPassword(email, newPassword);
         message.success('Đổi mật khẩu thành công!', 1);
         navigate(config.routes.login);
