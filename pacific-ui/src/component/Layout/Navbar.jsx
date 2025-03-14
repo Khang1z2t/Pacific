@@ -1,8 +1,8 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
-import { useAuth } from '~/config/firebase/AuthContext';
+import { useAuth } from '~/config/AuthContext';
 import { Dropdown, Menu, message } from 'antd';
 import config from '~/config';
 import { MenuItemsElm } from '~/component/ui/MenuItemsElm';
@@ -47,8 +47,9 @@ export const Navbar = () => {
             </div>
         );
     };
-    const { logout,currentUser } = useAuth();
-    useLayoutEffect(() => {
+    const { logout, currentUser } = useAuth();
+
+    useEffect(() => {
 
     }, [currentUser]);
 
@@ -105,7 +106,7 @@ export const Navbar = () => {
             <Menu.ItemGroup title="Khác">
                 <Menu.Item key="logout">
                     <button
-                        onClick={handleLogout}
+                        onClick={() => handleLogout()}
                         className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                         Đăng xuất

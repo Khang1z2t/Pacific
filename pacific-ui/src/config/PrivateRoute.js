@@ -1,4 +1,4 @@
-import { useAuth } from '~/config/firebase/AuthContext';
+import { useAuth } from '~/config/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { Loading } from '~/component/ui/Loading';
 import config from '~/config';

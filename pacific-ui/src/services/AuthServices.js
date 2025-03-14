@@ -1,5 +1,6 @@
 import AxiosConfig from "~/config/axiosConfig";
 import config from "~/config";
+import { useAuth } from '~/config/AuthContext';
 
 const AuthService = {
 
@@ -58,12 +59,12 @@ const AuthService = {
         }
     },
 
-    resetPassword : async (email,newPassword,confirmPaswword) => {
+    resetPassword : async (email,newPassword,confirmPassword) => {
         try{
             const response = await AxiosConfig.post(config.api.auth + '/reset-password', {
                 email,
                 newPassword,
-                confirmPaswword,
+                confirmPassword,
             });
             return response.data;
         }catch (error){
@@ -75,7 +76,7 @@ const AuthService = {
     authToken: async (token) => {
         try {
             if(!token){
-                return null;
+                return Promise.resolve(null);
             }else{
                 const response = await AxiosConfig.get(`${config.api.auth}/authenticate-token`, {
                     headers: {
@@ -90,7 +91,7 @@ const AuthService = {
         }
     },
 
-    loginGoogle: async () => {
+    loginGoogle: async (getUser) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await AxiosConfig.get(config.api.auth + "/oauth2/google");
@@ -110,7 +111,7 @@ const AuthService = {
                     return;
                 }
 
-                const handleMessage = (event) => {
+                const handleMessage = async (event) => {
                     if (event.origin !== window.location.origin) return;
 
                     if (event.data.error) {
@@ -120,6 +121,9 @@ const AuthService = {
                     if (event.data.accessToken) {
                         localStorage.setItem("accessToken", event.data.accessToken);
                         localStorage.setItem("refreshToken", event.data.refreshToken);
+
+                        await getUser();
+
                         resolve();
                     }
 
@@ -128,6 +132,23 @@ const AuthService = {
 
                 window.addEventListener("message", handleMessage);
 
+                //Validate truong hop treo popup
+                const timeout = setTimeout(() => {
+                    if(!popup.closed){
+                        popup.close();
+                        reject(new Error("Popup closed"));
+                    }
+                    reject('Quá thời gian đăng nhập')
+                },120000);
+
+                //Validate truong hop nguoi dung dong popup
+                const checkedPopupClosed = setInterval(() => {
+                    if(popup.closed){
+                        clearInterval(checkedPopupClosed);
+                        clearTimeout(timeout);
+                        reject("Cửa sổ đăng nhập bị đóng!");
+                    }
+                },500);
             } catch (error) {
                 reject(error);
             }

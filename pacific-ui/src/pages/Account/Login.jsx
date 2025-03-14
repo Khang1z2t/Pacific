@@ -1,23 +1,23 @@
 import '~/pages/j.css';
-import React, {useState} from 'react';
-import {Divider, Form, Input, message} from 'antd';
-import {EyeInvisibleOutlined, EyeTwoTone} from '@ant-design/icons';
-import {Link, useNavigate} from 'react-router-dom';
+import React, { useState } from 'react';
+import { Divider, Form, Input, message } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import UserServices from '~/services/UserServices';
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
-import AuthService from "~/services/AuthServices";
+import AuthService from '~/services/AuthServices';
+import { useAuth } from '~/config/AuthContext';
 
 export const Login = () => {
     //healing async
     const [loading, setLoading] = useState(false);
-    //
     const navigate = useNavigate();
-    //
+    const { setCurrentUser, getUser } = useAuth();
     const [password, setPassword] = useState('');
     const [identifier, setIdentifier] = useState('');
-    const [isSignIn, setIsSignIn] = useState(false);
 
+    const [isSignIn, setIsSignIn] = useState(false);
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -25,15 +25,15 @@ export const Login = () => {
                 message.error('Vui lòng điền đầy đủ thông tin', 1);
                 return;
             }
-            setLoading(true);
             // if (identifier.includes('@')) {
             //     user = await loginWEmail(identifier, password);
             // } else {
             //     user = await loginWithUsername(identifier, password);
             // }
-            await AuthService.login(identifier, password);
+            const user = await AuthService.login(identifier, password);
+            setCurrentUser(user.data);
             message.success('Đăng nhập thành công!', 1);
-            window.location.href = '/';
+            navigate('/');
         } catch (er) {
             message.error(`Đăng nhập thất bại: ${er.message}`, 1);
         } finally {
@@ -46,18 +46,18 @@ export const Login = () => {
         e.preventDefault();
         if (!isSignIn) {
             setIsSignIn(true);
-            await AuthService.loginGoogle().then(() => {
-                navigate('/')
-                message.success('Đăng nhập thành công', 2)
+            await AuthService.loginGoogle(getUser).then(() => {
+                navigate('/');
+                message.success('Đăng nhập thành công', 2);
             }).catch(() => {
-                message.error('Đăng nhập Google thất bại', 5)
-            })
+                message.error('Đăng nhập Google thất bại', 5);
+            });
         }
     };
 
     const handleFacebookLogin = async (e) => {
         e.preventDefault();
-        message.warning('Chức năng đang phát triển', 2)
+        message.warning('Chức năng đang phát triển', 2);
     };
     return (
         <div className="min-h-screen flex items-center justify-center">
@@ -69,13 +69,13 @@ export const Login = () => {
                 className="absolute inset-0 z-0"
             />
             <div className="bg-white relative p-8 rounded-lg shadow-lg w-full uppercase max-w-md border">
-                <h2 className="text-2xl font-bold mb-2 text-center text-orange-400">Đăng nhập</h2><Divider/>
+                <h2 className="text-2xl font-bold mb-2 text-center text-orange-400">Đăng nhập</h2><Divider />
                 <Form className="space-y-4">
                     <div className={'space-y-2'}>
                         <label className="block text-sm font-medium">Email/Tên tài khoản<span
                             className="text-red-500">*</span></label>
                         <Input placeholder="Nhập Email hoặc Tên tài khoản"
-                               onChange={(e) => setIdentifier(e.target.value)}/>
+                               onChange={(e) => setIdentifier(e.target.value)} />
                     </div>
                     <div className={'space-y-2'}>
                         <div className={'flex justify-between'}>
@@ -86,7 +86,7 @@ export const Login = () => {
                         </div>
                         <Input.Password
                             placeholder="Mật khẩu"
-                            iconRender={(visible) => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
+                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
@@ -110,7 +110,7 @@ export const Login = () => {
                         </p>
                     </div>
                 </Form>
-                <Divider plain children={'Hoặc đăng nhập với'}/>
+                <Divider plain children={'Hoặc đăng nhập với'} />
                 <div className="flex gap-4 justify-between">
                     <button
                         onClick={handleGoogleLogin}
