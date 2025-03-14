@@ -29,9 +29,3 @@ axiosInstance.interceptors.request.use(
 
 export default axiosInstance;
 
-// );
-// export const getAllUsers = async () => {
-//     return axiosInstance.get('/users/all');
-// };
-//
-// export default axiosInstance;
