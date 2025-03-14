@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {createContext, useContext, useEffect, useState} from 'react';
 import AuthService from '~/services/AuthServices';
-import { message } from 'antd';
+import {message} from 'antd';
 
 const AuthContext = createContext();
 
@@ -8,7 +8,7 @@ export function useAuth() {
     return useContext(AuthContext);
 }
 
-export function AuthProvider({ children }) {
+export function AuthProvider({children}) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [role, setRole] = useState(null);
@@ -20,6 +20,8 @@ export function AuthProvider({ children }) {
             setLoading(false);
         }).catch((err) => {
             console.log(err);
+            setCurrentUser(null);
+            localStorage.removeItem('accessToken');
         })
     }, []);
 
