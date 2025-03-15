@@ -3,7 +3,7 @@ import { Input } from 'antd';
 export const AccountSecurity = () => {
     return (
         <div className={"container mx-auto"}>
-            <div className={"section1 p-4 bg-red-100"}>
+            <div className={"section1 p-4 "}>
                 <h2 className={"text-2xl font-semibold"}>Bảo mật thông tin</h2>
                 <p className={"text-gray-500"}>Thông tin cá nhân của bạn</p>
                 <div className={"grid grid-cols-2 gap-4 mt-4"}>

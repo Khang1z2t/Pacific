@@ -1,12 +1,9 @@
-import BlogCards from '~/pages/Home/components/BlogCards';
 import { message, Pagination } from 'antd';
 import { useState } from 'react';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import config from '~/config';
-// const { routes } = config;
-
 import routes from '~/config/routes';
+import BlogCards from '~/pages/Home/components/BlogCard';
 
 export const BlogSection = () => {
     const BlogCardItems = [

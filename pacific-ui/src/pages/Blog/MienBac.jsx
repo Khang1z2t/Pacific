@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Divider } from 'antd';
 
 const locations = [
     {
@@ -60,7 +61,7 @@ export const MienBac = () => {
                     Miền Bắc Việt Nam nổi tiếng với cảnh quan thiên nhiên tuyệt đẹp, văn hóa phong phú và nền ẩm thực
                     đặc sắc. Hãy cùng khám phá ngay những điểm đến tuyệt vời này!
                 </h2>
-
+                <Divider/>
                 {/* Danh sách địa điểm */}
                 {locations.map((location) => (
                     <div key={location.id} className="mt-12">

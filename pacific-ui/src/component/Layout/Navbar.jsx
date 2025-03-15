@@ -68,16 +68,6 @@ export const Navbar = () => {
             href: config.routes.profile,
         },
         {
-            key: 'lich-su-dat-tour',
-            title: 'Lịch sử đặt tour',
-            href: config.routes.historyBooked,
-        },
-        {
-            key: 'lich-su-thanh-toan',
-            title: 'Lịch sử thanh toán',
-            href: config.routes.historyPayment,
-        },
-        {
             key: 'doi-mat-khau',
             title: 'Đổi mật khẩu',
             href: config.routes.changePassword,

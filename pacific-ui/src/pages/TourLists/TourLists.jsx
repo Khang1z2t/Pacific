@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
-import TourDetailServices from '~/services/TourDetailServices';
 
 export const TourLists = ({titleType}) => {
     const ITEM_PER_PAGE = 8;
@@ -18,17 +17,8 @@ export const TourLists = ({titleType}) => {
         setCurrentPage(e);
     };
 
-    // useEffect(() => {
-    //     TourServices.getAllTour().then((res) => {
-    //         setTours(res.data);
-    //         setFilteredTours(res.data); // Initialize filteredTours with all tours
-    //     }).catch((err) => {
-    //         console.error(err);
-    //     });
-    //     setCurrentPage(1);
-    // }, []);
     useEffect(() => {
-        TourDetailServices.getTourDetail().then((res) => {
+        TourServices.getAllTour().then((res) => {
             setTours(res.data);
             setFilteredTours(res.data);
         }).catch((error) => {
@@ -70,8 +60,8 @@ export const TourLists = ({titleType}) => {
                     <Aside setSort={setSort} titleType={titleType} />
                     {page.length > 0 ?
                         <div className="flex flex-wrap gap-4 w-full px-4">
-                            {page.map((tourDT) => (
-                                <TourCards key={tourDT.id} tourDT={tourDT} />
+                            {page.map((tour) => (
+                                <TourCards key={tour.id} data={tour} />
                             ))}
                         </div>
                         :

@@ -1,15 +1,13 @@
 import { useEffect } from 'react';
-import { FloatButton } from '~/component/ui/FloatButton';
 import { Divider } from 'antd';
 import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';
 import Vacations from '~/pages/Home/sections/Vacations';
 import { AboutSection } from '~/pages/Home/sections/AboutSection';
 import { TourLists } from '~/pages/Home/sections/TourLists';
-import BlogCards from '~/pages/Home/components/BlogCards';
-import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { AnimatedHomeBanner } from '~/pages/Home/components/AnimatedHomeBanner/AnimatedHomeBanner';
 import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
+import { BlogSection } from '~/pages/Home/sections/BlogSection';
 
 function Home() {
     useEffect(() => {
@@ -47,6 +45,8 @@ function Home() {
             title: 'Korea',
         },
     ];
+
+
     return (
         <FadeContent
             blur={true}

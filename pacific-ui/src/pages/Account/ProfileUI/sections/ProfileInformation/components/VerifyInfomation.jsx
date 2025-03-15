@@ -3,7 +3,7 @@ import { Input } from 'antd';
 export const VerifyInformation = () => {
     return (
         <div className={"container mx-auto"}>
-            <div className={"section2 bg-green-100 p-4"}>
+            <div className={"section2 p-4"}>
                 <h2 className={"text-2xl font-semibold"}>Xác thực thông tin</h2>
                 <div className={"grid grid-cols-2 gap-4 mt-4"}>
                     <div className={"space-y-2"}>

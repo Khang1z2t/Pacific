@@ -1,50 +1,44 @@
 import { Card, Divider, Pagination } from 'antd';
 import { TourCards } from '~/pages/Home/components/TourCards';
-import { useEffect, useRef, useState } from 'react';
-import { TourCardItems } from '~/pages/TourLists/data/TourCardItems';
+import { useEffect, useState } from 'react';
+import TourServices from '~/services/TourServices';
 
 export const TourLists = () => {
-    const ITEM_PER_PAGE = 6;
+    const ITEM_PER_PAGE = 8;
     const [currentPage, setCurrentPage] = useState(1);
-    const pageItem = TourCardItems.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
-    const containerRef = useRef(null);
-    const [maxHeight, setMaxHeight] = useState(0);
+    const [tours, setTours] = useState([]);
 
     // Tính toán chiều cao tối đa của danh sách các trang
-    useEffect(() => {
-        if (containerRef.current) {
-            setMaxHeight(containerRef.current.scrollHeight);
-        }
-        //
-
-    }, []);
 
     const onChange = (page) => {
         setCurrentPage(page);
     };
+    useEffect(() => {
+        TourServices.getAllTour().then((res) => {
+            setTours(res.data);
+        }).catch((err) => {
+            console.error(err);
+        })
+    }, []);
+    const pageItem = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 
     return (
-        <div className="container mx-auto px-4 sm:px-6">
+        <div className="container mx-auto justify-center w-full">
             <Divider
                 className="font-bold uppercase"
                 style={{ borderColor: '#7cb305' }}
                 orientation="center"
             >
-                <p className="text-xl sm:text-2xl md:text-3xl">Danh sách tour</p>
+                <h2 className="lg:text-3xl text-md">Danh sách tour</h2>
+                <p className="lg:text-xl text-sm">Những tour đang hot gần đây</p>
             </Divider>
             <div
-                ref={containerRef}
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5"
-                style={{
-                    minHeight: `${maxHeight}px`,
-                    height: 'auto',
-                }} // Đặt chiều cao tối thiểu dựa trên chiều cao lớn nhất
-            >
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-center px-14 w-fit mx-auto min-h-[500px]">
                 {pageItem.length === 0 ? (
                     <p className={'text-center text-xl'}>Không có tour nào</p>
                 ) : (
                     pageItem.map((item, index) => (
-                        <TourCards key={index} {...item} />
+                        <TourCards key={index} data={item} />
                     ))
                 )}
             </div>
@@ -52,7 +46,7 @@ export const TourLists = () => {
                 rootClassName={'flex justify-center mt-6'}
                 align="center"
                 defaultCurrent={1}
-                total={TourCardItems.length}
+                total={tours.length}
                 pageSize={ITEM_PER_PAGE}
                 onChange={onChange}
             />
