@@ -9,13 +9,13 @@ export const TourCards = ({ data }) => {
         <Link
             to={config.routes.tourDetail + `${data.id}`}
             className={
-                'w-72 max-h-fit rounded-lg shadow-lg hover:scale-105 overflow-hidden transition-transform hover:cursor-pointer hover:border-orange-500 hover:border-2'
+                'w-72 max-h-full rounded-lg shadow-lg hover:scale-105 overflow-hidden transition-transform hover:cursor-pointer hover:border-orange-500 hover:border-2'
             }
         >
             <img
                 alt={data.title}
-                src={`${config.imageConfig.getImage(data.thumbnail)}`}
-                className={'w-full h-48 object-cover rounded-t-lg'}
+                src={config.imageConfig.getImage(data.thumbnail) || config.webConfig.defaultTour}
+                className={'w-full max-h-48 object-cover rounded-t-lg'}
             />
             <div className={'p-4'}>
                 <h3 className={'text-lg font-semibold overflow-ellipsis text-gray-800 mb-2'}>{data.title}</h3>
@@ -25,8 +25,7 @@ export const TourCards = ({ data }) => {
                 </div>
                 <div className="flex justify-between items-center border-t pt-3">
                     <div className="flex items-center gap-1">
-                        <Rate disabled defaultValue={4} />
-                        <span className="text-gray-500 text-sm">(250)</span>
+                        <Rate disabled defaultValue={data.ratingAvg} />
                     </div>
 
                     <p className="text-lg font-bold text-gray-800">{config.webConfig.getCurrency(data.maxPrice)}</p>

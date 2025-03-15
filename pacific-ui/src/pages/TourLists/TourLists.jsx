@@ -6,7 +6,7 @@ import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
 
 export const TourLists = ({titleType}) => {
-    const ITEM_PER_PAGE = 8;
+    const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
     const [filteredTours, setFilteredTours] = useState([]);
@@ -54,7 +54,7 @@ export const TourLists = ({titleType}) => {
             <img src={'/img/Pages/TourLists/bg.jpg'} alt={'bg'} className="w-full h-96 object-cover" />
             <SearchBar onSearch={handleSearch} />
             <div className="mt-24 mx-24 justify-center min-h-[800px]">
-                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold'}>Danh sách tour du
+                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>Danh sách tour du
                     lịch {titleType} </p></Divider>
                 <div className="flex">
                     <Aside setSort={setSort} titleType={titleType} />

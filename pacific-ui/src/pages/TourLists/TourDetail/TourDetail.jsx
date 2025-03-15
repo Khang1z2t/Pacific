@@ -15,12 +15,10 @@ export const TourDetail = () => {
     const [loading, setLoading] = useState(true);
     const { id } = useParams();
     const [tour, setTour] = useState({});
-    const [tourDetail, setTourDetail] = useState([]);
 
     useEffect(() => {
-        TourDetailServices.getTourDetailByTourId(id).then((res) => {
-            setTourDetail(res.data[0]);
-            setTour(res.data[0].tour);
+        TourServices.getById(id).then((res) => {
+            setTour(res.data);
             setTimeout(() => {
                 setLoading(false);
             }, 1000);
@@ -33,14 +31,14 @@ export const TourDetail = () => {
     if (loading) {
         return <Loading/>
     }
-    if (!tourDetail) return <p className="text-center mt-10 text-gray-500">Tour not found!</p>;
+    if (!tour) return <p className="text-center mt-10 text-gray-500">Tour not found!</p>;
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-5">
             <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.title}</h1>
-            <DetailSection {...tourDetail}/>
+            <DetailSection {...tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Lịch trình khởi hành</p></Divider>
-            <CalendarSection {...tourDetail}/>
+            <CalendarSection {...tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Tour khác liên quan</p></Divider>
             <OtherToursList/>
         </div>

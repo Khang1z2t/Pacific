@@ -3,7 +3,7 @@ const imageConfig = {
         return `https://lh3.googleusercontent.com/d/${imageId}`;
     },
     getAvatar: (imageId) => {
-        return `https://lh3.googleusercontent.com/a/${imageId}`;
+        return `https://lh3.googleusercontent.com/a/${imageId}` || `https://lh3.googleusercontent.com/d/${imageId}`;
     }
 };
 

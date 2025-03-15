@@ -123,7 +123,7 @@ export const Navbar = ({ref1, ref2}) => {
                     </div>
 
                     {/* Menu Items */}
-                    <div className="hidden md:flex space-x-8">
+                    <div className="hidden md:flex space-x-8 ">
                         {navItems.map((item, index) => (
                             <NavItemsElm key={index} title={item.title} href={item.href} />
                         ))}
