@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect} from 'react';
 import { Divider } from 'antd';
 import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';
@@ -8,6 +8,7 @@ import { TourLists } from '~/pages/Home/sections/TourLists';
 import { AnimatedHomeBanner } from '~/pages/Home/components/AnimatedHomeBanner/AnimatedHomeBanner';
 import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
 import { BlogSection } from '~/pages/Home/sections/BlogSection';
+import { ComboTour } from '~/pages/Home/sections/ComboTour';
 
 function Home() {
     useEffect(() => {
@@ -46,7 +47,6 @@ function Home() {
         },
     ];
 
-
     return (
         <FadeContent
             blur={true}
@@ -76,6 +76,7 @@ function Home() {
                 <Vacations />
                 <AboutSection />
                 <TourLists />
+                <ComboTour />
                 <Divider className={'font-bold uppercase'}
                          style={{
                              borderColor: '#7cb305',

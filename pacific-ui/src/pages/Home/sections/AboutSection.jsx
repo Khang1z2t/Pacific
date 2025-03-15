@@ -42,7 +42,7 @@ export const AboutSection = () => {
                         </div>
                     </div>
                     <button
-                        className={"mx-auto justify-center container mt-5 text-4xl bg-orange-600 font-bold text-white p-4 rounded-full shadow-xl hover:bg-orange-800"}>
+                        className={"mx-auto justify-center items-center container mt-5 text-4xl bg-orange-600 font-bold text-white p-4 rounded-full shadow-xl hover:bg-orange-800"}>
                         Đặt tour ngay!
                     </button>
                 </div>

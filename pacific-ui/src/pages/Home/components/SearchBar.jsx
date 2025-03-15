@@ -1,9 +1,10 @@
+import { SearchOutlined } from '@ant-design/icons';
 import { Input, Select } from 'antd';
-import Search from 'antd/es/input/Search';
-import { useState } from 'react';
 import { sides } from '~/pages/TourLists/data/sides';
+import { prices } from '~/pages/TourLists/data/prices';
+import { useState } from 'react';
 
-export const SearchBar = ({ ...props }) => {
+export const SearchBar = ({...props}) => {
     const [query, setQuery] = useState({
         searchText: '',
         side: 'All',
@@ -19,7 +20,7 @@ export const SearchBar = ({ ...props }) => {
     }
     return (
         <div
-            className={'flex flex-row justify-center mx-auto items-center bg-gray-100 shadow-xl bg-blend-overlay mt-4 gap-4 p-4 w-fit rounded-lg'}>
+            className={'flex flex-row justify-center mx-auto items-center bg-gray-100 shadow-md bg-blend-overlay mt-4 gap-4 p-4 w-fit rounded-lg'}>
             <Input
                 placeholder="Tìm kiếm tour"
                 allowClear
@@ -38,7 +39,14 @@ export const SearchBar = ({ ...props }) => {
                 optionLabelProp={'label'}
                 className={'w-96 font-bold '}
             />
-
+            <Select
+                options={prices}
+                size={'large'}
+                defaultValue={prices[0].value}
+                filterOption={(input, option) => option.value.toLowerCase().includes(input.toLowerCase())}
+                optionLabelProp={'label'}
+                className={'w-96 font-bold '}
+                />
             <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>Tìm kiếm</button>
         </div>
     );

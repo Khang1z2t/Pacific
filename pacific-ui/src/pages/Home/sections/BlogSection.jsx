@@ -4,6 +4,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import routes from '~/config/routes';
 import BlogCards from '~/pages/Home/components/BlogCard';
+import Particles from '~/component/Animation/AnimatedUI/Background/Particles';
 
 export const BlogSection = () => {
     const BlogCardItems = [
@@ -76,12 +77,18 @@ export const BlogSection = () => {
             .then(() => message.info('Mời bạn đọc thêm bài viết.', 2.5));
     };
     return (
-        <section className="py-20 bg-gray-100">
+        <section className="py-20 relative">
             <div className="max-w-7xl mx-auto px-4">
-                <div className="text-center mb-12">
-                    <h2 className="text-4xl font-semibold">Bài Viết Mới Nhất</h2>
-                    <p className="text-gray-500 mt-2">Cập nhật những bài viết mới nhất từ chúng tôi.</p>
-                </div>
+                <Particles
+                    particleColors={['#d66e03', '#e8874c']}
+                    particleCount={200}
+                    particleSpread={10}
+                    speed={0.1}
+                    particleBaseSize={100}
+                    moveParticlesOnHover={false}
+                    alphaParticles={false}
+                    disableRotation={false}
+                    className={"-z-10 absolute top-0 left-0 w-full h-full object-cover"}/>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {pageItem.map((item, index) => (
                         <BlogCards key={index} title={item.title} img={item.img} date={item.date} link={item.link} />

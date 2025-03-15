@@ -104,7 +104,7 @@ export const Login = () => {
                     <div className="text-center">
                         <p className="text-gray-600">Chưa có tài khoản?{' '}
                             <Link to={config.routes.register}
-                                  className="text-blue-500 hover:text-blue-400 font-semibold">
+                                  className="text-orange-500 hover:text-orange-400 font-semibold">
                                 Đăng ký
                             </Link>
                         </p>

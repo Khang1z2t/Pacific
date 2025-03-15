@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
@@ -8,7 +8,8 @@ import config from '~/config';
 import { MenuItemsElm } from '~/component/ui/MenuItemsElm';
 import AuthService from '~/services/AuthServices';
 
-export const Navbar = () => {
+export const Navbar = ({ref1, ref2}) => {
+
     const navItems = [
         {
             title: 'TRANG CHỦ',
@@ -146,6 +147,7 @@ export const Navbar = () => {
                                     className={
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
+                                    ref={ref2}
                                 >
                                     Đăng nhập
                                 </Link>
@@ -154,6 +156,7 @@ export const Navbar = () => {
                                     className={
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
+                                    ref={ref1}
                                 >
                                     Đăng ký
                                 </Link>

@@ -14,17 +14,17 @@ export const AnimatedHomeBanner = () => {
                           animateBy="words"
                           direction={'top'}
                           delay={150}
-                          className={'uppercase text-4xl md:text-5xl font-bold mb-4'} />
+                          className={'uppercase text-3xl md:text-5xl font-bold mb-4'} />
                 <BlurText
                     animateBy="words"
                     text={'Khám phá những địa điểm yêu thích của bạn cùng với chúng tôi.'}
                     delay={180}
-                    className={'uppercase text-2xl md:text-3xl font-semibold mb-6'} />
+                    className={'uppercase text-xl md:text-2xl font-semibold mb-6'} />
                 <BlurText
                     animateBy="words"
                     text={'Du lịch đến mọi nơi trên thế giới mà không phải đi lòng vòng.'}
                     delay={200}
-                    className={'uppercase text-lg md:text-xl max-w-2xl'} />
+                    className={'uppercase text-md md:text-lg max-w-2xl'} />
             </div>
         </div>
     );
