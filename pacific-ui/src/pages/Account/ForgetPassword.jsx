@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import anhBien from '~/pages/Account/imgAC/anh-bien.jpg';
 import logo from '~/pages/Account/imgAC/logo.jpg';
-import { resetPassword } from '~/config/firebase/auth';
 import AuthServices from '~/services/AuthServices';
 
 export const ForgetPassword = () => {
