@@ -9,45 +9,47 @@ export const TourLists = ({titleType}) => {
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
+    const [query, setQuery] = useState({});
     const [filteredTours, setFilteredTours] = useState([]);
     const [sort, setSort] = useState('All');
 
-    const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
     const onChange = (e) => {
         setCurrentPage(e);
     };
 
+    const handleSearch = (query) => {
+        const filterSearch = {};
+
+        if(query.searchText) filterSearch.title = query.searchText;
+        if(query.sidesValue !== 'All') filterSearch.categoryId = query.searchSides;
+
+        setQuery(filterSearch);
+
+        console.log(query);
+    };
+
+
+
     useEffect(() => {
-        TourServices.getAllTour().then((res) => {
+        let sortedTours = [...tours];
+        if(sort === "HighToLow") {
+            sortedTours.sort((a,b) => b.maxPrice - a.maxPrice);
+        }else if (sort === "LowToHigh") {
+            sortedTours.sort((a,b) => a.maxPrice - b.maxPrice);
+        }
+        setFilteredTours(sortedTours);
+    }, [sort,tours]);
+
+    useEffect(() => {
+        TourServices.getAllTour(query).then((res) => {
             setTours(res.data);
             setFilteredTours(res.data);
         }).catch((error) => {
             console.error(error);
         })
         setCurrentPage(1);
-    },[])
-
-
-    useEffect(() => {
-        let sortedTours = [...tours];
-        if(sort === "HighToLow") {
-            sortedTours.sort((a,b) => b.priceAdults - a.priceAdults);
-        }else if (sort === "LowToHigh") {
-            sortedTours.sort((a,b) => a.priceAdults - b.priceAdults);
-        }
-        setFilteredTours(sortedTours);
-    }, [sort,tours]);
-
-
-    const handleSearch = (query) => {
-        const SearchFiltered = tours.filter((tour) => {
-            const searchText = query.searchText
-                ? tour.title.toLowerCase().includes(query.searchText.toLowerCase()) : true;
-            const side = query.side !== 'All' ? tour.side === query.side : true;
-            return searchText && side;
-        });
-        setFilteredTours(SearchFiltered);
-    };
+    },[query])
+    const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 
     return (
         <div className="w-full h-full">

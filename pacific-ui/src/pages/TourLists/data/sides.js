@@ -1,18 +1,18 @@
 export const sides = [
     {
-        value: "All",
-        label: 'Tất cả',
+        value: 'All',
+        label: 'Tất cả các khu vực',
     },
     {
-        value: 2,
+        value: 'BAC',
         label: 'Bắc',
     },
     {
-        value: 3,
+        value: 'NAM',
         label: 'Nam',
     },
     {
-        value: 4,
+        value: 'TRUNG',
         label: 'Trung',
-    }
-]
+    },
+];

@@ -26,7 +26,7 @@ const AuthService = {
                 username,
                 password,
             });
-            localStorage.setItem('accessToken', response.data.data.access_token);
+            localStorage.setItem('accessToken', response.data.data.accessToken);
             return response.data;
         }catch (error){
             console.error('Error:', error);
