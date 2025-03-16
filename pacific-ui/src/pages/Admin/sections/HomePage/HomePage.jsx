@@ -2,17 +2,44 @@ import { StatusCard } from '~/pages/Admin/components/StatusCard';
 import { ChartCard } from '~/pages/Admin/components/ChartCard';
 import { StatisticSection } from '~/pages/Admin/sections/HomePage/Sections/StatisticSection';
 import { StatisticTourSection } from '~/pages/Admin/sections/HomePage/Sections/StatisticTourSection';
+import { useState, useEffect } from 'react';
+import AdminServices from '~/services/AdminServices';
 
 export const HomePage = () => {
-    const chartData = [
-        { name: 'Mon', value: 1200 },
-        { name: 'Tue', value: 2100 },
-        { name: 'Wed', value: 800 },
-        { name: 'Thu', value: 1600 },
-        { name: 'Fri', value: 2400 },
-        { name: 'Sat', value: 1800 },
-        { name: 'Sun', value: 2200 },
-    ];
+    const [data, setData] = useState([]);
+    const [chartData, setChartData] = useState([ {
+        name: '',
+        value: 0,
+    }]);
+
+    useEffect(() => {
+        AdminServices.getBookingRevenue().then((res) => {
+            setData(res);
+        }).catch((err) => {
+            console.error(err);
+        })
+    }, []);
+
+    useEffect(() => {
+        const temp = data.map(item => {
+            return {
+                name: item.createdAt,
+                value: item.totalAmount || 100,
+            }
+        })
+        setChartData(temp);
+    }, [data]);
+
+
+    // const chartData = [
+    //     { name: 'Mon', value: 1200 },
+    //     { name: 'Tue', value: 2100 },
+    //     { name: 'Wed', value: 800 },
+    //     { name: 'Thu', value: 1600 },
+    //     { name: 'Fri', value: 2400 },
+    //     { name: 'Sat', value: 1800 },
+    //     { name: 'Sun', value: 2200 },
+    // ];
 
     return (
         <div className={"space-y-4"}>
