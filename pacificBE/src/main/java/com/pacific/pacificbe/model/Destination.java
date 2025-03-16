@@ -1,6 +1,7 @@
 package com.pacific.pacificbe.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -51,6 +52,7 @@ public class Destination {
     private String region;
 
     @OneToMany(mappedBy = "destination")
+    @JsonIgnore
     private Set<Tour> tours = new LinkedHashSet<>();
 
 }
