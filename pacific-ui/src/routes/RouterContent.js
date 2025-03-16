@@ -22,7 +22,6 @@ import {News} from '~/pages/News/News';
 import Users from '~/pages/Admin/Users';
 import Guide from '~/pages/Admin/Guide';
 import AddGuide from '~/pages/Admin/AddGuide';
-import AddUser from '~/pages/Admin/AddUser';
 import {Error} from '~/pages/Booking/status/Error';
 import {GoogleRedirect} from "~/pages/Account/components/GoogleRedirect";
 
@@ -128,7 +127,7 @@ export const RouterContent = [
         ),
     },
     {
-        path: config.routes.infoGuide,
+        path: config.routes.adminGuide,
         element: (
             <AdminLayout>
                 <Guide/>
@@ -143,12 +142,5 @@ export const RouterContent = [
             </AdminLayout>
         ),
     },
-    {
-        path: config.routes.addUser,
-        element: (
-            <AdminLayout>
-                <AddUser/>
-            </AdminLayout>
-        ),
-    }
+
 ];

@@ -1,167 +1,227 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Space, Table, Button, Input, Dropdown, Menu, Switch, Modal, Form, Row, Col, DatePicker, Select, Upload } from 'antd';
-import { SearchOutlined, DownOutlined, UploadOutlined } from '@ant-design/icons';
-import dayjs from "dayjs";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import {
+    Space,
+    Table,
+    Tag,
+    Switch,
+    Modal,
+    Button,
+    Form,
+    Input,
+    Radio,
+    Select,
+    Upload,
+    Row,
+    Col,
+    Dropdown,
+    Menu,
+    Image,
+    DatePicker,
+} from 'antd';
+import { SearchOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
+import config from '~/config';
+import GuideService from '~/services/GuideService';
+import dayjs from 'dayjs';
 
 const Guide = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [modalVisible, setModalVisible] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [users, setUsers] = useState([]);
+    const [selectedGuide, setSelectedGuide] = useState(null);
+    const [form] = Form.useForm();
     const [searchText, setSearchText] = useState("");
     const [selectedSort, setSelectedSort] = useState("Sắp xếp theo");
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const [form] = Form.useForm();
+    const [guides, setGuides] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const ITEM_PER_PAGE = 7;
+    const [filteredGuides, setFilteredGuides] = useState([]);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchUsers();
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchText, selectedSort]);
-
-    const fetchUsers = useCallback(async () => {
-        setLoading(true);
-        try {
-            const response = await fetch(`http://localhost:3000/api/guide?search=${searchText}&sort=${selectedSort}`);
-            const data = await response.json();
-            setUsers(data);
-        } catch (error) {
-            console.error("Error fetching guide:", error);
-        }
-        setLoading(false);
-    }, [searchText, selectedSort]);
-
-    const handleAddGuide = () => navigate("/add-guide");
-
-    const showUserDetails = (user) => {
-        if (!user) return;
-        setSelectedUser(user);
-        form.setFieldsValue({
-            ...user,
-            start_date: user.start_date ? dayjs(user.start_date, "YYYY-MM-DD HH:mm") : null,
-            end_date: user.end_date ? dayjs(user.end_date, "YYYY-MM-DD HH:mm") : null,
+        GuideService.getAllGuides().then((res) => {
+            setGuides(res.data);
+            setFilteredGuides(res.data);
+        }).catch((err) => {
+            console.error(err);
         });
-        setModalVisible(true);
-    };
+        setCurrentPage(1);
+    }, []);
+
 
     const handleCloseModal = () => {
         setModalVisible(false);
         setIsEditing(false);
-        setSelectedUser(null);
+        setSelectedGuide(null);
+        form.resetFields();
     };
 
-    const handleSortChange = (key) => setSelectedSort(key);
+
+    const showDetails = (guide) => {
+        if (!guide) return;
+        setSelectedGuide(guide);
+        form.setFieldsValue({
+            ...guide,
+            startDate: guide.startDate ? dayjs(guide.startDate, "YYYY-MM-DD HH:mm") : null,
+            endDate: guide.endDate ? dayjs(guide.endDate, "YYYY-MM-DD HH:mm") : null,
+        });
+        setModalVisible(true);
+    };
+
+
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleAddGuide = () => navigate("/admin/add-guide");
+
+    const handleSave = useCallback(async () => {
+        if (!selectedGuide) {
+            console.error("Không có selectedGuide");
+            return;
+        }
+
+        try {
+            const values = await form.validateFields();
+            const updatedGuide = await GuideService.updateGuide(selectedGuide.id, values);
+
+            if (updatedGuide) {
+                setGuides(prevGuides =>
+                    prevGuides.map(guide =>
+                        guide.id === selectedGuide.id ? { ...guide, ...values } : guide
+                    )
+                );
+                handleCloseModal();
+            }
+        } catch (error) {
+            console.error("Lỗi khi cập nhật guide:", error);
+        }
+    }, [selectedGuide, form]);
+
 
     const sortTypes = {
-        "name-asc": "Họ & tên (A-Z)",
-        "name-desc": "Họ & tên (Z-A)",
-        "date-newest": "Ngày tạo (mới nhất)",
-        "date-oldest": "Ngày tạo (cũ nhất)",
+        "Email (A-Z)": "Email (A-Z)",
+        "Email (Z-A)": "Email (Z-A)",
     };
+
+    const handleSortChange = (type) => {
+        setSelectedSort(type);
+    }
 
     const menu = (
         <Menu onClick={(e) => handleSortChange(e.key)}>
-            {Object.entries(sortTypes).map(([key, label]) => (
-                <Menu.Item key={key}>{label}</Menu.Item>
+            {Object.keys(sortTypes).map((key) => (
+                <Menu.Item key={key}>{sortTypes[key]}</Menu.Item>
             ))}
         </Menu>
     );
 
-    const handleEdit = () => setIsEditing(true);
+    // Xử lý tìm kiếm và sắp xếp
+    useEffect(() => {
+        let newList = guides.filter(guide =>
+            guide.email && guide.email.toLowerCase().includes(searchText.toLowerCase())
+        );
 
-    const handleSave = async () => {
-        try {
-            const values = await form.validateFields();
-            const updatedUser = {
-                ...values,
-                start_date: values.start_date?.format("YYYY-MM-DD HH:mm"),
-                end_date: values.end_date?.format("YYYY-MM-DD HH:mm"),
-            };
-
-            const response = await fetch(`http://localhost:3000/api/guide/${selectedUser.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedUser),
-            });
-
-            if (!response.ok) throw new Error("Lỗi khi cập nhật dữ liệu");
-
-            fetchUsers();
-            setIsEditing(false);
-            setModalVisible(false);
-        } catch (error) {
-            console.error("Lỗi:", error);
+        if (selectedSort === "Email (A-Z)") {
+            newList.sort((a, b) => (a.email || "").localeCompare(b.email || ""));
+        } else if (selectedSort === "Email (Z-A)") {
+            newList.sort((a, b) => (b.email || "").localeCompare(a.email || ""));
         }
-    };
+
+        setFilteredGuides(newList);
+    }, [searchText, selectedSort, guides]);
+
 
     const handleSwitchChange = async (id, checked) => {
+        const newStatus = checked ? "active" : "inactive";
         try {
-            const updatedStatus = checked ? "active" : "inactive";
-            const response = await fetch(`http://localhost:3000/api/guide/${id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: updatedStatus }),
-            });
-
-            if (!response.ok) throw new Error("Lỗi khi cập nhật trạng thái");
-
-            setUsers(users.map(user => user.id === id ? { ...user, status: updatedStatus } : user));
+            await GuideService.updateGuideStatus(id, newStatus);
+            setGuides(prevGuides =>
+                prevGuides.map(guide => (guide.id === id ? { ...guide, status: newStatus } : guide))
+            );
         } catch (error) {
-            console.error("Lỗi:", error);
+            console.error("Lỗi khi cập nhật trạng thái:", error);
         }
     };
 
-    const handleUpload = () => {
-        console.log("Upload function");
-    };
+
+    const columns = [
+        { title: "Họ", dataIndex: "firstName", key: "firstName" },
+        { title: "Tên", dataIndex: "lastName", key: "lastName" },
+        { title: "Kinh nghiệm", dataIndex: "experienceYears", key: "experienceYears" },
+        { title: "Email", dataIndex: "email", key: "email" },
+        { title: "SĐT", dataIndex: "phone", key: "phone" },
+        { title: "Địa chỉ", dataIndex: "address", key: "address" },
+        {
+            title: "Trạng thái",
+            dataIndex: "status",
+            key: "status",
+            render: (status) => {
+                const safeStatus = status ? status.toUpperCase() : "UNKNOWN";
+                return (
+                    <Tag color={status === "active" ? "green" : status === "pending" ? "gold" : "volcano"}>
+                        {safeStatus}
+                    </Tag>
+                );
+            },
+        },
+        {
+            title: "Hành động",
+            key: "action",
+            render: (_, record) => (
+                <Space size="middle">
+                    <Button icon={<InfoCircleOutlined />} onClick={() => showDetails(record)} />
+                    <Switch checked={record.status === "active"} onChange={(checked) => handleSwitchChange(record.id, checked)} />
+                </Space>
+            ),
+        },
+    ];
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-2">
             <h2 className="text-2xl font-bold mb-4">HƯỚNG DẪN VIÊN</h2>
+
             <Space style={{ marginBottom: 16 }}>
-                <Input placeholder="Tìm kiếm" prefix={<SearchOutlined />} value={searchText} onChange={(e) => setSearchText(e.target.value)} />
-                <Dropdown overlay={menu} trigger={["click"]}>
-                    <Button>{sortTypes[selectedSort] || "Sắp xếp theo"} <DownOutlined /></Button>
+                <Input
+                    placeholder="Tìm kiếm"
+                    prefix={<SearchOutlined />}
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                />
+                <Dropdown
+                    overlay={
+                        <Menu onClick={(e) => setSelectedSort(e.key)}>
+                            {Object.keys(sortTypes).map((key) => (
+                                <Menu.Item key={key}>{sortTypes[key]}</Menu.Item>
+                            ))}
+                        </Menu>
+                    }
+                    trigger={["click"]}
+                >
+                    <Button>
+                        {sortTypes[selectedSort] || "Sắp xếp theo"} <DownOutlined />
+                    </Button>
                 </Dropdown>
             </Space>
             <Button type="primary" onClick={handleAddGuide} style={{ float: "right" }}>Thêm</Button>
             <Table
+                dataSource={filteredGuides.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE)}
+                columns={columns}
+                pagination={{
+                    current: currentPage,
+                    pageSize: ITEM_PER_PAGE,
+                    total: filteredGuides.length,
+                    onChange: setCurrentPage,
+                }}
+                rowKey={(record) => record.id || record.key}
                 loading={loading}
-                dataSource={users}
-                columns={[
-                    { title: "ID", dataIndex: "id", key: "id" },
-                    { title: "Tên tài khoản", dataIndex: "username", key: "username" },
-                    { title: "Họ & tên", dataIndex: "fullname", key: "fullname" },
-                    { title: "Tour", dataIndex: "tour", key: "tour" },
-                    {
-                        title: "Trạng thái",
-                        dataIndex: "status",
-                        key: "status",
-                        render: (status, record) => (
-                            <Switch checked={status === "active"} onChange={(checked) => handleSwitchChange(record.id, checked)} />
-                        ),
-                    },
-                    { title: "Ngày đi", dataIndex: "start_date", key: "start_date" },
-                    { title: "Ngày về", dataIndex: "end_date", key: "end_date" },
-                    {
-                        title: "Hành động",
-                        key: "action",
-                        render: (_, record) => (
-                            <Button type="link" onClick={() => showUserDetails(record)}>Xem chi tiết</Button>
-                        ),
-                    },
-                ]}
-                pagination={{ current: currentPage, pageSize: 5, onChange: setCurrentPage }}
-                rowKey="id"
+                size="large"
             />
 
             {/* Popup */}
             <Modal
-                title="Thông tin chi tiết tour"
+                title="THÔNG TIN CHI TIẾT"
                 open={modalVisible}
                 onCancel={handleCloseModal}
                 footer={[
@@ -179,22 +239,16 @@ const Guide = () => {
                     </Button>,
                 ]}
             >
-                {selectedUser && (
+                {selectedGuide && (
                     <Form form={form} layout="vertical">
-                        <Form.Item label="Ảnh tour" name="image">
-                            <Upload listType="picture-card" onChange={handleUpload} showUploadList={false}>
-                                {selectedUser.image ? <img src={selectedUser.image} alt="avatar" style={{ width: "100%" }} /> : <UploadOutlined />}
-                            </Upload>
-                        </Form.Item>
-
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item label="Tên tour" name="tour">
+                                <Form.Item label="Họ" name="firstName">
                                     <Input readOnly />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Điểm đến" name="destination">
+                                <Form.Item label="Tên" name="lastName">
                                     <Input disabled={!isEditing} />
                                 </Form.Item>
                             </Col>
@@ -202,12 +256,12 @@ const Guide = () => {
 
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item label="Hành trình" name="schedule">
+                                <Form.Item label="Kinh nghiệm" name="experienceYears">
                                     <Input disabled={!isEditing} />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Số lượng khách" name="quantity">
+                                <Form.Item label="Email" name="email">
                                     <Input disabled={!isEditing} />
                                 </Form.Item>
                             </Col>
@@ -215,21 +269,13 @@ const Guide = () => {
 
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item label="Ngày đi" name="start_date">
-                                    <DatePicker
-                                        showTime={{ format: "HH:mm" }}
-                                        format="DD/MM/YYYY HH:mm"
-                                        disabled={!isEditing}
-                                    />
+                                <Form.Item label="SĐT" name="phone">
+                                    <Input disabled={!isEditing} />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Ngày về" name="end_date">
-                                    <DatePicker
-                                        showTime={{ format: "HH:mm" }}
-                                        format="DD/MM/YYYY HH:mm"
-                                        disabled={!isEditing}
-                                    />
+                                <Form.Item label="Địa chỉ" name="address">
+                                    <Input disabled={!isEditing} />
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -253,4 +299,3 @@ const Guide = () => {
 };
 
 export default Guide;
-
