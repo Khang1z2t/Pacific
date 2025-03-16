@@ -18,11 +18,6 @@ export const VerifyInformation = () => {
                         <button
                             className={"bg-orange-500 transition-all hover:bg-orange-700 hover:shadow-lg text-white px-4 py-2 rounded-md"}>Xác minh</button>
                     </div>
-                    <div className={"flex flex-col w-1/2"}>
-                        <label className={"font-semibold text-md"}>Mật khẩu</label>
-                        <button
-                            className={"bg-orange-500 transition-all hover:bg-orange-700 hover:shadow-lg text-white px-4 py-2 rounded-md"}>Đổi mật khẩu</button>
-                    </div>
                 </div>
                 <div className={"mt-2 flex justify-end"}>
                     <button

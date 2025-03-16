@@ -1,6 +1,9 @@
 import { Input } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import config from '~/config';
 
 export const AccountSecurity = () => {
+    const navigate = useNavigate();
     return (
         <div className={"container mx-auto"}>
             <div className={"section1 p-4 "}>
@@ -18,7 +21,7 @@ export const AccountSecurity = () => {
                     <div className={"flex flex-col w-1/2"}>
                         <label className={"font-semibold text-md"}>Mật khẩu</label>
                         <button
-
+                            onClick={() => navigate(config.routes.changePassword)}
                             className={"bg-orange-500 transition-all hover:bg-orange-700 hover:shadow-lg text-white px-4 py-2 rounded-md"}>Đổi mật khẩu</button>
                     </div>
                 </div>

@@ -6,25 +6,19 @@ import { AccountSecurity } from '~/pages/Account/ProfileUI/sections/ProfileInfor
 import { ProfileInformation } from '~/pages/Account/ProfileUI/sections/ProfileInformation/ProfileInformation';
 import { BookedTour } from '~/pages/Account/historyBooked/BookedTour';
 import HistoryPayment from '~/pages/Account/HistoryPayment/HistoryPayment';
+import { useAuth } from '~/config/AuthContext';
 
 const { TabPane } = Tabs;
-
 export const ProfileUI = () => {
+    const { currentUser } = useAuth();
+
     const [active, setActive] = useState(true);
-    const profile = {
-        name: "NguoiDungDepTrai",
-        job: "Frontend Developer",
-        about: "I'm a frontend developer",
-        location: "Hanoi",
-        phone: "123456789",
-        email: "abc@fpt.edu.vn",
-    }
     return (
         <div className="flex gap-6 p-6 bg-gray-100 min-h-screen">
             {/* Sidebar */}
             <div className="w-1/4">
                 {active ? (
-                    <ProfileCard profile={profile}/>
+                    <ProfileCard data={currentUser}/>
                 ) : (
                     <EmptyProfileCard/>
                 )}
