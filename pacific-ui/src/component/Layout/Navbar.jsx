@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
 import { Dropdown, Menu, message } from 'antd';
 import config from '~/config';
-import { MenuItemsElm } from '~/component/ui/MenuItemsElm';
 import AuthService from '~/services/AuthServices';
+import { useNavigate } from 'react-router-dom';
 
 export const Navbar = ({ref1, ref2}) => {
 
@@ -49,6 +49,7 @@ export const Navbar = ({ref1, ref2}) => {
         );
     };
     const { logout, currentUser } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -58,6 +59,7 @@ export const Navbar = ({ref1, ref2}) => {
         try {
             await logout();
             message.success('Đăng xuất thành công!', 1);
+            navigate('/')
         } catch (error) {
             message.error(`Đăng xuất thất bại: ${error.message}`, 1);
         }
@@ -66,11 +68,13 @@ export const Navbar = ({ref1, ref2}) => {
         {
             key: 'thong-tin-ca-nhan',
             title: 'Thông tin cá nhân',
+            icon: <FontAwesomeIcon icon="user" />,
             href: config.routes.profile,
         },
         {
             key: 'doi-mat-khau',
             title: 'Đổi mật khẩu',
+            icon: <FontAwesomeIcon icon="key" />,
             href: config.routes.changePassword,
         },
     ];
@@ -79,22 +83,38 @@ export const Navbar = ({ref1, ref2}) => {
         {
             key: 'thong-tin-tour',
             title: 'Thông tin tour',
+            icon: <FontAwesomeIcon icon="info" />,
             href: config.routes.tourInfo,
         },
     ];
     const menuGroup = (
         <Menu>
             <Menu.ItemGroup title="Tài khoản">
-                {menuItems.map((item, index) => (
-                    <MenuItemsElm key={index} title={item.title} href={item.href} />
+                {menuItems.map((item) => (
+                    <Menu.Item icon={item.icon} key={item.key}>
+                        <Link to={item.href} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            {item.title}
+                        </Link>
+                    </Menu.Item>
                 ))}
             </Menu.ItemGroup>
             <Menu.ItemGroup title="Booking">
-                {menuItemsTour.map((item, index) => (
-                    <MenuItemsElm key={index} title={item.title} href={item.href} />
+                {menuItemsTour.map((item) => (
+                    <Menu.Item icon={item.icon} key={item.key}>
+                        <Link to={item.href} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            {item.title}
+                        </Link>
+                    </Menu.Item>
                 ))}
             </Menu.ItemGroup>
             <Menu.ItemGroup title="Khác">
+                {currentUser?.role === 'ADMIN' && (
+                    <Menu.Item key="admin">
+                        <Link to={config.routes.adminHome} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Admin
+                        </Link>
+                    </Menu.Item>
+                    )}
                 <Menu.Item key="logout">
                     <button
                         onClick={() => handleLogout()}
