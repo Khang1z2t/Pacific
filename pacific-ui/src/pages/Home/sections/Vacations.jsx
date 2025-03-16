@@ -22,7 +22,7 @@ const Vacations = () => {
     const [swiper, setSwiper] = useState(null);
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto max-w-full p-12 justify-center">
             <Swiper
                 onSwiper={setSwiper}
                 spaceBetween={20}

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Divider } from 'antd';
 
 const locations = [
     {
@@ -51,11 +52,9 @@ export const MienTrung = () => {
     }, []);
 
     return (
-        <div className="relative w-full h-full bg-gray-100 py-10">
-            {/* Danh sách địa điểm du lịch */}
-
+        <div className="bg-gray-100 py-10">
             {/* Tiêu đề bài viết */}
-            <div className="container mx-auto bg-white p-6 shadow-lg rounded-lg">
+            <div className="max-w-5xl mx-auto bg-white p-8 shadow-lg rounded-lg">
                 <h1 className="text-4xl font-bold text-orange-500 text-center">
                     Địa Điểm Du Lịch Miền Trung Nổi Tiếng Tuyệt Vời
                 </h1>
@@ -63,7 +62,7 @@ export const MienTrung = () => {
                     Miền Trung Việt Nam hiện ra với vẻ đẹp mơ màng, trong trẻo nhưng cũng ôm ấp nhiều bất ngờ thú vị. Du
                     lịch miền Trung có gì vui? Cùng tìm hiểu những địa điểm du lịch miền Trung cực HOT nhé!
                 </h2>
-
+                <Divider/>
                 {locations.map((location) => (
                     <div key={location.id} className="mt-12">
                         {/* Tiêu đề địa điểm */}

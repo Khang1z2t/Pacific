@@ -60,7 +60,7 @@ export const AccountInformation = () => {
 
     return (
         <div className="container mx-auto">
-            <div className="section3 bg-yellow-100 p-4">
+            <div className="section3 space-y-2 p-4">
                 <h2 className="text-2xl font-semibold">Thông tin tài khoản</h2>
                 <div className="flex flex-wrap mt-2 items-center gap-4">
                     <Upload
@@ -105,24 +105,26 @@ export const AccountInformation = () => {
                         <label className={'font-semibold text-md'}>Số điện thoại</label>
                         <Input placeholder="Số điện thoại" className={'w-full'} />
                     </div>
-                    <div className="flex flex-wrap">
-                        <label className="font-semibold text-md">Vị trí</label>
-                        <Select className="w-full mt-2" placeholder="Thành phố">
+                </div>
+                <div>
+                    <label className="font-semibold text-md mt-2">Vị trí</label>
+                    <div className="grid grid-cols-2 gap-4 w-full mt-2">
+                        <Select className="w-full flex-1" placeholder="Thành phố">
                             <Option value="Hanoi">Hà Nội</Option>
                             <Option value="HCM">Hồ Chí Minh</Option>
                             <Option value="Others">Khác</Option>
                         </Select>
-                        <Select className="w-full mt-2" placeholder="Quận huyện">
+                        <Select className="w-full" placeholder="Quận huyện">
+                            <Option value="Hanoi">Gò vấp</Option>
+                            <Option value="HCM">Quận 12</Option>
+                            <Option value="Others">Khác</Option>
+                        </Select>
+                        <Select className="w-full" placeholder="Phường">
                             <Option value="Hanoi">Hà Nội</Option>
                             <Option value="HCM">Hồ Chí Minh</Option>
                             <Option value="Others">Khác</Option>
                         </Select>
-                        <Select className="w-full mt-2" placeholder="Phường">
-                            <Option value="Hanoi">Hà Nội</Option>
-                            <Option value="HCM">Hồ Chí Minh</Option>
-                            <Option value="Others">Khác</Option>
-                        </Select>
-                        <Input placeholder="Địa chỉ" className="w-full mt-2" />
+                        <Input placeholder="Địa chỉ" className="" />
                     </div>
                 </div>
                 <div className="mt-2 flex justify-end">

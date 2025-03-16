@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Divider } from 'antd';
 
 const locations = [
     {
@@ -65,11 +66,10 @@ export const MienNam = () => {
     }, []);
 
     return (
-        <div className="relative w-full h-full bg-gray-100 py-10">
-            {/* Danh sách địa điểm du lịch */}
+        <div className="bg-gray-100 py-10">
 
             {/* Tiêu đề bài viết */}
-            <div className="container mx-auto bg-white p-6 shadow-lg rounded-lg">
+            <div className="max-w-5xl mx-auto bg-white p-8 shadow-lg rounded-lg">
                 <h1 className="text-4xl font-bold text-orange-500 text-center">
                     Địa điểm "check-in" miền Nam đẹp lý tưởng nhất, không nên bỏ lỡ
                 </h1>
@@ -77,7 +77,7 @@ export const MienNam = () => {
                     Miền Nam Việt Nam với địa hình chủ yếu đồng bằng, có nhiều cảnh đẹp, điểm du lịch lý tưởng, phù hợp
                     đi phượt. Cùng bỏ túi ngay các địa điểm này nhé!
                 </h2>
-
+                <Divider />
                 {locations.map((location) => (
                     <div key={location.id} className="mt-12">
                         {/* Tiêu đề địa điểm */}

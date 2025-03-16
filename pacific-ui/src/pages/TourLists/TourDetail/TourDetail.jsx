@@ -16,20 +16,8 @@ export const TourDetail = () => {
     const { id } = useParams();
     const [tour, setTour] = useState({});
 
-    // useEffect(() => {
-    //     // setTour(tours.find((tour) => tour.id === +id));
-    //     TourServices.getById(id).then((res) => {
-    //         setTour(res.data);
-    //         setTimeout(() => {
-    //             setLoading(false);
-    //         },1000);
-    //     }).catch((err) => {
-    //         console.error(err);
-    //         setLoading(false);
-    //     });
-    // }, [id]);
     useEffect(() => {
-        TourDetailServices.getTourDetailById(id).then((res) => {
+        TourServices.getById(id).then((res) => {
             setTour(res.data);
             setTimeout(() => {
                 setLoading(false);
@@ -47,7 +35,7 @@ export const TourDetail = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-5">
-            <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.tour.title}</h1>
+            <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.title}</h1>
             <DetailSection {...tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Lịch trình khởi hành</p></Divider>
             <CalendarSection {...tour}/>

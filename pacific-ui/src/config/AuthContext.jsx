@@ -1,6 +1,6 @@
-import {createContext, useContext, useEffect, useState} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import AuthService from '~/services/AuthServices';
-import {message} from 'antd';
+import { message } from 'antd';
 
 const AuthContext = createContext();
 
@@ -8,29 +8,32 @@ export function useAuth() {
     return useContext(AuthContext);
 }
 
-export function AuthProvider({children}) {
+export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [role, setRole] = useState(null);
 
     useEffect(() => {
+        getUser()
+    }, []);
+
+    const getUser = async () => {
         AuthService.authToken(localStorage.getItem('accessToken')).then((res) => {
             setCurrentUser(res?.data);
             setRole(res?.data.role);
             setLoading(false);
         }).catch((err) => {
             console.log(err);
-            setCurrentUser(null);
-            localStorage.removeItem('accessToken');
+            setLoading(false)
         })
-    }, []);
+    };
 
     const logout = async () => {
         try {
             localStorage.removeItem('accessToken');
             setCurrentUser(null);
             setRole(null);
-            message.success('Đăng xuất thành công', 1);
+            return Promise.resolve();
         } catch (error) {
             console.error('Logout failed: ', error.message);
             throw error;
@@ -49,6 +52,7 @@ export function AuthProvider({children}) {
     const value = {
         getToken,
         currentUser,
+        getUser,
         logout,
         loading,
         role,

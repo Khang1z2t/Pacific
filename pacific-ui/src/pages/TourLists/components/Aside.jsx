@@ -23,7 +23,7 @@ export const Aside = ({setSort, titleType}) => {
         setSort(value);
     }
     return (
-        <aside className="w-3/12 h-fit border p-4 bg-gray-50 shadow-md rounded-md">
+        <aside className="w-3/12 sticky h-fit border p-4 bg-gray-50 shadow-md rounded-md">
             <Divider>Chọn lọc giá</Divider>
             <Select
                 className="w-full"

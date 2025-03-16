@@ -76,9 +76,7 @@ export default function HistoryPayment() {
     };
 
     return (
-        <div className="p-16 container mx-auto">
-            <h2 className="text-4xl text-center font-bold text-orange-400">Lịch sử thanh toán</h2>
-            <Divider />
+        <div className="container mx-auto">
             <Table columns={columns} dataSource={historyData} pagination={true} />
             <Modal
                 title="Chi tiết thanh toán"

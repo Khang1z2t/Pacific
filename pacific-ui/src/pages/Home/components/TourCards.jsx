@@ -1,30 +1,36 @@
-import { Card } from 'antd';
+import { Card, Rate } from 'antd';
 import AnimatedContent from '~/component/Animation/AnimatedUI/AnimatedContent';
-
-export const TourCards = ({ price, img, date, title, location, description, ...props }) => {
+import config from '~/config';
+import { Link } from 'react-router-dom';
+export const TourCards = ({ data }) => {
     return (
-        <AnimatedContent
-            distance={150}
-            direction="vertical"
-            reverse={false}
-            config={{ tension: 80, friction: 20 }}
-            initialOpacity={0.2}
-            animateOpacity
-            scale={1.1}
-            threshold={0.2}
+        <Link
+            to={config.routes.tourDetail + `${data.id}`}
+            className={
+                'w-72 max-h-fit rounded-lg shadow-lg hover:scale-105 overflow-hidden transition-transform hover:cursor-pointer hover:border-orange-500 hover:border-2'
+            }
         >
-            <Card
-                className={'rounded-lg shadow-lg hover:scale-105 max-h-fit overflow-ellipsis overflow-hidden transition-transform hover:cursor-pointer hover:border-yellow-400 hover:border-2'}>
-                <img alt={title} src={img} className={'w-full h-72 object-cover rounded-t-lg'} />
-                <div className={'p-4'}>
-                    <h3 className={'text-xl font-semibold'}>{title}</h3>
-                    <p className={'text-sm text-gray-500'}>{location}</p>
-                    <p className={'text-sm text-gray-500'}>{date}</p>
-                    <p className={'text-sm text-gray-500'}>{price}</p>
-                    <p className={'text-sm line-clamp-3'}>{description}</p>
+            <img
+                alt={data.title}
+                src={`${config.imageConfig.getImage(data.thumbnail)}`}
+                className={'w-full h-48 object-cover rounded-t-lg'}
+            />
+            <div className={'p-4'}>
+                <h3 className={'text-lg font-semibold overflow-ellipsis text-gray-800 mb-2'}>{data.title}</h3>
+                <p className={'text-sm text-gray-600 line-clamp-2 mb-4'}>{data.description}</p>
+                <div className="flex justify-between text-sm text-gray-500 mb-2">
+                    <span className={"font-semibold"}>{data.duration} Ngày {data.duration-1} đêm</span>
                 </div>
-            </Card>
-        </AnimatedContent>
+                <div className="flex justify-between items-center border-t pt-3">
+                    <div className="flex items-center gap-1">
+                        <Rate disabled defaultValue={4} />
+                        <span className="text-gray-500 text-sm">(250)</span>
+                    </div>
+
+                    <p className="text-lg font-bold text-gray-800">{config.webConfig.getCurrency(data.maxPrice)}</p>
+                </div>
+            </div>
+        </Link>
     );
 };
   

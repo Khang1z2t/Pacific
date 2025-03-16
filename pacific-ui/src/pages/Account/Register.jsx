@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import config from '~/config';
 import AuthService from '~/services/AuthServices';
+import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
 
 export const Register = () => {
     const navigate = useNavigate();
@@ -61,8 +62,16 @@ export const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full uppercase max-w-2xl">
+
+        <div className="min-h-screen flex items-center justify-center">
+            <Iridescence
+                color={[1, 1, 1]}
+                mouseReact={false}
+                amplitude={0.1}
+                speed={1.0}
+                className="absolute inset-0 py-12 z-0"
+            />
+            <div className="bg-white relative p-8 rounded-lg shadow-lg w-full uppercase max-w-2xl">
                 <h2 className="text-2xl font-bold text-center mb-6 text-orange-400">Đăng ký</h2>
                 <Divider />
                 <Form className="grid grid-cols-2 gap-4">
@@ -115,7 +124,7 @@ export const Register = () => {
                 </Form>
                 <div className={'text-center mt-4'}>
                     <p className="text-gray-600">Đã có tài khoản?{' '}
-                        <Link to={config.routes.login} className="text-indigo-600 hover:text-indigo-500 font-semibold">
+                        <Link to={config.routes.login} className="text-orange-600 hover:text-orange-500 font-semibold">
                             Đăng nhập
                         </Link>
                     </p>

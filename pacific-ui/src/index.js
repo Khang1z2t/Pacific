@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import GlobalStyles from '~/component/GlobalStyles';
-import { AuthProvider } from './config/firebase/AuthContext';
+import { AuthProvider } from './config/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -32,7 +32,7 @@ export const OtherToursList = () => {
 
     const handleTourClick = (id) => {
         setLoading(true);
-        navigate(`/tour-chi-tiet/${id}`, {replace: true});
+        navigate(config.routes.tourDetail + id, {replace: true});
         setTimeout(() => {
             setLoading(false);
         },1000);
@@ -43,7 +43,7 @@ export const OtherToursList = () => {
             {loading && <Loading />}
             <div className={"grid grid-cols-3 gap-4"}>
                 {page.map((tour, index) => (
-                    <TourCard key={index} {...tour} tag1={"Tour trong nước"} tag2={"Được đề xuất"} onClick={handleTourClick} />
+                    <TourCard key={index} data={tour} onClick={handleTourClick} />
                 ))}
             </div>
             <Pagination rootClassName={'my-10'} align={'center'} defaultCurrent={1} total={tours.length}

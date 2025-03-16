@@ -4,26 +4,21 @@ import { ProfileCard } from '~/pages/Account/ProfileUI/components/ProfileCard';
 import { EmptyProfileCard } from '~/pages/Account/ProfileUI/components/EmptyProfileCard';
 import { AccountSecurity } from '~/pages/Account/ProfileUI/sections/ProfileInformation/components/AccountSecurity';
 import { ProfileInformation } from '~/pages/Account/ProfileUI/sections/ProfileInformation/ProfileInformation';
-import { PaymentHistory } from '~/pages/Account/ProfileUI/components/PaymentHistory';
+import { BookedTour } from '~/pages/Account/historyBooked/BookedTour';
+import HistoryPayment from '~/pages/Account/HistoryPayment/HistoryPayment';
+import { useAuth } from '~/config/AuthContext';
 
 const { TabPane } = Tabs;
-
 export const ProfileUI = () => {
+    const { currentUser } = useAuth();
+
     const [active, setActive] = useState(true);
-    const profile = {
-        name: "NguoiDungDepTrai",
-        job: "Frontend Developer",
-        about: "I'm a frontend developer",
-        location: "Hanoi",
-        phone: "123456789",
-        email: "abc@fpt.edu.vn",
-    }
     return (
         <div className="flex gap-6 p-6 bg-gray-100 min-h-screen">
             {/* Sidebar */}
             <div className="w-1/4">
                 {active ? (
-                    <ProfileCard profile={profile}/>
+                    <ProfileCard data={currentUser}/>
                 ) : (
                     <EmptyProfileCard/>
                 )}
@@ -35,7 +30,13 @@ export const ProfileUI = () => {
                         <ProfileInformation/>
                     </TabPane>
                     <TabPane tab={"Lịch sử thanh toán"} key={"2"}>
-                        <PaymentHistory/>
+                        <HistoryPayment/>
+                    </TabPane>
+                    <TabPane tab="Lịch sử đặt tour" key="3">
+                        <BookedTour/>
+                    </TabPane>
+                    <TabPane tab="Bảo mật tài khoản" key="4">
+                        <AccountSecurity/>
                     </TabPane>
                 </Tabs>
             </div>

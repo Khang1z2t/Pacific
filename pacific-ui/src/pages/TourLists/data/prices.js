@@ -1,5 +1,5 @@
 export const prices = [
-    { value: "All", label: "Tất cả giá" },
-    { value: "HighToLow", label: "Cao nhất -> Thấp nhất" },
-    { value: "LowToHigh", label: "Thấp nhất -> Cao nhất" }
+    { id: null, title: "Tất cả giá" },
+    { id: "HighToLow", title: "Cao nhất -> Thấp nhất" },
+    { id: "LowToHigh", title: "Thấp nhất -> Cao nhất" }
 ];

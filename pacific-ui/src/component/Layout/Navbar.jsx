@@ -1,14 +1,15 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
-import { useAuth } from '~/config/firebase/AuthContext';
+import { useAuth } from '~/config/AuthContext';
 import { Dropdown, Menu, message } from 'antd';
 import config from '~/config';
-import { MenuItemsElm } from '~/component/ui/MenuItemsElm';
 import AuthService from '~/services/AuthServices';
+import { useNavigate } from 'react-router-dom';
 
-export const Navbar = () => {
+export const Navbar = ({ref1, ref2}) => {
+
     const navItems = [
         {
             title: 'TRANG CHỦ',
@@ -47,8 +48,10 @@ export const Navbar = () => {
             </div>
         );
     };
-    const { logout,currentUser } = useAuth();
-    useLayoutEffect(() => {
+    const { logout, currentUser } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
 
     }, [currentUser]);
 
@@ -56,6 +59,7 @@ export const Navbar = () => {
         try {
             await logout();
             message.success('Đăng xuất thành công!', 1);
+            navigate('/')
         } catch (error) {
             message.error(`Đăng xuất thất bại: ${error.message}`, 1);
         }
@@ -64,21 +68,13 @@ export const Navbar = () => {
         {
             key: 'thong-tin-ca-nhan',
             title: 'Thông tin cá nhân',
+            icon: <FontAwesomeIcon icon="user" />,
             href: config.routes.profile,
-        },
-        {
-            key: 'lich-su-dat-tour',
-            title: 'Lịch sử đặt tour',
-            href: config.routes.historyBooked,
-        },
-        {
-            key: 'lich-su-thanh-toan',
-            title: 'Lịch sử thanh toán',
-            href: config.routes.historyPayment,
         },
         {
             key: 'doi-mat-khau',
             title: 'Đổi mật khẩu',
+            icon: <FontAwesomeIcon icon="key" />,
             href: config.routes.changePassword,
         },
     ];
@@ -87,25 +83,41 @@ export const Navbar = () => {
         {
             key: 'thong-tin-tour',
             title: 'Thông tin tour',
+            icon: <FontAwesomeIcon icon="info" />,
             href: config.routes.tourInfo,
         },
     ];
     const menuGroup = (
         <Menu>
             <Menu.ItemGroup title="Tài khoản">
-                {menuItems.map((item, index) => (
-                    <MenuItemsElm key={index} title={item.title} href={item.href} />
+                {menuItems.map((item) => (
+                    <Menu.Item icon={item.icon} key={item.key}>
+                        <Link to={item.href} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            {item.title}
+                        </Link>
+                    </Menu.Item>
                 ))}
             </Menu.ItemGroup>
             <Menu.ItemGroup title="Booking">
-                {menuItemsTour.map((item, index) => (
-                    <MenuItemsElm key={index} title={item.title} href={item.href} />
+                {menuItemsTour.map((item) => (
+                    <Menu.Item icon={item.icon} key={item.key}>
+                        <Link to={item.href} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            {item.title}
+                        </Link>
+                    </Menu.Item>
                 ))}
             </Menu.ItemGroup>
             <Menu.ItemGroup title="Khác">
+                {currentUser?.role === 'ADMIN' && (
+                    <Menu.Item key="admin">
+                        <Link to={config.routes.adminHome} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Admin
+                        </Link>
+                    </Menu.Item>
+                    )}
                 <Menu.Item key="logout">
                     <button
-                        onClick={handleLogout}
+                        onClick={() => handleLogout()}
                         className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                         Đăng xuất
@@ -131,7 +143,7 @@ export const Navbar = () => {
                     </div>
 
                     {/* Menu Items */}
-                    <div className="hidden md:flex space-x-8">
+                    <div className="hidden md:flex space-x-8 ">
                         {navItems.map((item, index) => (
                             <NavItemsElm key={index} title={item.title} href={item.href} />
                         ))}
@@ -155,6 +167,7 @@ export const Navbar = () => {
                                     className={
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
+                                    ref={ref2}
                                 >
                                     Đăng nhập
                                 </Link>
@@ -163,6 +176,7 @@ export const Navbar = () => {
                                     className={
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
+                                    ref={ref1}
                                 >
                                     Đăng ký
                                 </Link>

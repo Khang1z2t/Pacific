@@ -1,11 +1,11 @@
-import { Card, Divider, Pagination } from 'antd';
+import { Divider, Pagination } from 'antd';
 import { TourCards } from '~/pages/Home/components/TourCards';
 import { useEffect, useState } from 'react';
 import TourServices from '~/services/TourServices';
 import { SearchBar } from '~/pages/Home/components/SearchBar';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
 
-export const TourLists = () => {
+export const ComboTour = () => {
     const ITEM_PER_PAGE = 8;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
@@ -47,9 +47,9 @@ export const TourLists = () => {
                 orientation="center"
             >
                 <h2 className="lg:text-3xl text-md">Danh sách tour</h2>
-                <p className="lg:text-xl text-sm">Những tour đang hot gần đây</p>
+                <p className="lg:text-xl text-sm">Những tour đang có ưu đãi hot!</p>
             </Divider>
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar onSearch={handleSearch}/>
             <div
                 className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-center px-14 w-fit mx-auto min-h-[500px]">
                 {pageItem.length === 0 ? (

@@ -2,9 +2,9 @@ import axiosConfig from '~/config/axiosConfig';
 import config from '~/config';
 
 const TourServices = {
-    getAllTour : async () => {
+    getAllTour : async (params) => {
         try{
-            const response = await axiosConfig.get(config.api.tours + '/all');
+            const response = await axiosConfig.get(config.api.tours + '/all', {params});
             return response.data;
         }catch (error){
             console.error('Error:', error);

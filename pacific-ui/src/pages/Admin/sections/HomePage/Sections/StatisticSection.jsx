@@ -1,26 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { Card } from "antd";
 import { Tabs } from "antd";
 import { DatePicker, Table } from "antd";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import AdminServices from '~/services/AdminServices';
 
 const { RangePicker } = DatePicker;
 
 // Dữ liệu doanh số
-const salesData = [
-    { month: "1月", value: 400 },
-    { month: "2月", value: 1000 },
-    { month: "3月", value: 1100 },
-    { month: "4月", value: 300 },
-    { month: "5月", value: 400 },
-    { month: "6月", value: 600 },
-    { month: "7月", value: 800 },
-    { month: "8月", value: 300 },
-    { month: "9月", value: 700 },
-    { month: "10月", value: 1100 },
-    { month: "11月", value: 700 },
-    { month: "12月", value: 650 },
-];
+// const salesData = [
+//     { month: "1月", value: 400 },
+//     { month: "2月", value: 1000 },
+//     { month: "3月", value: 1100 },
+//     { month: "4月", value: 300 },
+//     { month: "5月", value: 400 },
+//     { month: "6月", value: 600 },
+//     { month: "7月", value: 800 },
+//     { month: "8月", value: 300 },
+//     { month: "9月", value: 700 },
+//     { month: "10月", value: 1100 },
+//     { month: "11月", value: 700 },
+//     { month: "12月", value: 650 },
+// ];
 
 // Dữ liệu lượt truy cập
 const visitData = [
@@ -39,13 +40,7 @@ const visitData = [
 ];
 
 // Bảng doanh số
-const salesRanking = [
-    { key: "1", rank: 1, name: "工专路 0 号店", value: "323,234" },
-    { key: "2", rank: 2, name: "工专路 1 号店", value: "312,432" },
-    { key: "3", rank: 3, name: "工专路 2 号店", value: "290,876" },
-    { key: "4", rank: 4, name: "工专路 3 号店", value: "250,567" },
-    { key: "5", rank: 5, name: "工专路 4 号店", value: "200,321" },
-];
+
 
 // Bảng lượt truy cập
 const visitRanking = [
@@ -57,14 +52,54 @@ const visitRanking = [
 ];
 
 // Cấu trúc cột cho bảng
-const columns = [
-    { title: "Số thứ tự", dataIndex: "rank", key: "rank" },
-    { title: "Tên tour", dataIndex: "name", key: "name" },
-    { title: "Doanh thu", dataIndex: "value", key: "value" },
-];
+
 
 export const StatisticSection = () => {
     const [activeTab, setActiveTab] = useState("1");
+    const [data, setData] = useState([]);
+    const [tourId, setTourId] = useState(null);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [salesRanking, setSalesRanking] = useState([{
+        key: "",
+        rank: null,
+        name: "",
+        value: "",
+    }]);
+    const [salesData, setSalesData] = useState([{ month: "", value: null }]);
+
+    useEffect(() => {
+        AdminServices.getBookingRevenue({ tourId, startDate, endDate }).then((res) => {
+            setData(res);
+        }).catch((error) => {
+            console.error(error);
+        })
+    }, []);
+
+    useEffect(() => {
+        const datas = data.map((item, index) => {
+            return {
+                key: index,
+                rank: index,
+                name: item.tourTitle,
+                value: item.totalAmount || 'KHÔNG CÓ DỮ LIỆU',
+            }
+        })
+        setSalesRanking(datas)
+    }, [data]);
+    console.log(salesRanking)
+    const columns = [
+        { title: "Số thứ tự", dataIndex: "rank", key: "rank" },
+        { title: "Tên tour", dataIndex: "name", key: "name" },
+        { title: "Doanh thu", dataIndex: "value", key: "value" },
+    ];
+    // const salesRanking = [
+    //     { key: "1", rank: 1, name: "工专路 0 号店", value: "323,234" },
+    //     { key: "2", rank: 2, name: "工专路 1 号店", value: "312,432" },
+    //     { key: "3", rank: 3, name: "工专路 2 号店", value: "290,876" },
+    //     { key: "4", rank: 4, name: "工专路 3 号店", value: "250,567" },
+    //     { key: "5", rank: 5, name: "工专路 4 号店", value: "200,321" },
+    // ];
 
     return (
         <Card className="p-4">
@@ -74,11 +109,16 @@ export const StatisticSection = () => {
                     <Tabs.TabPane tab="Theo tháng" key="2" />
                 </Tabs>
                 <div className="flex space-x-4">
-                    <button className="text-gray-500">今天</button>
-                    <button className="text-gray-500">本周</button>
-                    <button className="text-gray-500">本月</button>
-                    <button className="text-gray-500">本年</button>
-                    <RangePicker />
+                    {/*<button className="text-gray-500">今天</button>*/}
+                    {/*<button className="text-gray-500">本周</button>*/}
+                    {/*<button className="text-gray-500">本月</button>*/}
+                    {/*<button className="text-gray-500">本年</button>*/}
+                    <RangePicker
+                        onChange={(date, dateString) => {
+                            setStartDate(dateString[0]);
+                            setEndDate(dateString[1]);
+                        }}
+                    />
                 </div>
             </div>
 
@@ -86,6 +126,7 @@ export const StatisticSection = () => {
                 {/* Biểu đồ cột */}
                 <div className="col-span-2">
                     <ResponsiveContainer width="100%" height={300}>
+                        {/*CHART*/}
                         <BarChart data={activeTab === "1" ? salesData : visitData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
@@ -102,6 +143,7 @@ export const StatisticSection = () => {
                         {activeTab === "1" ? "Danh sách tour được book nhiều nhất" : "Danh sách tour được xem nhiều nhất"}
                     </h3>
                     <Table
+                        className={"overflow-y-scroll max-h-60"}
                         columns={columns}
                         dataSource={activeTab === "1" ? salesRanking : visitRanking}
                         pagination={false}

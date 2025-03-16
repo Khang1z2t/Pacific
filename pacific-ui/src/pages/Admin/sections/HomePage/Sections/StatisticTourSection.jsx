@@ -1,27 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import { Select, Table } from 'antd';
+import { Input, Select, Table } from 'antd';
 import { Card } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import config from '~/config';
 import TourServices from '~/services/TourServices';
+import AdminServices from '~/services/AdminServices';
 
 export const StatisticTourSection = () => {
-    const [tours, setTours] = useState([]);
+    const [data, setData] = useState([]);
+    const [dataTour, setDataTour] = useState([
+        {
+            key: '',
+            keyword: '',
+            quantity: '',
+            ground: null,
+            trend: '',
+        },
+    ]);
+
     useEffect(() => {
-        TourServices.getAllTour().then((res) => {
-            setTours(res.data);
+        AdminServices.getBookingRevenue().then((res) => {
+            setData(res);
         }).catch((err) => {
             console.error(err);
         });
     }, []);
-    const dataSource = [
-        { key: '1', keyword: `${tours.title}`, users: 663, growth: 21, trend: 'up' },
-        { key: '2', keyword: `${tours.title}`, users: 419, growth: 35, trend: 'up' },
-        { key: '3', keyword: `${tours.title}`, users: 414, growth: 96, trend: 'down' },
-        { key: '4', keyword: `${tours.title}`, users: 201, growth: 8, trend: 'up' },
-        { key: '5', keyword: `${tours.title}`, users: 761, growth: 35, trend: 'down' },
-    ];
+
+    useEffect(() => {
+        const temp = data.map((item, index) => {
+            return {
+                key: index,
+                keyword: item.tourTitle,
+                quantity: item.totalNumber || 10,
+                growth: 21,
+                trend: 'up',
+            };
+        });
+        setDataTour(temp);
+    }, [data]);
+    // const dataSource = [
+    //     { key: '1', keyword: `${tours.title}`, users: 663, growth: 21, trend: 'up' },
+    //     { key: '2', keyword: `${tours.title}`, users: 419, growth: 35, trend: 'up' },
+    //     { key: '3', keyword: `${tours.title}`, users: 414, growth: 96, trend: 'down' },
+    //     { key: '4', keyword: `${tours.title}`, users: 201, growth: 8, trend: 'up' },
+    //     { key: '5', keyword: `${tours.title}`, users: 761, growth: 35, trend: 'down' },
+    // ];
 
     const columns = [
         {
@@ -35,19 +59,19 @@ export const StatisticTourSection = () => {
             dataIndex: 'keyword',
             key: 'keyword',
             render: (text) => (
-                <Link to={config.routes.tourDetail + `${tours.id}`} className="text-blue-500 hover:underline">
+                <Link to={'#'} className="text-blue-500 font-semibold hover:underline">
                     {text}
                 </Link>
             ),
         },
         {
-            title: '用户数',
-            dataIndex: 'users',
-            key: 'users',
+            title: 'quantity',
+            dataIndex: 'quantity',
+            key: 'quantity',
             align: 'center',
         },
         {
-            title: '周涨幅',
+            title: 'Tăng trưởng',
             dataIndex: 'growth',
             key: 'growth',
             align: 'center',
@@ -61,19 +85,25 @@ export const StatisticTourSection = () => {
     return (
         <Card className="p-4">
             {/* Tiêu đề */}
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold uppercase">Danh sách tour bán chạy</h3>
-                <Select className={'w-40'} placeholder={'Chọn bộ lọc'}>
-                    <Select.Option value="1">全部渠道</Select.Option>
-                    <Select.Option value="2">线上</Select.Option>
-                    <Select.Option value="3">线下</Select.Option>
+            <div className="flex flex-wrap gap-4 items-center mb-4">
+                <h3 className="text-lg font-semibold uppercase text-orange-400">Danh sách tour bán chạy</h3>
+                <Input className={'w-4/12'}
+                       allowClear
+                       placeholder="Tìm kiếm tour"
+                />
+                <Select className={'w-4/12'} placeholder={'Chọn bộ lọc'}>
+                    <Select.Option value="1">A-Z</Select.Option>
+                    <Select.Option value="2">Z-A</Select.Option>
+                    <Select.Option value="3">Số lượng bán cao nhất</Select.Option>
+                    <Select.Option value="3">Số lượng bán thấp nhất</Select.Option>
+
                 </Select>
             </div>
 
             {/* Bảng dữ liệu */}
             <Table
                 columns={columns}
-                dataSource={dataSource}
+                dataSource={dataTour}
                 pagination={{ pageSize: 5 }}
                 size="small"
             />
