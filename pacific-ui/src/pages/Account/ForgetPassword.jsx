@@ -54,7 +54,6 @@ export const ForgetPassword = () => {
             return;
         }
         await AuthServices.resetPassword(email,newPassword, confirmPassword);
-        await resetPassword(email, newPassword);
         message.success('Đổi mật khẩu thành công!', 1);
         navigate(config.routes.login);
     };
