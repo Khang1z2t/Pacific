@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
+import { EmptyComponent } from '~/component/ui/EmptyComponent';
 
-export const TourLists = ({titleType}) => {
+export const TourLists = ({ titleType }) => {
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
@@ -20,25 +21,22 @@ export const TourLists = ({titleType}) => {
     const handleSearch = (query) => {
         const filterSearch = {};
 
-        if(query.searchText) filterSearch.title = query.searchText;
-        if(query.sidesValue !== 'All') filterSearch.categoryId = query.searchSides;
+        if (query.searchText) filterSearch.title = query.searchText;
+        if (query.searchPrices !== null) filterSearch.categoryId = query.searchSides;
 
         setQuery(filterSearch);
-
-        console.log(query);
     };
-
 
 
     useEffect(() => {
         let sortedTours = [...tours];
-        if(sort === "HighToLow") {
-            sortedTours.sort((a,b) => b.maxPrice - a.maxPrice);
-        }else if (sort === "LowToHigh") {
-            sortedTours.sort((a,b) => a.maxPrice - b.maxPrice);
+        if (sort === 'HighToLow') {
+            sortedTours.sort((a, b) => b.maxPrice - a.maxPrice);
+        } else if (sort === 'LowToHigh') {
+            sortedTours.sort((a, b) => a.maxPrice - b.maxPrice);
         }
         setFilteredTours(sortedTours);
-    }, [sort,tours]);
+    }, [sort, tours]);
 
     useEffect(() => {
         TourServices.getAllTour(query).then((res) => {
@@ -46,9 +44,9 @@ export const TourLists = ({titleType}) => {
             setFilteredTours(res.data);
         }).catch((error) => {
             console.error(error);
-        })
+        });
         setCurrentPage(1);
-    },[query])
+    }, [query]);
     const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 
     return (
@@ -56,7 +54,8 @@ export const TourLists = ({titleType}) => {
             <img src={'/img/Pages/TourLists/bg.jpg'} alt={'bg'} className="w-full h-96 object-cover" />
             <SearchBar onSearch={handleSearch} />
             <div className="mt-24 mx-24 justify-center min-h-[800px]">
-                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>Danh sách tour du
+                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>Danh sách
+                    tour du
                     lịch {titleType} </p></Divider>
                 <div className="flex">
                     <Aside setSort={setSort} titleType={titleType} />
@@ -67,9 +66,7 @@ export const TourLists = ({titleType}) => {
                             ))}
                         </div>
                         :
-                        <div className={'w-full flex justify-center items-center'}>
-                            <Empty description={'Không tìm thấy tour du lịch'} image={'/img/empty.jpg'} />
-                        </div>
+                        <EmptyComponent description={'tour'}/>
                     }
                 </div>
             </div>

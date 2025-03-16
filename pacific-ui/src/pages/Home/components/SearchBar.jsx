@@ -1,52 +1,68 @@
-import { SearchOutlined } from '@ant-design/icons';
 import { Input, Select } from 'antd';
-import { sides } from '~/pages/TourLists/data/sides';
-import { prices } from '~/pages/TourLists/data/prices';
-import { useState } from 'react';
+import config from '~/config';
+import { useEffect, useState } from 'react';
+import CategoryServices from '~/services/CategoryServices';
 
-export const SearchBar = ({...props}) => {
-    const [query, setQuery] = useState({
-        searchText: '',
-        side: 'All',
-    });
-    const handleChangeInput = (e) => {
-        setQuery((prev) => ({ ...prev, searchText: e.target.value }));
-    }
-    const handleChangeSelect = (value) => {
-        setQuery((prev) => ({ ...prev, side: value }));
-    }
+export const SearchBar = ({ onSearch }) => {
+    const [searchText, setSearchText] = useState('');
+    const [searchSides, setSearchSides] = useState(null);
+    const [maxPrice, setMaxPrice] = useState(null);
+    const [minPrice, setMinPrice] = useState(null);
+
+    const [sides, setSides] = useState([]);
+
+    useEffect(() => {
+        CategoryServices.getCategories().then((res) => {
+            setSides((
+                [
+                    {
+                        id: null,
+                        title: 'Tất cả khu vực',
+                    },
+                    ...res,
+                ]
+            ));
+        });
+    }, []);
     const handleSearch = () => {
-        props.onSearch(query);
-    }
+        onSearch({ searchText, searchSides, maxPrice, minPrice });
+    };
+
     return (
         <div
             className={'flex flex-row justify-center mx-auto items-center bg-gray-100 shadow-md bg-blend-overlay mt-4 gap-4 p-4 w-fit rounded-lg'}>
             <Input
                 placeholder="Tìm kiếm tour"
                 allowClear
-                onChange={handleChangeInput}
+                onChange={(e) => setSearchText(e.target.value)}
                 rootClassName={'w-96 font-bold rounded-lg'}
                 size={'large'}
             />
             <Select
                 showSearch
-                placeholder="Chọn khu vực"
                 options={sides}
                 size={'large'}
-                defaultValue={"All"}
-                filterOption={(input, option) => option.value.toLowerCase().includes(input.toLowerCase())}
-                onChange={handleChangeSelect}
-                optionLabelProp={'label'}
+                value={searchSides}
+                fieldNames={{ value: 'id', label: 'title' }}
+                defaultValue={'All'}
+                onChange={(value) => setSearchSides(value)}
+                optionLabelProp={'title'}
                 className={'w-96 font-bold '}
             />
-            <Select
-                options={prices}
+            <Input
+                type={'number'}
+                placeholder={'Giá thấp nhất'}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className={'w-fit font-bold'}
                 size={'large'}
-                defaultValue={prices[0].value}
-                filterOption={(input, option) => option.value.toLowerCase().includes(input.toLowerCase())}
-                optionLabelProp={'label'}
-                className={'w-96 font-bold '}
-                />
+            />
+            <Input
+                type={'number'}
+                placeholder={'Giá cao nhất'}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className={'w-fit font-bold'}
+                size={'large'}
+            />
             <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>Tìm kiếm</button>
         </div>
     );

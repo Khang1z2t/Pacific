@@ -23,13 +23,6 @@ export const SearchBar = ({ onSearch }) => {
         })
     },[])
 
-    // useEffect(() => {
-    //     setSearchSides(
-    //         sides.filter((side) =>
-    //             side.title.toLowerCase().includes(searchSides.title.toLowerCase())
-    //     ));
-    // },[sides,searchSides])
-
     const handleSearch = () => {
         onSearch({ searchText, searchSides });
     };
