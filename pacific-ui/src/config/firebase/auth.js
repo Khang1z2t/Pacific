@@ -10,7 +10,7 @@ import {
     onAuthStateChanged,
 } from 'firebase/auth';
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
-import UserServices from '~/services/UserServices';
+import UserService from '~/services/UserService';
 
 
 export const register = async (email, password) => {
@@ -106,7 +106,7 @@ export const doSignInWithGoogle = async () => {
         await saveUser(user);
         const userDoc = await getUser(user.email);
         // Save to database
-        await UserServices.register(userDoc.username, '', '', '', user.email);
+        await UserService.register(userDoc.username, '', '', '', user.email);
         return user;
     } catch (error) {
         return error;
@@ -124,7 +124,7 @@ export const doSignInWithFacebook = async () => {
         const [firstName, ...lastNameParts] = userDoc.username.split(' ');
         const lastName = lastNameParts.join(' ');
         // Save to database
-        await UserServices.register(userDoc.username, '', firstName, lastName, user.email);
+        await UserService.register(userDoc.username, '', firstName, lastName, user.email);
         return user;
     } catch (error) {
         return error;
