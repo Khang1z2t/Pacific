@@ -87,7 +87,6 @@ export const StatisticSection = () => {
         })
         setSalesRanking(datas)
     }, [data]);
-    console.log(salesRanking)
     const columns = [
         { title: "Số thứ tự", dataIndex: "rank", key: "rank" },
         { title: "Tên tour", dataIndex: "name", key: "name" },

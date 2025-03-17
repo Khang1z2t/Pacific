@@ -13,25 +13,47 @@ const AdminServices = {
         }
     },
 
-    getBookingRevenueByMonth : async (params) => {
+    getBookingRevenueByMonth: async (params) => {
         try {
             const resp = await AxiosConfig.get(config.api.bookingRevenue + '/revenue/month', { params });
             return resp.data;
-        }catch (err) {
+        } catch (err) {
             console.error(err);
             return Promise.reject(err);
         }
     },
 
-    getBookingRevenuesByYear : async (params) => {
+    getBookingRevenuesByYear: async (params) => {
         try {
             const resp = await AxiosConfig.get(config.api.bookingRevenue + '/revenue/year', { params });
             return resp.data;
-        }catch (err) {
+        } catch (err) {
             console.error(err);
             return Promise.reject(err);
         }
-    }
+    },
+
+//     GUIDE MANAGEMENT
+    getGuides: async () => {
+        try {
+            const resp = await AxiosConfig.get(config.api.guide + '/all');
+            return resp.data;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    },
+    getGuideById: async (id) => {
+        try {
+            const resp = await AxiosConfig.get(config.api.guide + `/${id}`);
+            return resp.data;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    },
+
+
 };
 
 export default AdminServices;

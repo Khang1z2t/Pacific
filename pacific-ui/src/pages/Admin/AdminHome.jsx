@@ -8,7 +8,7 @@ import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
 import Users from './Users';
 import Guide from './Guide';
-import TourList from '~/pages/Admin/sections/TourList';
+import TourList from '~/pages/Admin/sections/ToursPage/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
 import Promotion from '~/pages/Admin/sections/Promotion';
 import { Link } from 'react-router-dom';
