@@ -1,42 +1,40 @@
-// Booking.jsx
-import React, { useState } from "react";
-import { Typography, Card, Table, Button, Input, Space, Tag } from "antd";
+import React, { useState, useEffect } from "react";
+import { Typography, Card, Table, Button, Input, Space, Tag, message } from "antd";
 import { SearchOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import axios from "axios";
 import BookingCard from "../components/BookingCard";
 
 const { Title } = Typography;
 
 const Booking = () => {
     const [searchText, setSearchText] = useState("");
-    const [bookings, setBookings] = useState([
-        { id: 1, name: "Tí Ní", bookingId: "ID21", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Tiền mặt", status: "Đã thanh toán", price: "9.000.000 đ", discount: 0 },
-        { id: 2, name: "Long Đại", bookingId: "ID98", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Thanh toán online", status: "Chưa thanh toán", price: "9.000.000 đ", discount: 0 },
-        { id: 3, name: "Tí Đẹp", bookingId: "ID26", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Thanh toán online", status: "Đã thanh toán", price: "9.000.000 đ", discount: 0 },
-    ]);
+    const [bookings, setBookings] = useState([]);
 
-    const handleDelete = (id) => {
-        setBookings(bookings.filter((b) => b.id !== id));
+    // Gọi API lấy danh sách bookings
+    useEffect(() => {
+        fetchBookings();
+    }, []);
+
+    const fetchBookings = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/api/bookings"); // Thay URL bằng API backend
+            setBookings(response.data);
+        } catch (error) {
+            message.error("Không thể lấy dữ liệu bookings");
+            console.error(error);
+        }
     };
 
-    const columns = [
-        { title: "ID", dataIndex: "id", key: "id" },
-        { title: "Tên người dùng", dataIndex: "name", key: "name" },
-        { title: "Booking ID", dataIndex: "bookingId", key: "bookingId" },
-        { title: "Tên Tour", dataIndex: "tour", key: "tour" },
-        { title: "Ngày khởi hành", dataIndex: "date", key: "date" },
-        { title: "PTTT", dataIndex: "payment", key: "payment" },
-        { title: "Trạng thái", dataIndex: "status", key: "status", render: (status) => (
-                <Tag color={status === "Đã thanh toán" ? "green" : "red"}>{status}</Tag>
-            )},
-        { title: "Giá tour", dataIndex: "price", key: "price" },
-        { title: "Giảm giá", dataIndex: "discount", key: "discount" },
-        { title: "Thao tác", key: "action", render: (_, record) => (
-                <Space>
-                    <Button icon={<EditOutlined />} />
-                    <Button icon={<DeleteOutlined />} danger onClick={() => handleDelete(record.id)} />
-                </Space>
-            )},
-    ];
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8080/api/bookings/${id}`);
+            setBookings(bookings.filter((b) => b.id !== id));
+            message.success("Xóa thành công!");
+        } catch (error) {
+            message.error("Xóa không thành công!");
+            console.error(error);
+        }
+    };
 
     return (
         <div className="container">
@@ -48,10 +46,12 @@ const Booking = () => {
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
                 />
-                <Button> Sắp xếp theo </Button>
+                <Button onClick={fetchBookings}>Làm mới</Button>
             </Space>
             <Card>
-                <Table columns={columns} dataSource={bookings} rowKey="id" />
+                {bookings.map((booking) => (
+                    <BookingCard key={booking.id} booking={booking} onDelete={handleDelete} />
+                ))}
             </Card>
         </div>
     );
