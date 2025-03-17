@@ -8,11 +8,9 @@ import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
 import Users from './Users';
 import Guide from './Guide';
-import TourList from '~/pages/Admin/sections/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
 import Promotion from '~/pages/Admin/sections/Promotion';
 import { Link } from 'react-router-dom';
-import { Category } from '@react-buddy/ide-toolbox';
 import UsedPromotion from '~/pages/Admin/UsedPromotion';
 import BookingCancel from '~/pages/Admin/sections/BookingCancel';
 import BookingDone from '~/pages/Admin/sections/BookingDone';
@@ -21,6 +19,8 @@ import ConfirmRating from '~/pages/Admin/ConfirmRating';
 import InfoBlog from '~/pages/Admin/InfoBlog';
 import Blog from '~/pages/Admin/Blog';
 import Support from '~/pages/Admin/Support';
+import Tour from '~/pages/Admin/Tour';
+import TourDetails from '~/pages/Admin/TourDetails';
 
 
 const { Content } = Layout;
@@ -52,9 +52,9 @@ const AdminHome = () => {
             key: 'sub3',
             icon: <FileOutlined />,
             children: [
-                { label: 'Danh sách danh mục', key: '7', content: <Category /> },
-                { label: 'Danh sách tour', key: '8', content: <TourList /> },
-                { label: 'Thông tin chi tiết tour', key: '9', content: 'Bill is a cat.' },
+                { label: 'Danh sách tour', key: '7', content: <Tour /> },
+                { label: 'Danh sách chi tiết tour', key: '8', content: <TourDetails />},
+                // { label: 'Thông tin lịch trình tour', key: '9', content: <Itinerary />  },
             ],
         },
         {

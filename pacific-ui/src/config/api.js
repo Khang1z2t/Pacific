@@ -11,7 +11,10 @@ const api = {
     bookingRevenue: '/api/bookings/book',
     adminUser: '/api/admin/user',
     adminGuide: '/api/admin/guide',
-    adminBlog: '/api/admin/blog'
+    adminBlog: '/api/admin/blog',
+    adminTour: '/api/admin/tour',
+    adminTourDetails: '/api/tour-details',
+
 };
 
 export default api;

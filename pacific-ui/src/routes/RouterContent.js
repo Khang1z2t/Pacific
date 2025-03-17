@@ -24,6 +24,7 @@ import Guide from '~/pages/Admin/Guide';
 import AddGuide from '~/pages/Admin/AddGuide';
 import {Error} from '~/pages/Booking/status/Error';
 import {GoogleRedirect} from "~/pages/Account/components/GoogleRedirect";
+import AddTourDetail from '~/pages/Admin/AddTourDetail';
 
 export const RouterContent = [
     {
@@ -142,5 +143,12 @@ export const RouterContent = [
             </AdminLayout>
         ),
     },
-
+    {
+        path: config.routes.addTourDetail,
+        element: (
+            <AdminLayout>
+                <AddTourDetail/>
+            </AdminLayout>
+        ),
+    },
 ];
