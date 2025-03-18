@@ -1,7 +1,7 @@
 import { Divider, Pagination } from 'antd';
 import { TourCards } from '~/pages/Home/components/TourCards';
 import { useEffect, useState } from 'react';
-import TourServices from '~/services/TourServices';
+import TourService from '~/services/TourService';
 import { SearchBar } from '~/pages/Home/components/SearchBar';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
 
@@ -29,7 +29,7 @@ export const ComboTour = () => {
 
 
     useEffect(() => {
-        TourServices.getAllTour(query).then((res) => {
+        TourService.getAllTour(query).then((res) => {
             setTours(res.data);
         }).catch((err) => {
             console.error(err);

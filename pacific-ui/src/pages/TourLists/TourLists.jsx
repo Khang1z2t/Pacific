@@ -3,7 +3,7 @@ import { TourCards } from '~/pages/TourLists/components/TourCards';
 import { useEffect, useState } from 'react';
 import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
-import TourServices from '~/services/TourServices';
+import TourService from '~/services/TourService';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
 
 export const TourLists = ({ titleType }) => {
@@ -39,7 +39,7 @@ export const TourLists = ({ titleType }) => {
     }, [sort, tours]);
 
     useEffect(() => {
-        TourServices.getAllTour(query).then((res) => {
+        TourService.getAllTour(query).then((res) => {
             setTours(res.data);
             setFilteredTours(res.data);
         }).catch((error) => {
