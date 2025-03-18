@@ -52,7 +52,7 @@ const AdminHome = () => {
             key: 'sub3',
             icon: <FileOutlined />,
             children: [
-                { label: 'Danh sách tour', key: '7', content: <Tour /> },
+                // { label: 'Danh sách tour', key: '7', content: <Tour /> },
                 { label: 'Danh sách chi tiết tour', key: '8', content: <TourDetails />},
                 // { label: 'Thông tin lịch trình tour', key: '9', content: <Itinerary />  },
             ],

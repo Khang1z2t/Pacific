@@ -12,7 +12,7 @@ const api = {
     adminUser: '/api/admin/user',
     adminGuide: '/api/admin/guide',
     adminBlog: '/api/admin/blog',
-    adminTour: '/api/admin/tour',
+    adminRating: '/api/admin/rating',
     adminTourDetails: '/api/tour-details',
 
 };
