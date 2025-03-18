@@ -35,6 +35,15 @@ const TourServices = {
             return Promise.reject(error);
         }
     },
+    HideTour: async (id) => {
+        try {
+            const resp = await AxiosConfig.delete(config.api.tours + `/delete/${id}`);
+            return resp.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 
 };
 export default TourServices;

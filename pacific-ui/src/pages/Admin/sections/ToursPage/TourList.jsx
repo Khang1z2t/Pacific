@@ -13,9 +13,9 @@ import {
     Divider,
     Rate,
     Tooltip,
-    Upload,
+    Upload, message,
 } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import TourServices from '~/services/TourServices';
 import { prices } from '~/pages/TourLists/data/prices';
 import config from '~/config';
@@ -23,6 +23,7 @@ import { AddTour } from '~/pages/Admin/sections/ToursPage/components/AddTour';
 import { EditTour } from '~/pages/Admin/sections/ToursPage/components/EditTour';
 import { AddTourDetail } from '~/pages/Admin/sections/ToursPage/components/AddTourDetail';
 import TourDetailServices from '~/services/TourDetailServices';
+import { setActive } from '@material-tailwind/react/components/Tabs/TabsContext';
 
 
 const { Title } = Typography;
@@ -36,6 +37,7 @@ const TourList = () => {
     const [tourDetail, setTourDetail] = useState([]);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [addDetailModalVisible, setAddDetailModalVisible] = useState(false);
+    const [active, setActive] = useState(null);
 
     // add tourDetail
     const [id, setId] = useState(null);
@@ -58,11 +60,23 @@ const TourList = () => {
     const handleOpenAddTourDetail = (key) => {
         setId(key);
         setAddDetailModalVisible(true);
-    }
+    };
 
+    const handleHideTour = async (id) => {
+        await TourServices.HideTour(id).then((res) => {
+            console.log(res);
+            setActive(res);
+            setLoading(!loading);
+            message.success('Ẩn tour thành công');
+        }).catch((err) => {
+            console.log(err);
+            message.error('Ẩn tour thất bại');
+        });
+        console.log(id)
+    };
     //
     const columns = [
-        { title: 'ID', dataIndex: 'id', key: 'id' },
+        // { title: 'ID', dataIndex: 'id', key: 'id' },
         { title: 'Tên tour', dataIndex: 'title', key: 'title' },
         {
             title: 'Giá tour',
@@ -74,7 +88,14 @@ const TourList = () => {
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status', render: (e) => {
                 return (
-                    <Switch checked={e === 'active'} />
+                    <Switch checked={e === 'PUBLISHED'} />
+                );
+            },
+        },
+        {
+            title: 'Ẩn/Hiện tour', key: 'active', render: (e) => {
+                return (
+                    <Switch value={e.active} onClick={() => handleHideTour(e.id)} />
                 );
             },
         },
@@ -92,7 +113,11 @@ const TourList = () => {
                 return (
                     <Space>
                         <Button icon={<EditOutlined />} onClick={() => setEditModalVisible(true)} />
-                        <Button icon={<DeleteOutlined />} danger onClick={''} />
+                        <Tooltip placement={'top'} title={'Xóa tour'}>
+                            <Button icon={<DeleteOutlined />} danger onClick={() => {
+                                message.warning('Dang phat trien');
+                            }} />
+                        </Tooltip>
                         <Tooltip placement="top" title={'Thêm chi tiết tour'}>
                             <Button icon={<PlusOutlined />} onClick={() => handleOpenAddTourDetail(e.id)}></Button>
                         </Tooltip>
@@ -203,7 +228,8 @@ const TourList = () => {
                 setLoading(!loading);
             }} setModalVisible={setModalVisible} modalVisible={modalVisible} />
             <EditTour setEditModalVisible={setEditModalVisible} editModalVisible={editModalVisible} />
-            <AddTourDetail tourId={id} setAddDetailModalVisible={setAddDetailModalVisible} addDetailModalVisible={addDetailModalVisible} />
+            <AddTourDetail tourId={id} setAddDetailModalVisible={setAddDetailModalVisible}
+                           addDetailModalVisible={addDetailModalVisible} />
         </div>
     );
 };

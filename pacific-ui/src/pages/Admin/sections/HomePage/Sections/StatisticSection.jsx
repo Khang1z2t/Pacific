@@ -123,10 +123,15 @@ export const StatisticSection = () => {
                     <RangePicker
                         format={'DD-MM-YYYY'}
                         onChange={(date, dateString) => {
-                            const formattedStartDate = moment(dateString[0], 'DD-MM-YYYY').format('YYYY-MM-DD');
-                            const formattedEndDate = moment(dateString[1], 'DD-MM-YYYY').format('YYYY-MM-DD');
-                            setStartDate(formattedStartDate);
-                            setEndDate(formattedEndDate);
+                            if(!dateString[0] || !dateString[1]) {
+                                setStartDate(null);
+                                setEndDate(null);
+                            }else {
+                                const formattedStartDate = moment(dateString[0], 'DD-MM-YYYY').format('YYYY-MM-DD');
+                                const formattedEndDate = moment(dateString[1], 'DD-MM-YYYY').format('YYYY-MM-DD');
+                                setStartDate(formattedStartDate);
+                                setEndDate(formattedEndDate);
+                            }
                         }}
                     />
                 </div>

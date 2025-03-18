@@ -1,3 +1,6 @@
+import AxiosConfig from '~/config/axiosConfig';
+import config from '~/config';
+
 const TransportServices = {
     getTransports : async () => {
         try {

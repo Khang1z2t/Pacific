@@ -30,7 +30,7 @@ const TourDetailServices = {
     },
     addTourDetail: async (params) => {
         try{
-            const resp = await AxiosConfig.post(config.api.tourDetail + '/add', { params });
+            const resp = await AxiosConfig.post(config.api.tourDetail + '/add', params);
             return resp.data;
         }catch (error){
             console.error('Error:', error);
