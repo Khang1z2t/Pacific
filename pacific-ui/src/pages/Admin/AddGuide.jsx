@@ -1,124 +1,140 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Row, Col, Select, DatePicker, Button, message, Upload
-} from 'antd';
+import React, { useEffect, useState } from "react";
+import { Button, Form, Input, Select, Row, Col, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { UploadOutlined } from '@ant-design/icons';
-
+import GuideService from "~/services/GuideService";
 
 const AddGuide = () => {
-    const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [selectedGuide, setSelectedGuide] = useState(null);
     const [form] = Form.useForm();
-    const [selectedUser, setSelectedUser] = useState({ image: null });
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
     const [guides, setGuides] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [filteredGuides, setFilteredGuides] = useState([]);
 
     useEffect(() => {
-        fetchTours();
+        GuideService.getAllGuides()
+            .then((res) => {
+                setGuides(res.data);
+                setFilteredGuides(res.data);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+        setCurrentPage(1);
     }, []);
 
-    const fetchTours = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch("http://localhost:3000/api/guide");
-            const data = await response.json();
-            setGuides(data);
-        } catch (error) {
-            console.error("Error fetching guide:", error);
-        }
-        setLoading(false);
-    };
-
-    const handleUpload = ({ fileList }) => {
-        if (fileList.length > 0) {
-            const imageUrl = fileList[0].thumbUrl;
-            setSelectedUser((prev) => ({ ...prev, image: imageUrl }));
-            form.setFieldsValue({ image: imageUrl }); // Lưu ảnh vào form
-        }
-    };
-
     const handleAddGuide = async () => {
+        if (loading) return;
+        setLoading(true);
+
         try {
-            const values = await form.validateFields(); // Lấy dữ liệu từ form
-            const newGuide = {
-                ...values,
-                start_date: values.start_date?.format("YYYY-MM-DD HH:mm:ss"),
-                end_date: values.end_date?.format("YYYY-MM-DD HH:mm:ss"),
-                image: selectedUser.image,
-            };
+            const values = await form.validateFields();
+            console.log("Dữ liệu form gửi đi:", values);
 
-            const response = await fetch("http://localhost:3000/api/guide", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newGuide),
-            });
+            // Kiểm tra email & phone đã tồn tại chưa
+            const isEmailExists = guides.some((guide) => guide.email === values.email);
+            const isPhoneExists = guides.some((guide) => guide.phone === values.phone);
 
-            if (!response.ok) {
-                throw new Error("Lỗi khi thêm mới hướng dẫn viên");
+            if (isEmailExists) {
+                message.error("Email đã tồn tại, vui lòng nhập email khác!");
+                setLoading(false);
+                return;
             }
 
-            message.success("Thêm hướng dẫn viên thành công!");
-            fetchTours(); // Cập nhật danh sách sau khi thêm mới
-            form.resetFields(); // Xóa dữ liệu form sau khi lưu
-            setSelectedUser({ image: null });
+            if (isPhoneExists) {
+                message.error("Số điện thoại đã tồn tại, vui lòng nhập số khác!");
+                setLoading(false);
+                return;
+            }
+
+            // Chuẩn bị dữ liệu gửi API
+            const newGuideData = {
+                ...values,
+                start_date: values.start_date ? values.start_date.format("YYYY-MM-DD HH:mm:ss") : null,
+                end_date: values.end_date ? values.end_date.format("YYYY-MM-DD HH:mm:ss") : null,
+                image: selectedGuide?.image || null,
+            };
+
+            console.log("Gửi API với dữ liệu:", newGuideData);
+
+            // Gọi API
+            const response = await GuideService.createGuide(newGuideData);
+
+            if (response && response.data && response.data.id) {
+                message.success("Thêm hướng dẫn viên thành công!");
+                form.resetFields();
+
+                // Chờ 1 giây rồi chuyển về trang admin
+                setTimeout(() => {
+                    navigate("/admin");
+                }, 1000);
+            } else {
+                console.error("API phản hồi không hợp lệ:", response);
+                message.error("API không trả về dữ liệu hợp lệ!");
+            }
         } catch (error) {
-            console.error("Lỗi:", error);
-            message.error("Có lỗi xảy ra, vui lòng thử lại!");
+            console.error("Lỗi khi thêm hướng dẫn viên:", error);
+
+            if (error.response && error.response.data && error.response.data.message) {
+                message.error(`Lỗi từ server: ${error.response.data.message}`);
+            } else {
+                message.error("Đã xảy ra lỗi, vui lòng thử lại!");
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="container mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-4">Thêm Hướng Dẫn Viên</h2>
+            <h2 className="text-2xl font-bold mb-4">THÊM HƯỚNG DẪN VIÊN</h2>
             <Form form={form} layout="vertical">
-                <Form.Item label="Ảnh đại diện" name="image">
-                    <Upload listType="picture-card" onChange={handleUpload} showUploadList={false}>
-                        {selectedUser.image ? <img src={selectedUser.image} alt="avatar" style={{ width: "100%" }} /> : <UploadOutlined />}
-                    </Upload>
+                <Row gutter={[16, 32]}>
+                    <Col span={12}>
+                        <Form.Item label="Họ" name="firstName" rules={[{ required: true, message: "Vui lòng nhập Họ!" }]}>
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label="Tên" name="lastName" rules={[{ required: true, message: "Vui lòng nhập Tên!" }]}>
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={[16, 32]}>
+                    <Col span={12}>
+                        <Form.Item label="Kinh nghiệm (năm)" name="experienceYears" rules={[{ required: true, message: "Vui lòng nhập kinh nghiệm!" }]}>
+                            <Input type="number" min={0} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label="Email" name="email" rules={[{ required: true, message: "Vui lòng nhập email!", type: "email" }]}>
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={[16, 32]}>
+                    <Col span={12}>
+                        <Form.Item label="SĐT" name="phone" rules={[{ required: true, message: "Vui lòng nhập SĐT!" }]}>
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label="Địa chỉ" name="address" rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}>
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Form.Item label="Trạng thái" name="status" rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
+                    <Select>
+                        <Select.Option value="active">Active</Select.Option>
+                        <Select.Option value="inactive">Inactive</Select.Option>
+                        <Select.Option value="pending">Pending</Select.Option>
+                    </Select>
                 </Form.Item>
-                <Row gutter={[16, 32]}>
-                    <Col span={12}>
-                        <Form.Item label="Tên tài khoản" name="username" rules={[{ required: true, message: "Vui lòng nhập tên tài khoản!" }]}>
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item label="Họ & Tên" name="fullname" rules={[{ required: true, message: "Vui lòng nhập họ & tên!" }]}>
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row gutter={[16, 32]}>
-                    <Col span={12}>
-                        <Form.Item label="Tour" name="tour" rules={[{ required: true, message: "Vui lòng nhập tên tour!" }]}>
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item label="Trạng thái" name="status" rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
-                            <Select>
-                                <Select.Option value="active">Active</Select.Option>
-                                <Select.Option value="inactive">Inactive</Select.Option>
-                                <Select.Option value="pending">Pending</Select.Option>
-                            </Select>
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row gutter={[16, 32]}>
-                    <Col span={12}>
-                        <Form.Item label="Ngày đi" name="start_date" rules={[{ required: true, message: "Vui lòng chọn ngày đi!" }]}>
-                            <DatePicker showTime format="DD/MM/YYYY HH:mm" />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item label="Ngày về" name="end_date" rules={[{ required: true, message: "Vui lòng chọn ngày về!" }]}>
-                            <DatePicker showTime format="DD/MM/YYYY HH:mm" />
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Button type="primary" onClick={handleAddGuide} style={{ marginRight: "10px" }}>
-                    Lưu
+                <Button type="primary" onClick={handleAddGuide} loading={loading} style={{ marginRight: "10px" }}>
+                    {loading ? "Đang lưu..." : "Lưu"}
                 </Button>
                 <Button onClick={() => navigate("/admin")}>Hủy</Button>
             </Form>

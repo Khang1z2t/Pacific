@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:8080',
-    timeout: 1000,
+    timeout: 5000,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -29,9 +29,3 @@ axiosInstance.interceptors.request.use(
 
 export default axiosInstance;
 
-// );
-// export const getAllUsers = async () => {
-//     return axiosInstance.get('/users/all');
-// };
-//
-// export default axiosInstance;

@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { Space, Table, Tag, Switch, Modal, Button, Form, Input, Radio, Select, Upload, Row, Col, Dropdown, Menu } from "antd";
+import { Space, Table, Tag, Switch, Modal, Button, Form, Input, Radio, Select, Upload, Row, Col, Dropdown, Menu, Image,
+} from 'antd';
 import { SearchOutlined, DownOutlined, InfoCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
+import UserService from '~/services/UserService';
+import config from '~/config';
 
 const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -15,24 +18,22 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchUsers();
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchText, selectedSort]);
+    const ITEM_PER_PAGE = 7;
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    // const page = filteredUsers.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
+    // const onChange = (e) => {setCurrentPage(e);};
+    const [imagePreview, setImagePreview] = useState(selectedUser?.image || ""); // Lưu ảnh preview
 
-    const fetchUsers = useCallback(async () => {
-        setLoading(true);
-        try {
-            const response = await fetch(`http://localhost:3000/api/users?search=${searchText}&sort=${selectedSort}`);
-            const data = await response.json();
-            setUsers(data);
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-        setLoading(false);
-    }, [searchText, selectedSort]);
+    useEffect(() => {
+        UserService.getAllUsers().then((res) => {
+            setUsers(res.data);
+            setFilteredUsers(res.data);
+        }).catch((err) => {
+            console.error(err);
+        });
+        setCurrentPage(1);
+    }, []);
+
 
     const handleCloseModal = () => {
         setModalVisible(false);
@@ -51,36 +52,39 @@ const Users = () => {
         setIsEditing(true);
     };
 
-    const handleSave = async () => {
-        if (!selectedUser) return;
+
+    const handleSave = useCallback(async () => {
+        if (!selectedUser) {
+            console.error("Không có selectedUser");
+            return;
+        }
+
         try {
-            const values = form.getFieldsValue();
-            const response = await fetch(`http://localhost:3000/api/users/${selectedUser.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(values),
-            });
-            if (response.ok) {
-                setUsers(users.map(user => user.id === selectedUser.id ? { ...user, ...values } : user));
+            const values = await form.validateFields();
+            const updatedUser = await UserService.updateUser(selectedUser.id, values);
+
+            if (updatedUser) {
+                setUsers(prevUsers =>
+                    prevUsers.map(user =>
+                        user.id === selectedUser.id ? { ...user, ...values } : user
+                    )
+                );
                 handleCloseModal();
-            } else {
-                console.error("Failed to update user");
             }
         } catch (error) {
-            console.error("Error updating user:", error);
+            console.error("Lỗi khi cập nhật user:", error);
         }
-    };
+    }, [selectedUser, form]);
+
 
     const sortTypes = {
-        "name-asc": "Họ & tên (A-Z)",
-        "name-desc": "Họ & tên (Z-A)",
-        "date-newest": "Ngày tạo (mới nhất)",
-        "date-oldest": "Ngày tạo (cũ nhất)",
+        "Tên tài khoản (A-Z)": "Tên (A-Z)",
+        "Tên tài khoản (Z-A)": "Tên (Z-A)",
     };
 
     const handleSortChange = (type) => {
         setSelectedSort(type);
-    };
+    }
 
     const menu = (
         <Menu onClick={(e) => handleSortChange(e.key)}>
@@ -90,49 +94,65 @@ const Users = () => {
         </Menu>
     );
 
-    const filteredUsers = useMemo(() => {
-        return users.filter((user) => {
-            return (
-                (user.username?.toLowerCase() || "").includes(searchText.toLowerCase()) ||
-                (user.fullname?.toLowerCase() || "").includes(searchText.toLowerCase()) ||
-                (user.role?.toLowerCase() || "").includes(searchText.toLowerCase())
-            );
-        });
-    }, [users, searchText]);
+    // Xử lý tìm kiếm và sắp xếp
+    useEffect(() => {
+        let newList = users.filter(user =>
+            user.username.toLowerCase().includes(searchText.toLowerCase())
+        );
+
+        if (selectedSort === "Tên tài khoản (A-Z)") {
+            newList.sort((a, b) => a.username.localeCompare(b.username));
+        } else if (selectedSort === "Tên tài khoản (Z-A)") {
+            newList.sort((a, b) => b.username.localeCompare(a.username));
+        }
+
+        setFilteredUsers(newList);
+    }, [searchText, selectedSort, users]);
 
     const handleSwitchChange = async (id, checked) => {
         const newStatus = checked ? "active" : "inactive";
         try {
-            const response = await fetch(`http://localhost:3000/api/users/${id}/status`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: newStatus }),
-            });
-            if (response.ok) {
-                setUsers(prevUsers =>
-                    prevUsers.map(user => user.id === id ? { ...user, status: newStatus } : user)
-                );
-            } else {
-                console.error("Cập nhật trạng thái thất bại!");
-            }
+            await UserService.updateUserStatus(id, newStatus);
+            setUsers(prevUsers =>
+                prevUsers.map(user => (user.id === id ? { ...user, status: newStatus } : user))
+            );
         } catch (error) {
             console.error("Lỗi khi cập nhật trạng thái:", error);
         }
     };
 
-    const handleUpload = ({ fileList }) => {
-        if (fileList.length > 0) {
-            setSelectedUser((prev) => ({
-                ...prev,
-                image: fileList[0].thumbUrl,
-            }));
+
+    // const handleUpload = useCallback(({ fileList }) => {
+    //     if (fileList.length > 0) {
+    //         form.setFieldsValue({
+    //             image: fileList[0].thumbUrl,
+    //         });
+    //     }
+    // }, [form]);
+
+
+    // Xử lý khi upload ảnh
+    const handleUpload = ({ file }) => {
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                setImagePreview(e.target.result);
+                form.setFieldsValue({ image: e.target.result });
+            };
+            reader.readAsDataURL(file);
         }
     };
 
     const columns = [
-        { title: "ID", dataIndex: "id", key: "id" },
         { title: "Tên tài khoản", dataIndex: "username", key: "username" },
-        { title: "Họ & tên", dataIndex: "fullname", key: "fullname" },
+        { title: "Hình Ảnh", dataIndex: "avatarUrl", render: (value) => (
+                <Image.PreviewGroup
+                >
+                    <Image width={100} src={`${config.imageConfig.getAvatar(value)}`} />
+                </Image.PreviewGroup>
+            ) },
+        { title: "Deposit", dataIndex: "deposit", key: "deposit" },
+        { title: "Email", dataIndex: "email", key: "email" },
         { title: "Vai trò", dataIndex: "role", key: "role" },
         {
             title: "Trạng thái",
@@ -159,6 +179,7 @@ const Users = () => {
     return (
         <div className="container mx-auto p-2">
             <h2 className="text-2xl font-bold mb-4">QUẢN LÝ TÀI KHOẢN</h2>
+
             <Space style={{ marginBottom: 16 }}>
                 <Input
                     placeholder="Tìm kiếm"
@@ -166,15 +187,33 @@ const Users = () => {
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
                 />
-                <Dropdown overlay={menu} trigger={["click"]}>
-                    <Button>{sortTypes[selectedSort] || "Sắp xếp theo"} <DownOutlined /></Button>
+                <Dropdown
+                    overlay={
+                        <Menu onClick={(e) => setSelectedSort(e.key)}>
+                            {Object.keys(sortTypes).map((key) => (
+                                <Menu.Item key={key}>{sortTypes[key]}</Menu.Item>
+                            ))}
+                        </Menu>
+                    }
+                    trigger={["click"]}
+                >
+                    <Button>
+                        {sortTypes[selectedSort] || "Sắp xếp theo"} <DownOutlined />
+                    </Button>
                 </Dropdown>
             </Space>
+
             <Table
-                dataSource={filteredUsers}
+                dataSource={filteredUsers.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE)}
                 columns={columns}
-                pagination={{ current: currentPage, pageSize: 5, onChange: setCurrentPage }}
-                rowKey="id"
+                pagination={{
+                    current: currentPage,
+                    pageSize: ITEM_PER_PAGE,
+                    total: filteredUsers.length,
+                    onChange: setCurrentPage,
+                }}
+                rowKey={(record) => record.id || record.key}
+                loading={loading}
                 size="large"
             />
 
@@ -199,13 +238,25 @@ const Users = () => {
                 ]}
             >
                 {selectedUser && (
-                    <Form form={form} layout="vertical">
+                    <Form form={form} layout="vertical" initialValues={selectedUser}>
+                        {/* Ảnh đại diện */}
                         <Form.Item label="Ảnh đại diện" name="image">
-                            <Upload listType="picture-card" onChange={handleUpload} showUploadList={false}>
-                                {selectedUser.image ? <img src={selectedUser.image} alt="avatar" style={{ width: "100%" }} /> : <UploadOutlined />}
+                            <Upload
+                                listType="picture-card"
+                                showUploadList={false} // Không hiển thị danh sách file
+                                beforeUpload={() => false} // Không upload tự động lên server
+                                maxCount={1} // Chỉ cho phép chọn 1 ảnh
+                                onChange={handleUpload} // Gọi khi có ảnh mới
+                            >
+                                {imagePreview ? (
+                                    <img src={imagePreview} alt="avatar" style={{ width: "100%" }} />
+                                ) : (
+                                    <UploadOutlined />
+                                )}
                             </Upload>
                         </Form.Item>
 
+                        {/* Thông tin người dùng */}
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Form.Item label="Tên tài khoản" name="username">
@@ -213,34 +264,21 @@ const Users = () => {
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Họ & Tên" name="fullname">
-                                    <Input disabled={!isEditing} />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-
-                        <Row gutter={16}>
-                            <Col span={12}>
                                 <Form.Item label="Email" name="email">
                                     <Input disabled={!isEditing} />
                                 </Form.Item>
                             </Col>
-                            <Col span={12}>
-                                <Form.Item label="Số điện thoại" name="phone">
-                                    <Input disabled={!isEditing} />
-                                </Form.Item>
-                            </Col>
                         </Row>
 
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item label="Địa chỉ" name="address">
+                                <Form.Item label="Deposit" name="deposit">
                                     <Input disabled={!isEditing} />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Ngày sinh" name="birthday">
-                                    <Input disabled={!isEditing} format="DD/MM/YYYY" />
+                                <Form.Item label="Vai trò" name="role">
+                                    <Input disabled={!isEditing} />
                                 </Form.Item>
                             </Col>
                         </Row>

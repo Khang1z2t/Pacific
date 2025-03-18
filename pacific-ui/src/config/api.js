@@ -12,6 +12,9 @@ const api = {
     guide: '/api/guide',
     hotel: '/api/hotels',
     transport: '/api/transports',
+    adminUser: '/api/admin/user',
+    adminGuide: '/api/admin/guide',
+    adminBlog: '/api/admin/blog'
 };
 
 export default api;
