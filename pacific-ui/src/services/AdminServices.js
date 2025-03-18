@@ -13,7 +13,7 @@ const AdminServices = {
         }
     },
 
-    getBookingRevenueByMonth: async (params) => {
+    getBookingRevenueMonthByYear: async (params) => {
         try {
             const resp = await AxiosConfig.get(config.api.bookingRevenue + '/revenue/month', { params });
             return resp.data;

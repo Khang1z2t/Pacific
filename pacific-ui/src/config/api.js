@@ -10,6 +10,8 @@ const api = {
     category: '/api/categories',
     bookingRevenue: '/api/bookings/book',
     guide: '/api/guide',
+    hotel: '/api/hotel',
+    transport: '/api/transport',
 };
 
 export default api;

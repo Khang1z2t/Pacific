@@ -26,7 +26,7 @@ const TourServices = {
         try {
             const resp = await AxiosConfig.post(config.api.tours + '/add', params , {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
                 }
             });
             return resp.data;

@@ -12,14 +12,17 @@ import {
     Image,
     Divider,
     Rate,
+    Tooltip,
     Upload,
 } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, } from '@ant-design/icons';
 import TourServices from '~/services/TourServices';
 import { prices } from '~/pages/TourLists/data/prices';
 import config from '~/config';
 import { AddTour } from '~/pages/Admin/sections/ToursPage/components/AddTour';
-
+import { EditTour } from '~/pages/Admin/sections/ToursPage/components/EditTour';
+import { AddTourDetail } from '~/pages/Admin/sections/ToursPage/components/AddTourDetail';
+import TourDetailServices from '~/services/TourDetailServices';
 
 
 const { Title } = Typography;
@@ -29,11 +32,13 @@ const TourList = () => {
 
     const [loading, setLoading] = useState(false);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
-
-    const [editingTour, setEditingTour] = useState(null);
-    const [form] = Form.useForm();
     const [tours, setTours] = useState([]);
     const [tourDetail, setTourDetail] = useState([]);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [addDetailModalVisible, setAddDetailModalVisible] = useState(false);
+
+    // add tourDetail
+    const [id, setId] = useState(null);
 
     useEffect(() => {
         TourServices.getAllTour().then((res) => {
@@ -50,6 +55,10 @@ const TourList = () => {
         });
         setDetailModalVisible(true);
     };
+    const handleOpenAddTourDetail = (key) => {
+        setId(key);
+        setAddDetailModalVisible(true);
+    }
 
     //
     const columns = [
@@ -65,7 +74,7 @@ const TourList = () => {
         {
             title: 'Trạng thái', dataIndex: 'status', key: 'status', render: (e) => {
                 return (
-                    <Switch checked={e === "active"}/>
+                    <Switch checked={e === 'active'} />
                 );
             },
         },
@@ -79,12 +88,17 @@ const TourList = () => {
             },
         },
         {
-            title: 'Thao tác', key: 'actions', render: (_, record) => (
-                <Space>
-                    <Button icon={<EditOutlined />} onClick={''} />
-                    <Button icon={<DeleteOutlined />} danger onClick={''} />
-                </Space>
-            ),
+            title: 'Thao tác', key: 'actions', render: (e) => {
+                return (
+                    <Space>
+                        <Button icon={<EditOutlined />} onClick={() => setEditModalVisible(true)} />
+                        <Button icon={<DeleteOutlined />} danger onClick={''} />
+                        <Tooltip placement="top" title={'Thêm chi tiết tour'}>
+                            <Button icon={<PlusOutlined />} onClick={() => handleOpenAddTourDetail(e.id)}></Button>
+                        </Tooltip>
+                    </Space>
+                );
+            },
         },
     ];
 
@@ -121,7 +135,7 @@ const TourList = () => {
             },
         ];
 
-    //add handle
+    // Edit Tour
 
     return (
         <div className={'bg-white p-4 rounded shadow-lg'}>
@@ -185,8 +199,11 @@ const TourList = () => {
                     </div>
                 </div>
             </Modal>
-            <AddTour setLoading={() => {setLoading(!loading)}} setModalVisible={setModalVisible} modalVisible={modalVisible}/>
-
+            <AddTour setLoading={() => {
+                setLoading(!loading);
+            }} setModalVisible={setModalVisible} modalVisible={modalVisible} />
+            <EditTour setEditModalVisible={setEditModalVisible} editModalVisible={editModalVisible} />
+            <AddTourDetail tourId={id} setAddDetailModalVisible={setAddDetailModalVisible} addDetailModalVisible={addDetailModalVisible} />
         </div>
     );
 };

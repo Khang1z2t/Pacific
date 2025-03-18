@@ -28,6 +28,15 @@ const TourDetailServices = {
             return Promise.reject(error);
         }
     },
+    addTourDetail: async (params) => {
+        try{
+            const resp = await AxiosConfig.post(config.api.tourDetail + '/add', { params });
+            return resp.data;
+        }catch (error){
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 }
 
 export default TourDetailServices;

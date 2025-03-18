@@ -74,6 +74,9 @@ export const AddTour = ({ modalVisible, setModalVisible, setLoading }) => {
     );
     //
 const handleAdd = async () => {
+    const thumbnailFile = thumbnail[0]?.originFileObj;
+    const imageFiles = images.map(file => ({ file: file.originFileObj }));
+
     const params = {
         title,
         description,
@@ -81,9 +84,10 @@ const handleAdd = async () => {
         destination,
         selectedGuide,
         selectedCategory,
-        thumbnail,
+        thumbnail: thumbnailFile,
+        images : imageFiles,
     };
-
+    console.log(thumbnailFile,imageFiles)
     try {
         await TourServices.AddTour(params);
         message.success('Thêm tour thành công', 1);

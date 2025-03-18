@@ -25,7 +25,7 @@ export const TourCards = ({ data }) => {
                 </div>
                 <div className="flex justify-between items-center border-t pt-3">
                     <div className="flex items-center gap-1">
-                        <Rate disabled defaultValue={data.ratingAvg} />
+                        <Rate allowHalf disabled defaultValue={data.ratingAvg} />
                     </div>
 
                     <p className="text-lg font-bold text-gray-800">{config.webConfig.getCurrency(data.maxPrice)}</p>
