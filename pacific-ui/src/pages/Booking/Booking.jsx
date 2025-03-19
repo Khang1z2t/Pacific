@@ -5,8 +5,7 @@ import { Form, Input, DatePicker, Select, Radio, Button } from 'antd';
 import { Loading } from '~/component/ui/Loading';
 import { BookingInfo1 } from '~/pages/Booking/components/BookingInfo1';
 import { BookingInfo2 } from '~/pages/Booking/components/BookingInfo2';
-import { Success } from '~/pages/Booking/status/Success';
-import TourDetailServices from '~/services/TourDetailServices';
+import TourServices from '~/services/TourServices';
 
 const { TextArea } = Input;
 
@@ -14,12 +13,12 @@ export const Booking = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [step, setStep] = useState(1);
-    const [tour, setTour] = useState({});
+    const [tour, setTour] = useState([]);
 
     const navigate = useNavigate();
     useEffect(() => {
         // setTour(tours.find((tour) => tour.id === +id));
-        TourDetailServices.getTourDetailById(id).then((res) => {
+        TourServices.getById(id).then((res) => {
             setTour(res.data);
             setTimeout(() => {
                 setLoading(false);
@@ -40,7 +39,7 @@ export const Booking = () => {
             <p className={"text-gray-500"}>{step < 2 && (
                 <p className={"text-gray-500"}>Bước {step} / 2</p>
             )}</p>
-            {step === 1 && <BookingInfo1 tourInfo={tour} setStep={setStep} />}
+            {step === 1 && <BookingInfo1 data={tour} setStep={setStep} />}
             {/*{step === 2 && <BookingInfo2 tourInfo={tour} setStep={setStep} />}*/}
             {/*{step === 2 && <Success/>}*/}
         </div>

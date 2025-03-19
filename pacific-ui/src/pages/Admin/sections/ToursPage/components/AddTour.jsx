@@ -73,31 +73,40 @@ export const AddTour = ({ modalVisible, setModalVisible, setLoading }) => {
         </button>
     );
     //
-const handleAdd = async () => {
-    const thumbnailFile = thumbnail[0]?.originFileObj;
-    const imageFiles = images.map(file => ({ file: file.originFileObj }));
+    const handleAdd = async () => {
+        const formData = new FormData();
 
-    const params = {
-        title,
-        description,
-        duration,
-        destination,
-        selectedGuide,
-        selectedCategory,
-        thumbnail: thumbnailFile,
-        images : imageFiles,
+        // Thêm dữ liệu tour
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('duration', duration);
+        formData.append('destination', destination);
+        formData.append('selectedGuide', selectedGuide);
+        formData.append('selectedCategory', selectedCategory);
+
+        // Thêm thumbnail (1 ảnh)
+        if (thumbnail.length > 0) {
+            formData.append('thumbnail', thumbnail[0].originFileObj);
+        }
+
+        // Thêm danh sách images (nhiều ảnh)
+        images.forEach((file, index) => {
+            formData.append(`images`, file.originFileObj);
+        });
+
+        console.log([...formData]); // Debug xem dữ liệu gửi đi có đúng không
+
+        try {
+            await TourServices.AddTour(formData);
+            message.success('Thêm tour thành công', 1);
+            setLoading();
+        } catch (err) {
+            message.error('Thêm tour thất bại: ' + err, 1);
+            console.log(err);
+        }
+        setModalVisible(false);
     };
-    console.log(thumbnailFile,imageFiles)
-    try {
-        await TourServices.AddTour(params);
-        message.success('Thêm tour thành công', 1);
-        setLoading();
-    } catch (err) {
-        message.error('Thêm tour thất bại: ' + err, 1);
-        console.log(err);
-    }
-    setModalVisible(false);
-};
+
 
     //
     return (
