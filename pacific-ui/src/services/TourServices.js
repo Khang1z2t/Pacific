@@ -27,7 +27,8 @@ const TourServices = {
             const resp = await AxiosConfig.post(config.api.tours + '/add', params , {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                }
+                },
+                timeout : 10000
             });
             return resp.data;
         } catch (error) {
@@ -35,9 +36,9 @@ const TourServices = {
             return Promise.reject(error);
         }
     },
-    HideTour: async (id) => {
+    HideTour: async (id,active) => {
         try {
-            const resp = await AxiosConfig.delete(config.api.tours + `/delete/${id}`);
+            const resp = await AxiosConfig.post(config.api.tours + `/delete/${id}?active=${active}`);
             return resp.data;
         } catch (error) {
             console.error('Error:', error);

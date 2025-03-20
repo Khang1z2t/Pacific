@@ -37,7 +37,6 @@ const TourList = () => {
     const [tourDetail, setTourDetail] = useState([]);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [addDetailModalVisible, setAddDetailModalVisible] = useState(false);
-    const [active, setActive] = useState(null);
 
     // add tourDetail
     const [id, setId] = useState(null);
@@ -52,6 +51,7 @@ const TourList = () => {
     const handleCheckDetail = async (id) => {
         await TourServices.getById(id).then((res) => {
             setTourDetail(res.data);
+            setLoading(true);
         }).catch((err) => {
             console.log(err);
         });
@@ -62,17 +62,18 @@ const TourList = () => {
         setAddDetailModalVisible(true);
     };
 
-    const handleHideTour = async (id) => {
-        await TourServices.HideTour(id).then((res) => {
-            console.log(res);
-            setActive(res);
-            setLoading(!loading);
-            message.success('Ẩn tour thành công');
+    const handleHideTour = async (id, active) => {
+        await TourServices.HideTour(id, active).then((res) => {
+            setTours((prev) =>
+                prev.map((item) =>
+                    item.id === id ? { ...item, active: active } : item,
+                ),
+            );
+            message.success('Thay đổi thành công');
         }).catch((err) => {
             console.log(err);
-            message.error('Ẩn tour thất bại');
+            message.error('Thay đôi thất bại');
         });
-        console.log(id)
     };
     //
     const columns = [
@@ -95,7 +96,7 @@ const TourList = () => {
         {
             title: 'Ẩn/Hiện tour', key: 'active', render: (e) => {
                 return (
-                    <Switch value={e.active} onClick={() => handleHideTour(e.id)} />
+                    <Switch value={e.active} loading={loading} onClick={(checked) => handleHideTour(e.id, checked)} />
                 );
             },
         },
@@ -193,7 +194,7 @@ const TourList = () => {
                 <div className={'p-4 space-y-2 w-full'}>
                     <div className={'items-start flex gap-4'}>
                         <div className={'flex flex-wrap gap-4'}>
-                            <Image src={config.imageConfig.getImage(tourDetail.thumbnail)} width={200} height={200}
+                            <Image src={config.imageConfig.getImage(`${tourDetail.thumbnail}`)} width={200} height={200}
                                    title={'ThumbNail'} />
 
                             {/*{tourDetail.images.map((image, index) => (*/}
@@ -207,15 +208,23 @@ const TourList = () => {
                         <Rate defaultValue={tourDetail.ratingAvg} disabled />
                     </div>
                     <Divider />
-                    <div className={'gap-2 mb-4 items-center'}>
-                        <h3 className={'text-lg font-semibold'}>Thông tin cơ bản</h3>
-                        <p><span className={'font-semibold'}>Điểm đến:</span> {tourDetail.destination}</p>
-                        <p><span
-                            className={'font-semibold'}>Thời gian:</span> {tourDetail.duration} ngày {tourDetail.duration - 1} đêm
-                        </p>
-                        <p><span
-                            className={'font-semibold'}>Giá:</span> {config.webConfig.getCurrency(tourDetail.maxPrice)}
-                        </p>
+                    <h3 className={'text-lg font-semibold'}>Thông tin cơ bản</h3>
+                    <div className={"grid grid-cols-2 gap-4"}>
+                        <div className={'gap-2 mb-4 items-center'}>
+                            <p><span className={'font-semibold'}>Điểm đến:</span> {tourDetail.destination}</p>
+                            <p><span
+                                className={'font-semibold'}>Thời gian:</span> {tourDetail.duration} ngày {tourDetail.duration - 1} đêm
+                            </p>
+                            <p><span
+                                className={'font-semibold'}>Giá:</span> {config.webConfig.getCurrency(tourDetail.maxPrice)}
+                            </p>
+                        </div>
+                        <div className={'gap-2 mb-4 items-center'}>
+                            <p><span className={'font-semibold'}>Trạng thái(Ẩn/Hiện):</span> {tourDetail.active ? "Đang được sử dụng" : "Đang được ẩn"}</p>
+                            <p><span
+                                className={'font-semibold'}>Trạng thái bán:</span> {tourDetail.active === "PUBLISHED" ? "Đã hết tour" : "Đang được bán"}
+                            </p>
+                        </div>
                     </div>
                     <Divider />
                     <div className={''}>

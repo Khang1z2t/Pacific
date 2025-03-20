@@ -7,7 +7,7 @@ import BookingServices from '~/services/BookingServices';
 
 const { TextArea } = Input;
 
-export const BookingInfo1 = ({ tourInfo, setStep }) => {
+export const BookingInfo1 = ({ data, setStep }) => {
     const { id } = useParams();
     //
     const [fullName, setFullName] = useState('');
@@ -20,8 +20,10 @@ export const BookingInfo1 = ({ tourInfo, setStep }) => {
     const [tour, setTour] = useState({});
     const [form] = Form.useForm();
     const [numPeople, setNumPeople] = useState(1);
-    const pricePerPerson = tourInfo.priceAdults;
+    console.log(data)
+    const pricePerPerson = data.detail[0].priceAdults;
     const [totalPrice, setTotalPrice] = useState(pricePerPerson * numPeople);
+
 
     const handlePeopleChange = (value) => {
         if (value < 1) {
@@ -67,7 +69,7 @@ export const BookingInfo1 = ({ tourInfo, setStep }) => {
 
                     </Form.Item>
 
-                    <Form.Item label="Tên Tour" name="tourName" initialValue={tourInfo.tour.title}>
+                    <Form.Item label="Tên Tour" name="tourName" initialValue={data.title}>
                         <Input disabled />
                     </Form.Item>
 
