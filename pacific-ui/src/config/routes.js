@@ -26,6 +26,8 @@ const routes = {
     adminUsers: '/admin-users',
     adminGuide: '/admin-guide',
     addGuide: '/admin/add-guide',
+    adminVoucher: '/admin-voucher',
+    addVoucher: '/admin/add-voucher',
     addTourDetail: '/admin/add-tour-detail',
     checkOutSuccess: '/checkout/success/',
     checkoutFail: '/checkout/fail/',

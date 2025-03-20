@@ -24,6 +24,7 @@ import InfoBlog from '~/pages/Admin/InfoBlog';
 import Blog from '~/pages/Admin/Blog';
 import Support from '~/pages/Admin/Support';
 import { useAuth } from '~/config/AuthContext';
+import Voucher from '~/pages/Admin/Voucher';
 
 
 const { Content } = Layout;
@@ -76,8 +77,8 @@ const AdminHome = () => {
             key: 'sub5',
             icon: <DollarCircleOutlined />,
             children: [
-                { label: 'Danh sách khuyến mãi', key: '13', content: <Promotion /> },
-                { label: 'Danh sách khách hàng sử dụng khuyến mãi', key: '14', content: <UsedPromotion /> },
+                { label: 'Danh sách khuyến mãi', key: '13', content: <Voucher /> },
+                // { label: 'Danh sách khách hàng sử dụng khuyến mãi', key: '14', content: <UsedPromotion /> },
             ],
         },
         {
