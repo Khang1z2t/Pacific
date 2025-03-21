@@ -1,15 +1,17 @@
-import { Card, Divider, Pagination } from 'antd';
+import { Card, Divider, Pagination, Spin } from 'antd';
 import { TourCards } from '~/pages/Home/components/TourCards';
 import { useEffect, useState } from 'react';
 import TourServices from '~/services/TourServices';
 import { SearchBar } from '~/pages/Home/components/SearchBar';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
+import { LoadingOutlined } from '@ant-design/icons';
 
 export const TourLists = () => {
     const ITEM_PER_PAGE = 8;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
     const [query, setQuery] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleSearch = (query) => {
         const filterSearch = {};
@@ -20,6 +22,7 @@ export const TourLists = () => {
         if(query.minPrice) filterSearch.minPrice = query.minPrice;
 
         setQuery(filterSearch);
+        setLoading(true)
     };
 
 
@@ -30,7 +33,9 @@ export const TourLists = () => {
 
     useEffect(() => {
         TourServices.getAllTour(query).then((res) => {
-            setTours(res.data);
+            const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
+            setTours(published);
+            setLoading(false)
         }).catch((err) => {
             console.error(err);
         });
@@ -51,13 +56,19 @@ export const TourLists = () => {
             </Divider>
             <SearchBar onSearch={handleSearch} />
             <div
-                className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 justify-center px-14 w-fit mx-auto min-h-[500px]">
-                {pageItem.length === 0 ? (
-                    <EmptyComponent description={'tour'}/>
-                ) : (
-                    pageItem.map((item, index) => (
-                        <TourCards key={index} data={item} />
-                    ))
+                className="mt-6 grid grid-cols-4 gap-4 justify-center px-14 w-fit mx-auto min-h-[500px]">
+                {!loading && pageItem.length === 0 && (
+                    <div className={"col-span-4 w-full"}>
+                        <EmptyComponent description={'tour'}/>
+                    </div>
+                )}
+                {!loading && pageItem.map((item, index) => (
+                <TourCards key={index} data={item} />
+                ))}
+                {loading && (
+                    <div className="w-full h-[400px] col-span-4 flex items-center justify-center">
+                        <Spin indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />
+                    </div>
                 )}
             </div>
             <Pagination

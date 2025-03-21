@@ -5,6 +5,9 @@ import AnimatedContent from '~/component/Animation/AnimatedUI/AnimatedContent';
 import { Rate } from 'antd';
 
 export const TourCards = ({ data }) => {
+
+
+
     return (
         <Link
             to={config.routes.tourDetail + `${data.id}`}

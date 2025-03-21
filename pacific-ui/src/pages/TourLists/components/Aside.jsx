@@ -1,27 +1,19 @@
-import {Checkbox, Divider, Radio, Rate, Select} from 'antd';
+import { Checkbox, Divider, Radio, Rate, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { prices } from '~/pages/TourLists/data/prices';
 import { times } from '~/pages/TourLists/data/times';
 import { ratings } from '~/pages/TourLists/data/ratings';
 
-export const Aside = ({setSort, titleType}) => {
-    const [query, setQuery] = useState({
-        prices: "All",
-        times: [],
-        ratings: [],
-    });
-    const [checkedTour, setCheckedTour] = useState(titleType === "trong nước" ? 1: 2);
+export const Aside = ({ setQuery, titleType }) => {
+    const ratingAvg = [1, 2, 3, 4, 5];
+    const [rate, setRate] = useState([]);
+    const [searchPrices, setSearchPrices] = useState(null);
+    const [checkedTour, setCheckedTour] = useState(titleType === 'trong nước' ? 1 : 2);
     useEffect(() => {
-        setCheckedTour(titleType === "trong nước" ? 1 : 2);
-    }, [titleType]);
+        setCheckedTour(titleType === 'trong nước' ? 1 : 2);
+        setQuery({ rate, searchPrices });
+    }, [titleType, rate, searchPrices]);
 
-    const handleCheckboxChange = (field, value) => {
-        setQuery({...query, [field]: value});
-    }
-    const handleSelectChange = (value) => {
-        setQuery({...query, prices: value});
-        setSort(value);
-    }
     return (
         <aside className="w-3/12 sticky h-fit border p-4 bg-gray-50 shadow-md rounded-md">
             <Divider>Chọn lọc giá</Divider>
@@ -29,7 +21,7 @@ export const Aside = ({setSort, titleType}) => {
                 className="w-full"
                 placeholder="Chọn giá"
                 optionFilterProp={'children'}
-                onChange={(value,option) => handleSelectChange(option.value)}
+                onChange={(e) => setSearchPrices(e)}
                 options={[
                     { label: 'Tất cả', value: 'All' },
                     { label: 'Cao nhất', value: 'HighToLow' },
@@ -38,21 +30,14 @@ export const Aside = ({setSort, titleType}) => {
                 defaultValue="All"
             />
 
-            <Divider>Giờ trong ngày</Divider>
-            {times.map((timed) => (
-                <Checkbox
-                    key={timed.label} onChange={(value) => handleCheckboxChange('times', value)}>
-                    {timed.label}
-                </Checkbox>
-            ))}
             <Divider>Điểm đánh giá</Divider>
-            {ratings.map((rating) => (
-                <div key={rating}>
-                    <Checkbox onChange={(value) => handleCheckboxChange('rating',value)}>
-                        <Rate allowHalf defaultValue={rating} disabled /> trở lên
-                    </Checkbox>
-                </div>
-            ))}
+            <Radio.Group className="w-full">
+                {ratingAvg.map((item, index) => (
+                    <Radio key={index} value={item} onChange={(e) => setRate(e.target.value)}>
+                        <Rate value={item} disabled />
+                    </Radio>
+                ))}
+            </Radio.Group>
             <Divider>Loại tour</Divider>
             <Radio.Group value={checkedTour}>
                 <Radio value={1}>Tour trong nước</Radio>

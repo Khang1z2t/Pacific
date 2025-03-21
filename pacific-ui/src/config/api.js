@@ -14,7 +14,8 @@ const api = {
     transport: '/api/transports',
     adminUser: '/api/admin/user',
     adminGuide: '/api/admin/guide',
-    adminBlog: '/api/admin/blog'
+    adminBlog: '/api/admin/blog',
+    wishlist: '/api/wishlist',
 };
 
 export default api;
