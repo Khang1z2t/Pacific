@@ -1,14 +1,14 @@
 import { Input, Select } from 'antd';
 import Search from 'antd/es/input/Search';
 import { useEffect, useState } from 'react';
-import CategoryService from '~/services/CategoryService';
+import CategoryServices from '~/services/CategoryServices';
 
 export const SearchBar = ({ onSearch }) => {
     const [searchText, setSearchText] = useState('');
     const [sides, setSides] = useState([]);
     const [searchSides , setSearchSides] = useState(null);
     useEffect(() => {
-        CategoryService.getCategories().then((res) => {
+        CategoryServices.getCategories().then((res) => {
             setSides((
                 [
                     {

@@ -1,7 +1,7 @@
 import { Input, Select } from 'antd';
 import config from '~/config';
 import { useEffect, useState } from 'react';
-import CategoryService from '~/services/CategoryService';
+import CategoryServices from '~/services/CategoryServices';
 
 export const SearchBar = ({ onSearch }) => {
     const [searchText, setSearchText] = useState('');
@@ -12,7 +12,7 @@ export const SearchBar = ({ onSearch }) => {
     const [sides, setSides] = useState([]);
 
     useEffect(() => {
-        CategoryService.getCategories().then((res) => {
+        CategoryServices.getCategories().then((res) => {
             setSides((
                 [
                     {
