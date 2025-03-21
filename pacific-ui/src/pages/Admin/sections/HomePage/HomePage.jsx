@@ -23,8 +23,8 @@ export const HomePage = () => {
     useEffect(() => {
         const temp = data.map(item => {
             return {
-                name: item.createdAt,
-                value: item.totalAmount || 100,
+                name: item.bookingDate,
+                value: item.tourRevenue || 100,
             }
         })
         setChartData(temp);

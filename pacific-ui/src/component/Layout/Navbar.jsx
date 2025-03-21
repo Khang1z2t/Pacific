@@ -8,7 +8,7 @@ import config from '~/config';
 import AuthService from '~/services/AuthServices';
 import { useNavigate } from 'react-router-dom';
 
-export const Navbar = ({ref1, ref2}) => {
+export const Navbar = () => {
 
     const navItems = [
         {
@@ -167,7 +167,6 @@ export const Navbar = ({ref1, ref2}) => {
                                     className={
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
-                                    ref={ref2}
                                 >
                                     Đăng nhập
                                 </Link>
@@ -176,7 +175,6 @@ export const Navbar = ({ref1, ref2}) => {
                                     className={
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
-                                    ref={ref1}
                                 >
                                     Đăng ký
                                 </Link>

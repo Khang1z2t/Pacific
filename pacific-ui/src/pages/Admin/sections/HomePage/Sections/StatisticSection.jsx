@@ -40,7 +40,7 @@ export const StatisticSection = () => {
     const [years, setYears] = useState({ years: new Date().getFullYear() });
 
     useEffect(() => {
-        AdminServices.getBookingRevenue({ tourId, startDate, endDate }).then((res) => {
+        AdminServices.getBookingRevenue({ tourId: tourId, startDate: startDate, endDate: endDate }).then((res) => {
             setData(res);
         }).catch((error) => {
             console.error(error);
@@ -82,8 +82,8 @@ export const StatisticSection = () => {
             return {
                 key: index,
                 rank: index,
-                name: item.tourTitle,
-                value: item.totalAmount || 'KHÔNG CÓ DỮ LIỆU',
+                name: item.tourId,
+                value: item.tourRevenue || 'KHÔNG CÓ DỮ LIỆU',
             };
         });
         setSalesRanking(datas);
