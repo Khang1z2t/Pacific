@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import config from '~/config';
 import { message } from 'antd';
 import { Heart } from 'lucide-react';
-import WishlistService from '~/services/WishlistService';
+import WishlistServices from '~/services/WishlistServices';
 
 export const WishlistCard = ({ data, wishlistId, onWishlistChange }) => {
     const handleRemoveWishlist = async () => {
@@ -13,7 +13,7 @@ export const WishlistCard = ({ data, wishlistId, onWishlistChange }) => {
         }
 
         try {
-            const response = await WishlistService.removeWishlist(wishlistId, accessToken); // Xóa bằng wishlistId
+            const response = await WishlistServices.removeWishlist(wishlistId, accessToken); // Xóa bằng wishlistId
             if (response) {
                 message.success('Đã xóa khỏi danh sách yêu thích');
                 onWishlistChange(); // Gọi callback để cập nhật danh sách từ component cha

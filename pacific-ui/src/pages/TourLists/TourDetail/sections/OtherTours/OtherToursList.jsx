@@ -4,7 +4,7 @@ import { TourCard } from '~/pages/TourLists/TourDetail/sections/OtherTours/Compo
 import { Pagination } from 'antd';
 import config from '~/config';
 import { Loading } from '~/component/ui/Loading';
-import TourService from '~/services/TourService';
+import TourServices from '~/services/TourServices';
 
 export const OtherToursList = () => {
     const [tours, setTours] = useState([]);
@@ -20,7 +20,7 @@ export const OtherToursList = () => {
     };
 
     useEffect(() => {
-        TourService.getAllTour().then((res) => {
+        TourServices.getAllTour().then((res) => {
             const filteredTours = res.data.filter(tour => tour.id !== currentTourId);
             setTours(filteredTours);
         }).catch((err) => {

@@ -1,7 +1,7 @@
 import AxiosConfig from '~/config/axiosConfig';
 import config from '~/config';
 
-const WishlistService = {
+const WishlistServices = {
     AddToWishlist: async (id, token) => {
         try {
             const resp = await AxiosConfig.post(config.api.wishlist + `/add/${id}`, {} ,  {
@@ -44,4 +44,4 @@ const WishlistService = {
         }
     },
 };
-export default WishlistService;
+export default WishlistServices;

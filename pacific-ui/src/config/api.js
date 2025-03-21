@@ -11,6 +11,7 @@ const api = {
     bookingRevenue: '/api/report',
     guide: '/api/guide',
     hotel: '/api/hotels',
+    wishlist: '/api/wishlist',
     transport: '/api/transports',
     adminUser: '/api/admin/user',
     adminGuide: '/api/admin/guide',

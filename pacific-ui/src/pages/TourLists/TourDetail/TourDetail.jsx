@@ -8,8 +8,7 @@ import { CalendarSection } from '~/pages/TourLists/TourDetail/sections/CalendarS
 import { OtherToursList } from '~/pages/TourLists/TourDetail/sections/OtherTours/OtherToursList';
 import config from '~/config';
 import { Loading } from '~/component/ui/Loading';
-import TourService from '~/services/TourService';
-import TourDetailService from '~/services/TourDetailService';
+import TourServices from '~/services/TourService';
 
 export const TourDetail = () => {
     const [loading, setLoading] = useState(true);
@@ -17,7 +16,7 @@ export const TourDetail = () => {
     const [tour, setTour] = useState({});
 
     useEffect(() => {
-        TourService.getById(id).then((res) => {
+        TourServices.getById(id).then((res) => {
             setTour(res.data);
             setTimeout(() => {
                 setLoading(false);
