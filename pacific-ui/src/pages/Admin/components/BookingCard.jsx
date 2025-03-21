@@ -1,52 +1,58 @@
-import React, { useState } from "react";
-import { Card, Button, Space, Tag, Modal } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import React, { useEffect } from "react";
+import { Modal, Form, Input, Row, Col, Select, Button } from "antd";
 
-const BookingCard = ({ booking, onDelete }) => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
+const BookingCard = ({ visible, onClose, booking }) => {
+    const [form] = Form.useForm();
 
-    const getStatusTag = (status) => {
-        return status === "confirmed" ? <Tag color="green">Đã xác nhận</Tag> : <Tag color="red">Đang chờ</Tag>;
-    };
+    useEffect(() => {
+        if (booking) {
+            form.setFieldsValue(booking);
+        } else {
+            form.resetFields();
+        }
+    }, [booking, form]);
 
     return (
-        <>
-            <Card
-                title={booking.user.fullName}
-                bordered={false}
-                className="booking-card"
-                extra={getStatusTag(booking.bookingStatus)}
-            >
-                <p>🗺️ <strong>Tour:</strong> {booking.tourDetail.name}</p>
-                <p>👨‍👩‍👧‍👦 <strong>Số lượng:</strong> {booking.totalNumber}</p>
-                <p>💳 <strong>PTTT:</strong> {booking.paymentMethod}</p>
-                <p>💰 <strong>Tổng tiền:</strong> {booking.totalAmount.toLocaleString()} đ</p>
+        <Modal
+            title="Chi tiết booking"
+            open={visible}
+            onCancel={onClose}
+            footer={[
+                <Button key="close" onClick={onClose}>
+                    Đóng
+                </Button>,
+            ]}
+        >
+            <Form form={form} layout="vertical">
+                <Row gutter={16}>
+                    <Col span={12}>
+                        <Form.Item label="Tên người dùng" name="name">
+                            <Input disabled />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label="Booking ID" name="bookingId">
+                            <Input disabled />
+                        </Form.Item>
+                    </Col>
+                </Row>
 
-                <Space style={{ marginTop: "10px" }}>
-                    <Button icon={<EyeOutlined />} type="primary" onClick={() => setIsModalVisible(true)}>
-                        Xem
-                    </Button>
-                    <Button icon={<DeleteOutlined />} type="danger" onClick={() => onDelete(booking.id)}>
-                        Xóa
-                    </Button>
-                </Space>
-            </Card>
+                <Form.Item label="Tên Tour" name="tour">
+                    <Input disabled />
+                </Form.Item>
 
-            {/* Popup Modal Chi Tiết */}
-            <Modal
-                title={`Chi tiết Booking - ${booking.user.fullName}`}
-                open={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                footer={null}
-                width={700}
-            >
-                <p>🗺️ <strong>Tour:</strong> {booking.tourDetail.name}</p>
-                <p>👨‍👩‍👧‍👦 <strong>Số lượng:</strong> {booking.totalNumber}</p>
-                <p>📌 <strong>Trạng thái:</strong> {getStatusTag(booking.bookingStatus)}</p>
-                <p>💳 <strong>Phương thức thanh toán:</strong> {booking.paymentMethod}</p>
-                <p>💰 <strong>Tổng tiền:</strong> {booking.totalAmount.toLocaleString()} đ</p>
-            </Modal>
-        </>
+                <Form.Item label="Ngày khởi hành" name="date">
+                    <Input type="date" disabled />
+                </Form.Item>
+
+                <Form.Item label="Trạng thái" name="status">
+                    <Select disabled>
+                        <Select.Option value="Đã thanh toán">Đã thanh toán</Select.Option>
+                        <Select.Option value="Chưa thanh toán">Chưa thanh toán</Select.Option>
+                    </Select>
+                </Form.Item>
+            </Form>
+        </Modal>
     );
 };
 

@@ -1,58 +1,74 @@
-import React, { useState, useEffect } from "react";
-import { Typography, Card, Table, Button, Input, Space, Tag, message } from "antd";
-import { SearchOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import axios from "axios";
-import BookingCard from "../components/BookingCard";
-
-const { Title } = Typography;
+import React, { useEffect, useState } from "react";
+import { Table, Tag, message } from "antd";
+import BookingServices from "~/services/BookingServices";
+import BookingCard from "~/pages/Admin/components/BookingCard";
 
 const Booking = () => {
-    const [searchText, setSearchText] = useState("");
     const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState(null);
 
-    // Gọi API lấy danh sách bookings
+    const fetchBookings = async () => {
+        setLoading(true);
+        try {
+            const data = await BookingServices.getBookings();
+            setBookings(Array.isArray(data) ? data : []);
+        } catch (error) {
+            message.error("Không thể tải danh sách booking.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchBookings();
     }, []);
 
-    const fetchBookings = async () => {
-        try {
-            const response = await axios.get("http://localhost:8080/api/bookings"); // Thay URL bằng API backend
-            setBookings(response.data);
-        } catch (error) {
-            message.error("Không thể lấy dữ liệu bookings");
-            console.error(error);
-        }
+    const openModal = (booking) => {
+        setSelectedBooking(booking);
+        setModalVisible(true);
     };
 
-    const handleDelete = async (id) => {
-        try {
-            await axios.delete(`http://localhost:8080/api/bookings/${id}`);
-            setBookings(bookings.filter((b) => b.id !== id));
-            message.success("Xóa thành công!");
-        } catch (error) {
-            message.error("Xóa không thành công!");
-            console.error(error);
-        }
-    };
+    const columns = [
+        { title: "ID", dataIndex: "id", key: "id" },
+        { title: "Tên người dùng", dataIndex: "name", key: "name" },
+        { title: "Booking ID", dataIndex: "bookingId", key: "bookingId" },
+        {
+            title: "Trạng thái",
+            dataIndex: "status",
+            key: "status",
+            render: (status) => (
+                <Tag color={status === "Đã xác nhận" ? "green" : "volcano"}>
+                    {status.toUpperCase()}
+                </Tag>
+            ),
+        },
+        {
+            title: "Chi tiết",
+            key: "actions",
+            render: (_, record) => (
+                <a onClick={() => openModal(record)}>Xem chi tiết</a>
+            ),
+        },
+    ];
 
     return (
-        <div className="container">
-            <Title level={2}>QUẢN LÝ BOOKING</Title>
-            <Space style={{ marginBottom: 16 }}>
-                <Input
-                    placeholder="Tìm kiếm"
-                    prefix={<SearchOutlined />}
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
+        <div>
+            <h2>Danh sách Booking</h2>
+            <Table
+                columns={columns}
+                dataSource={bookings}
+                loading={loading}
+                rowKey="id"
+            />
+            {selectedBooking && (
+                <BookingCard
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    booking={selectedBooking}
                 />
-                <Button onClick={fetchBookings}>Làm mới</Button>
-            </Space>
-            <Card>
-                {bookings.map((booking) => (
-                    <BookingCard key={booking.id} booking={booking} onDelete={handleDelete} />
-                ))}
-            </Card>
+            )}
         </div>
     );
 };
