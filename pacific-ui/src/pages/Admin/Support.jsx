@@ -1,157 +1,130 @@
-import React, { useState, useEffect } from "react";
-import { Table, Button, Typography, Space, Input, Modal, Form, message } from "antd";
-import { SearchOutlined, InfoOutlined, MailOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Table, Tag, Button, Form, Input, Modal, message } from 'antd';
+import { MailOutlined } from '@ant-design/icons';
 import dayjs from "dayjs";
+import SupportService from '~/services/SupportService';
+import axios from 'axios';
 
-const { Title } = Typography;
+const ITEM_PER_PAGE = 7;
 
 const Support = () => {
-    const [support, setSupport] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
     const [form] = Form.useForm();
-    const [searchName, setSearchName] = useState("");
-    const [searchEmail, setSearchEmail] = useState("");
-    const [infoModalVisible, setInfoModalVisible] = useState(false);
-    const [selectedSupport, setSelectedSupport] = useState(null);
-
+    const [supports, setSupports] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        fetchSupport();
+        SupportService.getAllSupports().then((res) => {
+            setSupports(res.data);
+        }).catch((err) => {
+            console.error(err);
+        });
     }, []);
 
-    const fetchSupport = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch("http://localhost:3000/api/support");
-            const data = await response.json();
-            setSupport(data);
-        } catch (error) {
-            console.error("Error fetching support:", error);
-        }
-        setLoading(false);
-    };
 
-    const filteredSupport = support.filter((item) =>
-        item.name.toLowerCase().includes(searchName.toLowerCase()) ||
-        item.email.toLowerCase().includes(searchName.toLowerCase())
-    );
+    const [supportId, setSupportId] = useState(null); // Lưu ID của support cần cập nhật
 
-    const handleInfo = (record) => {
-        setSelectedSupport(record);
-        setInfoModalVisible(true);
-    };
-
-    // Xử lý mở modal gửi email phản hồi
-    const handleReply = (record) => {
-        setSelectedSupport(record);
+    const handleOpenModal = (record) => {
+        setSupportId(record.id); // Gán supportId từ record
+        form.setFieldsValue({
+            email: record.email,
+            subject: "",
+            message: ""
+        });
         setModalVisible(true);
     };
 
-    // Xử lý gửi email
-    const handleSendEmail = async (values) => {
+    const handleCloseModal = () => {
+        setModalVisible(false);
+        form.resetFields();
+    };
+
+    const handleSubmit = async () => {
         try {
-            await fetch("http://localhost:3000/api/send-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    to: selectedSupport.email,
-                    subject: values.subject,
-                    message: values.message,
-                }),
-            });
-            message.success("Gửi email thành công!");
-            setModalVisible(false);
-            form.resetFields();
+            const values = await form.validateFields();
+            console.log("Dữ liệu gửi mail:", values);
+
+            // Gửi email
+            await SupportService.sendMail(values.email, values.subject, values.message);
+            await SupportService.updateSupportStatus(supportId, "resolved");
+            message.success("Gửi email thành công, trạng thái đã cập nhật!");
+
+            // Làm mới DS
+            SupportService.getAllSupports()
+                .then((res) => {
+                    setSupports(res.data);
+                    handleCloseModal();
+                })
+                .catch((err) => {
+                    console.error("Lỗi khi làm mới danh sách:", err);
+                    message.error("Có lỗi khi làm mới dữ liệu!");
+                });
+
         } catch (error) {
-            console.error("Lỗi khi gửi email:", error);
+            console.error("Lỗi khi gửi email:", error?.response?.data || error.message);
             message.error("Gửi email thất bại!");
         }
     };
 
+
     const columns = [
-        { title: "Họ & tên", dataIndex: "name", key: "name" },
+        { title: "Tên tài khoản", dataIndex: "username", key: "username" },
         { title: "Email", dataIndex: "email", key: "email" },
-        { title: "Nội dung", dataIndex: "content", key: "content" },
-        { title: "Ngày gửi", dataIndex: "date", key: "date", render: (text) => dayjs(text).format("DD/MM/YYYY") },
+        { title: "Tiêu đề", dataIndex: "subject", key: "subject" },
+        { title: "Nội dung", dataIndex: "message", key: "message" },
         {
-            title: "Thao tác",
-            key: "actions",
+            title: "Trạng thái",
+            dataIndex: "status",
+            key: "status",
+            render: (status) => {
+                const statusColors = {
+                    pending: "volcano",
+                    resolved: "blue",
+                };
+                return (
+                    <Tag color={statusColors[status.toLowerCase()] || "default"}>
+                        {status.toUpperCase()}
+                    </Tag>
+                );
+            },
+        },
+        {
+            title: "Hành động",
+            key: "action",
             render: (_, record) => (
-                <Space>
-                    <Button icon={<InfoOutlined />} onClick={() => handleInfo(record)} />
-                    <Button icon={<MailOutlined />} type="primary" onClick={() => handleReply(record)}>Phản hồi</Button>
-                </Space>
+                <Button icon={<MailOutlined />} type="link" onClick={() => handleOpenModal(record)}>
+                    Gửi thư
+                </Button>
             ),
         },
     ];
 
     return (
-        <div style={{ padding: 24, backgroundColor: "#f0f2f5", minHeight: "100vh" }}>
-            <Title level={2}>DANH SÁCH KHÁCH HÀNG CẦN TƯ VẤN</Title>
-            <Space style={{ marginBottom: 16 }}>
-                <Input
-                    placeholder="Tìm theo họ tên hoặc email..."
-                    prefix={<SearchOutlined />}
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                    style={{ width: 300 }}
-                />
-            </Space>
+        <div className="container mx-auto p-2">
+            <h2 className="text-2xl font-bold mb-4">KHÁCH HÀNG CẦN HỖ TRỢ & TƯ VẤN</h2>
+            <Table dataSource={supports} columns={columns} pagination={{ pageSize: ITEM_PER_PAGE }} rowKey="id" />
 
-            <Table columns={columns} dataSource={filteredSupport} loading={loading} rowKey="email" />
-
-            {/* Modal Gửi Email */}
+            {/* Modal gửi thư */}
             <Modal
-                title="Gửi Email Phản Hồi"
+                title="GỬI THƯ PHẢN HỒI KHÁCH HÀNG"
                 open={modalVisible}
-                onOk={() => form.submit()}
-                onCancel={() => setModalVisible(false)}
+                onCancel={handleCloseModal}
                 footer={[
-                    <Button key="cancel" onClick={() => setModalVisible(false)}>Hủy</Button>,
-                    <Button key="submit" type="primary" onClick={() => form.submit()}>Gửi</Button>
+                    <Button key="send" type="primary" onClick={handleSubmit} icon={<MailOutlined />}>Gửi</Button>,
+                    <Button key="close" onClick={handleCloseModal}>Đóng</Button>,
                 ]}
             >
-                <Form form={form} layout="vertical" onFinish={handleSendEmail}>
-                    <Form.Item label="Người nhận">
-                        <Input value={selectedSupport ? selectedSupport.email : ""} disabled />
+                <Form form={form} layout="vertical">
+                    <Form.Item label="To Email:" name="email" rules={[{ required: true, message: "Vui lòng nhập email" }]}>
+                        <Input placeholder="Nhập email" />
                     </Form.Item>
-                    <Form.Item label="Họ và tên">
-                        <Input value={selectedSupport ? selectedSupport.name : ""} disabled />
+                    <Form.Item label="Tiêu đề" name="subject" rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}>
+                        <Input placeholder="Nhập tiêu đề" />
                     </Form.Item>
-                    <Form.Item label="Ngày gửi">
-                        <Input value={selectedSupport ? dayjs(selectedSupport.date).format("DD/MM/YYYY") : ""} disabled />
-                    </Form.Item>
-                    <Form.Item label="Nội dung">
-                        <Input.TextArea value={selectedSupport ? selectedSupport.content : ""} disabled />
+                    <Form.Item label="Nội dung" name="message" rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}>
+                        <Input.TextArea rows={4} placeholder="Nhập nội dung thư" />
                     </Form.Item>
                 </Form>
             </Modal>
-
-            {/* Modal Info */}
-            <Modal
-                title="Thông Tin Chi Tiết"
-                open={infoModalVisible}
-                onCancel={() => setInfoModalVisible(false)}
-                footer={[<Button key="close" onClick={() => setInfoModalVisible(false)}>Đóng</Button>]}>
-                {selectedSupport && (
-                    <Form layout="vertical">
-                        <Form.Item label="Họ và tên">
-                            <Input value={selectedSupport.name} disabled />
-                        </Form.Item>
-                        <Form.Item label="Email">
-                            <Input value={selectedSupport.email} disabled />
-                        </Form.Item>
-                        <Form.Item label="Ngày gửi">
-                            <Input value={dayjs(selectedSupport.date).format("DD/MM/YYYY")} disabled />
-                        </Form.Item>
-                        <Form.Item label="Nội dung">
-                            <Input.TextArea value={selectedSupport.content} disabled />
-                        </Form.Item>
-                    </Form>
-                )}
-            </Modal>
-
         </div>
     );
 };
