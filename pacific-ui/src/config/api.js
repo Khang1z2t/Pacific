@@ -15,6 +15,7 @@ const api = {
     adminUser: '/api/admin/user',
     adminGuide: '/api/admin/guide',
     adminBlog: '/api/admin/blog',
+    adminSupport: '/api/admin/support',
     adminRating: '/api/admin/rating',
     adminVoucher: '/api/admin/voucher',
     adminTourDetails: '/api/tour-details',
