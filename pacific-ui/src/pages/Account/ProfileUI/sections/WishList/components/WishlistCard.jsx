@@ -33,7 +33,7 @@ export const WishlistCard = ({ data, wishlistId, onWishlistChange }) => {
                     <img
                         src={config.imageConfig.getImage(data.thumbnail) || config.webConfig.defaultTour}
                         alt="TourLogo"
-                        className="rounded-lg lg:w-full w-42 max-h-20"
+                        className="rounded-lg lg:w-full w-42"
                     />
                 </div>
 
