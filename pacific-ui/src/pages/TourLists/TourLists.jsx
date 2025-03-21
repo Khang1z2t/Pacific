@@ -3,7 +3,7 @@ import { TourCards } from '~/pages/TourLists/components/TourCards';
 import { useEffect, useState } from 'react';
 import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
-import TourService from '~/services/TourService';
+import TourServices from '~/services/TourServices';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
 
 export const TourLists = ({ titleType }) => {
@@ -12,7 +12,6 @@ export const TourLists = ({ titleType }) => {
     const [tours, setTours] = useState([]);
     const [query, setQuery] = useState({});
     const [filteredTours, setFilteredTours] = useState([]);
-    const [sort, setSort] = useState('All');
 
     const onChange = (e) => {
         setCurrentPage(e);
@@ -23,25 +22,35 @@ export const TourLists = ({ titleType }) => {
 
         if (query.searchText) filterSearch.title = query.searchText;
         if (query.searchPrices !== null) filterSearch.categoryId = query.searchSides;
-
+        // if (query.rate !== null) filterSearch.ratingAvg = query.rate;
+        // if (query.searchPrices === "HighToLow") filterSearch.maxPrice = filterSearch.maxPrice.sort((a, b) => b.maxPrice - a.maxPrice);
+        // if (query.searchPrices === "LowToHigh") filterSearch.minPrice = filterSearch.minPrice.sort((a, b) => a.minPrice - b.minPrice);
         setQuery(filterSearch);
     };
 
-
     useEffect(() => {
         let sortedTours = [...tours];
-        if (sort === 'HighToLow') {
+
+        // Lọc theo đánh giá lớn hơn hoặc bằng `query.rate`
+        if (query.rate) {
+            sortedTours = sortedTours.filter((tour) => tour.ratingAvg >= query.rate);
+        }
+
+        // Sắp xếp theo giá
+        if (query.searchPrices === 'HighToLow') {
             sortedTours.sort((a, b) => b.maxPrice - a.maxPrice);
-        } else if (sort === 'LowToHigh') {
+        } else if (query.searchPrices === 'LowToHigh') {
             sortedTours.sort((a, b) => a.maxPrice - b.maxPrice);
         }
+
         setFilteredTours(sortedTours);
-    }, [sort, tours]);
+    }, [query.rate, query.searchPrices, tours]);
 
     useEffect(() => {
-        TourService.getAllTour(query).then((res) => {
-            setTours(res.data);
-            setFilteredTours(res.data);
+        TourServices.getAllTour(query).then((res) => {
+            const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
+            setTours(published);
+            setFilteredTours(published);
         }).catch((error) => {
             console.error(error);
         });
@@ -58,7 +67,7 @@ export const TourLists = ({ titleType }) => {
                     tour du
                     lịch {titleType} </p></Divider>
                 <div className="flex">
-                    <Aside setSort={setSort} titleType={titleType} />
+                    <Aside query={query} setQuery={setQuery} titleType={titleType} />
                     {page.length > 0 ?
                         <div className="flex flex-wrap gap-4 w-full px-4">
                             {page.map((tour) => (
@@ -66,7 +75,7 @@ export const TourLists = ({ titleType }) => {
                             ))}
                         </div>
                         :
-                        <EmptyComponent description={'tour'}/>
+                        <EmptyComponent description={'tour'} />
                     }
                 </div>
             </div>

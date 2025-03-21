@@ -7,6 +7,7 @@ import { ProfileInformation } from '~/pages/Account/ProfileUI/sections/ProfileIn
 import { BookedTour } from '~/pages/Account/historyBooked/BookedTour';
 import HistoryPayment from '~/pages/Account/HistoryPayment/HistoryPayment';
 import { useAuth } from '~/config/AuthContext';
+import { WishListIndex } from '~/pages/Account/ProfileUI/sections/WishList/WishListIndex';
 
 const { TabPane } = Tabs;
 export const ProfileUI = () => {
@@ -37,6 +38,9 @@ export const ProfileUI = () => {
                     </TabPane>
                     <TabPane tab="Bảo mật tài khoản" key="4">
                         <AccountSecurity/>
+                    </TabPane>
+                    <TabPane tab={"Danh sách yêu thích"}>
+                        <WishListIndex/>
                     </TabPane>
                 </Tabs>
             </div>
