@@ -1,4 +1,4 @@
-import { Divider, Pagination, Spin } from 'antd';
+import { Divider, Pagination } from 'antd';
 import { TourCards } from '~/pages/Home/components/TourCards';
 import { useEffect, useState } from 'react';
 import TourServices from '~/services/TourServices';

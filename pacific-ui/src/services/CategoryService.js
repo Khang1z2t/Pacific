@@ -1,7 +1,7 @@
 import AxiosConfig from '~/config/axiosConfig';
 import config from '~/config';
 
-const CategoryServices = {
+const CategoryService = {
     getCategories: async () => {
         try {
             const resp = await AxiosConfig.get(config.api.category + '/all');
@@ -14,4 +14,4 @@ const CategoryServices = {
 
 };
 
-export default CategoryServices;
+export default CategoryService;

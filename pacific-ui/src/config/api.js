@@ -16,6 +16,10 @@ const api = {
     adminGuide: '/api/admin/guide',
     adminBlog: '/api/admin/blog',
     wishlist: '/api/wishlist',
+    adminRating: '/api/admin/rating',
+    adminVoucher: '/api/admin/voucher',
+    adminTourDetails: '/api/tour-details',
+
 };
 
 export default api;
