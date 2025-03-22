@@ -28,7 +28,7 @@ const TourServices = {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                timeout : 10000
+                timeout : 60000
             });
             return resp.data;
         } catch (error) {

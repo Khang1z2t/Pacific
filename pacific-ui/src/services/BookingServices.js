@@ -20,6 +20,28 @@ const BookingServices = {
             return Promise.reject(error);
         }
     },
+
+//     NGHIEP VU BOOK TOUR
+    getInfoMonth: async (id) => {
+        try{
+            const resp = await axiosConfig.get(config.api.tourDetail + `/month/${id}`)
+            return resp.data;
+        }catch (error){
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    getInfoDay : async (params) => {
+        try{
+            const resp = await axiosConfig.get(config.api.tourDetail + '/day', {params});
+            return resp.data;
+        }catch (error){
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
 }
 
 export default BookingServices;

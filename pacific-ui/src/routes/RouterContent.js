@@ -152,12 +152,12 @@ export const RouterContent = [
             </AdminLayout>
         ),
     },
-    {
-        path: config.routes.addTourDetail,
-        element: (
-            <AdminLayout>
-                <AddTourDetail/>
-            </AdminLayout>
-        ),
-    },
+    // {
+    //     path: config.routes.addTourDetail,
+    //     element: (
+    //         <AdminLayout>
+    //             <AddTourDetail/>
+    //         </AdminLayout>
+    //     ),
+    // },
 ];
