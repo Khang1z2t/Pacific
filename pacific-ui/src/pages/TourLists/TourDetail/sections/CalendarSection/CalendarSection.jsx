@@ -15,13 +15,11 @@ export const CalendarSection = ({ data }) => {
     const [loading, setLoading] = useState(false);
     const [month, setMonth] = useState([]);
     const [days, setDays] = useState([]);
-    const [tourDetail, setTourDetail] = useState([]);
+    const [tourDetail, setTourDetail] = useState(data.detail[0]);
     const [transport, setTransport] = useState({});
     const [hotel, setHotel] = useState({});
     const [quantity, setQuantity] = useState('');
     const [orderInfo, setOrderInfo] = useState('');
-    const images = data.images;
-    const price = data.priceAdults;
     const navigate = useNavigate();
 
     const [selectedMonth, setSelectedMonth] = useState();
@@ -42,10 +40,10 @@ export const CalendarSection = ({ data }) => {
 
 
     // handles
-    const handleSelectedMonth = (month) => {
+    const handleSelectedMonth = async (month) => {
         setSelectedMonth(month);
         setToggle(true);
-        BookingServices.getInfoDay({ tourId: data.id, months: month }).then((res) => {
+        await BookingServices.getInfoDay({ tourId: data.id, months: month }).then((res) => {
             setDays(res.data);
         }).catch((err) => {
             console.error(err);
@@ -68,6 +66,7 @@ export const CalendarSection = ({ data }) => {
             handleSelectedMonth(month[0]?.getDate);
         }
     }, [month]);
+
     useEffect(() => {
         if (tourDetail?.hotelId) {
             HotelServices.getHotelById(tourDetail.hotelId)
@@ -89,7 +88,7 @@ export const CalendarSection = ({ data }) => {
                         <Image src={config.imageConfig.getImage(data.thumbnail)} alt="Main Tour"
                                height={650} rootClassName="col-span-3 rounded-xl w-full object-cover shadow-lg" />
                         <div className="flex flex-col gap-2">
-                            {images.map((img, index) => (
+                            {data.images.map((img, index) => (
                                 <Image key={index} src={config.imageConfig.getImage(img)} alt={'subImage'}
                                        rootClassName="rounded-xl w-full h-full hover:cursor-pointer shadow-lg object-cover" />
                             ))}
@@ -99,7 +98,7 @@ export const CalendarSection = ({ data }) => {
 
                 {/* Right Section: Booking Info */}
                 <Card className="max-w-sm p-4 h-fit sticky top-20 shadow-xl ms-10 rounded-2xl">
-                    <h2 className="text-2xl font-semibold mb-4 text-red-600">Giá: {config.webConfig.getCurrency(tourDetail?.priceAdults)} /
+                    <h2 className="text-2xl font-semibold mb-4 text-red-600">Giá: {config.webConfig.getCurrency(tourDetail?.priceAdults)}  /
                         Người</h2>
                     <p className="bg-red-100 text-red-600 p-2 rounded mb-2">
                         Đặt ngay để nhận ưu đãi giờ chót tiết kiệm thêm 300K
@@ -107,11 +106,12 @@ export const CalendarSection = ({ data }) => {
                     <div className="space-y-2">
                         <p><strong>Mã tour:</strong> {data.id}</p>
                         <p><strong>Khởi hành:</strong> {data.destination}</p>
-                        {/*<p><strong>Ngày khởi hành:</strong> {config.webConfig.convertDateNoTime(tourDetail?.startDate)}</p>*/}
+                        <p><strong>Ngày khởi hành:</strong> {config.webConfig.convertDateNoTime(tourDetail?.startDate)}</p>
                         <p><strong>Thời gian:</strong> {data.duration} ngày {data.duration - 1} đêm</p>
                     </div>
                     <div className="flex space-x-4 mt-4">
                         <Button
+                            disabled={tourDetail?.priceAdults === null}
                             onClick={() => navigate(config.routes.booking + `${tourDetail.id}`)}
                             type="primary" className="bg-red-500 hover:bg-red-700 w-full">
                             Đặt tour

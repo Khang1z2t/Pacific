@@ -105,7 +105,7 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                     {voucher.includes('Pacific') ?
                         <>
                             {config.webConfig.getCurrency(totalPrice - totalPrice * 0.9)}
-                            <span className={'text-xs text-green-500'}> (-0%)</span>
+                            <span className={'text-xs text-green-500'}> (-90%)</span>
                         </> : config.webConfig.getCurrency(totalPrice)}
                 </p>
             </div>

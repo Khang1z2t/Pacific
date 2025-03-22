@@ -64,10 +64,9 @@ export const BookingInfo1 = ({ data, setStep }) => {
         });
 
     }, [fullName, phone, email, startDate, note, totalPrice, adults, children]);
-    console.log(orderInfo);
 
     const BookTour = async (amount, info) => {
-        await BookingServices.checkOut({ amount: amount, orderInfo: info }).then((res) => {
+        await BookingServices.checkOut({ amount: amount, orderInfo: JSON.stringify(info) }).then((res) => {
             window.location.href = res;
         }).catch((err) => {
             console.error(err);
@@ -110,7 +109,7 @@ export const BookingInfo1 = ({ data, setStep }) => {
                                         <div className="text-lg font-semibold flex flex-col">Người lớn<span
                                             className={'text-red-300 text-sm font-mono'}>{config.webConfig.getCurrency(data.priceAdults)}/Người</span>
                                         </div>
-                                        <InputNumber min={0} defaultValue={1} onChange={(e) => setAdults(e)} />
+                                        <InputNumber min={0} defaultValue={0} onChange={(e) => setAdults(e)} />
                                     </Card>
                                     <Card className={'flex flex-col bg-gray-50 shadow-lg'}>
                                         <div className="text-lg font-semibold flex flex-col">Trẻ em<span
@@ -154,13 +153,13 @@ export const BookingInfo1 = ({ data, setStep }) => {
                                 {voucher.includes('Pacific') ?
                                     <>
                                          {config.webConfig.getCurrency(totalPrice - totalPrice * 0.9)}
-                                        <span className={'text-xs text-green-500'}> (-10%)</span>
+                                        <span className={'text-xs text-green-500'}> (-90%)</span>
                                     </> : config.webConfig.getCurrency(totalPrice)}
                             </div>
                             <Form.Item>
                                 <Button
                                     disabled={!confirm}
-                                    onClick={() => BookTour(totalPrice, 'A')}
+                                    onClick={() => BookTour(totalPrice, orderInfo)}
                                     type="primary" htmlType="submit" className="bg-orange-500 w-full">
                                     Xác nhận đặt tour
                                 </Button>
