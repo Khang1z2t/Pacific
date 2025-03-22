@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Select, Row, Col, message, Upload, DatePicker } from 'antd';
 import { useNavigate } from "react-router-dom";
-import TourDetailService from '~/services/TourDetailService';
+import TourDetailServices from '~/services/TourDetailService';
 import { UploadOutlined } from '@ant-design/icons';
 
 const AddTourDetail = () => {
@@ -14,7 +14,7 @@ const AddTourDetail = () => {
     const [filteredTourDetails, setFilteredTourDetails] = useState([]);
 
     useEffect(() => {
-        TourDetailService.getAllTourDetails()
+        TourDetailServices.getAllTourDetails()
             .then((res) => {
                 setTourDetails(res.data);
                 setFilteredTourDetails(res.data);
@@ -50,7 +50,7 @@ const AddTourDetail = () => {
 
             console.log("Gửi API với dữ liệu:", newTourDetailData);
 
-            const response = await TourDetailService.addTourDetail(newTourDetailData);
+            const response = await TourDetailServices.addTourDetail(newTourDetailData);
 
             if (response && response.data && response.data.id) {
                 message.success("Thêm chi tiết tour thành công!");

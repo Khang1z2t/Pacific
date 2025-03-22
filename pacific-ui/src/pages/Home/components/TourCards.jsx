@@ -4,14 +4,14 @@ import config from '~/config';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import { message } from 'antd';
-import WishlistService from '~/services/WishlistService';
+import WishlistServices from '~/services/WishlistServices';
 import { useAuth } from '~/config/AuthContext';
 
 export const TourCards = ({ data }) => {
     const [wishlist, setWishlist] = useState([]);
     const { currentUser } = useAuth();
     const handleAddToWishlist = async (id) => {
-        await WishlistService.AddToWishlist(id, localStorage.getItem('accessToken')).then((res) => {
+        await WishlistServices.AddToWishlist(id, localStorage.getItem('accessToken')).then((res) => {
             setWishlist(res.data);
             console.log(res.data);
             message.success('Đã thêm vào danh sách yêu thích');

@@ -1,6 +1,6 @@
 import { WishlistCard } from '~/pages/Account/ProfileUI/sections/WishList/components/WishlistCard';
 import { useEffect, useState, useMemo } from 'react';
-import WishlistService from '~/services/WishlistService';
+import WishlistServices from '~/services/WishlistServices';
 import TourServices from '~/services/TourServices';
 import { Empty } from 'antd';
 
@@ -14,7 +14,7 @@ export const WishListIndex = () => {
     useEffect(() => {
         if (!accessToken) return;
 
-        WishlistService.getWishlist(accessToken)
+        WishlistServices.getWishlist(accessToken)
             .then((res) => {
                 setWishlist(res.data);
                 console.log(res.data);
