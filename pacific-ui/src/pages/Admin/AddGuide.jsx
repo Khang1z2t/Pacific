@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Select, Row, Col, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import GuideService from "~/services/GuideService";
+import GuideServices from "~/services/GuideServices";
 
 const AddGuide = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -13,7 +13,7 @@ const AddGuide = () => {
     const [filteredGuides, setFilteredGuides] = useState([]);
 
     useEffect(() => {
-        GuideService.getAllGuides()
+        GuideServices.getAllGuides()
             .then((res) => {
                 setGuides(res.data);
                 setFilteredGuides(res.data);
@@ -59,7 +59,7 @@ const AddGuide = () => {
             console.log("Gửi API với dữ liệu:", newGuideData);
 
             // Gọi API
-            const response = await GuideService.createGuide(newGuideData);
+            const response = await GuideServices.createGuide(newGuideData);
 
             if (response && response.data && response.data.id) {
                 message.success("Thêm hướng dẫn viên thành công!");

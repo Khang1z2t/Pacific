@@ -2,7 +2,7 @@ import axiosConfig from '~/config/axiosConfig';
 import config from '~/config';
 const API_BASE = config.api.adminVoucher;
 
-const VoucherService = {
+const VoucherServices = {
     getAllVouchers: async () => {
         try {
             const response = await axiosConfig.get(`${API_BASE}/all`);
@@ -67,4 +67,4 @@ const VoucherService = {
     }
 };
 
-export default VoucherService;
+export default VoucherServices;

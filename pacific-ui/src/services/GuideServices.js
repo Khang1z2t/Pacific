@@ -1,12 +1,10 @@
 import config from '~/config';
-import axiosConfig from '~/config/axiosConfig';
+import AxiosConfig from '~/config/axiosConfig';
 
-const API_BASE = config.api.adminGuide;
-
-const GuideService = {
+const GuideServices = {
     getAllGuides: async () => {
         try {
-            const { data } = await axiosConfig.get(`${API_BASE}/all`);
+            const { data } = await AxiosConfig.get(config.api.guide + '/all');
             return data;
         } catch (error) {
             return handleError(error);
@@ -15,7 +13,7 @@ const GuideService = {
 
     createGuide: async (guideData) => {
         try {
-            const { data } = await axiosConfig.post(`${API_BASE}/create`, guideData);
+            const { data } = await AxiosConfig.post(config.api.guide + '/create', guideData);
             return data;
         } catch (error) {
             return handleError(error);
@@ -33,7 +31,7 @@ const GuideService = {
 
     updateGuide: async (id, userData) => {
         try {
-            const { data } = await axiosConfig.put(`${API_BASE}/update/${id}`, userData);
+            const { data } = await AxiosConfig.put(config.api.guide + `/update/${id}`, userData);
             return data;
         } catch (error) {
             return handleError(error);
@@ -42,7 +40,7 @@ const GuideService = {
 
     updateGuideStatus: async (id, status) => {
         try {
-            const { data } = await axiosConfig.patch(`${API_BASE}/updateStatus/${id}`, { status });
+            const { data } = await AxiosConfig.patch(config.api.guide + `/updateStatus/${id}`, { status });
             return data;
         } catch (error) {
             return handleError(error);
@@ -56,4 +54,4 @@ const GuideService = {
     return Promise.reject(error);
 };
 
-export default GuideService;
+export default GuideServices;

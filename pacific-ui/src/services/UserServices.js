@@ -1,7 +1,7 @@
 import config from '~/config';
 import axiosConfig from '~/config/axiosConfig';
 
-const UserService = {
+const UserServices = {
     register : async (username, password, firstName, lastName, email) => {
         try{
             const response = await axiosConfig.post(config.api.user + '/register', {
@@ -104,4 +104,4 @@ const UserService = {
     },
 }
 
-export default UserService;
+export default UserServices;
