@@ -2,9 +2,9 @@ import config from '~/config';
 import axiosConfig from '~/config/axiosConfig';
 
 const BookingServices = {
-    checkOut : async (amount, orderInfo) => {
+    checkOut : async (params) => {
         try{
-            const response = await axiosConfig.get(config.api.booking + `/checkout?amount=${amount}&orderInfo=${orderInfo}`);
+            const response = await axiosConfig.get(config.api.booking + `/checkout`, {params});
             return response.data;
         }catch (error){
             console.error('Error:', error);

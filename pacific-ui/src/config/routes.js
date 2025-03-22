@@ -6,6 +6,7 @@ const routes = {
     profile: '/tai-khoan',
     settings: '/settings',
     notFound: '/404',
+    terms: '/terms',
     serverError: '/500',
     tourTrongNuoc: '/tour-trong-nuoc',
     tourNgoaiNuoc: '/tour-nuoc-ngoai',

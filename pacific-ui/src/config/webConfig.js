@@ -13,10 +13,17 @@ const webConfig = {
     convertDate: (date) => {
         return new Intl.DateTimeFormat('vi-VN').format(date);
     },
+    convertDateNoTime: (date) => {
+        return new Intl.DateTimeFormat('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        }).format(new Date(date));
+    },
     convertMonthYear: (monthYear) => {
         let [year, month] = monthYear.split('-');
         let date = new Date(year, month - 1);
-        return new Intl.DateTimeFormat('vi-VN', { month: 'numeric', year: 'numeric' }).format(date).replace('-', '/');
+        return new Intl.DateTimeFormat('vi-VN', { month: 'numeric', year: 'numeric' }).format(new Date(date)).replace('-', '/');
     },
 };
 

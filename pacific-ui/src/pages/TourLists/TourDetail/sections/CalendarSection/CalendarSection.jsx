@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Menu, Calendar, Modal, Card, Divider, Button } from 'antd';
+import { Menu, Calendar, Modal, Card, Divider, Button, Image } from 'antd';
 import dayjs from 'dayjs';
 import { LocationDetails } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/LocationDetails';
 import BookingServices from '~/services/BookingServices';
@@ -7,7 +7,7 @@ import config from '~/config';
 import TourDetailServices from '~/services/TourDetailServices';
 import HotelServices from '~/services/HotelServices';
 import TransportServices from '~/services/TransportServices';
-import { FaBus, FaCalendarAlt, FaChild, FaHotel, FaUser } from 'react-icons/fa';
+import { FaBus, FaCalendarAlt, FaChild, FaHotel, FaMoneyBill, FaUser } from 'react-icons/fa';
 import { PhoneOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ export const CalendarSection = ({ data }) => {
     const [tourDetail, setTourDetail] = useState([]);
     const [transport, setTransport] = useState({});
     const [hotel, setHotel] = useState({});
-    const [quantity, setQuantity] =  useState('');
+    const [quantity, setQuantity] = useState('');
     const [orderInfo, setOrderInfo] = useState('');
     const images = data.images;
     const price = data.priceAdults;
@@ -51,7 +51,6 @@ export const CalendarSection = ({ data }) => {
             console.error(err);
         });
     };
-
     const selectTourDetail = async (id) => {
         await TourDetailServices.getTourDetailById(id).then((res) => {
             setTourDetail(res.data);
@@ -61,6 +60,7 @@ export const CalendarSection = ({ data }) => {
             console.error(err);
         });
     };
+
     // render
     useEffect(() => {
         if (month.length > 0) {
@@ -86,12 +86,12 @@ export const CalendarSection = ({ data }) => {
                 {/* Left Section: Image Gallery and Title */}
                 <div className="flex flex-col w-full">
                     <div className="grid grid-cols-4 gap-2 mb-4">
-                        <img src={config.imageConfig.getImage(data.thumbnail)} alt="Main Tour"
-                             className="col-span-3 rounded-xl w-full max-h-[650px] object-cover shadow-lg" />
+                        <Image src={config.imageConfig.getImage(data.thumbnail)} alt="Main Tour"
+                               height={650} rootClassName="col-span-3 rounded-xl w-full object-cover shadow-lg" />
                         <div className="flex flex-col gap-2">
                             {images.map((img, index) => (
-                                <img key={index} src={config.imageConfig.getImage(img)} alt={'subImage'}
-                                     className="rounded-xl w-full h-full hover:cursor-pointer shadow-lg object-cover" />
+                                <Image key={index} src={config.imageConfig.getImage(img)} alt={'subImage'}
+                                       rootClassName="rounded-xl w-full h-full hover:cursor-pointer shadow-lg object-cover" />
                             ))}
                         </div>
                     </div>
@@ -99,21 +99,20 @@ export const CalendarSection = ({ data }) => {
 
                 {/* Right Section: Booking Info */}
                 <Card className="max-w-sm p-4 h-fit sticky top-20 shadow-xl ms-10 rounded-2xl">
-                    <h2 className="text-2xl font-semibold mb-4 text-red-600">Giá: {config.webConfig.getCurrency(data.maxPrice)} /
-                        Khách</h2>
+                    <h2 className="text-2xl font-semibold mb-4 text-red-600">Giá: {config.webConfig.getCurrency(tourDetail?.priceAdults)} /
+                        Người</h2>
                     <p className="bg-red-100 text-red-600 p-2 rounded mb-2">
                         Đặt ngay để nhận ưu đãi giờ chót tiết kiệm thêm 300K
                     </p>
                     <div className="space-y-2">
-                        <p><strong>Mã tour:</strong> NDSGN841-017-270924XE-H</p>
+                        <p><strong>Mã tour:</strong> {data.id}</p>
                         <p><strong>Khởi hành:</strong> {data.destination}</p>
-                        <p><strong>Ngày khởi hành:</strong> {data.createdAt}</p>
+                        {/*<p><strong>Ngày khởi hành:</strong> {config.webConfig.convertDateNoTime(tourDetail?.startDate)}</p>*/}
                         <p><strong>Thời gian:</strong> {data.duration} ngày {data.duration - 1} đêm</p>
-                        <p><strong>Số chỗ còn:</strong> 9 chỗ</p>
                     </div>
                     <div className="flex space-x-4 mt-4">
                         <Button
-                            onClick={() => navigate(config.routes.booking + `${data.id}`)}
+                            onClick={() => navigate(config.routes.booking + `${tourDetail.id}`)}
                             type="primary" className="bg-red-500 hover:bg-red-700 w-full">
                             Đặt tour
                         </Button>
@@ -125,7 +124,8 @@ export const CalendarSection = ({ data }) => {
                     </div>
                 </Card>
             </div>
-            <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Lịch trình khởi hành</p></Divider>
+            <Divider className={'my-8'}><p className={'font-bold uppercase text-orange-400 text-3xl'}
+                                           align={'center'}>Lịch trình khởi hành</p></Divider>
             <div className="flex p-4 space-x-4">
                 {/* Month Picker */}
                 <Card className="max-w-1/4 h-[435px] border-r p-4 shadow-lg">
@@ -151,6 +151,7 @@ export const CalendarSection = ({ data }) => {
                             <Calendar
                                 value={selectedMonth ? dayjs(selectedMonth, 'YYYY-MM') : dayjs()}
                                 fullscreen={false}
+                                onPanelChange={(date) => handleSelectedMonth(date.format('YYYY-MM'))}
                                 headerRender={() => null}
                                 dateFullCellRender={(date) => {
                                     const day = date.date();
@@ -195,17 +196,35 @@ export const CalendarSection = ({ data }) => {
                                     Thông tin khởi hành
                                 </h2>
                                 <div className="grid grid-cols-3 gap-4 mt-4 text-gray-700">
-                                    <p className="flex items-center gap-2 font-semibold">
-                                        <FaHotel className="text-orange-500" /> Khách sạn: <span
-                                        className="text-gray-500">{hotel.name}</span>
+                                    <p className="flex flex-col gap-2 font-semibold">
+                                        <div className={'flex flex-wrap gap-2 items-center'}>
+                                            <FaHotel className="text-orange-500" /> Khách sạn: <span
+                                            className="text-gray-500">{hotel.name}</span>
+                                        </div>
+                                        <div className={'flex flex-wrap gap-2 items-center'}>
+                                            <FaMoneyBill className={'text-orange-500'} /> Giá: <span
+                                            className="text-gray-500">{config.webConfig.getCurrency(hotel.cost)}</span>
+                                        </div>
                                     </p>
-                                    <p className="flex items-center gap-2 font-semibold">
-                                        <FaBus className="text-orange-500" /> Phương tiện: <span
-                                        className="text-gray-500">{transport.name}</span>
+                                    <p className="flex flex-col gap-2 font-semibold">
+                                        <div className={'flex flex-wrap gap-2 items-center'}>
+                                            <FaBus className="text-orange-500" /> Phương tiện: <span
+                                            className="text-gray-500">{transport.name}</span>
+                                        </div>
+                                        <div className={'flex flex-wrap gap-2 items-center'}>
+                                            <FaMoneyBill className={'text-orange-500'} /> Giá: <span
+                                            className="text-gray-500">{config.webConfig.getCurrency(transport.cost)}</span>
+                                        </div>
                                     </p>
-                                    <p className="flex items-center gap-2 font-semibold">
-                                        <FaCalendarAlt className="text-orange-500" /> Ngày khởi hành: <span
-                                        className="text-gray-500">{selectedDay}/{config.webConfig.convertMonthYear(selectedMonth)}</span>
+                                    <p className="flex flex-col gap-2 font-semibold">
+                                        <div className={'flex flex-wrap gap-2 items-center'}>
+                                            <FaCalendarAlt className="text-orange-500" /> Ngày khởi hành: <span
+                                            className="text-gray-500">{selectedDay}/{config.webConfig.convertMonthYear(selectedMonth)}</span>
+                                        </div>
+                                        <div className={'flex flex-wrap gap-2 items-center'}>
+                                            <FaCalendarAlt className={' text-orange-500'} /> Ngày về: <span
+                                            className={'text-gray-500'}>{selectedDay}/{config.webConfig.convertMonthYear(selectedMonth)}</span>
+                                        </div>
                                     </p>
                                 </div>
                             </div>
