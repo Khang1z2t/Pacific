@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, Rate, Tag, Divider, Button, Row, Col } from 'antd';
-// import { tours } from '../data/tours';
 import DetailSection from '~/pages/TourLists/TourDetail/sections/DetailSection';
 import "tailwindcss/tailwind.css";
 import { CalendarSection } from '~/pages/TourLists/TourDetail/sections/CalendarSection/CalendarSection';
 import { OtherToursList } from '~/pages/TourLists/TourDetail/sections/OtherTours/OtherToursList';
-import config from '~/config';
 import { Loading } from '~/component/ui/Loading';
-import TourServices from '~/services/TourService';
+import TourServices from '~/services/TourServices';
+import config from '~/config';
 
 export const TourDetail = () => {
     const [loading, setLoading] = useState(true);
@@ -30,7 +29,7 @@ export const TourDetail = () => {
     if (loading) {
         return <Loading/>
     }
-    if (!tour) return <p className="text-center mt-10 text-gray-500">Tour not found!</p>;
+    if (!tour) return config.routes.home;
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-5">

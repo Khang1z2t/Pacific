@@ -3,7 +3,7 @@ import { Space, Table, Tag, Switch, Modal, Button, Form, Input, Radio, Select, U
 } from 'antd';
 import { SearchOutlined, DownOutlined, InfoCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
-import UserService from '~/services/UserService';
+import UserServices from '~/services/UserServices';
 import config from '~/config';
 
 const Users = () => {
@@ -25,7 +25,7 @@ const Users = () => {
     const [imagePreview, setImagePreview] = useState(selectedUser?.image || ""); // Lưu ảnh preview
 
     useEffect(() => {
-        UserService.getAllUsers().then((res) => {
+        UserServices.getAllUsers().then((res) => {
             setUsers(res.data);
             setFilteredUsers(res.data);
         }).catch((err) => {
@@ -61,7 +61,7 @@ const Users = () => {
 
         try {
             const values = await form.validateFields();
-            const updatedUser = await UserService.updateUser(selectedUser.id, values);
+            const updatedUser = await UserServices.updateUser(selectedUser.id, values);
 
             if (updatedUser) {
                 setUsers(prevUsers =>
@@ -112,7 +112,7 @@ const Users = () => {
     const handleSwitchChange = async (id, checked) => {
         const newStatus = checked ? "active" : "inactive";
         try {
-            await UserService.updateUserStatus(id, newStatus);
+            await UserServices.updateUserStatus(id, newStatus);
             setUsers(prevUsers =>
                 prevUsers.map(user => (user.id === id ? { ...user, status: newStatus } : user))
             );

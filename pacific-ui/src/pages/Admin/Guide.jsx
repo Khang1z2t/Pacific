@@ -21,7 +21,7 @@ import {
 import { SearchOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import config from '~/config';
-import GuideService from '~/services/GuideService';
+import GuideServices from '~/services/GuideServices';
 import dayjs from 'dayjs';
 
 const Guide = () => {
@@ -40,7 +40,7 @@ const Guide = () => {
     const [filteredGuides, setFilteredGuides] = useState([]);
 
     useEffect(() => {
-        GuideService.getAllGuides().then((res) => {
+        GuideServices.getAllGuides().then((res) => {
             setGuides(res.data);
             setFilteredGuides(res.data);
         }).catch((err) => {
@@ -84,7 +84,7 @@ const Guide = () => {
 
         try {
             const values = await form.validateFields();
-            const updatedGuide = await GuideService.updateGuide(selectedGuide.id, values);
+            const updatedGuide = await GuideServices.updateGuide(selectedGuide.id, values);
 
             if (updatedGuide) {
                 setGuides(prevGuides =>
@@ -136,7 +136,7 @@ const Guide = () => {
     const handleSwitchChange = async (id, checked) => {
         const newStatus = checked ? "active" : "inactive";
         try {
-            await GuideService.updateGuideStatus(id, newStatus);
+            await GuideServices.updateGuideStatus(id, newStatus);
             setGuides(prevGuides =>
                 prevGuides.map(guide => (guide.id === id ? { ...guide, status: newStatus } : guide))
             );

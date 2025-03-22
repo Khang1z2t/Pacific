@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Select, Row, Col, message, DatePicker } from 'antd';
 import { useNavigate } from "react-router-dom";
-import VoucherService from '~/services/VoucherService';
+import VoucherServices from '~/services/VoucherServices';
 
 const AddVoucher = () => {
     const [form] = Form.useForm();
@@ -15,7 +15,7 @@ const AddVoucher = () => {
 
     const fetchAllVouchers = async () => {
         try {
-            const res = await VoucherService.getAllVouchers();
+            const res = await VoucherServices.getAllVouchers();
             setVouchers(res.data);
         } catch (err) {
             console.error("Lỗi khi lấy danh sách voucher:", err);
@@ -71,7 +71,7 @@ const AddVoucher = () => {
             console.log("Gửi API với dữ liệu:", newVoucherData);
 
             // Gọi API thêm voucher
-            const response = await VoucherService.addVoucher(newVoucherData);
+            const response = await VoucherServices.addVoucher(newVoucherData);
             if (response?.data?.id) {
                 message.success("Thêm voucher thành công!");
                 form.resetFields();

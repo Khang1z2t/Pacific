@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Select, Row, Col, message, Upload, DatePicker } from 'antd';
 import { useNavigate } from "react-router-dom";
-import TourDetailServices from '~/services/TourDetailService';
+import TourDetailServices from '~/services/TourDetailServices';
 import { UploadOutlined } from '@ant-design/icons';
 
 const AddTourDetail = () => {
@@ -14,7 +14,7 @@ const AddTourDetail = () => {
     const [filteredTourDetails, setFilteredTourDetails] = useState([]);
 
     useEffect(() => {
-        TourDetailServices.getAllTourDetails()
+        TourDetailServices.getTourDetail()
             .then((res) => {
                 setTourDetails(res.data);
                 setFilteredTourDetails(res.data);

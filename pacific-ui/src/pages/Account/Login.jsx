@@ -4,7 +4,7 @@ import { Divider, Form, Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
-import UserService from '~/services/UserService';
+import UserServices from '~/services/UserServices';
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
 import AuthService from '~/services/AuthServices';
 import { useAuth } from '~/config/AuthContext';

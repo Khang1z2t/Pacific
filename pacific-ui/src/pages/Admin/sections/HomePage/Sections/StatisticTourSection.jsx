@@ -3,8 +3,6 @@ import { Input, Select, Table } from 'antd';
 import { Card } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import config from '~/config';
-import TourService from '~/services/TourService';
 import AdminServices from '~/services/AdminServices';
 
 export const StatisticTourSection = () => {

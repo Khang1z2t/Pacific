@@ -4,7 +4,7 @@ import { Space, Table, Tag, Switch, Button, Form, Input, Dropdown, Menu, Modal, 
 import { SearchOutlined, DownOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import VoucherService from '~/services/VoucherService';
+import VoucherServices from '~/services/VoucherServices';
 
 const ITEM_PER_PAGE = 7;
 const sortTypes = {
@@ -30,7 +30,7 @@ const Voucher = () => {
     const [selectedVoucher, setSelectedVoucher] = useState(null);
 
     useEffect(() => {
-        VoucherService.getAllVouchers().then((res) => {
+        VoucherServices.getAllVouchers().then((res) => {
             setVouchers(res.data);
             setFilteredVouchers(res.data);
         }).catch((err) => {
@@ -87,13 +87,13 @@ const Voucher = () => {
                 message.error("Không tìm thấy voucher để cập nhật.");
                 return;
             }
-            const response = await VoucherService.updateVoucher(selectedVoucher.id, values);
+            const response = await VoucherServices.updateVoucher(selectedVoucher.id, values);
             console.log("Phản hồi từ server:", response);
             if (response.code === 200) {
                 message.success("Cập nhật thành công!");
 
                 // Sau khi cập nhật thành công, gọi lại API để tải lại dữ liệu
-                VoucherService.getAllVouchers().then((res) => {
+                VoucherServices.getAllVouchers().then((res) => {
                     setVouchers(res.data);
                     setFilteredVouchers(res.data);
                 }).catch((err) => {
@@ -112,10 +112,10 @@ const Voucher = () => {
 
     const handleDelete = async (id) => {
         try {
-            await VoucherService.deleteVoucher(id);
+            await VoucherServices.deleteVoucher(id);
             setVouchers(prev => prev.filter(voucher => voucher.id !== id));
             setFilteredVouchers(prev => prev.filter(voucher => voucher.id !== id));
-            VoucherService.getAllVouchers().then((res) => {
+            VoucherServices.getAllVouchers().then((res) => {
                 setVouchers(res.data);
                 setFilteredVouchers(res.data);
             }).catch((err) => {
@@ -129,7 +129,7 @@ const Voucher = () => {
     const handleSwitchChange = async (id, checked) => {
         const newStatus = checked ? "active" : "inactive";
         try {
-            await VoucherService.updateVoucherStatus(id, newStatus);
+            await VoucherServices.updateVoucherStatus(id, newStatus);
             setVouchers(prev =>
                 prev.map(voucher => (voucher.id === id ? { ...voucher, status: newStatus } : voucher))
             );
