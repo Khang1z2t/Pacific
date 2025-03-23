@@ -5,8 +5,12 @@ import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
+import { useAuth } from '~/config/AuthContext';
 
 export const TourLists = ({ titleType }) => {
+    const token = localStorage.getItem('accessToken');
+    const { getWishlist } = useAuth()
+
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
@@ -27,6 +31,10 @@ export const TourLists = ({ titleType }) => {
         // if (query.searchPrices === "LowToHigh") filterSearch.minPrice = filterSearch.minPrice.sort((a, b) => a.minPrice - b.minPrice);
         setQuery(filterSearch);
     };
+
+    useEffect(() => {
+        getWishlist(token);
+    }, [token]);
 
     useEffect(() => {
         let sortedTours = [...tours];
