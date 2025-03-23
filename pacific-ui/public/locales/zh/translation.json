@@ -1,0 +1,18 @@
+{
+  "menu": {
+    "title1": "首页",
+    "title2": "国内旅游",
+    "title3": "国际旅游",
+    "title4": "新闻",
+    "title5": "联系我们",
+    "title6": "关于我们",
+    "title7": "联系我们",
+    "title8": "登录",
+    "title9": "注册"
+  },
+  "welcome": "欢迎来到 Pacific 旅行公司。",
+  "description": {
+    "text1": "与我们一起探索您最喜爱的目的地。",
+    "text2": "环游世界，无需绕远路。"
+  }
+}

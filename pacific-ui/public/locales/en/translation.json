@@ -1,0 +1,18 @@
+{
+  "menu": {
+    "title1": "HOME",
+    "title2": "DOMESTIC TOURS",
+    "title3": "INTERNATIONAL TOURS",
+    "title4": "NEWS",
+    "title5": "CONTACT",
+    "title6": "ABOUT US",
+    "title7": "CONTACT",
+    "title8": "LOGIN",
+    "title9": "REGISTER"
+  },
+  "welcome": "Welcome to Pacific Travel Company.",
+  "description": {
+    "text1": "Discover your favorite destinations with us.",
+    "text2": "Travel anywhere in the world without taking detours."
+  }
+}

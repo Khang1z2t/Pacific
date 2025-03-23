@@ -1,0 +1,18 @@
+{
+  "menu": {
+    "title1": "TRANG CHỦ",
+    "title2": "TOUR TRONG NƯỚC",
+    "title3": "TOUR NƯỚC NGOÀI",
+    "title4": "TIN TỨC",
+    "title5": "LIÊN HỆ",
+    "title6": "GIỚI THIỆU",
+    "title7": "LIÊN HỆ",
+    "title8": "ĐĂNG NHẬP",
+    "title9": "ĐĂNG KÝ"
+  },
+  "welcome": "Chào mừng bạn đến với công ty du lịch Pacific.",
+  "description": {
+    "text1": "Chúng tôi là công ty du lịch Pacific.",
+    "text2": "Du lịch đến mọi nơi trên thế giới mà không phải đi lòng vòng."
+  }
+}

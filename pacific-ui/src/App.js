@@ -9,14 +9,32 @@ import ScrollToTop from '~/component/Animation/ScrollToTop';
 import webConfig from '~/config/webConfig';
 import InterceptRoute from '~/config/IntercepterRoute';
 import config from '~/config';
+import { useTranslation } from "react-i18next";
 
 function App() {
-    useEffect(() => {
-        window.title = webConfig.defaultTitle;
-    }, []);
-    return (
+    // useEffect(() => {
+    //     window.title = webConfig.defaultTitle;
+    // }, []);
+
+        const { t, i18n } = useTranslation();
+
+        useEffect(() => {
+            document.title = webConfig.defaultTitle;
+        }, []);
+
+        const changeLanguage = (lng) => {
+            i18n.changeLanguage(lng);
+        };
+
+        return (
         <Router>
             <ScrollToTop />
+            {/* Nút chọn ngôn ngữ */}
+            <div style={{ position: "absolute", top: 10, right: 10 }}>
+                <button onClick={() => changeLanguage("en")}>English</button>
+                <button onClick={() => changeLanguage("vi")}>Tiếng Việt</button>
+            </div>
+
             <Routes>
                 {RouterContent.map((route, index) => {
                     const isAdminRoute = route.path.startsWith('/admin');

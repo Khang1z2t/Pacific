@@ -3,36 +3,43 @@ import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
-import { Dropdown, Menu, message } from 'antd';
+import { Button, Dropdown, Menu, message } from 'antd';
 import config from '~/config';
 import AuthService from '~/services/AuthServices';
 import { useNavigate } from 'react-router-dom';
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from "react-i18next";
+import LanguageSelector from '~/pages/Home/components/LanguageSelector';
 
 export const Navbar = () => {
+    const { i18n } = useTranslation();
+    const [selectedLang, setSelectedLang] = useState(i18n.language);
+    const {t} = useTranslation();
+    const {title1, title2, title3, title4, title5, title6, title7, title8, title9 } = t("menu");
 
     const navItems = [
         {
-            title: 'TRANG CHỦ',
+            title: t("menu.title1"),
             href: config.routes.home,
         },
         {
-            title: 'TOUR TRONG NƯỚC',
+            title: t("menu.title2"),
             href: config.routes.tourTrongNuoc,
         },
         {
-            title: 'TOUR NƯỚC NGOÀI',
+            title: t("menu.title3"),
             href: config.routes.tourNgoaiNuoc,
         },
         {
-            title: 'tin tức',
+            title: t("menu.title4"),
             href: '/news',
         },
         {
-            title: 'liên hệ',
+            title: t("menu.title5"),
             href: '/lien-he',
         },
         {
-            title: 'giới thiệu',
+            title: t("menu.title6"),
             href: '/gioi-thieu',
         },
     ];
@@ -126,6 +133,30 @@ export const Navbar = () => {
             </Menu.ItemGroup>
         </Menu>
     );
+
+    const languages = [
+        { code: "vi", label: "Tiếng Việt" },
+        { code: "en", label: "English" },
+        { code: "ja", label: "日本語" },
+        { code: "zh", label: "中文" },
+        { code: "ko", label: "한국어" }
+    ];
+
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+        setSelectedLang(lng);
+    };
+
+    const languageMenu = (
+        <Menu>
+            {languages.map(lang => (
+                <Menu.Item key={lang.code} onClick={() => changeLanguage(lang.code)}>
+                    {lang.label}
+                </Menu.Item>
+            ))}
+        </Menu>
+    );
+
     return (
         <header className="sticky top-0 z-50 bg-white shadow-md">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -148,7 +179,8 @@ export const Navbar = () => {
                             <NavItemsElm key={index} title={item.title} href={item.href} />
                         ))}
                     </div>
-                    <div className={'hidden md:flex space-x-4'}>
+                    {/*<div className={'hidden md:flex space-x-4'}>*/}
+                    <div className={'hidden md:flex space-x-4 items-center ml-auto'}>
                         {currentUser ? (
                             <>
                                 <Dropdown overlay={menuGroup}>
@@ -168,7 +200,7 @@ export const Navbar = () => {
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
                                 >
-                                    Đăng nhập
+                                    {t("menu.title8")}
                                 </Link>
                                 <Link
                                     to={config.routes.register}
@@ -176,8 +208,14 @@ export const Navbar = () => {
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
                                 >
-                                    Đăng ký
+                                    {t("menu.title9")}
                                 </Link>
+                                <Dropdown overlay={languageMenu} trigger={['click']}>
+                                    <Button className="text-gray-700 hover:text-yellow-600 uppercase font-bold px-2 py-1 text-sm">
+                                        <FontAwesomeIcon icon={faGlobe} className="mr-1 text-sm" />
+                                        {languages.find(l => l.code === selectedLang)?.label || "Language"}
+                                    </Button>
+                                </Dropdown>
                             </>
                         )}
                     </div>
