@@ -1,11 +1,11 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { encode as base64Encode } from 'js-base64';
 import React, { useEffect, useState } from 'react';
 import config from '~/config';
-import { Form, Input, DatePicker, Select, Radio, Button, InputNumber, Checkbox, Modal, Card, Divider } from 'antd';
+import { Form, Input ,Button, InputNumber, Checkbox, Modal, Card, Divider } from 'antd';
 import BookingServices from '~/services/BookingServices';
 import { ModalTerms } from '~/pages/Terms/ModalTerms';
-import { FaPhoneAlt, FaPlaneDeparture, FaTags } from 'react-icons/fa';
-import { BiSolidUserDetail } from 'react-icons/bi';
+import { FaTags } from 'react-icons/fa';
 import TourService from '~/services/TourServices';
 import { TourInfoCard } from '~/pages/Booking/components/bookingInfo1/components/TourInfoCard';
 
@@ -66,7 +66,9 @@ export const BookingInfo1 = ({ data, setStep }) => {
     }, [fullName, phone, email, startDate, note, totalPrice, adults, children]);
 
     const BookTour = async (amount, info) => {
-        await BookingServices.checkOut({ amount: amount, orderInfo: JSON.stringify(info) }).then((res) => {
+        const hashedOrderInfo = base64Encode(JSON.stringify(info));
+
+        await BookingServices.checkOut({ amount: amount, orderInfo: hashedOrderInfo }).then((res) => {
             window.location.href = res;
         }).catch((err) => {
             console.error(err);
@@ -165,9 +167,11 @@ export const BookingInfo1 = ({ data, setStep }) => {
                                 </Button>
                             </Form.Item>
                         </Form>
+                        {/*terms*/}
                         <Modal open={open}
+                               footer={null}
+                               width={800}
                                onCancel={() => setOpen(!open)}
-                               onOk={() => setOpen(!open)}
                                title={'Điều khoản và điều kiện'}>
                             <Card className={'overflow-y-scroll max-h-screen'}>
                                 <ModalTerms />

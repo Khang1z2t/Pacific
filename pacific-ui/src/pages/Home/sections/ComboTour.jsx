@@ -20,8 +20,11 @@ export const ComboTour = () => {
         if (query.searchSides !== null) filterSearch.categoryId = query.searchSides;
         if(query.maxPrice) filterSearch.maxPrice = query.maxPrice;
         if(query.minPrice) filterSearch.minPrice = query.minPrice;
+        if(query.startDate) filterSearch.startDate = query.startDate;
+        if(query.endDate) filterSearch.endDate = query.endDate;
 
         setQuery(filterSearch);
+        setLoading(true)
     };
 
 

@@ -1,11 +1,16 @@
-import { Input, Select } from 'antd';
+import { DatePicker, Input, Select } from 'antd';
 import Search from 'antd/es/input/Search';
 import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
+import config from '~/config';
 
 export const SearchBar = ({ onSearch }) => {
+    const { RangePicker } = DatePicker;
+
     const [searchText, setSearchText] = useState('');
     const [sides, setSides] = useState([]);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
     const [searchSides , setSearchSides] = useState(null);
     useEffect(() => {
         CategoryServices.getCategories().then((res) => {
@@ -24,7 +29,7 @@ export const SearchBar = ({ onSearch }) => {
     },[])
 
     const handleSearch = () => {
-        onSearch({ searchText, searchSides });
+        onSearch({ searchText, searchSides, startDate, endDate });
     };
 
     return (
@@ -48,7 +53,21 @@ export const SearchBar = ({ onSearch }) => {
                 optionLabelProp={'title'}
                 className={'w-96 font-bold '}
             />
-
+            <RangePicker
+                size={'large'}
+                format={"DD/MM/YYYY"}
+                placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
+                onChange={(dates) => {
+                    if (dates) {
+                        setStartDate(dates[0].format("YYYY-MM-DD"));
+                        setEndDate(dates[1].format("YYYY-MM-DD"));
+                    } else {
+                        setStartDate(null);
+                        setEndDate(null);
+                    }
+                }}
+                className={'w-96 font-bold'}
+            />
             <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>Tìm kiếm</button>
         </div>
     );
