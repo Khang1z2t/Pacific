@@ -8,21 +8,12 @@ import WishlistServices from '~/services/WishlistServices';
 import { useAuth } from '~/config/AuthContext';
 
 export const TourCards = ({ data }) => {
-    const [wishlist, setWishlist] = useState([]);
-    const { currentUser } = useAuth();
-    const handleAddToWishlist = async (id) => {
-        await WishlistServices.AddToWishlist(id, localStorage.getItem('accessToken')).then((res) => {
-            setWishlist(res.data);
-            console.log(res.data);
-            message.success('Đã thêm vào danh sách yêu thích');
-        }).catch((err) => {
-            console.error('Error:', err);
-        });
-    };
+    const { handleAddToWishlist } = useAuth();
+
     return (
         <div
             className={
-                'w-72 max-h-fit rounded-lg shadow-lg hover:scale-105 overflow-hidden transition-transform hover:cursor-pointer hover:border-orange-500 hover:border-2'
+                'w-72 h-[446px] rounded-lg shadow-lg hover:scale-105 overflow-hidden transition-transform hover:cursor-pointer hover:border-orange-500 hover:border-2'
             }
         >
             <Link to={config.routes.tourDetail + `${data.id}`}>
@@ -32,7 +23,7 @@ export const TourCards = ({ data }) => {
                     className={'w-full h-48 object-cover rounded-t-lg'}
                 />
                 <div className={'p-4'}>
-                    <h3 className={'text-lg font-semibold overflow-ellipsis text-gray-800 mb-2'}>{data.title}</h3>
+                    <h3 className={'text-lg font-semibold overflow-ellipsis text-gray-800 mb-2 line-clamp-2'}>{data.title}</h3>
                     <p className={'text-sm text-gray-600 line-clamp-2 mb-4'}>{data.description}</p>
                     <div className="flex justify-between text-sm text-gray-500 mb-2">
                         <span className={'font-semibold'}>{data.duration} Ngày {data.duration - 1} đêm</span>

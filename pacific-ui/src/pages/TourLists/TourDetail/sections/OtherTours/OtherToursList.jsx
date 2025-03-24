@@ -22,7 +22,8 @@ export const OtherToursList = () => {
     useEffect(() => {
         TourServices.getAllTour().then((res) => {
             const filteredTours = res.data.filter(tour => tour.id !== currentTourId);
-            setTours(filteredTours);
+            const published = filteredTours.filter((tour) => tour.status === 'PUBLISHED');
+            setTours(published);
         }).catch((err) => {
             console.error(err);
         });

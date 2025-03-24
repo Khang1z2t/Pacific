@@ -26,6 +26,7 @@ import AddVoucher from '~/pages/Admin/AddVoucher';
 import {Error} from '~/pages/Booking/status/Error';
 import {GoogleRedirect} from "~/pages/Account/components/GoogleRedirect";
 import AddTourDetail from '~/pages/Admin/AddTourDetail';
+import { Terms } from '~/pages/Terms/Terms';
 
 export const RouterContent = [
     {
@@ -71,6 +72,10 @@ export const RouterContent = [
     {
         path: config.routes.booking + ':id',
         element: <Booking/>,
+    },
+    {
+        path: config.routes.terms,
+        element: <Terms/>,
     },
     {
         path: config.routes.historyBooked,
@@ -152,12 +157,12 @@ export const RouterContent = [
             </AdminLayout>
         ),
     },
-    {
-        path: config.routes.addTourDetail,
-        element: (
-            <AdminLayout>
-                <AddTourDetail/>
-            </AdminLayout>
-        ),
-    },
+    // {
+    //     path: config.routes.addTourDetail,
+    //     element: (
+    //         <AdminLayout>
+    //             <AddTourDetail/>
+    //         </AdminLayout>
+    //     ),
+    // },
 ];

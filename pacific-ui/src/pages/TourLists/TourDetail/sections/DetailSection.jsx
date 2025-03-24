@@ -28,7 +28,6 @@ const DetailSection = ({...data}) => {
     const [quantity, setQuantity] =  useState('');
     const [orderInfo, setOrderInfo] = useState('');
     const images = data.images;
-    console.log(images);
     const price = data.priceAdults;
     const navigate = useNavigate();
 

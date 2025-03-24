@@ -6,6 +6,7 @@ import { Loading } from '~/component/ui/Loading';
 import { BookingInfo1 } from '~/pages/Booking/components/BookingInfo1';
 import { BookingInfo2 } from '~/pages/Booking/components/BookingInfo2';
 import TourServices from '~/services/TourServices';
+import TourDetailServices from '~/services/TourDetailServices';
 
 const { TextArea } = Input;
 
@@ -17,8 +18,7 @@ export const Booking = () => {
 
     const navigate = useNavigate();
     useEffect(() => {
-        // setTour(tours.find((tour) => tour.id === +id));
-        TourServices.getById(id).then((res) => {
+        TourDetailServices.getTourDetailById(id).then((res) => {
             setTour(res.data);
             setTimeout(() => {
                 setLoading(false);

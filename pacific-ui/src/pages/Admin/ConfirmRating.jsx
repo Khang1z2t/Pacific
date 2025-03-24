@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Switch, Button, Form, Input, Dropdown, Menu } from 'antd';
-import { SearchOutlined, DownOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Space, Table, Tag, Switch, Button, Form, Input, Dropdown, Menu, Modal, message } from 'antd';
+import { SearchOutlined, DownOutlined, DeleteOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import RatingService from '~/services/RatingService';
 import dayjs from 'dayjs';
@@ -20,21 +20,32 @@ const ConfirmRating = () => {
         setLoading(true);
         RatingService.getAllRatings()
             .then((res) => {
-                setRatings(res.data);
-                setFilteredRatings(res.data);
+                const activeRatings = res.data.filter((rating) => rating.status === "active");
+                setRatings(activeRatings);
+                setFilteredRatings(activeRatings);
             })
             .catch((err) => console.error(err))
             .finally(() => setLoading(false));
     }, []);
-
+    
     const handleDelete = async (id) => {
-        try {
-            await RatingService.deleteRating(id);
-            setRatings(prev => prev.filter(rating => rating.id !== id));
-            setFilteredRatings(prev => prev.filter(rating => rating.id !== id));
-        } catch (error) {
-            console.error("Lỗi khi xóa đánh giá:", error);
-        }
+        Modal.confirm({
+            title: "Bạn có chắc chắn muốn xóa đánh giá này?",
+            content: "Hành động này không thể hoàn tác!",
+            okText: "Xóa",
+            cancelText: "Hủy",
+            onOk: async () => {
+                try {
+                    await RatingService.deleteRating(id);
+                    message.success("Xóa đánh giá thành công!");
+                    setRatings(prev => prev.filter(rating => rating.id !== id));
+                    setFilteredRatings(prev => prev.filter(rating => rating.id !== id));
+                } catch (error) {
+                    console.error("Lỗi khi xóa đánh giá:", error);
+                    message.error("Lỗi khi xóa đánh giá!");
+                }
+            },
+        });
     };
 
     const sortTypes = {
@@ -44,17 +55,18 @@ const ConfirmRating = () => {
 
     useEffect(() => {
         let newList = ratings.filter(rating =>
-            rating.rating && rating.rating.toString().includes(searchText)
+            rating.tuorName && rating.tuorName.toLowerCase().includes(searchText.toLowerCase())
         );
-
+    
         if (selectedSort === "1-5") {
             newList.sort((a, b) => a.rating - b.rating);
         } else if (selectedSort === "5-1") {
             newList.sort((a, b) => b.rating - a.rating);
         }
-
+    
         setFilteredRatings(newList);
     }, [searchText, selectedSort, ratings]);
+    
 
     const handleSwitchChange = async (id, checked) => {
         const newStatus = checked ? "active" : "inactive";
@@ -63,15 +75,17 @@ const ConfirmRating = () => {
             setRatings(prevRatings =>
                 prevRatings.map(rating => (rating.id === id ? { ...rating, status: newStatus } : rating))
             );
+            message.success("Cập nhật trạng thái thành công!");
         } catch (error) {
             console.error("Lỗi khi cập nhật trạng thái:", error);
+            message.error("Lỗi khi cập nhật trạng thái!");
         }
     };
 
     const columns = [
         { title: "Người đánh giá", dataIndex: "email", key: "email" },
         { title: "Đánh giá", dataIndex: "rating", key: "rating" },
-        { title: "Tour", dataIndex: "tourTitle", key: "tourTitle" },
+        { title: "Tour", dataIndex: "tuorName", key: "tuorName" },
         { title: "Nội dung", dataIndex: "comment", key: "comment" },
         {
             title: "Ngày đánh giá",
@@ -84,8 +98,8 @@ const ConfirmRating = () => {
             dataIndex: "status",
             key: "status",
             render: (status) => (
-                <Tag color={status === "active" ? "green" : status === "pending" ? "gold" : "volcano"}>
-                    {status ? status.toUpperCase() : "UNKNOWN"}
+                <Tag color={status === "active" ? "green" : "volcano"}>
+                    {status.toUpperCase()}
                 </Tag>
             ),
         },
@@ -100,6 +114,7 @@ const ConfirmRating = () => {
             ),
         },
     ];
+    
 
     return (
         <div className="container mx-auto p-2">

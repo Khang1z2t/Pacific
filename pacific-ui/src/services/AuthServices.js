@@ -122,7 +122,7 @@ const AuthService = {
                         localStorage.setItem("accessToken", event.data.accessToken);
                         localStorage.setItem("refreshToken", event.data.refreshToken);
 
-                        await getUser();
+                        getUser();
 
                         resolve();
                     }

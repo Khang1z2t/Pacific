@@ -1,7 +1,7 @@
 import { Divider } from 'antd';
 import React from 'react';
 
-export const CardInfo = ({title, children, ...props}) => {
+export const CardInfo = ({title, children}) => {
     return (
         <div className={"mt-2"}>
             <h3 className={'text-xl uppercase text-blue-800 font-semibold text-center'}>{title}</h3>

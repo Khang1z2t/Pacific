@@ -37,6 +37,7 @@ const TourDetailServices = {
             return Promise.reject(error);
         }
     },
+
 }
 
 export default TourDetailServices;

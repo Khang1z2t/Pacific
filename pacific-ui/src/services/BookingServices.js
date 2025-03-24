@@ -1,48 +1,47 @@
 import config from '~/config';
 import axiosConfig from '~/config/axiosConfig';
 
-const BookingService = {
-    checkOut: async (amount, orderInfo) => {
-        try {
-            const response = await axiosConfig.get(`${config.api.booking}/checkout`, {
-                params: { amount, orderInfo },
-            });
+const BookingServices = {
+    checkOut : async (params) => {
+        try{
+            const response = await axiosConfig.get(config.api.booking + `/checkout`, {params});
             return response.data;
-        } catch (error) {
-            console.error('Error during checkout:', error);
+        }catch (error){
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+    returnCheckout : async () => {
+        try{
+            const response = await axiosConfig.get(config.api.booking + `/vnpay-payment-return`);
+            return response.data;
+        }catch (error){
+            console.error('Error:', error);
             return Promise.reject(error);
         }
     },
 
-    returnCheckout: async () => {
-        try {
-            const response = await axiosConfig.get(`${config.api.booking}/vnpay-payment-return`);
-            return response.data;
-        } catch (error) {
-            console.error('Error during payment return:', error);
+//     NGHIEP VU BOOK TOUR
+    getInfoMonth: async (id) => {
+        try{
+            const resp = await axiosConfig.get(config.api.tourDetail + `/month/${id}`)
+            return resp.data;
+        }catch (error){
+            console.error('Error:', error);
             return Promise.reject(error);
         }
     },
 
-    getBookingById: async (id) => {
-        try {
-            const response = await axiosConfig.get(`${config.api.booking}/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error(`Error fetching booking with ID ${id}:`, error);
+    getInfoDay : async (params) => {
+        try{
+            const resp = await axiosConfig.get(config.api.tourDetail + '/day', {params});
+            return resp.data;
+        }catch (error){
+            console.error('Error:', error);
             return Promise.reject(error);
         }
     },
 
-    getBookings: async () => {
-        try {
-            const response = await axiosConfig.get(`${config.api.booking}/all`);
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching all bookings:', error);
-            return Promise.reject(error);
-        }
-    },
-};
+}
 
-export default BookingService;
+export default BookingServices;
