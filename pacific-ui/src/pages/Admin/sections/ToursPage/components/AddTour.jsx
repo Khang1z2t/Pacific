@@ -1,6 +1,6 @@
-import { Divider, Image, Input, InputNumber, message, Modal, Select, Upload } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
+import {Divider, Image, Input, InputNumber, message, Modal, Select, Upload} from 'antd';
+import React, {useEffect, useState} from 'react';
+import {PlusOutlined} from '@ant-design/icons';
 import AdminServices from '~/services/AdminServices';
 import config from '~/config';
 import TourServices from '~/services/TourServices';
@@ -14,7 +14,7 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-export const AddTour = ({ modalVisible, setModalVisible, setLoading }) => {
+export const AddTour = ({modalVisible, setModalVisible, setLoading}) => {
     // MODAL & IMAGES UPLOAD
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -51,8 +51,8 @@ export const AddTour = ({ modalVisible, setModalVisible, setLoading }) => {
         setPreviewImage(file.url || file.preview);
         setPreviewOpen(true);
     };
-    const handleChange = ({ fileList: newFileList }) => setImages(newFileList);
-    const handleChangeThumbnail = ({ fileList: newThumbnail }) => setThumbnail(newThumbnail);
+    const handleChange = ({fileList: newFileList}) => setImages(newFileList);
+    const handleChangeThumbnail = ({fileList: newThumbnail}) => setThumbnail(newThumbnail);
     // Render
     const uploadButton = (
         <button
@@ -62,7 +62,7 @@ export const AddTour = ({ modalVisible, setModalVisible, setLoading }) => {
             }}
             type="button"
         >
-            <PlusOutlined />
+            <PlusOutlined/>
             <div
                 style={{
                     marginTop: 8,
@@ -169,7 +169,7 @@ export const AddTour = ({ modalVisible, setModalVisible, setLoading }) => {
                         />
                     )}
                 </div>
-                <Divider />
+                <Divider/>
                 <div className={'p-2'}>
                     <div className={'grid grid-cols-2 gap-4'}>
                         <div className={'flex flex-col gap-2'}>
@@ -184,7 +184,7 @@ export const AddTour = ({ modalVisible, setModalVisible, setLoading }) => {
                             <Input.TextArea rootClassName={'max-h-24'}
                                             allowClear
                                             onChange={(e) => setDescription(e.target.value)}
-                                            placeholder={'Mô tả tour'} />
+                                            placeholder={'Mô tả tour'}/>
                         </div>
                         <div className={'flex flex-col gap-2'}>
                             <label className={'font-semibold text-black uppercase'}>Thời gian</label>
@@ -192,31 +192,31 @@ export const AddTour = ({ modalVisible, setModalVisible, setLoading }) => {
                                 className={'w-full'}
                                 onChange={(e) => setDuration(e)}
                                 min={0}
-                                placeholder={'Thời gian'} />
+                                placeholder={'Thời gian'}/>
                         </div>
                         <div className={'flex flex-col gap-2'}>
                             <label className={'font-semibold text-black uppercase'}>Điểm đến</label>
                             <Input
                                 onChange={(e) => setDestination(e.target.value)}
-                                placeholder={'Điểm đến destination'} />
+                                placeholder={'Điểm đến destination'}/>
                         </div>
                         <div className={'flex flex-col gap-2'}>
                             <label className={'font-semibold text-black uppercase'}>Hướng dẫn viên</label>
                             <Select
                                 showSearch
                                 options={guides}
-                                fieldNames={{ value: 'id', label: 'firstname + lastname' }}
+                                fieldNames={{value: 'id', label: 'firstname + lastname'}}
                                 onChange={(e) => setSelectedGuide(e)}
-                                placeholder={'Chọn hướng dẫn viên'} />
+                                placeholder={'Chọn hướng dẫn viên'}/>
                         </div>
                         <div className={'flex flex-col gap-2'}>
                             <label className={'font-semibold text-black uppercase'}>Loại tour</label>
                             <Select
                                 showSearch
                                 options={categories}
-                                fieldNames={{ value: 'id', label: 'title' }}
+                                fieldNames={{value: 'id', label: 'title'}}
                                 onChange={(e) => setCategories(e)}
-                                placeholder={'Chọn loại tour'} />
+                                placeholder={'Chọn loại tour'}/>
                         </div>
                     </div>
                 </div>
