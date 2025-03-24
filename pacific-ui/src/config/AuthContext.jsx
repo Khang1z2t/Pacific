@@ -12,29 +12,33 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
+    const [loading, setLoading] = useState(false);
+
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [wishlist, setWishlist] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [role, setRole] = useState(null);
     const token = localStorage.getItem('accessToken');
 
     useEffect(() => {
-        getUser(localStorage.getItem('accessToken')).then(() => {
-            getWishlist();
-            getPaymentHistory();
-        }).catch((err) => {
-            console.error(err);
-        });
-    }, []);
+        if (token) {
+            getUser(token).then(() => {
+                getWishlist();
+                getPaymentHistory();
+            }).catch((err) => {
+                console.error(err);
+            });
+        } else {
+            setLoading(false);
+        }
+    }, [token]);
 
-    const getUser = async () => {
-        await AuthService.authToken(localStorage.getItem('accessToken')).then((res) => {
+    const getUser = async (token) => {
+        await AuthService.authToken(token).then((res) => {
             setCurrentUser(res?.data);
             setRole(res?.data.role);
             setLoading(false);
         }).catch((err) => {
             console.error(err);
-            setLoading(true);
         });
     };
     const getPaymentHistory = () => {
@@ -94,20 +98,28 @@ export function AuthProvider({ children }) {
             message.error('Đã xảy ra lỗi, vui lòng thử lại');
         }
     };
+    const handleGoogleLogin = async (navigate) => {
+        try {
+            await AuthService.loginGoogle();
+            getUser(localStorage.getItem('accessToken'));
+            message.success('Đăng nhập thành công!', 1);
+            navigate('/');
+        } catch (error) {
+            message.error(`Đăng nhập thất bại: ${error.message}`, 1);
+        }
+    };
 
-
-    const logout = async () => {
+    const handleLogout = async (navigate) => {
         try {
             localStorage.removeItem('accessToken');
             setCurrentUser(null);
             setRole(null);
-            return Promise.resolve();
+            message.success('Đăng xuất thành công!', 1);
+            navigate('/');
         } catch (error) {
-            console.error('Logout failed: ', error.message);
-            throw error;
+            message.error(`Đăng xuất thất bại: ${error.message}`, 1);
         }
     };
-
     const getToken = async () => {
         try {
             return localStorage.getItem('accessToken');
@@ -120,8 +132,9 @@ export function AuthProvider({ children }) {
     const value = {
         getToken,
         currentUser,
+        setCurrentUser,
         getUser,
-        logout,
+        handleLogout,
         loading,
         role,
         paymentHistory,
@@ -132,6 +145,7 @@ export function AuthProvider({ children }) {
         handleAddToWishlist,
         handleRemoveWishlist,
         setWishlist,
+        handleGoogleLogin,
     };
 
     return (

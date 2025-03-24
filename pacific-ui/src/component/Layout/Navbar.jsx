@@ -48,22 +48,14 @@ export const Navbar = () => {
             </div>
         );
     };
-    const { logout, currentUser } = useAuth();
+    const { handleLogout, currentUser,getUser } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
 
     }, [currentUser]);
 
-    const handleLogout = async () => {
-        try {
-            await logout();
-            message.success('Đăng xuất thành công!', 1);
-            navigate('/')
-        } catch (error) {
-            message.error(`Đăng xuất thất bại: ${error.message}`, 1);
-        }
-    };
+
     const menuItems = [
         {
             key: 'thong-tin-ca-nhan',
@@ -117,7 +109,7 @@ export const Navbar = () => {
                     )}
                 <Menu.Item key="logout">
                     <button
-                        onClick={() => handleLogout()}
+                        onClick={() => handleLogout(navigate)}
                         className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                         Đăng xuất

@@ -13,10 +13,9 @@ export const Login = () => {
     //healing async
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { setCurrentUser, getUser } = useAuth();
+    const { setCurrentUser, getUser, handleGoogleLogin } = useAuth();
     const [password, setPassword] = useState('');
     const [identifier, setIdentifier] = useState('');
-
     const [isSignIn, setIsSignIn] = useState(false);
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -25,15 +24,12 @@ export const Login = () => {
                 message.error('Vui lòng điền đầy đủ thông tin', 1);
                 return;
             }
-            // if (identifier.includes('@')) {
-            //     user = await loginWEmail(identifier, password);
-            // } else {
-            //     user = await loginWithUsername(identifier, password);
-            // }
-            const user = await AuthService.login(identifier, password);
-            setCurrentUser(user.data);
-            message.success('Đăng nhập thành công!', 1);
-            navigate('/');
+            await AuthService.login(identifier, password).then(r => {
+                setCurrentUser(r.data);
+                message.success('Đăng nhập thành công!', 1);
+                navigate('/');
+            });
+
         } catch (er) {
             message.error(`Đăng nhập thất bại: ${er.message}`, 1);
         } finally {
@@ -42,18 +38,7 @@ export const Login = () => {
     };
 
 
-    const handleGoogleLogin = async (e) => {
-        e.preventDefault();
-        if (!isSignIn) {
-            setIsSignIn(true);
-            await AuthService.loginGoogle(getUser).then(() => {
-                navigate('/');
-                message.success('Đăng nhập thành công', 2);
-            }).catch(() => {
-                message.error('Đăng nhập Google thất bại', 5);
-            });
-        }
-    };
+
 
     const handleFacebookLogin = async (e) => {
         e.preventDefault();
@@ -113,7 +98,7 @@ export const Login = () => {
                 <Divider plain children={'Hoặc đăng nhập với'} />
                 <div className="flex gap-4 justify-between">
                     <button
-                        onClick={handleGoogleLogin}
+                        onClick={() => handleGoogleLogin(navigate)}
                         className="p-2 bg-red-500 text-white rounded-md font-semibold hover:bg-red-600"
                     >
                         Đăng nhập với Google
