@@ -19,6 +19,7 @@ const api = {
     adminSupport: '/api/admin/support',
     adminRating: '/api/admin/rating',
     adminVoucher: '/api/admin/voucher',
+    payment: '/api/payments',
     adminTourDetails: '/api/tour-details',
 
 };

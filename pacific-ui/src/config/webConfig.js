@@ -13,6 +13,9 @@ const webConfig = {
     convertDate: (date) => {
         return new Intl.DateTimeFormat('vi-VN').format(date);
     },
+    convertDateFromString: (date) => {
+        return new Intl.DateTimeFormat('vi-VN').format(new Date(date));
+    },
     convertDateNoTime: (date) => {
         return new Intl.DateTimeFormat('vi-VN', {
             year: 'numeric',
@@ -23,8 +26,13 @@ const webConfig = {
     convertMonthYear: (monthYear) => {
         let [year, month] = monthYear.split('-');
         let date = new Date(year, month - 1);
-        return new Intl.DateTimeFormat('vi-VN', { month: 'numeric', year: 'numeric' }).format(new Date(date)).replace('-', '/');
+        return new Intl.DateTimeFormat('vi-VN', {
+            month: 'numeric',
+            year: 'numeric',
+        }).format(new Date(date)).replace('-', '/');
     },
+//     decode base64
+
 };
 
 export default webConfig;
