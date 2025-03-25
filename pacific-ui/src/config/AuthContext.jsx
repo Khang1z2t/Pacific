@@ -3,6 +3,7 @@ import AuthService from '~/services/AuthServices';
 import { message } from 'antd';
 import WishlistServices from '~/services/WishlistServices';
 import PaymentServices from '~/services/PaymentServices';
+import BookingServices from '~/services/BookingServices';
 
 const AuthContext = createContext();
 
@@ -13,7 +14,8 @@ export function useAuth() {
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(false);
-
+    const [booking, setBooking] = useState({});
+    const [bookLists, setBookLists] = useState([]);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [wishlist, setWishlist] = useState([]);
     const [role, setRole] = useState(null);
@@ -24,6 +26,7 @@ export function AuthProvider({ children }) {
             getUser(token).then(() => {
                 getWishlist();
                 getPaymentHistory();
+                getBooking();
             }).catch((err) => {
                 console.error(err);
             });
@@ -59,6 +62,15 @@ export function AuthProvider({ children }) {
             console.error(err);
         }
     }, [token]);
+
+    const getBooking = useCallback(async () => {
+        try {
+            const res = await BookingServices.getBookingByUser(token);
+            setBookLists(res?.data);
+        } catch (err) {
+            console.error(err);
+        }
+    },[token]);
 
     const handleAddToWishlist = async (id) => {
         if (!token) {
@@ -133,6 +145,7 @@ export function AuthProvider({ children }) {
 
     const value = {
         getToken,
+        getBooking,
         currentUser,
         setCurrentUser,
         getUser,
@@ -140,6 +153,8 @@ export function AuthProvider({ children }) {
         loading,
         role,
         paymentHistory,
+        booking,
+        setBooking,
         setPaymentHistory,
         getPaymentHistory,
         wishlist,

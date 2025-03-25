@@ -2,10 +2,9 @@ import config from '~/config';
 import axiosConfig from '~/config/axiosConfig';
 
 const BookingServices = {
-    checkOut: async (params) => {
+    checkOut: async (params, token) => {
         try {
             const token = localStorage.getItem('accessToken');
-            console.log(token);
             const response = await axiosConfig.get(config.api.booking + '/checkout', {
                 params,
                 headers: {
@@ -49,6 +48,36 @@ const BookingServices = {
         }
     },
 
+    getBookingByTourId: async (id, body) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const resp = await axiosConfig.post(config.api.booking + `/tour/${id}`,
+                body,
+                {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json',
+                    },
+                },
+            );
+            return resp.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+    getBookingByUser: async (token) => {
+        try{
+            const response = await axiosConfig.get(config.api.booking + '/book/user', {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            });
+        }catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 };
 
 export default BookingServices;

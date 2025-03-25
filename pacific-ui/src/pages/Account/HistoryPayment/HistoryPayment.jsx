@@ -24,12 +24,10 @@ const historyData = [
     },
 ];
 
-export default function HistoryPayment({ data }) {
+export default function HistoryPayment({ data, booking }) {
     const [visible, setVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
-    const [orderInfo, setOrderInfo] = useState(null);
     const [tourDetail, setTourDetail] = useState({});
-    const [status, setStatus] = useState('Completed');
     const columns = [
         {
             title: 'Mã giao dịch',
@@ -67,18 +65,13 @@ export default function HistoryPayment({ data }) {
     const showDetails = async (record) => {
         setSelectedTransaction(record);
         try {
-            const decodedOrderInfo = atob(record.note);
-            const pastedData = JSON.parse(decodedOrderInfo);
-            setOrderInfo(pastedData);
-
-            TourDetailServices.getTourDetailById(pastedData.tourId).then((res) => {
+            TourDetailServices.getTourDetailById(booking.tourDetailId).then((res) => {
                 setTourDetail(res.data);
             }).catch((err) => {
                 console.error(err);
             });
         } catch (err) {
             console.log(err);
-            setOrderInfo(null);
         }
 
         setVisible(true);
@@ -96,7 +89,7 @@ export default function HistoryPayment({ data }) {
             >
                 {selectedTransaction && (
                     <div>
-                        <div className={"grid grid-cols-2 gap-3"}>
+                        <div className={'grid grid-cols-2 gap-3'}>
                             <div>
                                 <label className="font-semibold text-black">Mã giao dịch</label>
                                 <p>{selectedTransaction.transactionId}</p>
@@ -111,51 +104,47 @@ export default function HistoryPayment({ data }) {
                             </div>
                             <div>
                                 <label className="font-semibold text-black">Trạng thái</label>
-                                <p>{selectedTransaction.status ? "Thành công" : "Thất bại"}</p>
+                                <p>{selectedTransaction.status ? 'Thành công' : 'Thất bại'}</p>
                             </div>
                         </div>
                         <Card className={'shadow-lg'}>
-                            {orderInfo && (
+                            {booking && (
                                 <>
                                     <div className={'grid grid-cols-2 gap-4'}>
                                         <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Tên Người dùng</label>
-                                            <p>{orderInfo.name}</p>
+                                            <label className="font-semibold text-black">Số lượng người lớn</label>
+                                            <p>{booking.adultNum}</p>
                                         </div>
                                         <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Email</
+                                            <label className="font-semibold text-black">Số lượng trẻ em</
                                                 label>
-                                            <p>{orderInfo.email}</p>
+                                            <p>{booking.adultNum}</p>
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <label className="font-semibold text-black">Số điện thoại</label>
-                                            <p>{orderInfo.phone}</p>
+                                            <p>{booking.phone}</p>
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <label className="font-semibold text-black">Tổng tiền</label>
-                                            <p>{config.webConfig.getCurrency(orderInfo.totalPrice)}</p>
+                                            <p>{config.webConfig.getCurrency(booking.totalAmount)}</p>
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <label className="font-semibold text-black">Hình thức thanh toán</label>
-                                            <p>{orderInfo.paymentMethod}</p>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Ghi chú</label>
-                                            <p>{orderInfo.note || 'Không có ghi chú'}</p>
+                                            <p>{booking.paymentMethod}</p>
                                         </div>
                                     </div>
                                     <Divider
                                         orientation="center"
-                                        style={{ borderColor: "#7cb305" }}
+                                        style={{ borderColor: '#7cb305' }}
                                     />
-                                    <div className={"grid grid-cols-2 gap-4"}>
+                                    <div className={'grid grid-cols-2 gap-4'}>
                                         <div className="flex flex-col gap-2">
                                             <label className="font-semibold text-black">Mã tour</label>
                                             <p>{tourDetail.id}</p>
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <label className="font-semibold text-black">Ngày khởi hành</label>
-                                            <p>{moment(tourDetail.startDate).format("DD/MM/YYYY")}</p>
+                                            <p>{moment(tourDetail.startDate).format('DD/MM/YYYY')}</p>
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <label className="font-semibold text-black">Người lớn</label>
