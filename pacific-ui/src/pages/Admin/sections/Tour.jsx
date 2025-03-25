@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import TourCard from "../components/TourCard"; 
+import React, { useState } from 'react';
+import TourCard from '../components/TourCard';
 
 const Tour = () => {
   const [tours, setTours] = useState([

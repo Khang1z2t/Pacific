@@ -1,5 +1,6 @@
 import axiosConfig from '~/config/axiosConfig';
 import config from '~/config';
+
 const API_BASE = config.api.adminVoucher;
 
 const VoucherServices = {

@@ -1,5 +1,5 @@
 // MailingCard.jsx
-import { useState } from "react";
+import { useState } from 'react';
 
 const MailingCard = () => {
   const [to, setTo] = useState("");

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card } from 'antd';
-import { Tabs } from 'antd';
-import { DatePicker, Table } from 'antd';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Card, DatePicker, Table, Tabs } from 'antd';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import AdminServices from '~/services/AdminServices';
 import moment from 'moment';
 

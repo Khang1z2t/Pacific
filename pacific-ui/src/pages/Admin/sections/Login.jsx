@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import LoginCard from "../components/LoginCard";
+import { useEffect, useState } from 'react';
+import LoginCard from '../components/LoginCard';
 
 const Login = () => {
     const [showWebcam, setShowWebcam] = useState(false);

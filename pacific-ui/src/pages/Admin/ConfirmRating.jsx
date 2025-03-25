@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Switch, Button, Form, Input, Dropdown, Menu, Modal, message } from 'antd';
-import { SearchOutlined, DownOutlined, DeleteOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Button, Dropdown, Form, Input, Menu, message, Modal, Space, Switch, Table, Tag } from 'antd';
+import { DeleteOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import RatingService from '~/services/RatingService';
 import dayjs from 'dayjs';
 

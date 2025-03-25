@@ -1,7 +1,6 @@
 import axiosConfig from '~/config/axiosConfig';
-import config from '~/config';
 import AxiosConfig from '~/config/axiosConfig';
-import qs from 'qs';
+import config from '~/config';
 
 const TourServices = {
     getAllTour: async (params) => {

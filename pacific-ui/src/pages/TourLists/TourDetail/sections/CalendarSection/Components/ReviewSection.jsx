@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { Divider, Drawer, Input, Progress, Rate, Select } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';

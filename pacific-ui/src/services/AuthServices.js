@@ -1,6 +1,5 @@
-import AxiosConfig from "~/config/axiosConfig";
-import config from "~/config";
-import { useAuth } from '~/config/AuthContext';
+import AxiosConfig from '~/config/axiosConfig';
+import config from '~/config';
 
 const AuthService = {
 

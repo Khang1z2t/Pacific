@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from 'antd';
-import { Info, ArrowUp, ArrowDown } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Info } from 'lucide-react';
+import { Bar, BarChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 export const ChartCard = ({ title, totalAmount, weekChange, dayChange, dailyAmount, chartData, chartType = 'line' }) => {
     return (

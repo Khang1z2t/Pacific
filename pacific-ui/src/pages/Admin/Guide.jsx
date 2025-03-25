@@ -1,26 +1,7 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
-import {
-    Space,
-    Table,
-    Tag,
-    Switch,
-    Modal,
-    Button,
-    Form,
-    Input,
-    Radio,
-    Select,
-    Upload,
-    Row,
-    Col,
-    Dropdown,
-    Menu,
-    Image,
-    DatePicker,
-} from 'antd';
-import { SearchOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
-import config from '~/config';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, Col, Dropdown, Form, Input, Menu, Modal, Row, Select, Space, Switch, Table, Tag } from 'antd';
+import { DownOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import GuideServices from '~/services/GuideServices';
 import dayjs from 'dayjs';
 

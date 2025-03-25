@@ -1,4 +1,4 @@
-import { Avatar, Input, Upload, message, Select } from 'antd';
+import { Input, message, Select, Upload } from 'antd';
 import { useState } from 'react';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 

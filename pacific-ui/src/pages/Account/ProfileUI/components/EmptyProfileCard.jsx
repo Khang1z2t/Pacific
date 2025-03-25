@@ -1,6 +1,7 @@
 import { Avatar, Card } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import config from '~/config';
+
 export const EmptyProfileCard = () => {
     const navigate = useNavigate();
     const handleClick = () => {

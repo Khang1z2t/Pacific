@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Card, Button, Modal } from "antd";
+import React, { useState } from 'react';
+import { Button, Card, Modal } from 'antd';
 
 const TourListCard = ({ tour }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);

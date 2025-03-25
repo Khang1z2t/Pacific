@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
-import { Dropdown, Menu, message } from 'antd';
+import { Dropdown, Menu } from 'antd';
 import config from '~/config';
-import AuthService from '~/services/AuthServices';
-import { useNavigate } from 'react-router-dom';
 
 export const Navbar = () => {
 

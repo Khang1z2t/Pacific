@@ -1,5 +1,5 @@
 import { Button, Divider, Form, Input, message } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone, FacebookFilled, FacebookOutlined, GoogleOutlined } from '@ant-design/icons';
+import { EyeInvisibleOutlined, EyeTwoTone, FacebookFilled, GoogleOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import config from '~/config';

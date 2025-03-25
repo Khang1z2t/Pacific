@@ -1,8 +1,6 @@
 import { DatePicker, Input, Select } from 'antd';
-import Search from 'antd/es/input/Search';
 import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
-import config from '~/config';
 
 export const SearchBar = ({ onSearch }) => {
     const { RangePicker } = DatePicker;

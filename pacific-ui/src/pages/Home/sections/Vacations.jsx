@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Card } from 'antd';
+
 const { Meta } = Card;
 
 const carouselItems = [

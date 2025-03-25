@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import {
-    BlockOutlined, CommentOutlined, DesktopOutlined, DollarCircleOutlined, FileOutlined, HistoryOutlined,
-    LogoutOutlined, PaperClipOutlined, PieChartOutlined, TeamOutlined,
+    BlockOutlined,
+    CommentOutlined,
+    DesktopOutlined,
+    DollarCircleOutlined,
+    FileOutlined,
+    HistoryOutlined,
+    LogoutOutlined,
+    PaperClipOutlined,
+    PieChartOutlined,
+    TeamOutlined,
 } from '@ant-design/icons';
 import { Breadcrumb, Layout, theme, Tooltip } from 'antd';
 import { AdminSidebar } from '~/pages/Admin/components/AdminHome/AdminSidebar';
@@ -12,10 +20,8 @@ import Users from './Users';
 import Guide from './Guide';
 import TourList from '~/pages/Admin/sections/ToursPage/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
-import Promotion from '~/pages/Admin/sections/Promotion';
 import { Link } from 'react-router-dom';
 import { Category } from '@react-buddy/ide-toolbox';
-import UsedPromotion from '~/pages/Admin/UsedPromotion';
 import BookingCancel from '~/pages/Admin/sections/BookingCancel';
 import BookingDone from '~/pages/Admin/sections/BookingDone';
 import Rating from '~/pages/Admin/Rating';

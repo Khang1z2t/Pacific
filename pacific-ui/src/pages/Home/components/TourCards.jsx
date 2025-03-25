@@ -1,10 +1,7 @@
-import { Card, Rate } from 'antd';
-import { useEffect, useState } from 'react';
+import { Rate } from 'antd';
 import config from '~/config';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
-import { message } from 'antd';
-import WishlistServices from '~/services/WishlistServices';
 import { useAuth } from '~/config/AuthContext';
 
 export const TourCards = ({ data }) => {

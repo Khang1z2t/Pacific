@@ -1,5 +1,5 @@
-import { Button, Card, Divider, Input } from 'antd';
-import { FaHotel, FaInfoCircle, FaPhoneAlt, FaPlaneDeparture, FaTags } from 'react-icons/fa';
+import { Card, Divider } from 'antd';
+import { FaHotel, FaInfoCircle, FaPlaneDeparture } from 'react-icons/fa';
 import { BiSolidUserDetail } from 'react-icons/bi';
 import { useEffect, useState } from 'react';
 import config from '~/config';

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { SearchOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { SearchOutlined } from '@ant-design/icons';
 import PromotionCard from '~/pages/Admin/components/PromotionCard';
-import { Space, Input } from "antd";
+import { Input, Space } from 'antd';
 
 
 const UsedPromotion = () => {

@@ -1,4 +1,4 @@
-import { Card, DatePicker, Input, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { useEffect, useState } from 'react';
 import { ProfileCard } from '~/pages/Account/ProfileUI/components/ProfileCard';
 import { EmptyProfileCard } from '~/pages/Account/ProfileUI/components/EmptyProfileCard';

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Menu, Calendar, Modal, Card, Divider, Button, Image } from 'antd';
+import { Button, Calendar, Card, Divider, Image, Menu } from 'antd';
 import dayjs from 'dayjs';
-import { LocationDetails } from '~/pages/TourLists/TourDetail/sections/CalendarSection/Components/LocationDetails';
 import BookingServices from '~/services/BookingServices';
 import config from '~/config';
 import TourDetailServices from '~/services/TourDetailServices';

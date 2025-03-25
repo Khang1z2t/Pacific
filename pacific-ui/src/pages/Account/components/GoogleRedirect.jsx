@@ -1,6 +1,6 @@
-import {useLocation, useNavigate} from "react-router-dom";
-import {useEffect} from "react";
-import {Loading} from "~/component/ui/Loading";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Loading } from '~/component/ui/Loading';
 
 export const GoogleRedirect = () => {
     const navigate = useNavigate();

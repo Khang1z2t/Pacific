@@ -1,7 +1,7 @@
 import { SearchBar } from '~/pages/TourLists/components/SearchBar';
 import { TourCards } from '~/pages/TourLists/components/TourCards';
 import { useEffect, useState } from 'react';
-import { Divider, Empty, Pagination, Popover, Rate, Select, Spin, Tag } from 'antd';
+import { Divider, Pagination, Spin } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';

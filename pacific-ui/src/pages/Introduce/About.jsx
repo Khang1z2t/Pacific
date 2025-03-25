@@ -1,6 +1,15 @@
-import React from "react";
-import { FaMapMarkedAlt, FaHiking, FaUmbrellaBeach, FaCity, FaStar, FaQuoteLeft, FaMountain, FaShip, FaCampground } from "react-icons/fa";
-import { motion } from "framer-motion";
+import React from 'react';
+import {
+    FaCampground,
+    FaCity,
+    FaHiking,
+    FaMapMarkedAlt,
+    FaMountain,
+    FaShip,
+    FaStar,
+    FaUmbrellaBeach,
+} from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 
 const services = [

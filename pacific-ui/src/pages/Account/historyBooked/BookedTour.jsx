@@ -1,4 +1,4 @@
-import { Card, Divider, Pagination } from 'antd';
+import { Pagination } from 'antd';
 import { BookedTourCard } from '~/pages/Account/historyBooked/components/BookedTourCard';
 
 const tourInfos = [

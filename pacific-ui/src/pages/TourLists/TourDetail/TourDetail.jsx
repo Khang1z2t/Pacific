@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Rate, Tag, Divider, Button, Row, Col } from 'antd';
-import DetailSection from '~/pages/TourLists/TourDetail/sections/DetailSection';
-import "tailwindcss/tailwind.css";
+import { Divider } from 'antd';
+import 'tailwindcss/tailwind.css';
 import { CalendarSection } from '~/pages/TourLists/TourDetail/sections/CalendarSection/CalendarSection';
 import { OtherToursList } from '~/pages/TourLists/TourDetail/sections/OtherTours/OtherToursList';
 import { Loading } from '~/component/ui/Loading';

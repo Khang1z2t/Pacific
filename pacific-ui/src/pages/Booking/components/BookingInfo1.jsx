@@ -1,20 +1,7 @@
 import { useParams } from 'react-router-dom';
-import { encode as base64Encode } from 'js-base64';
 import React, { useEffect, useState } from 'react';
 import config from '~/config';
-import {
-    Form,
-    Input,
-    Button,
-    InputNumber,
-    Checkbox,
-    Modal,
-    Card,
-    Divider,
-    message,
-    DatePicker,
-    Radio,
-} from 'antd';
+import { Button, Card, Checkbox, DatePicker, Divider, Form, Input, InputNumber, message, Modal, Radio } from 'antd';
 import BookingServices from '~/services/BookingServices';
 import { ModalTerms } from '~/pages/Terms/ModalTerms';
 import { FaTags } from 'react-icons/fa';
