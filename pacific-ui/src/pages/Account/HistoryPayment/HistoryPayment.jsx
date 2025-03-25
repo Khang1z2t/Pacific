@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Table, Modal, Button, Divider, Tooltip, Card, Input } from 'antd';
 import config from '~/config';
 import { PlusOutlined } from '@ant-design/icons';

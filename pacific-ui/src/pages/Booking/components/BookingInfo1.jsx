@@ -21,7 +21,6 @@ import { FaTags } from 'react-icons/fa';
 import TourService from '~/services/TourServices';
 import { TourInfoCard } from '~/pages/Booking/components/bookingInfo1/components/TourInfoCard';
 import { useAuth } from '~/config/AuthContext';
-import bookingServices from '~/services/BookingServices';
 
 const { TextArea } = Input;
 
@@ -35,13 +34,13 @@ export const BookingInfo1 = ({ data, setStep }) => {
     const [children, setChildren] = useState(0);
     const [phone, setPhone] = useState(currentUser ? `${currentUser.phone}` : '');
     const [email, setEmail] = useState(currentUser ? `${currentUser.email}` : '');
-    const [startDate, setStartDate] = useState('');
     const [note, setNote] = useState('');
     const [confirm, setConfirm] = useState(false);
     const [open, setOpen] = useState(false);
     const [voucher, setVoucher] = useState('');
     const [tour, setTour] = useState({});
     const [bookingDetails, setBookingDetails] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(adults * data.priceAdults + children * data.priceChildren);
 
     const MAX_TOTAL_PASSENGERS = 10; // Giới hạn tổng số hành khách
 
@@ -50,7 +49,7 @@ export const BookingInfo1 = ({ data, setStep }) => {
         const total = value + children;
         if (total > MAX_TOTAL_PASSENGERS) {
             message.warning(`Tổng số hành khách không được vượt quá ${MAX_TOTAL_PASSENGERS}`);
-            setAdults(MAX_TOTAL_PASSENGERS - children); // Giữ tổng không vượt quá 10
+            setAdults(MAX_TOTAL_PASSENGERS - children);
         } else {
             setAdults(value);
         }
@@ -61,7 +60,7 @@ export const BookingInfo1 = ({ data, setStep }) => {
         const total = adults + value;
         if (total > MAX_TOTAL_PASSENGERS) {
             message.warning(`Tổng số hành khách không được vượt quá ${MAX_TOTAL_PASSENGERS}`);
-            setChildren(MAX_TOTAL_PASSENGERS - adults); // Giữ tổng không vượt quá 10
+            setChildren(MAX_TOTAL_PASSENGERS - adults);
         } else {
             setChildren(value);
         }
@@ -96,13 +95,18 @@ export const BookingInfo1 = ({ data, setStep }) => {
                     gender: prev.find((item) => item.id === `child-${i}`)?.gender || 'MALE',
                     birthday: prev.find((item) => item.id === `child-${i}`)?.birthday || '',
                     ageGroup: 'CHILD',
-                    price: data.priceAdults,
+                    price: data.priceChildren, // Sửa price cho trẻ em
                 });
             }
 
             return newDetails;
         });
-    }, [adults, children]);
+    }, [adults, children, data.priceAdults, data.priceChildren]);
+
+    // Cập nhật totalPrice khi adults hoặc children thay đổi
+    useEffect(() => {
+        setTotalPrice(adults * data.priceAdults + children * data.priceChildren);
+    }, [adults, children, data.priceAdults, data.priceChildren]);
 
     const updateBookingDetail = (id, field, value) => {
         setBookingDetails((prev) => {
@@ -115,9 +119,7 @@ export const BookingInfo1 = ({ data, setStep }) => {
         });
     };
 
-    const [totalPrice, setTotalPrice] = useState(adults * data.priceAdults + children * data.priceChildren);
     const [form] = Form.useForm();
-
 
     useEffect(() => {
         TourService.getById('TOUR001')
@@ -128,20 +130,6 @@ export const BookingInfo1 = ({ data, setStep }) => {
                 console.error(err);
             });
     }, []);
-
-    useEffect(() => {
-        setTotalPrice(adults * data.priceAdults + children * data.priceChildren);
-        // setOrderInfo({
-        //     name: fullName,
-        //     phone: phone,
-        //     email: email,
-        //     tourId: id,
-        //     startDate: startDate,
-        //     note: note,
-        //     totalPrice: totalPrice,
-        //     paymentMethod: 'VNPAY',
-        // });
-    }, [totalPrice]);
 
     const BookTour = async (amount, info) => {
         const body = {
@@ -154,15 +142,16 @@ export const BookingInfo1 = ({ data, setStep }) => {
                 gender: detail.gender || 'MALE',
                 birthday: detail.birthday ? new Date(detail.birthday).toISOString() : null,
                 ageGroup: detail.ageGroup || 'ADULT',
-                price: detail.priceAdults || 0,
+                price: detail.price || 0, // Sử dụng price từ bookingDetails
             })),
         };
-        await BookingServices.getBookingByTourId(data.id, body).then((res) => {
-            setBooking(res.data);
-        }).catch((err) => {
-            console.error(err);
-        });
-
+        await BookingServices.getBookingByTourId(data.id, body)
+            .then((res) => {
+                setBooking(res.data);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
 
         await BookingServices.checkOut({ amount: amount, orderInfo: info ? note : '' })
             .then((res) => {
@@ -215,8 +204,8 @@ export const BookingInfo1 = ({ data, setStep }) => {
                                         <InputNumber
                                             className={'w-full mt-5'}
                                             min={1}
-                                            max={MAX_TOTAL_PASSENGERS - children} // Giới hạn động dựa trên số trẻ em
-                                            defaultValue={1}
+                                            max={MAX_TOTAL_PASSENGERS - children}
+                                            value={adults}
                                             onChange={handleAdultsChange}
                                         />
                                     </Card>
@@ -231,8 +220,8 @@ export const BookingInfo1 = ({ data, setStep }) => {
                                         <InputNumber
                                             className={'w-full'}
                                             min={0}
-                                            max={MAX_TOTAL_PASSENGERS - adults} // Giới hạn động dựa trên số người lớn
-                                            defaultValue={0}
+                                            max={MAX_TOTAL_PASSENGERS - adults}
+                                            value={children}
                                             onChange={handleChildrenChange}
                                         />
                                     </Card>
@@ -243,9 +232,10 @@ export const BookingInfo1 = ({ data, setStep }) => {
                             <div className="overflow-y-scroll space-y-4 p-5 max-h-96">
                                 {bookingDetails.map((item, index) => {
                                     const isAdult = item.ageGroup === 'ADULT';
-                                    const passengerNumber = isAdult
-                                        ? index + 1 - bookingDetails.filter((i, idx) => i.ageGroup === 'CHILD' && idx < index).length
-                                        : index + 1 - bookingDetails.filter((i, idx) => i.ageGroup === 'ADULT' && idx < index).length;
+                                    const passengerNumber =
+                                        isAdult
+                                            ? index + 1 - bookingDetails.filter((i, idx) => i.ageGroup === 'CHILD' && idx < index).length
+                                            : index + 1 - bookingDetails.filter((i, idx) => i.ageGroup === 'ADULT' && idx < index).length;
 
                                     return (
                                         <Card
@@ -256,7 +246,6 @@ export const BookingInfo1 = ({ data, setStep }) => {
                                             }
                                             key={item.id}
                                         >
-                                            {/* Phần còn lại của Card giữ nguyên */}
                                             <div
                                                 className="grid grid-cols-2 gap-2 mb-4 rounded-lg border border-gray-100 transition-all hover:border-orange-600 p-4 shadow-lg">
                                                 <div className={'gap-2 flex flex-col mb-2'}>
@@ -326,9 +315,8 @@ export const BookingInfo1 = ({ data, setStep }) => {
                                 <Checkbox rootClassName={'text-red-500'} onChange={() => setConfirm(!confirm)}>
                                     Tôi đã đọc và đồng ý với các
                                 </Checkbox>
-                                <a onClick={() => setOpen(!open)} className={'text-indigo-500 underline'}>
-                                    chính sách và điều khoản.
-                                </a>
+                                <a onClick={() => setOpen(!open)} className={'text-indigo-500 underline'}>chính sách và
+                                    điều khoản.</a>
                             </div>
                             <Divider />
                             <div className="text-lg font-semibold text-orange-500 mt-2">
