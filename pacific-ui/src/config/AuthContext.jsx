@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AuthService from '~/services/AuthServices';
 import { message } from 'antd';
 import WishlistServices from '~/services/WishlistServices';
@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
         }
     }, [token]);
 
-    const getUser = async (token) => {
+    const getUser = useCallback(async (token) => {
         await AuthService.authToken(token).then((res) => {
             setCurrentUser(res?.data);
             setRole(res?.data.role);
@@ -40,23 +40,25 @@ export function AuthProvider({ children }) {
         }).catch((err) => {
             console.error(err);
         });
-    };
-    const getPaymentHistory = () => {
-        PaymentServices.getHistoryPayments(localStorage.getItem('accessToken')).then((res) => {
+    },[]);
+
+    const getPaymentHistory = useCallback(async () => {
+        try {
+            const res = await PaymentServices.getHistoryPayments(token);
             setPaymentHistory(res?.data);
-        }).catch((err) => {
+        } catch (err) {
             console.error(err);
-        });
-    };
+        }
+    }, [token]);
 
-    const getWishlist = () => {
-        WishlistServices.getWishlist(localStorage.getItem('accessToken')).then((res) => {
+    const getWishlist = useCallback(async () => {
+        try {
+            const res = await WishlistServices.getWishlist(token);
             setWishlist(res?.data);
-        }).catch((err) => {
+        } catch (err) {
             console.error(err);
-        });
-
-    };
+        }
+    }, [token]);
 
     const handleAddToWishlist = async (id) => {
         if (!token) {

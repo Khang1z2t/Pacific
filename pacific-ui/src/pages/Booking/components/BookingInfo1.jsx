@@ -8,6 +8,7 @@ import { ModalTerms } from '~/pages/Terms/ModalTerms';
 import { FaTags } from 'react-icons/fa';
 import TourService from '~/services/TourServices';
 import { TourInfoCard } from '~/pages/Booking/components/bookingInfo1/components/TourInfoCard';
+import { useAuth } from '~/config/AuthContext';
 
 const { TextArea } = Input;
 
@@ -51,7 +52,6 @@ export const BookingInfo1 = ({ data, setStep }) => {
 
     useEffect(() => {
         setTotalPrice((adults * data.priceAdults) + (children * data.priceChildren));
-
         setOrderInfo({
             name: fullName,
             phone: phone,
@@ -67,9 +67,9 @@ export const BookingInfo1 = ({ data, setStep }) => {
 
     const BookTour = async (amount, info) => {
         const hashedOrderInfo = base64Encode(JSON.stringify(info));
-
+        console.log(hashedOrderInfo);
         await BookingServices.checkOut({ amount: amount, orderInfo: hashedOrderInfo }).then((res) => {
-            window.location.href = res;
+            // window.location.href = res;
         }).catch((err) => {
             console.error(err);
         });
