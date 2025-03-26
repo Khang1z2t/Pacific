@@ -1,4 +1,14 @@
+import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+
 export const AboutSection = () => {
+    const { t, i18n } = useTranslation();
+    const [selectedLang, setSelectedLang] = useState(i18n.language);
+
+    useEffect(() => {
+        setSelectedLang(i18n.language);
+    }, [i18n.language]);
+
     return (
         <>
             <div className={"hidden lg:block"}>
@@ -11,19 +21,18 @@ export const AboutSection = () => {
                 <div className={"container mx-auto py-8 px-40"}>
                     <div className={"ms-96 grid grid-cols-1 md:grid-cols-2"}>
                         <div className={"text-balance"}>
-                            <h2 className={"text-5xl font-bold mb-4 text-orange-500"}>Về chúng tôi</h2>
+                            <h2 className={"text-5xl font-bold mb-4 text-orange-500"}>{t("aboutUs.ab1")}</h2>
                             <p className={"text-xl font-bold"}>
-                                Hãy biến chuyến tham quan của bạn trở nên đáng nhớ và an toàn với Pacific Tour.
+                                {t("aboutUs.ab2")}
                             </p>
                             <p className={"text-md font-bold pt-4"}>
-                                Chúng tôi cung cấp dịch vụ du lịch chất lượng cao, giúp bạn khám phá những điểm đến tuyệt
-                                vời nhất trên thế giới.
+                                {t("aboutUs.ab3")}
                             </p>
                         </div>
                     </div>
                     <button
                         className={"mx-96 mt-5 text-4xl bg-orange-600 font-bold text-white p-4 rounded-full shadow-xl hover:bg-orange-800"}>
-                        Đặt tour ngay!
+                        {t("aboutUs.ab4")}
                     </button>
                 </div>
             </div>
@@ -31,19 +40,18 @@ export const AboutSection = () => {
                 <div className={"container bg-gray-100 rounded-lg mx-auto py-8 px-4"}>
                     <div className={"grid grid-cols-1"}>
                         <div className={"text-center"}>
-                            <h2 className={"text-5xl font-bold mb-4 text-orange-500"}>Về chúng tôi</h2>
+                            <h2 className={"text-5xl font-bold mb-4 text-orange-500"}>{t("aboutUs.ab1")}</h2>
                             <p className={"text-xl font-bold"}>
-                                Hãy biến chuyến tham quan của bạn trở nên đáng nhớ và an toàn với Pacific Tour.
+                                {t("aboutUs.ab2")}
                             </p>
                             <p className={"text-md font-bold pt-4"}>
-                                Chúng tôi cung cấp dịch vụ du lịch chất lượng cao, giúp bạn khám phá những điểm đến tuyệt
-                                vời nhất trên thế giới.
+                                {t("aboutUs.ab3")}
                             </p>
                         </div>
                     </div>
                     <button
                         className={"mx-auto justify-center items-center container mt-5 text-4xl bg-orange-600 font-bold text-white p-4 rounded-full shadow-xl hover:bg-orange-800"}>
-                        Đặt tour ngay!
+                        {t("aboutUs.ab4")}
                     </button>
                 </div>
             </div>

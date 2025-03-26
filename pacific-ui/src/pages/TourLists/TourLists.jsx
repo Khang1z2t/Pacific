@@ -5,8 +5,10 @@ import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
+import { useTranslation } from 'react-i18next';
 
 export const TourLists = ({ titleType }) => {
+    const { t } = useTranslation();
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
@@ -63,9 +65,8 @@ export const TourLists = ({ titleType }) => {
             <img src={'/img/Pages/TourLists/bg.jpg'} alt={'bg'} className="w-full h-96 object-cover" />
             <SearchBar onSearch={handleSearch} />
             <div className="mt-24 mx-24 justify-center min-h-[800px]">
-                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>Danh sách
-                    tour du
-                    lịch {titleType} </p></Divider>
+                {/*<Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>{t("tourList.ti1")} {titleType} </p></Divider>*/}
+                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>{t("tourList.ti1")}</p></Divider>
                 <div className="flex">
                     <Aside query={query} setQuery={setQuery} titleType={titleType} />
                     {page.length > 0 ?

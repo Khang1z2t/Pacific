@@ -2,6 +2,7 @@ import { Input, Select } from 'antd';
 import config from '~/config';
 import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
+import { useTranslation } from 'react-i18next';
 
 export const SearchBar = ({ onSearch }) => {
     const [searchText, setSearchText] = useState('');
@@ -10,6 +11,12 @@ export const SearchBar = ({ onSearch }) => {
     const [minPrice, setMinPrice] = useState(null);
 
     const [sides, setSides] = useState([]);
+    const { t, i18n } = useTranslation();
+    const [selectedLang, setSelectedLang] = useState(i18n.language);
+
+    useEffect(() => {
+        setSelectedLang(i18n.language);
+    }, [i18n.language]);
 
     useEffect(() => {
         CategoryServices.getCategories().then((res) => {
@@ -17,13 +24,13 @@ export const SearchBar = ({ onSearch }) => {
                 [
                     {
                         id: null,
-                        title: 'Tất cả khu vực',
+                        title: t("searchBar.ti1"),
                     },
                     ...res,
                 ]
             ));
         });
-    }, []);
+    }, [t]);
     const handleSearch = () => {
         onSearch({ searchText, searchSides, maxPrice, minPrice });
     };
@@ -32,7 +39,7 @@ export const SearchBar = ({ onSearch }) => {
         <div
             className={'flex flex-row justify-center mx-auto items-center bg-gray-100 shadow-md bg-blend-overlay mt-4 gap-4 p-4 w-fit rounded-lg'}>
             <Input
-                placeholder="Tìm kiếm tour"
+                placeholder={t("searchBar.ti2")}
                 allowClear
                 onChange={(e) => setSearchText(e.target.value)}
                 rootClassName={'w-96 font-bold rounded-lg'}
@@ -51,19 +58,19 @@ export const SearchBar = ({ onSearch }) => {
             />
             <Input
                 type={'number'}
-                placeholder={'Giá thấp nhất'}
+                placeholder={t("searchBar.ti3")}
                 onChange={(e) => setMinPrice(e.target.value)}
                 className={'w-fit font-bold'}
                 size={'large'}
             />
             <Input
                 type={'number'}
-                placeholder={'Giá cao nhất'}
+                placeholder={t("searchBar.ti4")}
                 onChange={(e) => setMaxPrice(e.target.value)}
                 className={'w-fit font-bold'}
                 size={'large'}
             />
-            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>Tìm kiếm</button>
+            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("searchBar.ti5")}</button>
         </div>
     );
 };

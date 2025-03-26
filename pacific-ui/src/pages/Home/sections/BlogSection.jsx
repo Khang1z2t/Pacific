@@ -1,58 +1,66 @@
 import { message, Pagination } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import routes from '~/config/routes';
 import BlogCards from '~/pages/Home/components/BlogCard';
 import Particles from '~/component/Animation/AnimatedUI/Background/Particles';
+import { useTranslation } from 'react-i18next';
 
 export const BlogSection = () => {
+    const { t, i18n } = useTranslation();
+    const [selectedLang, setSelectedLang] = useState(i18n.language);
+
+    useEffect(() => {
+        setSelectedLang(i18n.language);
+    }, [i18n.language]);
+
     const BlogCardItems = [
         {
             img: '/img/BlogCards/blog_1.jpg',
-            title: 'Địa Điểm Phổ Biến Nhất Khu Vực Miền Bắc',
+            title: t("blog.blog1"),
             date: '10/10/2021',
             link: `${routes.blogMienBac}`,
         },
         {
             img: '/img/BlogCards/blog_2.jpg',
-            title: 'Địa Điểm Phổ Biến Nhất Khu Vựa Miền Trung',
+            title: t("blog.blog2"),
             date: '10/10/2021',
             link: `${routes.blogMienTrung}`,
         },
         {
             img: '/img/BlogCards/blog_3.jpg',
-            title: 'Địa Điểm Phổ Biến Nhất Khu Vực Miền Nam',
+            title: t("blog.blog3"),
             date: '10/10/2021',
             link: `${routes.blogMienNam}`,
         },
         {
             img: '/img/BlogCards/blog_4.jpg',
-            title: 'Địa Điểm Phổ Biến Nhất Khu Vực Miền Bắc',
+            title: t("blog.blog1"),
             date: '10/10/2021',
             link: `${routes.blogMienBac}`,
         },
         {
             img: '/img/BlogCards/blog_5.jpg',
-            title: 'Địa Điểm Phổ Biến Nhất Khu Vực Miền Trung',
+            title: t("blog.blog2"),
             date: '10/10/2021',
             link: `${routes.blogMienTrung}`,
         },
         {
             img: '/img/BlogCards/blog_6.jpg',
-            title: 'Địa Điểm Phổ Biến Nhất Khu Vực Miền Nam',
+            title: t("blog.blog3"),
             date: '10/10/2021',
             link: `${routes.blogMienNam}`,
         },
         {
             img: '/img/BlogCards/blog_4.jpg',
-            title: 'Địa Điểm Phổ Biến Nhất Khu Vực Miền Bắc',
+            title: t("blog.blog1"),
             date: '10/10/2021',
             link: `${routes.blogMienBac}`,
         },
         {
             img: '/img/BlogCards/blog_5.jpg',
-            title: 'Địa Điểm Phổ Biến Nhất Khu Vực Miền Nam',
+            title: t("blog.blog2"),
             date: '10/10/2021',
             link: `${routes.blogMienNam}`,
         },
@@ -70,11 +78,11 @@ export const BlogSection = () => {
         messageApi
             .open({
                 type: 'loading',
-                content: 'Đang test...',
+                content: 'Loading...',
                 duration: 2.5,
             })
-            .then(() => message.success('Tải thành công!', 2.5))
-            .then(() => message.info('Mời bạn đọc thêm bài viết.', 2.5));
+            .then(() => message.success(t("blog.blog4"), 2.5))
+            .then(() => message.info(t("blog.blog5"), 2.5));
     };
     return (
         <section className="py-20 relative">
@@ -108,7 +116,7 @@ export const BlogSection = () => {
                             onClick={success}
                             className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600"
                         >
-                            Xem thêm
+                            {t("blog.blog6")}
                         </button>
                         {contextHolder}
                     </div>

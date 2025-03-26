@@ -12,28 +12,20 @@ import config from '~/config';
 import { useTranslation } from "react-i18next";
 
 function App() {
-    // useEffect(() => {
-    //     window.title = webConfig.defaultTitle;
-    // }, []);
 
-        const { t, i18n } = useTranslation();
+        const { i18n } = useTranslation();
 
         useEffect(() => {
             document.title = webConfig.defaultTitle;
         }, []);
 
         const changeLanguage = (lng) => {
-            i18n.changeLanguage(lng);
+        i18n.changeLanguage(lng);
         };
 
         return (
         <Router>
             <ScrollToTop />
-            {/* Nút chọn ngôn ngữ */}
-            <div style={{ position: "absolute", top: 10, right: 10 }}>
-                <button onClick={() => changeLanguage("en")}>English</button>
-                <button onClick={() => changeLanguage("vi")}>Tiếng Việt</button>
-            </div>
 
             <Routes>
                 {RouterContent.map((route, index) => {
@@ -60,7 +52,6 @@ function App() {
                 })}
                 <Route path="*" element={<NotFound />} />
             </Routes>
-
         </Router>
     );
 }

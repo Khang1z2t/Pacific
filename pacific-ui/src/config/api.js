@@ -20,7 +20,7 @@ const api = {
     adminRating: '/api/admin/rating',
     adminVoucher: '/api/admin/voucher',
     adminTourDetails: '/api/tour-details',
-
+    translator: '/api/translator',
 };
 
 export default api;

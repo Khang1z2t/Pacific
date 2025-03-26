@@ -6,15 +6,23 @@ import { Heart } from 'lucide-react';
 import { message } from 'antd';
 import WishlistServices from '~/services/WishlistServices';
 import { useAuth } from '~/config/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export const TourCards = ({ data }) => {
     const [wishlist, setWishlist] = useState([]);
     const { currentUser } = useAuth();
+    const { t, i18n } = useTranslation();
+    const [selectedLang, setSelectedLang] = useState(i18n.language);
+
+    useEffect(() => {
+        setSelectedLang(i18n.language);
+    }, [i18n.language]);
+
     const handleAddToWishlist = async (id) => {
         await WishlistServices.AddToWishlist(id, localStorage.getItem('accessToken')).then((res) => {
             setWishlist(res.data);
             console.log(res.data);
-            message.success('Đã thêm vào danh sách yêu thích');
+            message.success(t("tourCard.ti1"));
         }).catch((err) => {
             console.error('Error:', err);
         });
@@ -35,7 +43,7 @@ export const TourCards = ({ data }) => {
                     <h3 className={'text-lg font-semibold overflow-ellipsis text-gray-800 mb-2'}>{data.title}</h3>
                     <p className={'text-sm text-gray-600 line-clamp-2 mb-4'}>{data.description}</p>
                     <div className="flex justify-between text-sm text-gray-500 mb-2">
-                        <span className={'font-semibold'}>{data.duration} Ngày {data.duration - 1} đêm</span>
+                        <span className={'font-semibold'}>{data.duration} {t("tourCard.ti2")} {data.duration - 1} {t("tourCard.ti3")}</span>
                     </div>
                 </div>
                 <div className="flex flex-col justify-start border-t p-3">

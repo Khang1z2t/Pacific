@@ -9,13 +9,32 @@ import AuthService from '~/services/AuthServices';
 import { useNavigate } from 'react-router-dom';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from "react-i18next";
-import LanguageSelector from '~/pages/Home/components/LanguageSelector';
 
 export const Navbar = () => {
     const { i18n } = useTranslation();
     const [selectedLang, setSelectedLang] = useState(i18n.language);
-    const {t} = useTranslation();
-    const {title1, title2, title3, title4, title5, title6, title7, title8, title9 } = t("menu");
+    const { logout, currentUser } = useAuth();
+    const navigate = useNavigate();
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        setSelectedLang(i18n.language);
+    }, [i18n.language]);
+
+
+    useEffect(() => {
+
+    }, [currentUser]);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            message.success('Đăng xuất thành công!', 1);
+            navigate('/')
+        } catch (error) {
+            message.error(`Đăng xuất thất bại: ${error.message}`, 1);
+        }
+    };
 
     const navItems = [
         {
@@ -43,6 +62,7 @@ export const Navbar = () => {
             href: '/gioi-thieu',
         },
     ];
+
     const NavItemsElm = ({ title, href }) => {
         return (
             <div className={''}>
@@ -55,32 +75,17 @@ export const Navbar = () => {
             </div>
         );
     };
-    const { logout, currentUser } = useAuth();
-    const navigate = useNavigate();
 
-    useEffect(() => {
-
-    }, [currentUser]);
-
-    const handleLogout = async () => {
-        try {
-            await logout();
-            message.success('Đăng xuất thành công!', 1);
-            navigate('/')
-        } catch (error) {
-            message.error(`Đăng xuất thất bại: ${error.message}`, 1);
-        }
-    };
     const menuItems = [
         {
             key: 'thong-tin-ca-nhan',
-            title: 'Thông tin cá nhân',
+            title: t("menu.title7"),
             icon: <FontAwesomeIcon icon="user" />,
             href: config.routes.profile,
         },
         {
             key: 'doi-mat-khau',
-            title: 'Đổi mật khẩu',
+            title: t("menu.title8"),
             icon: <FontAwesomeIcon icon="key" />,
             href: config.routes.changePassword,
         },
@@ -89,14 +94,14 @@ export const Navbar = () => {
     const menuItemsTour = [
         {
             key: 'thong-tin-tour',
-            title: 'Thông tin tour',
+            title: t("menu.title9"),
             icon: <FontAwesomeIcon icon="info" />,
             href: config.routes.tourInfo,
         },
     ];
     const menuGroup = (
         <Menu>
-            <Menu.ItemGroup title="Tài khoản">
+            <Menu.ItemGroup title={t("menu.title10")}>
                 {menuItems.map((item) => (
                     <Menu.Item icon={item.icon} key={item.key}>
                         <Link to={item.href} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
@@ -105,7 +110,7 @@ export const Navbar = () => {
                     </Menu.Item>
                 ))}
             </Menu.ItemGroup>
-            <Menu.ItemGroup title="Booking">
+            <Menu.ItemGroup title={t("menu.title11")}>
                 {menuItemsTour.map((item) => (
                     <Menu.Item icon={item.icon} key={item.key}>
                         <Link to={item.href} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
@@ -114,20 +119,20 @@ export const Navbar = () => {
                     </Menu.Item>
                 ))}
             </Menu.ItemGroup>
-            <Menu.ItemGroup title="Khác">
+            <Menu.ItemGroup title={t("menu.title12")}>
                 {currentUser?.role === 'ADMIN' && (
                     <Menu.Item key="admin">
                         <Link to={config.routes.adminHome} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Admin
                         </Link>
                     </Menu.Item>
-                    )}
+                )}
                 <Menu.Item key="logout">
                     <button
                         onClick={() => handleLogout()}
                         className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
-                        Đăng xuất
+                        {t("menu.title13")}
                     </button>
                 </Menu.Item>
             </Menu.ItemGroup>
@@ -200,7 +205,7 @@ export const Navbar = () => {
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
                                 >
-                                    {t("menu.title8")}
+                                    {t("menu.title14")}
                                 </Link>
                                 <Link
                                     to={config.routes.register}
@@ -208,7 +213,7 @@ export const Navbar = () => {
                                         'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'
                                     }
                                 >
-                                    {t("menu.title9")}
+                                    {t("menu.title15")}
                                 </Link>
                                 <Dropdown overlay={languageMenu} trigger={['click']}>
                                     <Button className="text-gray-700 hover:text-yellow-600 uppercase font-bold px-2 py-1 text-sm">
