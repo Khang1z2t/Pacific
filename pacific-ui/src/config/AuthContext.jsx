@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AuthService from '~/services/AuthServices';
 import { message } from 'antd';
 import WishlistServices from '~/services/WishlistServices';
 import PaymentServices from '~/services/PaymentServices';
+import BookingServices from '~/services/BookingServices';
 
 const AuthContext = createContext();
 
@@ -12,47 +13,64 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [booking, setBooking] = useState({});
+    const [bookLists, setBookLists] = useState([]);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [wishlist, setWishlist] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [role, setRole] = useState(null);
     const token = localStorage.getItem('accessToken');
 
     useEffect(() => {
-        getUser(localStorage.getItem('accessToken')).then(() => {
-            getWishlist();
-            getPaymentHistory();
-        }).catch((err) => {
-            console.error(err);
-        });
-    }, []);
+        if (token) {
+            getUser(token).then(() => {
+                getWishlist();
+                getPaymentHistory();
+                getBooking();
+            }).catch((err) => {
+                console.error(err);
+            });
+        } else {
+            setLoading(false);
+        }
+    }, [token]);
 
-    const getUser = async () => {
-        await AuthService.authToken(localStorage.getItem('accessToken')).then((res) => {
+    const getUser = useCallback(async (token) => {
+        await AuthService.authToken(token).then((res) => {
             setCurrentUser(res?.data);
             setRole(res?.data.role);
             setLoading(false);
         }).catch((err) => {
             console.error(err);
-            setLoading(true);
         });
-    };
-    const getPaymentHistory = () => {
-        PaymentServices.getHistoryPayments(localStorage.getItem('accessToken')).then((res) => {
+    },[]);
+
+    const getPaymentHistory = useCallback(async () => {
+        try {
+            const res = await PaymentServices.getHistoryPayments(token);
             setPaymentHistory(res?.data);
-        }).catch((err) => {
+        } catch (err) {
             console.error(err);
-        });
-    };
+        }
+    }, [token]);
 
-    const getWishlist = () => {
-        WishlistServices.getWishlist(localStorage.getItem('accessToken')).then((res) => {
+    const getWishlist = useCallback(async () => {
+        try {
+            const res = await WishlistServices.getWishlist(token);
             setWishlist(res?.data);
-        }).catch((err) => {
+        } catch (err) {
             console.error(err);
-        });
+        }
+    }, [token]);
 
-    };
+    const getBooking = useCallback(async () => {
+        try {
+            const res = await BookingServices.getBookingByUser(token);
+            setBookLists(res?.data);
+        } catch (err) {
+            console.error(err);
+        }
+    },[token]);
 
     const handleAddToWishlist = async (id) => {
         if (!token) {
@@ -94,20 +112,28 @@ export function AuthProvider({ children }) {
             message.error('Đã xảy ra lỗi, vui lòng thử lại');
         }
     };
+    const handleGoogleLogin = async (navigate) => {
+        try {
+            await AuthService.loginGoogle();
+            getUser(localStorage.getItem('accessToken'));
+            message.success('Đăng nhập thành công!', 1);
+            navigate('/');
+        } catch (error) {
+            message.error(`Đăng nhập thất bại: ${error.message}`, 1);
+        }
+    };
 
-
-    const logout = async () => {
+    const handleLogout = async (navigate) => {
         try {
             localStorage.removeItem('accessToken');
             setCurrentUser(null);
             setRole(null);
-            return Promise.resolve();
+            message.success('Đăng xuất thành công!', 1);
+            navigate('/');
         } catch (error) {
-            console.error('Logout failed: ', error.message);
-            throw error;
+            message.error(`Đăng xuất thất bại: ${error.message}`, 1);
         }
     };
-
     const getToken = async () => {
         try {
             return localStorage.getItem('accessToken');
@@ -119,12 +145,16 @@ export function AuthProvider({ children }) {
 
     const value = {
         getToken,
+        getBooking,
         currentUser,
+        setCurrentUser,
         getUser,
-        logout,
+        handleLogout,
         loading,
         role,
         paymentHistory,
+        booking,
+        setBooking,
         setPaymentHistory,
         getPaymentHistory,
         wishlist,
@@ -132,6 +162,7 @@ export function AuthProvider({ children }) {
         handleAddToWishlist,
         handleRemoveWishlist,
         setWishlist,
+        handleGoogleLogin,
     };
 
     return (

@@ -1,14 +1,16 @@
-import { Button, Card, Divider, Input } from 'antd';
-import { FaHotel, FaInfoCircle, FaPhoneAlt, FaPlaneDeparture, FaTags } from 'react-icons/fa';
+import { Card, Divider } from 'antd';
+import { FaHotel, FaInfoCircle, FaPlaneDeparture } from 'react-icons/fa';
 import { BiSolidUserDetail } from 'react-icons/bi';
 import { useEffect, useState } from 'react';
 import config from '~/config';
 import HotelServices from '~/services/HotelServices';
 import TransportServices from '~/services/TransportServices';
+import { useNavigate } from 'react-router-dom';
 
 export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, voucher }) => {
     const [hotel, setHotel] = useState({});
     const [transport, setTransport] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (detailData?.hotelId) {
@@ -27,7 +29,7 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
         }
     }, [detailData.hotelId, detailData.transportId]);
     return (
-        <Card className="w-[500px] p-4 shadow-lg border rounded-xl -mt-20">
+        <Card className="w-[500px] h-fit sticky top-24 transition-all p-4 shadow-lg border rounded-xl">
             {/* Tiêu đề */}
             <h2 className="text-lg font-bold uppercase">Tóm Tắt Chuyến Đi</h2>
 
@@ -39,7 +41,9 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                     className="rounded-md object-cover w-28 h-20"
                 />
                 <div className="flex-1">
-                    <p className="text-sm font-semibold line-clamp-1">
+                    <p
+                        onClick={() => navigate(config.routes.tourDetail + data.id)}
+                        className="text-sm font-semibold line-clamp-1 hover:text-indigo-500 transition-all uppercase hover:underline cursor-pointer">
                         {data.title}
                     </p>
                     <p className="text-xs text-gray-500">Mã tour: <span
@@ -84,7 +88,7 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                 <h3 className="text-lg font-bold flex items-center gap-2"><BiSolidUserDetail
                     className={'text-orange-400'} /> Khách hàng + Phụ
                     thu</h3>
-                <p><strong>Người lớn:</strong> {adults || 0} - {config.webConfig.getCurrency(detailData.priceAdults)}/Người
+                <p><strong>Người lớn:</strong> {adults || 1} - {config.webConfig.getCurrency(detailData.priceAdults)}/Người
                 </p>
                 {children > 0 && (
                     <p><strong>Trẻ em:</strong> {children} - {config.webConfig.getCurrency(detailData.priceChildren)}/Người

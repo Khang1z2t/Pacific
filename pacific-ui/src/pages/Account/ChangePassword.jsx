@@ -1,11 +1,10 @@
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
 import { Divider, Form, Input, message } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useState } from 'react';
 import { useAuth } from '~/config/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import AuthServices from '~/services/AuthServices';
 
 

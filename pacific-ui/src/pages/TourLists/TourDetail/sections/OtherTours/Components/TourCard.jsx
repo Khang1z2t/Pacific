@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Rate, Tag } from 'antd';
+import { Rate } from 'antd';
 import config from '~/config';
-import { Heart } from 'lucide-react';
 
 export const TourCard = ({ data, onClick }) => {
     const handleClick = () => {

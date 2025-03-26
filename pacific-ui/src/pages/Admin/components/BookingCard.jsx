@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input, Row, Col, Select, Button } from "antd";
+import React, { useState } from 'react';
+import { Button, Card, Modal, Space, Tag } from 'antd';
+import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 
 const BookingCard = ({ visible, onClose, booking }) => {
     const [form] = Form.useForm();

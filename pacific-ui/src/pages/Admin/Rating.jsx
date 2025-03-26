@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Switch, Button, Form, Input, Dropdown, Menu } from 'antd';
-import { SearchOutlined, DownOutlined, DeleteOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Button, Dropdown, Form, Input, Menu, message, Modal, Space, Table, Tag } from 'antd';
+import { CheckCircleOutlined, DeleteOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import RatingService from '~/services/RatingService';
-import dayjs from 'dayjs';
-import { Modal, message } from "antd";
 
 const Rating = () => {
     const [currentPage, setCurrentPage] = useState(1);

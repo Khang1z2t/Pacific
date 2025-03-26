@@ -1,87 +1,76 @@
-import React, { useEffect, useState } from "react";
-import { Table, Button, Input, Space, Tag, message } from "antd";
-import { SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined, FilterOutlined, PlusOutlined } from "@ant-design/icons";
-import axios from "axios";
-import TourCard from "../components/TourCard";
+import React, { useState } from 'react';
+import TourCard from '../components/TourCard';
 
 const Tour = () => {
-  const [tours, setTours] = useState([]);
-  const [searchText, setSearchText] = useState("");
+  const [tours, setTours] = useState([
+    { id: 1, name: "Hạ Long Bay", price: "5,000,000 VND", duration: "3 ngày 2 đêm" },
+    { id: 2, name: "Đà Nẵng", price: "4,000,000 VND", duration: "4 ngày 3 đêm" },
+  ]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentTour, setCurrentTour] = useState({ id: "", name: "", price: "", duration: "" });
 
-  useEffect(() => {
-    fetchTours();
-  }, []);
-
-  const fetchTours = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/api/tours/get-all-tours");
-      setTours(response.data);
-    } catch (error) {
-      message.error("Không thể tải danh sách tour");
-      console.error("Lỗi khi tải danh sách tour:", error);
-    }
+  const handleEdit = (tour) => {
+    setCurrentTour(tour);
+    setModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8080/api/tours/delete-tour/${id}`);
-      setTours(tours.filter((tour) => tour.id !== id));
-      message.success("Xóa thành công!");
-    } catch (error) {
-      message.error("Xóa không thành công!");
-      console.error("Lỗi khi xóa tour:", error);
-    }
+  const handleDelete = (id) => {
+    setTours(tours.filter((tour) => tour.id !== id));
   };
 
-  const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Tên tour", dataIndex: "name", key: "name" },
-    { title: "Category", dataIndex: "category", key: "category" },
-    { title: "Số ngày", dataIndex: "duration", key: "duration" },
-    { title: "Điểm đến", dataIndex: "destination", key: "destination" },
-    { title: "Mô tả", dataIndex: "description", key: "description" },
-    { title: "HDV", dataIndex: "guide", key: "guide" },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => <Tag color={status === "ACTIVE" ? "green" : "red"}>{status}</Tag>,
-    },
-    { title: "Ngày tạo", dataIndex: "createdAt", key: "createdAt" },
-    {
-      title: "Thao tác",
-      key: "actions",
-      render: (_, record) => (
-          <Space size="middle">
-            <Button icon={<EyeOutlined />} type="primary" />
-            <Button icon={<EditOutlined />} />
-            <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} danger />
-          </Space>
-      ),
-    },
-  ];
+  const handleSave = () => {
+    if (currentTour.id) {
+      setTours(tours.map((t) => (t.id === currentTour.id ? currentTour : t)));
+    } else {
+      setTours([...tours, { ...currentTour, id: Date.now() }]);
+    }
+    setModalOpen(false);
+    setCurrentTour({ id: "", name: "", price: "", duration: "" });
+  };
 
   return (
-      <div className="tour-management">
-        <h2>Quản lý Tour</h2>
-        <div className="toolbar" style={{ marginBottom: 16 }}>
-          <Input
-              placeholder="Tìm kiếm"
-              prefix={<SearchOutlined />}
-              style={{ width: 200, marginRight: 8 }}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-          />
-          <Button type="primary" icon={<PlusOutlined />}>Thêm</Button>
-          <Button icon={<FilterOutlined />}>Sắp xếp theo</Button>
-        </div>
-        <Table
-            columns={columns}
-            dataSource={tours.filter((tour) => tour.name.toLowerCase().includes(searchText.toLowerCase()))}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-        />
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Danh sách Tour</h2>
+      <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => setModalOpen(true)}>
+        Thêm Tour
+      </button>
+      <div className="grid gap-4 mt-4">
+        {tours.map((tour) => (
+          <TourCard key={tour.id} tour={tour} onEdit={handleEdit} onDelete={handleDelete} />
+        ))}
       </div>
+      {modalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded shadow-lg">
+            <h3 className="text-lg font-bold">{currentTour.id ? "Chỉnh sửa Tour" : "Thêm Tour"}</h3>
+            <input
+              className="border p-2 w-full my-2"
+              value={currentTour.name}
+              onChange={(e) => setCurrentTour({ ...currentTour, name: e.target.value })}
+              placeholder="Tên Tour"
+            />
+            <input
+              className="border p-2 w-full my-2"
+              value={currentTour.price}
+              onChange={(e) => setCurrentTour({ ...currentTour, price: e.target.value })}
+              placeholder="Giá Tour"
+            />
+            <input
+              className="border p-2 w-full my-2"
+              value={currentTour.duration}
+              onChange={(e) => setCurrentTour({ ...currentTour, duration: e.target.value })}
+              placeholder="Thời gian"
+            />
+            <button className="bg-green-500 text-white px-4 py-2 rounded mr-2" onClick={handleSave}>
+              Lưu
+            </button>
+            <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={() => setModalOpen(false)}>
+              Hủy
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

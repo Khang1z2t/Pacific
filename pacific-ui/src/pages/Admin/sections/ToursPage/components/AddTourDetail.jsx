@@ -1,11 +1,11 @@
-import { Input, InputNumber, Modal, DatePicker, Select, Divider } from 'antd';
+import { DatePicker, Divider, Input, InputNumber, message, Modal, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import HotelServices from '~/services/HotelServices';
 import TransportServices from '~/services/TransportServices';
 import moment from 'moment/moment';
 import { differenceInDays } from 'date-fns';
 import TourDetailServices from '~/services/TourDetailServices';
-import { message } from 'antd';
+
 const { RangePicker } = DatePicker;
 
 export const AddTourDetail = ({ tourId, setAddDetailModalVisible, addDetailModalVisible }) => {

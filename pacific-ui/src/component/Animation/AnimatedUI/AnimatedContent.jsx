@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
-import { useSpring, animated } from '@react-spring/web';
+import { useEffect, useRef, useState } from 'react';
+import { animated, useSpring } from '@react-spring/web';
 
 const AnimatedContent = ({
                              children,

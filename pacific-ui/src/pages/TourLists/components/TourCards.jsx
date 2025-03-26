@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import config from '~/config';
-import { message, Rate } from 'antd';
+import { Rate } from 'antd';
 import { Heart } from 'lucide-react';
 import { useAuth } from '~/config/AuthContext';
 

@@ -1,5 +1,5 @@
 import { RouterContent } from '~/routes/RouterContent';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MainLayout from '~/component/Layout/MainLayout';
 import 'font-awesome/css/font-awesome.min.css';
 import NotFound from '~/pages/NotFound';

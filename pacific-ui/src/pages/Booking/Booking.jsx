@@ -1,11 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import config from '~/config';
-import { Form, Input, DatePicker, Select, Radio, Button } from 'antd';
+import { Input } from 'antd';
 import { Loading } from '~/component/ui/Loading';
 import { BookingInfo1 } from '~/pages/Booking/components/BookingInfo1';
-import { BookingInfo2 } from '~/pages/Booking/components/BookingInfo2';
-import TourServices from '~/services/TourServices';
 import TourDetailServices from '~/services/TourDetailServices';
 
 const { TextArea } = Input;

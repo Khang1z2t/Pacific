@@ -1,7 +1,7 @@
-import { Card, Modal, Button, Avatar } from 'antd';
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import config from "~/config";
+import { Button, Card, Modal } from 'antd';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import config from '~/config';
 
 export const BookedTourCard = ({ id, title, quantity, bookingStatus, paymentMethod, createAt, totalAmount }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);

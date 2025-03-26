@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { Renderer, Camera, Geometry, Program, Mesh } from "ogl";
+import { useEffect, useRef } from 'react';
+import { Camera, Geometry, Mesh, Program, Renderer } from 'ogl';
 
 const defaultColors = ["#ffffff", "#ffffff", "#ffffff"];
 

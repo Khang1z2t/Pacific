@@ -1,6 +1,5 @@
 import { WishlistCard } from '~/pages/Account/ProfileUI/sections/WishList/components/WishlistCard';
-import { useEffect, useState, useMemo } from 'react';
-import WishlistServices from '~/services/WishlistServices';
+import { useEffect, useMemo, useState } from 'react';
 import TourServices from '~/services/TourServices';
 import { Empty } from 'antd';
 import { useAuth } from '~/config/AuthContext';

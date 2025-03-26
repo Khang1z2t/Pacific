@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Select, Row, Col, message } from "antd";
-import { useNavigate } from "react-router-dom";
-import GuideServices from "~/services/GuideServices";
+import React, { useEffect, useState } from 'react';
+import { Button, Col, Form, Input, message, Row, Select } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import GuideServices from '~/services/GuideServices';
 
 const AddGuide = () => {
     const [currentPage, setCurrentPage] = useState(1);

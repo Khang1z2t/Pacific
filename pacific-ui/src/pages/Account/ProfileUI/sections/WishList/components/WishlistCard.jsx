@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 import config from '~/config';
-import { message } from 'antd';
 import { Heart } from 'lucide-react';
-import WishlistServices from '~/services/WishlistServices';
 import { useAuth } from '~/config/AuthContext';
 
 export const WishlistCard = ({ data, wishlistId, onWishlistChange }) => {

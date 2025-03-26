@@ -1,6 +1,5 @@
-import AxiosConfig from "~/config/axiosConfig";
-import config from "~/config";
-import { useAuth } from '~/config/AuthContext';
+import AxiosConfig from '~/config/axiosConfig';
+import config from '~/config';
 
 const AuthService = {
 
@@ -20,10 +19,10 @@ const AuthService = {
         }
     },
 
-    login: async (username, password) => {
+    login: async (identifier, password) => {
         try{
             const response = await AxiosConfig.post(config.api.auth + '/login', {
-                username,
+                identifier,
                 password,
             });
             localStorage.setItem('accessToken', response.data.data.accessToken);
@@ -37,7 +36,7 @@ const AuthService = {
     sendVerifyEmail : async (email) => {
         try{
             const response = await AxiosConfig.post(config.api.auth + `/send-reset-password-mail?email=${email}`, {} , {
-                timeout : 5000,
+                timeout : 60000,
             })
             return response.data;
         }catch (error){
@@ -91,7 +90,7 @@ const AuthService = {
         }
     },
 
-    loginGoogle: async (getUser) => {
+    loginGoogle: async () => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await AxiosConfig.get(config.api.auth + "/oauth2/google");
@@ -122,7 +121,6 @@ const AuthService = {
                         localStorage.setItem("accessToken", event.data.accessToken);
                         localStorage.setItem("refreshToken", event.data.refreshToken);
 
-                        getUser();
 
                         resolve();
                     }

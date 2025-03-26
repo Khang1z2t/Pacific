@@ -1,5 +1,5 @@
-import { Renderer, Program, Mesh, Triangle } from "ogl";
-import { useEffect, useRef } from "react";
+import { Mesh, Program, Renderer, Triangle } from 'ogl';
+import { useEffect, useRef } from 'react';
 
 function hexToVec4(hex) {
     let hexStr = hex.replace("#", "");

@@ -1,4 +1,4 @@
-import { Card, DatePicker, Input, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { useEffect, useState } from 'react';
 import { ProfileCard } from '~/pages/Account/ProfileUI/components/ProfileCard';
 import { EmptyProfileCard } from '~/pages/Account/ProfileUI/components/EmptyProfileCard';
@@ -11,7 +11,7 @@ import { WishListIndex } from '~/pages/Account/ProfileUI/sections/WishList/WishL
 
 const { TabPane } = Tabs;
 export const ProfileUI = () => {
-    const { currentUser, getPaymentHistory, paymentHistory } = useAuth();
+    const { currentUser, getPaymentHistory, paymentHistory, bookLists } = useAuth();
     const token = localStorage.getItem('accessToken');
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export const ProfileUI = () => {
                         <ProfileInformation />
                     </TabPane>
                     <TabPane tab={'Lịch sử thanh toán'} key={'2'}>
-                        <HistoryPayment data={paymentHistory} />
+                        <HistoryPayment booking={bookLists} data={paymentHistory} />
                     </TabPane>
                     <TabPane tab="Lịch sử đặt tour" key="3">
                         <BookedTour />

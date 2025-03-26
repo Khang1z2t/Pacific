@@ -1,5 +1,4 @@
 import { DatePicker, Input, Select } from 'antd';
-import config from '~/config';
 import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
 

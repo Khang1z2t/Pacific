@@ -1,6 +1,6 @@
-import React from "react";
-import { useInView } from "react-intersection-observer";
-import CountUp from "react-countup";
+import React from 'react';
+import { useInView } from 'react-intersection-observer';
+import CountUp from 'react-countup';
 
 const AnimatedNumber = ({ start, end }) => {
   const { ref, inView } = useInView({ triggerOnce: true });

@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import {FloatButton} from "antd";
+import { useEffect } from 'react';
+import { FloatButton } from 'antd';
 
 export const AdminLayout = ({ children }) => {
     useEffect(() => {
