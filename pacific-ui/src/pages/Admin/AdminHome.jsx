@@ -13,6 +13,7 @@ import Guide from './Guide';
 import TourList from '~/pages/Admin/sections/ToursPage/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
 import Transport from '~/pages/Admin/sections/Transport';
+import Hotel from '~/pages/Admin/sections/Hotel';
 import Promotion from '~/pages/Admin/sections/Promotion';
 import { Link } from 'react-router-dom';
 import { Category } from '@react-buddy/ide-toolbox';
@@ -104,6 +105,8 @@ const AdminHome = () => {
         { label: 'Hỗ trợ', key: '19', icon: <CommentOutlined />, content: <Support /> },
         { label: 'Logout', key: '20', icon: <LogoutOutlined />, content: 'File management system.' },
         { label: 'Phương tiện', key: '21', icon: <LogoutOutlined />, content: <Transport /> },
+        { label: 'Khách sạn', key: '22', icon: <LogoutOutlined />, content: <Hotel /> },
+
     ];
     const [selectedContent, setSelectedContent] = useState(menuItems[0].content);
     const [selectedLabel, setSelectedLabel] = useState(menuItems[0].label);

@@ -1,78 +1,93 @@
 import axiosConfig from '~/config/axiosConfig';
-import api from '~/config/api';
+import config from '~/config';
+
+const handleError = (error, context) => {
+    const errorMessage = error.response?.data || error.message || "Unknown error";
+    console.error(`[TransportServices] Error in ${context}:`, errorMessage);
+    return Promise.reject(errorMessage);
+};
 
 const TransportServices = {
     getTransports: async () => {
         try {
-            const resp = await axiosConfig.get(api.transport);
-            return resp.data;
+            const response = await axiosConfig.get(`${config.api.transport}/all`);
+            return response.data;
         } catch (error) {
-            console.error('Error fetching transports:', error);
-            throw error;
+            return handleError(error, "getTransports");
         }
     },
 
     getTransportById: async (id) => {
+        if (!id) return handleError({ message: "Transport ID is required" }, "getTransportById");
+
         try {
-            const resp = await axiosConfig.get(`${api.transport}/${id}`);
-            return resp.data;
+            const response = await axiosConfig.get(`${config.api.transport}/${id}`);
+            return response.data;
         } catch (error) {
-            console.error(`Error fetching transport with ID ${id}:`, error);
-            throw error;
+            return handleError(error, `getTransportById - ID: ${id}`);
         }
     },
 
-    addTransport: async (data) => {
+    addTransport: async (params) => {
+        if (!params || Object.keys(params).length === 0) {
+            return handleError({ message: "Transport data is required" }, "addTransport");
+        }
+
         try {
-            const payload = {
-                name: data.name,
-                cost: data.cost,
-                typeTransport: data.typeTransport,
-                imageURL: data.imageURL,
-                active: data.active
-            };
-            const resp = await axiosConfig.post(api.transport, payload);
-            return resp.data;
+            console.log("🚀 Sending transport data:", params);
+            const response = await axiosConfig.post(`${config.api.transport}/add`, params, {
+                headers: { "Content-Type": "application/json" },
+            });
+            console.log("✅ Transport added successfully:", response.data);
+            return response.data;
         } catch (error) {
-            console.error('Error adding transport:', error);
-            throw error;
+            return handleError(error, "addTransport");
         }
     },
 
     updateTransport: async (id, data) => {
+        if (!id || !data || Object.keys(data).length === 0) {
+            return handleError({ message: "Transport ID and valid data are required" }, "updateTransport");
+        }
+
         try {
-            const payload = {
-                name: data.name,
-                cost: data.cost,
-                typeTransport: data.typeTransport,
-                imageURL: data.imageURL,
-                active: data.active
-            };
-            const resp = await axiosConfig.put(`${api.transport}/${id}`, payload);
-            return resp.data;
+            console.log("🚀 Updating transport:", data);
+            const response = await axiosConfig.put(`${config.api.transport}/${id}`, data, {
+                headers: { "Content-Type": "application/json" },
+            });
+            console.log("✅ Transport updated successfully:", response.data);
+            return response.data;
         } catch (error) {
-            console.error(`Error updating transport with ID ${id}:`, error);
-            throw error;
+            return handleError(error, `updateTransport - ID: ${id}`);
         }
     },
 
     deleteTransport: async (id) => {
+        if (!id) return handleError({ message: "Transport ID is required" }, "deleteTransport");
+
         try {
-            const resp = await axiosConfig.delete(`${api.transport}/${id}`);
-            return resp.data;
+            const response = await axiosConfig.patch(`${config.api.transport}/${id}/delete`);
+            return response.data ?? false;
         } catch (error) {
-            console.error(`Error deleting transport with ID ${id}:`, error);
-            throw error;
+            return handleError(error, `deleteTransport - ID: ${id}`);
         }
     },
 
-    toggleActive: async (id, isActive) => {
+    updateTransportStatus: async (id, status) => {
+        if (!id || status === undefined || status === null || status === "") {
+            return handleError({ message: "Transport ID and valid status are required" }, "updateTransportStatus");
+        }
+
         try {
-            const resp = await axiosConfig.patch(`${api.transport}/${id}`, { active: isActive });
-            return resp.data;
+            console.log(`🚀 Updating transport status (ID: ${id}):`, status);
+            const response = await axiosConfig.patch(`${config.api.transport}/${id}/updateStatus`,
+                { status: String(status) },
+                { headers: { "Content-Type": "application/json" } }
+            );
+            console.log("✅ Transport status updated successfully:", response.data);
+            return response.data;
         } catch (error) {
-            console.error(`Error toggling active state for transport with ID ${id}:`, error);
-            throw error;
+            return handleError(error, `updateTransportStatus - ID: ${id}`);
         }
     },
 };
