@@ -55,19 +55,21 @@ export const SearchBar = ({ onSearch }) => {
             />
             <InputNumber
                 allowClear
+                min={0}
                 formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 suffix={"VND"}
                 placeholder="Giá thấp nhất"
-                onChange={(e) => setMinPrice(e.target.value)}
+                onChange={(e) => setMinPrice(e)}
                 className="w-[200px] font-bold"
                 size="large"
             />
             <InputNumber
+                min={0}
                 allowClear
                 formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 suffix={"VND"}
                 placeholder="Giá cao nhất"
-                onChange={(e) => setMaxPrice(e.target.value)}
+                onChange={(e) => setMaxPrice(e)}
                 className="w-[200px] font-bold"
                 size="large"
             />
