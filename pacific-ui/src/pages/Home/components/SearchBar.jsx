@@ -1,4 +1,4 @@
-import { DatePicker, Input, Select } from 'antd';
+import { DatePicker, Input, InputNumber, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
 
@@ -53,18 +53,22 @@ export const SearchBar = ({ onSearch }) => {
                 onChange={(value) => setSearchSides(value)}
                 className="flex-grow min-w-[150px] max-w-[200px] font-bold"
             />
-            <Input
-                type="number"
+            <InputNumber
+                allowClear
+                formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                suffix={"VND"}
                 placeholder="Giá thấp nhất"
                 onChange={(e) => setMinPrice(e.target.value)}
-                className="min-w-[120px] max-w-[150px] font-bold"
+                className="w-[200px] font-bold"
                 size="large"
             />
-            <Input
-                type="number"
+            <InputNumber
+                allowClear
+                formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                suffix={"VND"}
                 placeholder="Giá cao nhất"
                 onChange={(e) => setMaxPrice(e.target.value)}
-                className="min-w-[120px] max-w-[150px] font-bold"
+                className="w-[200px] font-bold"
                 size="large"
             />
             <RangePicker
