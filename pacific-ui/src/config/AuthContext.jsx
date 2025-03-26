@@ -13,7 +13,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState({});
     const [bookLists, setBookLists] = useState([]);
     const [paymentHistory, setPaymentHistory] = useState([]);
@@ -22,10 +22,6 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('accessToken');
 
     useEffect(() => {
-        const user = localStorage.getItem('accessToken')
-        if(user || token) {
-            setCurrentUser(user);
-        }
         if (token) {
             getUser(token).then(() => {
                 getWishlist();
@@ -33,6 +29,7 @@ export function AuthProvider({ children }) {
                 getBooking();
             }).catch((err) => {
                 console.error(err);
+                setLoading(false);
             });
         } else {
             setLoading(false);
@@ -40,14 +37,22 @@ export function AuthProvider({ children }) {
     }, [token]);
 
     const getUser = useCallback(async (token) => {
-        await AuthService.authToken(token).then((res) => {
+        try {
+            const res = await AuthService.authToken(token);
             setCurrentUser(res?.data);
             setRole(res?.data.role);
             setLoading(false);
-        }).catch((err) => {
+        } catch (err) {
             console.error(err);
-        });
-    },[]);
+            if (err.response?.status === 401) {
+                localStorage.removeItem('accessToken');
+            }
+            setCurrentUser(null);
+            setRole(null);
+            setLoading(false);
+            throw err;
+        }
+    }, []);
 
     const getPaymentHistory = useCallback(async () => {
         try {
@@ -74,7 +79,7 @@ export function AuthProvider({ children }) {
         } catch (err) {
             console.error(err);
         }
-    },[token]);
+    }, [token]);
 
     const handleAddToWishlist = async (id) => {
         if (!token) {
@@ -150,6 +155,7 @@ export function AuthProvider({ children }) {
     const value = {
         getToken,
         getBooking,
+        bookLists,
         currentUser,
         setCurrentUser,
         getUser,
