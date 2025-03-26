@@ -10,8 +10,11 @@ import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
 import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { ComboTour } from '~/pages/Home/sections/ComboTour';
 import { AboutLogin } from '~/pages/Home/sections/AboutLogin';
+import { useAuth } from '~/config/AuthContext';
 
 function Home() {
+    const { currentUser } = useAuth();
+
     useEffect(() => {
         document.title = 'Pacific - Hành trình khám phá mọi nơi.';
     }, []);
@@ -87,7 +90,7 @@ function Home() {
                     <p className={'lg:text-xl text-sm'}>Những bài viết mới nhất</p>
                 </Divider>
                 <BlogSection />
-                <AboutLogin/>
+                {currentUser ? null : <AboutLogin />}
             </div>
         </FadeContent>
     );

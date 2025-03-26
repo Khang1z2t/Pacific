@@ -1,4 +1,8 @@
+import { useNavigate } from 'react-router-dom';
+import config from '~/config';
+
 export const AboutSection = () => {
+    const navigate = useNavigate();
     return (
         <>
             <div className={"hidden lg:block"}>
@@ -22,6 +26,7 @@ export const AboutSection = () => {
                         </div>
                     </div>
                     <button
+                        onClick={() => navigate(config.routes.tourTrongNuoc)}
                         className={"mx-96 mt-5 text-4xl bg-orange-600 font-bold text-white p-4 rounded-full shadow-xl hover:bg-orange-800"}>
                         Đặt tour ngay!
                     </button>

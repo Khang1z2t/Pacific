@@ -4,11 +4,10 @@ import MainLayout from '~/component/Layout/MainLayout';
 import 'font-awesome/css/font-awesome.min.css';
 import NotFound from '~/pages/NotFound';
 import { Fragment, useEffect } from 'react';
-import PrivateRoute from '~/config/PrivateRoute';
 import ScrollToTop from '~/component/Animation/ScrollToTop';
 import webConfig from '~/config/webConfig';
-import InterceptRoute from '~/config/IntercepterRoute';
 import config from '~/config';
+import { ProtectedRoute } from '~/config/ProtecteRoute';
 
 function App() {
     useEffect(() => {
@@ -19,25 +18,23 @@ function App() {
             <ScrollToTop />
             <Routes>
                 {RouterContent.map((route, index) => {
-                    const isAdminRoute = route.path.startsWith('/admin');
-                    const loggedInRoute = route.path.startsWith(config.routes.tourDetail);
-                    // const isPublicRoute = route.path === '/';
+                    const isAdminRoute = route.path.startsWith(config.routes.adminHome);
+                    const isTourRoute = route.path.startsWith(config.routes.tourDetail) || route.path.startsWith(config.routes.booking) || route.path.startsWith(config.routes.profile);
+                    const requireAuth = isTourRoute || isAdminRoute
+                    const allowedRoles = isAdminRoute ? ['ADMIN'] : [];
                     const Layout = isAdminRoute ? Fragment : MainLayout;
                     return (
                         <Route
                             key={index}
                             path={route.path}
                             element={
-                                <InterceptRoute route={loggedInRoute}>
-                                    <PrivateRoute adminOnly={isAdminRoute}>
-                                        <Layout>
-                                            {route.element}
-                                        </Layout>
-                                    </PrivateRoute>
-                                </InterceptRoute>
+                                <ProtectedRoute requireAuth={requireAuth} allowedRoles={allowedRoles}>
+                                    <Layout>
+                                        {route.element}
+                                    </Layout>
+                                </ProtectedRoute>
                             }
                         />
-
                     );
                 })}
                 <Route path="*" element={<NotFound />} />

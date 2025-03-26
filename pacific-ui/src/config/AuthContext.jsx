@@ -22,6 +22,10 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('accessToken');
 
     useEffect(() => {
+        const user = localStorage.getItem('accessToken')
+        if(user || token) {
+            setCurrentUser(user);
+        }
         if (token) {
             getUser(token).then(() => {
                 getWishlist();
