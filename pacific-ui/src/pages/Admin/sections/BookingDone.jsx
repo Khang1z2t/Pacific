@@ -1,8 +1,7 @@
 // Booking.jsx
-import React, { useState } from "react";
-import { Typography, Card, Table, Button, Input, Space, Tag } from "antd";
-import { SearchOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import BookingCard from "../components/BookingCard";
+import React, { useState } from 'react';
+import { Button, Card, Input, Space, Table, Tag, Typography } from 'antd';
+import { DeleteOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 

@@ -1,20 +1,7 @@
 'use client';
 
-import {
-    motion,
-    useMotionValue,
-    useSpring,
-    useTransform,
-    AnimatePresence,
-} from 'framer-motion';
-import {
-    Children,
-    cloneElement,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Children, cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 
 function DockItem({
                       children,

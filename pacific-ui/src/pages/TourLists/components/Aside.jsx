@@ -1,4 +1,4 @@
-import { Checkbox, Divider, Radio, Rate, Select } from 'antd';
+import { Divider, Radio, Rate, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { prices } from '~/pages/TourLists/data/prices';
 import { times } from '~/pages/TourLists/data/times';

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Card, Button, Space, Tag, Modal } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import React, { useState } from 'react';
+import { Button, Card, Modal, Space, Tag } from 'antd';
+import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 
 const BookingCard = ({ booking, onEdit, onDelete }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);

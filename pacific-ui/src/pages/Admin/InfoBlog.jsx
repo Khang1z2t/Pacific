@@ -1,6 +1,6 @@
-import React from "react";
-import { Form, Input, Upload, Select, DatePicker, Button } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import React from 'react';
+import { Button, DatePicker, Form, Input, Select, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 

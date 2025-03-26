@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Divider } from 'antd';
 import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';
@@ -10,6 +11,7 @@ import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
 import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { ComboTour } from '~/pages/Home/sections/ComboTour';
 import { useTranslation } from 'react-i18next';
+import { AboutLogin } from '~/pages/Home/sections/AboutLogin';
 
 function Home() {
     const { t, i18n } = useTranslation();
@@ -95,6 +97,7 @@ function Home() {
                     <p className={'lg:text-xl text-sm'}>{t("index.ind6")}</p>
                 </Divider>
                 <BlogSection />
+                <AboutLogin/>
             </div>
         </FadeContent>
     );

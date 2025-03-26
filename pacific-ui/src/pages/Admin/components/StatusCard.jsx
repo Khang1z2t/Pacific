@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'antd';
-import { InfoCircleOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { ArrowDownOutlined, ArrowUpOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 export const StatusCard = ({ title, totalAmount, weekChange, dayChange, dailyAmount }) => {
     return (

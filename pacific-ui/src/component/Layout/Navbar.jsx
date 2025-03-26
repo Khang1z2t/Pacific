@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
+import { Dropdown, Menu } from 'antd';
 import { Button, Dropdown, Menu, message } from 'antd';
 import config from '~/config';
 import AuthService from '~/services/AuthServices';
@@ -75,6 +76,13 @@ export const Navbar = () => {
             </div>
         );
     };
+    const { handleLogout, currentUser,getUser } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+
+    }, [currentUser]);
+
 
     const menuItems = [
         {
@@ -129,7 +137,7 @@ export const Navbar = () => {
                 )}
                 <Menu.Item key="logout">
                     <button
-                        onClick={() => handleLogout()}
+                        onClick={() => handleLogout(navigate)}
                         className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                         {t("menu.title13")}

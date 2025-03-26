@@ -2,7 +2,7 @@ import { StatusCard } from '~/pages/Admin/components/StatusCard';
 import { ChartCard } from '~/pages/Admin/components/ChartCard';
 import { StatisticSection } from '~/pages/Admin/sections/HomePage/Sections/StatisticSection';
 import { StatisticTourSection } from '~/pages/Admin/sections/HomePage/Sections/StatisticTourSection';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import AdminServices from '~/services/AdminServices';
 
 export const HomePage = () => {

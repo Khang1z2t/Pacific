@@ -1,5 +1,5 @@
 // Mail.jsx
-import MailCard from "./MailCard";
+import MailCard from './MailCard';
 
 const Mail = () => {
   return (

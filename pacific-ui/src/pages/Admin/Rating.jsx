@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Switch, Button, Form, Input, Dropdown, Menu } from 'antd';
-import { SearchOutlined, DownOutlined, DeleteOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Button, Dropdown, Form, Input, Menu, message, Modal, Space, Table, Tag } from 'antd';
+import { CheckCircleOutlined, DeleteOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import RatingService from '~/services/RatingService';
-import dayjs from 'dayjs';
 
 const Rating = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -20,22 +19,35 @@ const Rating = () => {
         setLoading(true);
         RatingService.getAllRatings()
             .then((res) => {
-                setRatings(res.data);
-                setFilteredRatings(res.data);
+                const pendingRatings = res.data.filter((rating) => rating.status === "disable");
+                setRatings(pendingRatings);
+                setFilteredRatings(pendingRatings);
             })
             .catch((err) => console.error(err))
             .finally(() => setLoading(false));
     }, []);
+    
 
     const handleDelete = async (id) => {
-        try {
-            await RatingService.deleteRating(id);
-            setRatings(prev => prev.filter(rating => rating.id !== id));
-            setFilteredRatings(prev => prev.filter(rating => rating.id !== id));
-        } catch (error) {
-            console.error("Lỗi khi xóa đánh giá:", error);
-        }
+        Modal.confirm({
+            title: "Bạn có chắc chắn muốn xóa đánh giá này?",
+            content: "Hành động này không thể hoàn tác!",
+            okText: "Xóa",
+            cancelText: "Hủy",
+            onOk: async () => {
+                try {
+                    await RatingService.deleteRating(id);
+                    message.success("Xóa đánh giá thành công!");
+                    setRatings(prev => prev.filter(rating => rating.id !== id));
+                    setFilteredRatings(prev => prev.filter(rating => rating.id !== id));
+                } catch (error) {
+                    console.error("Lỗi khi xóa đánh giá:", error);
+                    message.error("Lỗi khi xóa đánh giá!");
+                }
+            },
+        });
     };
+    
 
     const sortTypes = {
         "1-5": "Đánh giá (1-5)",
@@ -44,17 +56,18 @@ const Rating = () => {
 
     useEffect(() => {
         let newList = ratings.filter(rating =>
-            rating.rating && rating.rating.toString().includes(searchText)
+            rating.tuorName && rating.tuorName.toLowerCase().includes(searchText.toLowerCase())
         );
-
+    
         if (selectedSort === "1-5") {
             newList.sort((a, b) => a.rating - b.rating);
         } else if (selectedSort === "5-1") {
             newList.sort((a, b) => b.rating - a.rating);
         }
-
+    
         setFilteredRatings(newList);
     }, [searchText, selectedSort, ratings]);
+    
 
     const handleSwitchChange = async (id, checked) => {
         const newStatus = checked ? "active" : "inactive";
@@ -68,24 +81,32 @@ const Rating = () => {
         }
     };
 
+    const handleApprove = async (id) => {
+        try {
+            await RatingService.updateRatingStatus(id, "active");
+    
+            setRatings((prevRatings) => prevRatings.filter((rating) => rating.id !== id));
+    
+            message.success("Đánh giá đã được duyệt!");
+        } catch (error) {
+            console.error("Lỗi khi duyệt đánh giá:", error);
+            message.error("Lỗi khi duyệt đánh giá!");
+        }
+    };
+    
+
     const columns = [
         { title: "Người đánh giá", dataIndex: "email", key: "email" },
         { title: "Đánh giá", dataIndex: "rating", key: "rating" },
-        { title: "Tour", dataIndex: "tourTitle", key: "tourTitle" },
-        { title: "Nội dung", dataIndex: "ccomment", key: "comment" },
-        {
-            title: "Ngày đánh giá",
-            dataIndex: "createdAt",
-            key: "createdAt",
-            render: (text) => dayjs(text).format("DD/MM/YYYY"),
-        },
+        { title: "Tour", dataIndex: "tuorName", key: "tuorName" },
+        { title: "Nội dung", dataIndex: "comment", key: "comment" },
         {
             title: "Trạng thái",
             dataIndex: "status",
             key: "status",
             render: (status) => (
-                <Tag color={status === "active" ? "green" : status === "pending" ? "gold" : "volcano"}>
-                    {status ? status.toUpperCase() : "UNKNOWN"}
+                <Tag color={status === "disable" ? "gold" : "green"}>
+                    {status.toUpperCase()}
                 </Tag>
             ),
         },
@@ -94,13 +115,17 @@ const Rating = () => {
             key: "action",
             render: (_, record) => (
                 <Space size="middle">
-                    <Button icon={<CheckCircleOutlined />} />
-                    <Button icon={<DeleteOutlined />} danger onClick={() => handleDelete(record.id)} />
-                    <Switch checked={record.status === "active"} onChange={(checked) => handleSwitchChange(record.id, checked)} />
+                    <Button icon={<CheckCircleOutlined />} onClick={() => handleApprove(record.id)}>
+                        Duyệt
+                    </Button>
+                    <Button icon={<DeleteOutlined />} danger onClick={() => handleDelete(record.id)}>
+                        Xóa
+                    </Button>
                 </Space>
             ),
         },
     ];
+    
 
     return (
         <div className="container mx-auto p-2">
@@ -143,7 +168,7 @@ const Rating = () => {
                 size="large"
             />
         </div>
-    );
+    );  
 };
 
 export default Rating;

@@ -1,5 +1,5 @@
 // MailCard.jsx
-import { useState } from "react";
+import { useState } from 'react';
 
 const MailCard = () => {
   const [showExtraFiles, setShowExtraFiles] = useState(false);

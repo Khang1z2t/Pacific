@@ -1,7 +1,7 @@
-import {Navbar} from "~/component/Layout/Navbar";
+import { Navbar } from '~/component/Layout/Navbar';
 import { FloatButton } from 'antd';
 import Footer from '~/component/Layout/Footer';
-import { CommentOutlined, CustomerServiceOutlined } from '@ant-design/icons';
+import { CommentOutlined } from '@ant-design/icons';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect } from 'react';

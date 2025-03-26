@@ -1,7 +1,6 @@
 import axiosConfig from '~/config/axiosConfig';
-import config from '~/config';
 import AxiosConfig from '~/config/axiosConfig';
-import qs from 'qs';
+import config from '~/config';
 
 const TourServices = {
     getAllTour: async (params) => {
@@ -28,7 +27,7 @@ const TourServices = {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                timeout : 10000
+                timeout : 60000
             });
             return resp.data;
         } catch (error) {

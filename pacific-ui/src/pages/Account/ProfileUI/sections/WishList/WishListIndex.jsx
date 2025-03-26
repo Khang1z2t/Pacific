@@ -1,26 +1,21 @@
 import { WishlistCard } from '~/pages/Account/ProfileUI/sections/WishList/components/WishlistCard';
-import { useEffect, useState, useMemo } from 'react';
-import WishlistServices from '~/services/WishlistServices';
+import { useEffect, useMemo, useState } from 'react';
 import TourServices from '~/services/TourServices';
 import { Empty } from 'antd';
+import { useAuth } from '~/config/AuthContext';
 
 export const WishListIndex = () => {
-    const [wishlist, setWishlist] = useState([]);
-    const [tours, setTours] = useState([]);
-    const [wishlistUpdate, setWishlistUpdate] = useState(0); // Biến để theo dõi khi nào cần cập nhật
-
+    const {wishlist, setWishlist, getWishlist} = useAuth();
     const accessToken = localStorage.getItem('accessToken');
 
-    useEffect(() => {
-        if (!accessToken) return;
+    const [tours, setTours] = useState([]);
+    const [wishlistUpdate, setWishlistUpdate] = useState(0);
 
-        WishlistServices.getWishlist(accessToken)
-            .then((res) => {
-                setWishlist(res.data);
-                console.log(res.data);
-            })
-            .catch((err) => console.error(err));
-    }, [accessToken, wishlistUpdate]); // Cập nhật khi có thay đổi từ `wishlistUpdate`
+    useEffect(() => {
+        if(accessToken){
+            getWishlist(accessToken);
+        }
+    }, [accessToken, wishlistUpdate]);
 
     useEffect(() => {
         TourServices.getAllTour()
@@ -39,7 +34,7 @@ export const WishListIndex = () => {
     }, [tours]);
 
     return (
-        <div className="justify-center flex w-full h-[350px]">
+        <div className="justify-center flex w-full min-h-[350px]">
             <div className="grid grid-cols-2 gap-4">
                 {wishlist.length > 0 &&
                     wishlist.map((wish, index) => {

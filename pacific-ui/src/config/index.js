@@ -1,5 +1,5 @@
-import routes from "~/config/routes";
-import api from "~/config/api";
+import routes from '~/config/routes';
+import api from '~/config/api';
 import imageConfig from '~/config/imageConfig';
 import webConfig from '~/config/webConfig';
 

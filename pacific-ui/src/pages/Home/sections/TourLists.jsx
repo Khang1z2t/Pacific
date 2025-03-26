@@ -1,4 +1,4 @@
-import { Card, Divider, Pagination, Spin } from 'antd';
+import { Divider, Pagination, Spin } from 'antd';
 import { TourCards } from '~/pages/Home/components/TourCards';
 import { useEffect, useState } from 'react';
 import TourServices from '~/services/TourServices';
@@ -27,6 +27,8 @@ export const TourLists = () => {
         if (query.searchSides !== null) filterSearch.categoryId = query.searchSides;
         if(query.maxPrice) filterSearch.maxPrice = query.maxPrice;
         if(query.minPrice) filterSearch.minPrice = query.minPrice;
+        if(query.startDate) filterSearch.startDate = query.startDate;
+        if(query.endDate) filterSearch.endDate = query.endDate;
 
         setQuery(filterSearch);
         setLoading(true)

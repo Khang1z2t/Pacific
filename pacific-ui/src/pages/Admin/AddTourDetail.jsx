@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Select, Row, Col, message, Upload, DatePicker } from 'antd';
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Button, Col, DatePicker, Form, Input, message, Row, Select, Upload } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import TourDetailServices from '~/services/TourDetailServices';
 import { UploadOutlined } from '@ant-design/icons';
 

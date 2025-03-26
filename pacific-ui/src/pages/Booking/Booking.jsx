@@ -1,11 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import config from '~/config';
-import { Form, Input, DatePicker, Select, Radio, Button } from 'antd';
+import { Input } from 'antd';
 import { Loading } from '~/component/ui/Loading';
 import { BookingInfo1 } from '~/pages/Booking/components/BookingInfo1';
-import { BookingInfo2 } from '~/pages/Booking/components/BookingInfo2';
-import TourServices from '~/services/TourServices';
+import TourDetailServices from '~/services/TourDetailServices';
 
 const { TextArea } = Input;
 
@@ -17,8 +15,7 @@ export const Booking = () => {
 
     const navigate = useNavigate();
     useEffect(() => {
-        // setTour(tours.find((tour) => tour.id === +id));
-        TourServices.getById(id).then((res) => {
+        TourDetailServices.getTourDetailById(id).then((res) => {
             setTour(res.data);
             setTimeout(() => {
                 setLoading(false);

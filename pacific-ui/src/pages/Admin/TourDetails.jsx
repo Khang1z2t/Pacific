@@ -1,9 +1,24 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-    Space, Table, Tag, Switch, Modal, Button, Form, Input, Select, Upload, Row, Col, Dropdown, Menu, Image, DatePicker,
+    Button,
+    Col,
+    DatePicker,
+    Dropdown,
+    Form,
+    Image,
+    Input,
+    Menu,
+    Modal,
+    Row,
+    Select,
+    Space,
+    Switch,
+    Table,
+    Tag,
+    Upload,
 } from 'antd';
-import { SearchOutlined, DownOutlined, InfoCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import { useNavigate } from "react-router-dom";
+import { DownOutlined, InfoCircleOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import config from '~/config';
 import TourDetailService from '~/services/TourDetailService';
 import tourDetail from '~/pages/Admin/TourDetails';

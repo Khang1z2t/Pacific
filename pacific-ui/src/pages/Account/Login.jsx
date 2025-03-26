@@ -4,7 +4,6 @@ import { Divider, Form, Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
-import UserServices from '~/services/UserServices';
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
 import AuthService from '~/services/AuthServices';
 import { useAuth } from '~/config/AuthContext';
@@ -15,10 +14,9 @@ export const Login = () => {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { setCurrentUser, getUser } = useAuth();
+    const { setCurrentUser, getUser, handleGoogleLogin } = useAuth();
     const [password, setPassword] = useState('');
     const [identifier, setIdentifier] = useState('');
-
     const [isSignIn, setIsSignIn] = useState(false);
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -36,6 +34,12 @@ export const Login = () => {
             setCurrentUser(user.data);
             message.success(t("login.ti2"), 1);
             navigate('/');
+            await AuthService.login(identifier, password).then(r => {
+                setCurrentUser(r.data);
+                message.success('Đăng nhập thành công!', 1);
+                navigate('/');
+            });
+
         } catch (er) {
             message.error(`${t("login.ti3")} ${er.message}`, 1);
         } finally {
@@ -56,6 +60,7 @@ export const Login = () => {
             });
         }
     };
+
 
     const handleFacebookLogin = async (e) => {
         e.preventDefault();
@@ -113,7 +118,7 @@ export const Login = () => {
                 <Divider plain children={t("login.ti15")} />
                 <div className="flex gap-4 justify-between">
                     <button
-                        onClick={handleGoogleLogin}
+                        onClick={() => handleGoogleLogin(navigate)}
                         className="p-2 bg-red-500 text-white rounded-md font-semibold hover:bg-red-600"
                     >
                         {t("login.ti16")}

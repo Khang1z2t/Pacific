@@ -1,5 +1,5 @@
-import React from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import React from 'react';
+import { Pencil, Trash2 } from 'lucide-react';
 
 const PromotionCard = ({ promotion, onDelete, onEdit }) => {
     return (

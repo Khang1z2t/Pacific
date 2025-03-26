@@ -3,6 +3,21 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Card } from 'antd';
+
+const { Meta } = Card;
+
+const carouselItems = [
+    { title: 'Hà Nội', description: '8 Chuyến đi', imageUrl: '/img/vacation/des1.jpg' },
+    { title: 'Huế', description: '2 Chuyến đi', imageUrl: '/img/vacation/des2.jpg' },
+    { title: 'Thành phố Hồ Chí Minh', description: '5 Chuyến đi', imageUrl: '/img/vacation/des3.jpg' },
+    { title: 'Cần Thơ', description: '5 Chuyến đi', imageUrl: '/img/vacation/des4.jpg' },
+    { title: 'Cần Thơ', description: '5 Chuyến đi', imageUrl: '/img/vacation/des4.jpg' },
+    { title: 'Cần Thơ', description: '5 Chuyến đi', imageUrl: '/img/vacation/des4.jpg' },
+    { title: 'Cần Thơ', description: '5 Chuyến đi', imageUrl: '/img/vacation/des4.jpg' },
+    { title: 'Cần Thơ', description: '5 Chuyến đi', imageUrl: '/img/vacation/des4.jpg' },
+    { title: 'Cần Thơ', description: '5 Chuyến đi', imageUrl: '/img/vacation/des4.jpg' },
+    // Add more items if needed
+];
 import { useTranslation } from 'react-i18next';
 
 const Vacations = () => {

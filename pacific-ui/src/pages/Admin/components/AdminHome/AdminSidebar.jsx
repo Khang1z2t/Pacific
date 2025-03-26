@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Menu } from "antd";
-import Sider from "antd/es/layout/Sider";
+import React, { useState } from 'react';
+import { Menu } from 'antd';
+import Sider from 'antd/es/layout/Sider';
 
 export const AdminSidebar = ({ onSelect, menuItems }) => {
     const [collapsed, setCollapsed] = useState(false);

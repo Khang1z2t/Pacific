@@ -1,29 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Table,
     Button,
-    Switch,
-    Typography,
-    Space,
-    Input,
-    Modal,
-    Form,
-    Select,
-    Image,
     Divider,
+    Image,
+    Input,
+    message,
+    Modal,
     Rate,
+    Select,
+    Space,
+    Switch,
+    Table,
     Tooltip,
-    Upload, message,
+    Typography,
 } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import TourServices from '~/services/TourServices';
 import { prices } from '~/pages/TourLists/data/prices';
 import config from '~/config';
 import { AddTour } from '~/pages/Admin/sections/ToursPage/components/AddTour';
 import { EditTour } from '~/pages/Admin/sections/ToursPage/components/EditTour';
 import { AddTourDetail } from '~/pages/Admin/sections/ToursPage/components/AddTourDetail';
-import TourDetailServices from '~/services/TourDetailServices';
-import { setActive } from '@material-tailwind/react/components/Tabs/TabsContext';
 
 
 const { Title } = Typography;

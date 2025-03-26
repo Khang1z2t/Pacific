@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Rate, Tag, Divider, Button, Row, Col } from 'antd';
-import DetailSection from '~/pages/TourLists/TourDetail/sections/DetailSection';
-import "tailwindcss/tailwind.css";
+import { Divider } from 'antd';
+import 'tailwindcss/tailwind.css';
 import { CalendarSection } from '~/pages/TourLists/TourDetail/sections/CalendarSection/CalendarSection';
 import { OtherToursList } from '~/pages/TourLists/TourDetail/sections/OtherTours/OtherToursList';
 import { Loading } from '~/component/ui/Loading';
@@ -34,9 +33,8 @@ export const TourDetail = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-5">
             <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.title}</h1>
-            <DetailSection {...tour}/>
-            <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Lịch trình khởi hành</p></Divider>
-            <CalendarSection {...tour}/>
+            {/*<DetailSection {...tour}/>*/}
+            <CalendarSection data={tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Tour khác liên quan</p></Divider>
             <OtherToursList/>
         </div>

@@ -2,7 +2,7 @@ import { AccountSecurity } from '~/pages/Account/ProfileUI/sections/ProfileInfor
 import { Divider } from 'antd';
 import { VerifyInformation } from '~/pages/Account/ProfileUI/sections/ProfileInformation/components/VerifyInfomation';
 import {
-    AccountInformation
+    AccountInformation,
 } from '~/pages/Account/ProfileUI/sections/ProfileInformation/components/AccountInformation';
 
 export const ProfileInformation = () => {

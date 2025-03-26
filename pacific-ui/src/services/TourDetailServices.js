@@ -1,5 +1,6 @@
 import AxiosConfig from '~/config/axiosConfig';
 import config from '~/config';
+
 const TourDetailServices = {
     getTourDetail: async () => {
         try{
@@ -37,6 +38,7 @@ const TourDetailServices = {
             return Promise.reject(error);
         }
     },
+
 }
 
 export default TourDetailServices;

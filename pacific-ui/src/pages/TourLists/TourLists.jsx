@@ -1,20 +1,25 @@
 import { SearchBar } from '~/pages/TourLists/components/SearchBar';
 import { TourCards } from '~/pages/TourLists/components/TourCards';
 import { useEffect, useState } from 'react';
-import { Divider, Empty, Pagination, Popover, Rate, Select, Tag } from 'antd';
+import { Divider, Pagination, Spin } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
+import { useAuth } from '~/config/AuthContext';
+import { LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 export const TourLists = ({ titleType }) => {
+    const token = localStorage.getItem('accessToken');
+    const { getWishlist } = useAuth()
+
     const { t } = useTranslation();
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
     const [query, setQuery] = useState({});
     const [filteredTours, setFilteredTours] = useState([]);
-
+    const [loading, setLoading] = useState(true);
     const onChange = (e) => {
         setCurrentPage(e);
     };
@@ -24,11 +29,17 @@ export const TourLists = ({ titleType }) => {
 
         if (query.searchText) filterSearch.title = query.searchText;
         if (query.searchPrices !== null) filterSearch.categoryId = query.searchSides;
+        if (query.startDate !== null) filterSearch.startDate = query.startDate;
+        if (query.endDate !== null) filterSearch.endDate = query.endDate;
         // if (query.rate !== null) filterSearch.ratingAvg = query.rate;
         // if (query.searchPrices === "HighToLow") filterSearch.maxPrice = filterSearch.maxPrice.sort((a, b) => b.maxPrice - a.maxPrice);
         // if (query.searchPrices === "LowToHigh") filterSearch.minPrice = filterSearch.minPrice.sort((a, b) => a.minPrice - b.minPrice);
         setQuery(filterSearch);
     };
+
+    useEffect(() => {
+        getWishlist(token);
+    }, [token]);
 
     useEffect(() => {
         let sortedTours = [...tours];
@@ -49,13 +60,14 @@ export const TourLists = ({ titleType }) => {
     }, [query.rate, query.searchPrices, tours]);
 
     useEffect(() => {
+        setLoading(true);
         TourServices.getAllTour(query).then((res) => {
             const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
             setTours(published);
             setFilteredTours(published);
         }).catch((error) => {
             console.error(error);
-        });
+        }).finally(() => setLoading(false))
         setCurrentPage(1);
     }, [query]);
     const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
@@ -69,15 +81,19 @@ export const TourLists = ({ titleType }) => {
                 <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>{t("tourList.ti1")}</p></Divider>
                 <div className="flex">
                     <Aside query={query} setQuery={setQuery} titleType={titleType} />
-                    {page.length > 0 ?
+                    {loading ? (
+                        <div className="w-full h-[400px] col-span-4 flex items-center justify-center">
+                            <Spin indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />
+                        </div>
+                    ) : page.length > 0 ? (
                         <div className="flex flex-wrap gap-4 w-full px-4">
                             {page.map((tour) => (
                                 <TourCards key={tour.id} data={tour} />
                             ))}
                         </div>
-                        :
+                    ) : (
                         <EmptyComponent description={'tour'} />
-                    }
+                    )}
                 </div>
             </div>
             <Pagination rootClassName={'my-10'} align={'center'} defaultCurrent={1} total={filteredTours.length}

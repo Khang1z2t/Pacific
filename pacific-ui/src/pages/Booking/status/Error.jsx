@@ -1,4 +1,4 @@
-import { Button, Result } from 'antd';
+import { Result } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 

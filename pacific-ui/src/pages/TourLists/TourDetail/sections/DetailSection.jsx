@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Card } from 'antd';
 import { PhoneOutlined } from '@ant-design/icons';
-import BookingServices from '~/services/BookingServices';
 import { useNavigate } from 'react-router-dom';
 import config from '~/config';
 
@@ -28,7 +27,6 @@ const DetailSection = ({...data}) => {
     const [quantity, setQuantity] =  useState('');
     const [orderInfo, setOrderInfo] = useState('');
     const images = data.images;
-    console.log(images);
     const price = data.priceAdults;
     const navigate = useNavigate();
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import PromotionCard from "../components/PromotionCard";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import PromotionCard from '../components/PromotionCard';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 const Promotion = () => {
     const [promotions, setPromotions] = useState([]);

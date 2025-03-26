@@ -1,4 +1,4 @@
-import {Footer} from "antd/es/layout/layout";
+import { Footer } from 'antd/es/layout/layout';
 
 
 export const AdminFooter = ({children}) => (
