@@ -115,7 +115,7 @@ export function AuthProvider({ children }) {
     const handleGoogleLogin = async (navigate) => {
         try {
             await AuthService.loginGoogle();
-            getUser(localStorage.getItem('accessToken'));
+            await getUser(localStorage.getItem('accessToken'));
             message.success('Đăng nhập thành công!', 1);
             navigate('/');
         } catch (error) {

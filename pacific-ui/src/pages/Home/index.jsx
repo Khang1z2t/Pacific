@@ -9,6 +9,7 @@ import { AnimatedHomeBanner } from '~/pages/Home/components/AnimatedHomeBanner/A
 import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
 import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { ComboTour } from '~/pages/Home/sections/ComboTour';
+import { AboutLogin } from '~/pages/Home/sections/AboutLogin';
 
 function Home() {
     useEffect(() => {
@@ -86,6 +87,7 @@ function Home() {
                     <p className={'lg:text-xl text-sm'}>Những bài viết mới nhất</p>
                 </Divider>
                 <BlogSection />
+                <AboutLogin/>
             </div>
         </FadeContent>
     );
