@@ -50,6 +50,7 @@ export default function HistoryPayment({ data, booking }) {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
+            render: (status) => (status ? 'Thành công' : 'Thất bại'),
         },
         {
             title: 'Chi tiết',

@@ -1,7 +1,11 @@
+import { useNavigate } from 'react-router-dom';
+import config from '~/config';
+
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 
 export const AboutSection = () => {
+    const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const [selectedLang, setSelectedLang] = useState(i18n.language);
 
@@ -31,6 +35,7 @@ export const AboutSection = () => {
                         </div>
                     </div>
                     <button
+                        onClick={() => navigate(config.routes.tourTrongNuoc)}
                         className={"mx-96 mt-5 text-4xl bg-orange-600 font-bold text-white p-4 rounded-full shadow-xl hover:bg-orange-800"}>
                         {t("aboutUs.ab4")}
                     </button>

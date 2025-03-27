@@ -63,6 +63,7 @@ export const SearchBar = ({ onSearch }) => {
             <InputNumber
                 allowClear
                 min={0}
+                step={100000}
                 formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 suffix={"VND"}
                 placeholder="Giá thấp nhất"
@@ -84,6 +85,7 @@ export const SearchBar = ({ onSearch }) => {
                 size={'large'}
             <InputNumber
                 min={0}
+                step={100000}
                 allowClear
                 formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 suffix={"VND"}

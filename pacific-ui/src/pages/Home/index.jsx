@@ -12,8 +12,11 @@ import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { ComboTour } from '~/pages/Home/sections/ComboTour';
 import { useTranslation } from 'react-i18next';
 import { AboutLogin } from '~/pages/Home/sections/AboutLogin';
+import { useAuth } from '~/config/AuthContext';
 
 function Home() {
+    const { currentUser } = useAuth();
+
     const { t, i18n } = useTranslation();
     const [selectedLang, setSelectedLang] = useState(i18n.language);
 
@@ -97,7 +100,7 @@ function Home() {
                     <p className={'lg:text-xl text-sm'}>{t("index.ind6")}</p>
                 </Divider>
                 <BlogSection />
-                <AboutLogin/>
+                {currentUser ? null : <AboutLogin />}
             </div>
         </FadeContent>
     );

@@ -4,11 +4,11 @@ import { useAuth } from './AuthContext';
 import config from './index';
 
 function InterceptRoute({children ,route}) {
-    const { currentUser, loading, role } = useAuth();
+    const { currentUser, loading } = useAuth();
 
     if (loading) return <Loading />;
 
-    if (!currentUser && route) {
+    if (!currentUser && !loading && route) {
         return <Navigate to={config.routes.login} />;
     }
 
