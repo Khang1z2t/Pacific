@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Autoplay } from 'swiper/modules';
+import { useTranslation } from 'react-i18next';
+import { Card } from 'antd';
 
 const carouselItems = [
     { title: 'Pháp', imageUrl: '/img/vacation/Paris.jpg' },
@@ -17,7 +19,21 @@ const carouselItems = [
 ];
 
 const Vacations = () => {
+    const { Meta } = Card;
+    const { t } = useTranslation();
     const [swiper, setSwiper] = useState(null);
+
+const carouselItems = [
+    { title: 'Hà Nội', description: `8 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des1.jpg' },
+    { title: 'Huế', description: `2 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des2.jpg' },
+    { title: 'Thành phố Hồ Chí Minh', description: `5 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des3.jpg' },
+    { title: 'Cần Thơ', description: `5 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des4.jpg' },
+    { title: 'Hà Nội', description: `8 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des1.jpg' },
+    { title: 'Huế', description: `2 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des2.jpg' },
+    { title: 'Thành phố Hồ Chí Minh', description: `5 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des3.jpg' },
+    { title: 'Cần Thơ', description: `5 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des4.jpg' },
+    { title: 'Hà Nội', description: `8 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des1.jpg' },
+];
 
     return (
         <div className="container mx-auto max-w-7xl px-4 py-12">

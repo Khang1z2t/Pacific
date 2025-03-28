@@ -1,8 +1,11 @@
-import { Rate } from 'antd';
+import { message, Rate } from 'antd';
 import config from '~/config';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import { useAuth } from '~/config/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import WishlistServices from '~/services/WishlistServices';
 
 export const TourCards = ({ data }) => {
     const { handleAddToWishlist,wishlist } = useAuth();
@@ -25,7 +28,7 @@ export const TourCards = ({ data }) => {
                     <h3 className={'text-lg font-semibold overflow-ellipsis text-gray-800 mb-2 line-clamp-2'}>{data.title}</h3>
                     <p className={'text-sm text-gray-600 line-clamp-2 mb-4'}>{data.description}</p>
                     <div className="flex justify-between text-sm text-gray-500 mb-2">
-                        <span className={'font-semibold'}>{data.duration} Ngày {data.duration - 1} đêm</span>
+                        <span className={'font-semibold'}>{data.duration} {t("tourCard.ti2")} {data.duration - 1} {t("tourCard.ti3")}</span>
                     </div>
                 </div>
                 <div className="flex flex-col justify-start border-t p-3">

@@ -1,10 +1,11 @@
 import { DatePicker, Input, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
+import { useTranslation } from 'react-i18next';
 
 export const SearchBar = ({ onSearch }) => {
     const { RangePicker } = DatePicker;
-
+    const { t } = useTranslation();
     const [searchText, setSearchText] = useState('');
     const [sides, setSides] = useState([]);
     const [startDate, setStartDate] = useState(null);
@@ -16,7 +17,7 @@ export const SearchBar = ({ onSearch }) => {
                 [
                     {
                         id: null,
-                        title: 'Tất cả khu vực',
+                        title: t("search.ti1"),
                     },
                     ...res,
                 ]
@@ -34,7 +35,7 @@ export const SearchBar = ({ onSearch }) => {
         <div
             className={'flex flex-row justify-center mx-auto items-center bg-gray-100 shadow-xl bg-blend-overlay mt-4 gap-4 p-4 w-fit rounded-lg'}>
             <Input
-                placeholder="Tìm kiếm tour"
+                placeholder={t("search.ti2")}
                 allowClear
                 onChange={(e) => setSearchText(e.target.value)}
                 rootClassName={'w-96 font-bold rounded-lg'}
@@ -51,10 +52,12 @@ export const SearchBar = ({ onSearch }) => {
                 optionLabelProp={'title'}
                 className={'w-96 font-bold '}
             />
+
+            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("search.ti3")}</button>
             <RangePicker
                 size={'large'}
                 format={"DD/MM/YYYY"}
-                placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
+                placeholder={[t("search.ti6"), t("search.ti7")]}
                 onChange={(dates) => {
                     if (dates) {
                         setStartDate(dates[0].format("YYYY-MM-DD"));
@@ -66,7 +69,7 @@ export const SearchBar = ({ onSearch }) => {
                 }}
                 className={'w-96 font-bold'}
             />
-            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>Tìm kiếm</button>
+            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("search.ti5")}</button>
         </div>
     );
 };

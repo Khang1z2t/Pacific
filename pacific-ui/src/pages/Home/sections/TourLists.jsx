@@ -5,6 +5,7 @@ import TourServices from '~/services/TourServices';
 import { SearchBar } from '~/pages/Home/components/SearchBar';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 export const TourLists = () => {
     const ITEM_PER_PAGE = 8;
@@ -12,6 +13,7 @@ export const TourLists = () => {
     const [tours, setTours] = useState([]);
     const [query, setQuery] = useState({});
     const [loading, setLoading] = useState(false);
+    const { t } = useTranslation();
 
     const handleSearch = (query) => {
         const filterSearch = {};
@@ -32,7 +34,6 @@ export const TourLists = () => {
         setCurrentPage(page);
     };
 
-
     useEffect(() => {
         TourServices.getAllTour(query).then((res) => {
             const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
@@ -43,7 +44,6 @@ export const TourLists = () => {
         });
     }, [query]);
 
-
     const pageItem = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 
     return (
@@ -53,8 +53,8 @@ export const TourLists = () => {
                 style={{ borderColor: '#7cb305' }}
                 orientation="center"
             >
-                <h2 className="lg:text-3xl text-md">Danh sách tour</h2>
-                <p className="lg:text-xl text-sm">Những tour đang hot gần đây</p>
+                <h2 className="lg:text-3xl text-md">{t("comboTour.tour1")}</h2>
+                <p className="lg:text-xl text-sm">{t("comboTour.tour3")}</p>
             </Divider>
             <SearchBar onSearch={handleSearch} />
             <div

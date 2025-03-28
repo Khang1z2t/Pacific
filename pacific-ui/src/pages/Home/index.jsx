@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Divider } from 'antd';
 import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';
@@ -9,15 +9,18 @@ import { AnimatedHomeBanner } from '~/pages/Home/components/AnimatedHomeBanner/A
 import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
 import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { ComboTour } from '~/pages/Home/sections/ComboTour';
+import { useTranslation } from 'react-i18next';
 import { AboutLogin } from '~/pages/Home/sections/AboutLogin';
 import { useAuth } from '~/config/AuthContext';
 
 function Home() {
     const { currentUser } = useAuth();
+    const { t } = useTranslation();
 
     useEffect(() => {
         document.title = 'Pacific - Hành trình khám phá mọi nơi.';
     }, []);
+
     const FloatBtnItems = [
         {
             icon: 'fas fa-link',
@@ -65,8 +68,8 @@ function Home() {
                              borderColor: '#7cb305',
                          }}
                          orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>Cùng khám phá với pacific</h2>
-                    <p className={'lg:text-xl text-sm'}>Những điểm đến phổ biến</p>
+                    <h2 className={'lg:text-3xl text-md'}>{t("index.ind1")}</h2>
+                    <p className={'lg:text-xl text-sm'}>{t("index.ind2")}</p>
                 </Divider>
                 <TravelCardLists />
                 <Divider className={'font-bold uppercase'}
@@ -74,8 +77,8 @@ function Home() {
                              borderColor: '#7cb305',
                          }}
                          orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>Lựa chọn điểm đến của chính mình</h2>
-                    <p className={'lg:text-xl text-sm'}>Đặt chân tới địa điểm mới</p>
+                    <h2 className={'lg:text-3xl text-md'}>{t("index.ind3")}</h2>
+                    <p className={'lg:text-xl text-sm'}>{t("index.ind4")}</p>
                 </Divider>
                 <Vacations />
                 <AboutSection />
@@ -86,8 +89,8 @@ function Home() {
                              borderColor: '#7cb305',
                          }}
                          orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>Blog của chúng tôi</h2>
-                    <p className={'lg:text-xl text-sm'}>Những bài viết mới nhất</p>
+                    <h2 className={'lg:text-3xl text-md'}>{t("index.ind5")}</h2>
+                    <p className={'lg:text-xl text-sm'}>{t("index.ind6")}</p>
                 </Divider>
                 <BlogSection />
                 {currentUser ? null : <AboutLogin />}

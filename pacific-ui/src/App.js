@@ -7,15 +7,25 @@ import { Fragment, useEffect } from 'react';
 import ScrollToTop from '~/component/Animation/ScrollToTop';
 import webConfig from '~/config/webConfig';
 import config from '~/config';
+import { useTranslation } from "react-i18next";
 import { ProtectedRoute } from '~/config/ProtecteRoute';
 
 function App() {
-    useEffect(() => {
-        window.title = webConfig.defaultTitle;
-    }, []);
-    return (
+
+        const { i18n } = useTranslation();
+
+        useEffect(() => {
+            document.title = webConfig.defaultTitle;
+        }, []);
+
+        const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+        };
+
+        return (
         <Router>
             <ScrollToTop />
+
             <Routes>
                 {RouterContent.map((route, index) => {
                     const isAdminRoute = route.path.startsWith(config.routes.adminHome);
@@ -39,9 +49,7 @@ function App() {
                 })}
                 <Route path="*" element={<NotFound />} />
             </Routes>
-
         </Router>
     );
 }
-
 export default App;
