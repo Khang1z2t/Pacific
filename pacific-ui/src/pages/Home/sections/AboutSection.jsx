@@ -6,12 +6,7 @@ import { useEffect, useState } from 'react';
 
 export const AboutSection = () => {
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
-    const [selectedLang, setSelectedLang] = useState(i18n.language);
-
-    useEffect(() => {
-        setSelectedLang(i18n.language);
-    }, [i18n.language]);
+    const { t } = useTranslation();
 
     return (
         <>

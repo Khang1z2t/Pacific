@@ -13,12 +13,7 @@ export const SearchBar = ({ onSearch }) => {
     const [minPrice, setMinPrice] = useState(null);
 
     const [sides, setSides] = useState([]);
-    const { t, i18n } = useTranslation();
-    const [selectedLang, setSelectedLang] = useState(i18n.language);
-
-    useEffect(() => {
-        setSelectedLang(i18n.language);
-    }, [i18n.language]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         CategoryServices.getCategories().then((res) => {
@@ -66,30 +61,18 @@ export const SearchBar = ({ onSearch }) => {
                 step={100000}
                 formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 suffix={"VND"}
-                placeholder="Giá thấp nhất"
+                placeholder={t("searchBar.ti3")}
                 onChange={(e) => setMinPrice(e)}
                 className="w-[200px] font-bold"
                 size="large"
-            <Input
-                type={'number'}
-                placeholder={t("searchBar.ti3")}
-                onChange={(e) => setMinPrice(e.target.value)}
-                className={'w-fit font-bold'}
-                size={'large'}
-            />
-            <Input
-                type={'number'}
-                placeholder={t("searchBar.ti4")}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className={'w-fit font-bold'}
-                size={'large'}
+                />
             <InputNumber
                 min={0}
                 step={100000}
                 allowClear
                 formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 suffix={"VND"}
-                placeholder="Giá cao nhất"
+                placeholder={t("searchBar.ti4")}
                 onChange={(e) => setMaxPrice(e)}
                 className="w-[200px] font-bold"
                 size="large"

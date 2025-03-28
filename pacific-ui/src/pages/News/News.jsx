@@ -23,6 +23,7 @@ export const News = () => {
                 t("news.ti4"),
         },
     ];
+
     useEffect(() => {
         document.title = 'Địa Điểm Du Lịch Miền Bắc - Blog';
     }, []);

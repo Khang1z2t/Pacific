@@ -63,7 +63,6 @@ export const Register = () => {
     };
 
     return (
-
         <div className="min-h-screen flex items-center justify-center">
             <Iridescence
                 color={[1, 1, 1]}

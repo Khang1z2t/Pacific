@@ -1,11 +1,7 @@
 import { Empty } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import { Empty } from "antd";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
 import { useTranslation } from 'react-i18next';
 
 export const EmptyComponent = ({ description }) => {

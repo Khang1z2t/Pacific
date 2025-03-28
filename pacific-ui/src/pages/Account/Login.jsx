@@ -48,18 +48,18 @@ export const Login = () => {
     };
 
 
-    const handleGoogleLogin = async (e) => {
-        e.preventDefault();
-        if (!isSignIn) {
-            setIsSignIn(true);
-            await AuthService.loginGoogle(getUser).then(() => {
-                navigate('/');
-                message.success(t("login.ti2"), 2);
-            }).catch(() => {
-                message.error(t("login.ti4"), 5);
-            });
-        }
-    };
+    // const handleGoogleLogin = async (e) => {
+    //     e.preventDefault();
+    //     if (!isSignIn) {
+    //         setIsSignIn(true);
+    //         await AuthService.loginGoogle(getUser).then(() => {
+    //             navigate('/');
+    //             message.success(t("login.ti2"), 2);
+    //         }).catch(() => {
+    //             message.error(t("login.ti4"), 5);
+    //         });
+    //     }
+    // };
 
 
     const handleFacebookLogin = async (e) => {

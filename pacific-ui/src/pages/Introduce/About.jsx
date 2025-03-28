@@ -10,6 +10,7 @@ import {
     FaUmbrellaBeach,
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const About = () => {
   const { t } = useTranslation();
@@ -103,7 +104,6 @@ const About = () => {
     }
   ];
 
-const About = () => {
   return (
     <div className="bg-gray-100 py-16 px-6 lg:px-20">
       <h2 className="text-4xl font-bold text-black text-center">{t("about.ti23")}</h2>

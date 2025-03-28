@@ -31,7 +31,6 @@ export const Aside = ({ setQuery, titleType }) => {
                 ]}
                 defaultValue="All"
             />
-
             <Divider>{t("search.ti9")}</Divider>
             <Radio.Group className="w-full">
                 {ratingAvg.map((item, index) => (

@@ -3,6 +3,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Autoplay } from 'swiper/modules';
+import { useTranslation } from 'react-i18next';
+import { Card } from 'antd';
 
 const carouselItems = [
     { title: 'Pháp', imageUrl: '/img/vacation/Paris.jpg' },
@@ -15,17 +17,11 @@ const carouselItems = [
     { title: 'Sao Hỏa', imageUrl: '/img/vacation/Mars.jpg' },
     { title: 'Sao Mộc', imageUrl: '/img/vacation/Jupiter.jpg' },
 ];
-import { useTranslation } from 'react-i18next';
 
 const Vacations = () => {
     const { Meta } = Card;
-    const { t, i18n } = useTranslation();
-    const [selectedLang, setSelectedLang] = useState(i18n.language);
+    const { t } = useTranslation();
     const [swiper, setSwiper] = useState(null);
-
-    useEffect(() => {
-        setSelectedLang(i18n.language);
-    }, [i18n.language]);
 
 const carouselItems = [
     { title: 'Hà Nội', description: `8 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des1.jpg' },

@@ -1,41 +1,26 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
-import { Dropdown, Menu } from 'antd';
 import { Button, Dropdown, Menu, message } from 'antd';
 import config from '~/config';
 import AuthService from '~/services/AuthServices';
-import { useNavigate } from 'react-router-dom';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from "react-i18next";
 
 export const Navbar = () => {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [selectedLang, setSelectedLang] = useState(i18n.language);
-    const { logout, currentUser } = useAuth();
+    const { handleLogout, currentUser,getUser } = useAuth();
     const navigate = useNavigate();
-    const { t } = useTranslation();
 
     useEffect(() => {
         setSelectedLang(i18n.language);
     }, [i18n.language]);
 
-
     useEffect(() => {
-
     }, [currentUser]);
-
-    const handleLogout = async () => {
-        try {
-            await logout();
-            message.success('Đăng xuất thành công!', 1);
-            navigate('/')
-        } catch (error) {
-            message.error(`Đăng xuất thất bại: ${error.message}`, 1);
-        }
-    };
 
     const navItems = [
         {
@@ -76,13 +61,6 @@ export const Navbar = () => {
             </div>
         );
     };
-    const { handleLogout, currentUser,getUser } = useAuth();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-
-    }, [currentUser]);
-
 
     const menuItems = [
         {
@@ -194,6 +172,12 @@ export const Navbar = () => {
                     </div>
                     {/*<div className={'hidden md:flex space-x-4'}>*/}
                     <div className={'hidden md:flex space-x-4 items-center ml-auto'}>
+                        <Dropdown overlay={languageMenu} trigger={['click']}>
+                            <Button className="text-gray-700 hover:text-yellow-600 uppercase font-bold px-2 py-1 text-sm">
+                                <FontAwesomeIcon icon={faGlobe} className="mr-1 text-sm" />
+                                {languages.find(l => l.code === selectedLang)?.label || "Language"}
+                            </Button>
+                        </Dropdown>
                         {currentUser ? (
                             <>
                                 <Dropdown overlay={menuGroup}>
@@ -223,12 +207,6 @@ export const Navbar = () => {
                                 >
                                     {t("menu.title15")}
                                 </Link>
-                                <Dropdown overlay={languageMenu} trigger={['click']}>
-                                    <Button className="text-gray-700 hover:text-yellow-600 uppercase font-bold px-2 py-1 text-sm">
-                                        <FontAwesomeIcon icon={faGlobe} className="mr-1 text-sm" />
-                                        {languages.find(l => l.code === selectedLang)?.label || "Language"}
-                                    </Button>
-                                </Dropdown>
                             </>
                         )}
                     </div>

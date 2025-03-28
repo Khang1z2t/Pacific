@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useEffect } from 'react';
 import { Divider } from 'antd';
 import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';
@@ -16,13 +15,7 @@ import { useAuth } from '~/config/AuthContext';
 
 function Home() {
     const { currentUser } = useAuth();
-
-    const { t, i18n } = useTranslation();
-    const [selectedLang, setSelectedLang] = useState(i18n.language);
-
-    useEffect(() => {
-        setSelectedLang(i18n.language);
-    }, [i18n.language]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         document.title = 'Pacific - Hành trình khám phá mọi nơi.';

@@ -17,9 +17,9 @@
     "title15": "ĐĂNG KÝ"
   },
   "welcome": "Chào mừng bạn đến với công ty du lịch Pacific.",
-  "description": {
-    "text1": "Chúng tôi là công ty du lịch Pacific.",
-    "text2": "Du lịch đến mọi nơi trên thế giới mà không phải đi lòng vòng."
+  "text": {
+    "t1": "Chúng tôi là công ty du lịch Pacific.",
+    "t2": "Du lịch đến mọi nơi trên thế giới mà không phải đi lòng vòng."
   },
   "message": {
     "mes1": "Đăng xuất thành công!",
@@ -70,7 +70,9 @@
     "ti2": "Tìm kiếm tour",
     "ti3": "Giá thấp nhất",
     "ti4": "Giá cao nhất",
-    "ti5": "Tìm kiếm"
+    "ti5": "Tìm kiếm",
+    "ti6": "Ngày bắt đầu",
+    "ti7": "Ngày kết thúc"
   },
   "tourCard": {
     "ti1": "Đã thêm vào danh sách yêu thích",
@@ -233,4 +235,5 @@
   "tourList": {
     "ti1": "Danh sách tour du lịch"
   }
+
 }

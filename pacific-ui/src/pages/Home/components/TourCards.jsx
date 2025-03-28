@@ -1,21 +1,18 @@
-import { Rate } from 'antd';
+import { message, Rate } from 'antd';
 import config from '~/config';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import { useAuth } from '~/config/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import WishlistServices from '~/services/WishlistServices';
 
 export const TourCards = ({ data }) => {
-    const { handleAddToWishlist } = useAuth();
+    // const { handleAddToWishlist } = useAuth();
 
     const [wishlist, setWishlist] = useState([]);
     const { currentUser } = useAuth();
-    const { t, i18n } = useTranslation();
-    const [selectedLang, setSelectedLang] = useState(i18n.language);
-
-    useEffect(() => {
-        setSelectedLang(i18n.language);
-    }, [i18n.language]);
+    const { t } = useTranslation();
 
     const handleAddToWishlist = async (id) => {
         await WishlistServices.AddToWishlist(id, localStorage.getItem('accessToken')).then((res) => {

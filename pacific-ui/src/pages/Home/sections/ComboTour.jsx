@@ -13,12 +13,7 @@ export const ComboTour = () => {
     const [tours, setTours] = useState([]);
     const [query, setQuery] = useState({});
     const [loading, setLoading] = useState(false);
-    const { t, i18n } = useTranslation();
-    const [selectedLang, setSelectedLang] = useState(i18n.language);
-
-    useEffect(() => {
-        setSelectedLang(i18n.language);
-    }, [i18n.language]);
+    const { t } = useTranslation();
 
     const handleSearch = (query) => {
         const filterSearch = {};

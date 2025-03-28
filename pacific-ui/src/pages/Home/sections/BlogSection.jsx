@@ -8,13 +8,7 @@ import Particles from '~/component/Animation/AnimatedUI/Background/Particles';
 import { useTranslation } from 'react-i18next';
 
 export const BlogSection = () => {
-    const { t, i18n } = useTranslation();
-    const [selectedLang, setSelectedLang] = useState(i18n.language);
-
-    useEffect(() => {
-        setSelectedLang(i18n.language);
-    }, [i18n.language]);
-
+    const { t } = useTranslation();
     const BlogCardItems = [
         {
             img: '/img/BlogCards/blog_1.jpg',

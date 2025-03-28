@@ -17,9 +17,9 @@
     "title15": "REGISTER"
   },
   "welcome": "Welcome to Pacific Travel Company.",
-  "description": {
-    "text1": "We are Pacific Travel Company.",
-    "text2": "Travel anywhere in the world without taking detours."
+  "text": {
+    "t1": "We are Pacific Travel Company.",
+    "t2": "Travel anywhere in the world without taking detours."
   },
   "message": {
     "mes1": "Logout successful!",
@@ -66,11 +66,13 @@
     "va1": "Trip"
   },
   "searchBar": {
-    "ti1": "All regions",
+    "ti1": "All areas",
     "ti2": "Search tour",
     "ti3": "Lowest price",
     "ti4": "Highest price",
-    "ti5": "Search"
+    "ti5": "Search",
+    "ti6": "Start date",
+    "ti7": "End date"
   },
   "tourCard": {
     "ti1": "Added to favorites",
@@ -233,6 +235,5 @@
   "tourList": {
     "ti1": "Tour lists"
   }
-
 
 }

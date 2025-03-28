@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 export const SearchBar = ({ onSearch }) => {
     const { RangePicker } = DatePicker;
-
     const { t } = useTranslation();
     const [searchText, setSearchText] = useState('');
     const [sides, setSides] = useState([]);
@@ -58,7 +57,7 @@ export const SearchBar = ({ onSearch }) => {
             <RangePicker
                 size={'large'}
                 format={"DD/MM/YYYY"}
-                placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
+                placeholder={[t("search.ti6"), t("search.ti7")]}
                 onChange={(dates) => {
                     if (dates) {
                         setStartDate(dates[0].format("YYYY-MM-DD"));
@@ -70,7 +69,7 @@ export const SearchBar = ({ onSearch }) => {
                 }}
                 className={'w-96 font-bold'}
             />
-            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>Tìm kiếm</button>
+            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("search.ti5")}</button>
         </div>
     );
 };
