@@ -5,7 +5,9 @@ import { Heart } from 'lucide-react';
 import { useAuth } from '~/config/AuthContext';
 
 export const TourCards = ({ data }) => {
-    const { handleAddToWishlist } = useAuth();
+    const { handleAddToWishlist,wishlist } = useAuth();
+
+    const isInWishlist = wishlist.some((item) => item?.tourId === data.id);
 
     return (
         <div
@@ -27,7 +29,7 @@ export const TourCards = ({ data }) => {
                     </div>
                 </div>
                 <div className="flex flex-col justify-start border-t p-3">
-                    <Rate disabled defaultValue={4} />
+                    <Rate disabled allowHalf defaultValue={data.ratingAvg} />
                     <div className={'flex flex-wrap gap-2 items-center'}>
                         <p className="text-lg font-bold text-gray-800">{config.webConfig.getCurrency(data.maxPrice)}</p>
                     </div>
@@ -35,10 +37,13 @@ export const TourCards = ({ data }) => {
             </Link>
             <div className={'flex justify-end items-end -mt-14 p-4'}>
                 <Heart
-                    onClick={() => handleAddToWishlist(data.id)}
-                    className={'text-red-500 transition-all hover:cursor-pointer hover:fill-red-500'}
-                    size={24}
-                />
+                    onClick={(e) => {
+                        e.preventDefault();
+                        handleAddToWishlist(data.id);
+                    }}
+                    className={`text-red-500 hover:fill-red-600 hover:cursor-pointer  ${isInWishlist ? 'fill-red-500' : ''}`}
+                    size={24}>
+                </Heart>
             </div>
         </div>
     );

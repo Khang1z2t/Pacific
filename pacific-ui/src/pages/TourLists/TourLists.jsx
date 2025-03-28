@@ -42,10 +42,10 @@ export const TourLists = ({ titleType }) => {
     useEffect(() => {
         let sortedTours = [...tours];
 
-        // Lọc theo đánh giá lớn hơn hoặc bằng `query.rate`
         if (query.rate) {
             sortedTours = sortedTours.filter((tour) => tour.ratingAvg >= query.rate);
         }
+        sortedTours.sort((a, b) => a.ratingAvg - b.ratingAvg);
 
         // Sắp xếp theo giá
         if (query.searchPrices === 'HighToLow') {
@@ -55,6 +55,7 @@ export const TourLists = ({ titleType }) => {
         }
 
         setFilteredTours(sortedTours);
+        setCurrentPage(1)
     }, [query.rate, query.searchPrices, tours]);
 
     useEffect(() => {
@@ -95,7 +96,9 @@ export const TourLists = ({ titleType }) => {
                     )}
                 </div>
             </div>
-            <Pagination rootClassName={'my-10'} align={'center'} defaultCurrent={1} total={filteredTours.length}
+            <Pagination rootClassName={'my-10'} align={'center'}
+                        current={currentPage}
+                        defaultCurrent={1} total={filteredTours.length}
                         pageSize={ITEM_PER_PAGE} onChange={(e) => onChange(e)} />
         </div>
     );

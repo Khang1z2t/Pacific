@@ -1,3 +1,5 @@
+import config from '~/config/index';
+
 const webConfig = {
     defaultUser: 'defaultL.png',
     defaultTour: '/img/user_null.png',
@@ -31,7 +33,13 @@ const webConfig = {
             year: 'numeric',
         }).format(new Date(date)).replace('-', '/');
     },
-//     decode base64
+    //getQRCODE
+    getTourDetailQrUrl: (tourId) => {
+        if (!tourId) return ''; // Return empty string if no tourId
+        // const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://pacific-vn.vercel.app'; // Fallback for SSR
+        const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'localhost:3000'; // Fallback for SSR
+        return `${baseUrl}${config.routes.tourDetail}${tourId}`;
+    },
 
 };
 

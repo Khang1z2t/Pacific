@@ -1,9 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AuthService from '~/services/AuthServices';
-import { message } from 'antd';
+import { Button, message, Modal } from 'antd';
 import WishlistServices from '~/services/WishlistServices';
 import PaymentServices from '~/services/PaymentServices';
 import BookingServices from '~/services/BookingServices';
+import config from '~/config/index';
+import { GoogleOutlined, LoginOutlined } from '@ant-design/icons';
+import { BiRegistered } from 'react-icons/bi';
+import { GoSignOut } from 'react-icons/go';
 
 const AuthContext = createContext();
 
@@ -18,6 +22,7 @@ export function AuthProvider({ children }) {
     const [bookLists, setBookLists] = useState([]);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [wishlist, setWishlist] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const [role, setRole] = useState(null);
     const token = localStorage.getItem('accessToken');
 
@@ -83,21 +88,33 @@ export function AuthProvider({ children }) {
 
     const handleAddToWishlist = async (id) => {
         if (!token) {
-            message.error('Bạn cần đăng nhập để thực hiện thao tác này.');
+            // message.error('Bạn cần đăng nhập để thực hiện thao tác này.');
+            setIsModalVisible(true);
             return;
         }
 
-        if (Array.isArray(wishlist) && wishlist.some(item => item?.tourId === id)) {
-            message.error('Tour đã có trong danh sách yêu thích');
-            return;
-        }
-        try {
-            const res = await WishlistServices.AddToWishlist(id, token);
-            setWishlist(prevWishlist => [...prevWishlist, res.data]);
-            message.success('Đã thêm vào danh sách yêu thích');
-        } catch (err) {
-            console.error('Error:', err);
-            message.error('Đã xảy ra lỗi, vui lòng thử lại');
+        const existingItem = wishlist.find((item) => item?.tourId === id);
+
+        if (existingItem) {
+            // Nếu tour đã có trong wishlist, xóa nó
+            try {
+                await WishlistServices.removeWishlist(existingItem.id, token);
+                setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== existingItem.id));
+                message.success('Đã xóa khỏi danh sách yêu thích');
+            } catch (err) {
+                console.error('Error removing from wishlist:', err);
+                message.error('Đã xảy ra lỗi khi xóa, vui lòng thử lại');
+            }
+        } else {
+            // Nếu tour chưa có trong wishlist, thêm nó
+            try {
+                const res = await WishlistServices.AddToWishlist(id, token);
+                setWishlist((prevWishlist) => [...prevWishlist, res.data]);
+                message.success('Đã thêm vào danh sách yêu thích');
+            } catch (err) {
+                console.error('Error adding to wishlist:', err);
+                message.error('Đã xảy ra lỗi khi thêm, vui lòng thử lại');
+            }
         }
     };
 
@@ -121,6 +138,22 @@ export function AuthProvider({ children }) {
             message.error('Đã xảy ra lỗi, vui lòng thử lại');
         }
     };
+
+    const handleModalOk = () => {
+        setIsModalVisible(false);
+        // Có thể thêm logic chuyển hướng đến trang đăng nhập nếu muốn
+        window.location.href = config.routes.login;
+    };
+
+    const handleModalRegister = () => {
+        setIsModalVisible(false);
+        // Có thể thêm logic chuyển hướng đến trang đăng ký nếu muốn
+        window.location.href = config.routes.register;
+    }
+    const handleModalCancel = () => {
+        setIsModalVisible(false);
+    };
+
     const handleGoogleLogin = async (navigate) => {
         try {
             await AuthService.loginGoogle();
@@ -137,8 +170,10 @@ export function AuthProvider({ children }) {
             localStorage.removeItem('accessToken');
             setCurrentUser(null);
             setRole(null);
+            //reload
             message.success('Đăng xuất thành công!', 1);
             navigate('/');
+            window.location.reload();
         } catch (error) {
             message.error(`Đăng xuất thất bại: ${error.message}`, 1);
         }
@@ -178,6 +213,44 @@ export function AuthProvider({ children }) {
     return (
         <AuthContext.Provider value={value}>
             {!loading && children}
+            <Modal
+                visible={isModalVisible}
+                onOk={handleModalOk}
+                onCancel={handleModalCancel}
+                footer={null}
+                width={400}
+                className="rounded-xl overflow-hidden shadow-2xl"
+                closeIcon={<span className="text-white text-lg">×</span>}
+            >
+
+                {/* Body */}
+                <div className="p-6 text-center bg-gray-50">
+                    <p className="text-gray-600 text-base mb-6">
+                        Để trải nghiệm tốt hơn! Hãy đăng nhập để sử dụng đầy đủ tính năng của chúng tôi.
+                    </p>
+
+                    <div className="space-y-4">
+                        <Button
+                            type="primary"
+                            size="large"
+                            icon={<LoginOutlined />}
+                            onClick={handleModalOk}
+                            className="w-full bg-blue-500 hover:bg-blue-600 border-none rounded-md h-11 text-base font-medium transition-all duration-200"
+                        >
+                            Đi đến trang đăng nhập
+                        </Button>
+
+                        <Button
+                            size="large"
+                            icon={<GoSignOut/>}
+                            onClick={handleModalRegister}
+                            className="w-full bg-white border border-gray-300 hover:border-gray-400 text-gray-700 rounded-md h-11 text-base font-medium shadow-sm transition-all duration-200"
+                        >
+                            Chưa có tài khoản? Đi tới đăng ký!
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
         </AuthContext.Provider>
     );
 }

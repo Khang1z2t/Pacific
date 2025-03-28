@@ -140,7 +140,7 @@ export const BookingInfo1 = ({ data, setStep }) => {
                 console.error(err);
             });
 
-        await BookingServices.checkOut({ amount: amount, orderInfo: info ? note : '' })
+        await BookingServices.checkOut({ amount: amount, orderInfo: info || `TOURID : ${data.id}` })
             .then((res) => {
                 window.location.href = res;
             })
