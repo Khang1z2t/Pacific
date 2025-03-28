@@ -1,33 +1,24 @@
-import React, { useState } from 'react';
-import { Button, Card, Divider, Modal, Table, Tooltip } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Space, Modal, Table, Typography, Tooltip, message, Input } from 'antd';
 import config from '~/config';
-import { PlusOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import TourDetailServices from '~/services/TourDetailServices';
 import moment from 'moment';
+import { useAuth } from '~/config/AuthContext';
 
-const historyData = [
-    {
-        key: '1',
-        transactionId: 'TXN12345',
-        date: '2024-02-19',
-        amount: '$50',
-        status: 'Completed',
-        details: 'Thanh toán tiền phòng tháng 2.',
-    },
-    {
-        key: '2',
-        transactionId: 'TXN67890',
-        date: '2024-01-19',
-        amount: '$50',
-        status: 'Sắp khởi hành',
-        details: 'Thanh toán tiền phòng tháng 1.',
-    },
-];
+const { Title, Text } = Typography;
 
-export default function HistoryPayment({ data, booking }) {
+export default function HistoryPayment() {
+    const { token, getPaymentHistory, paymentHistory } = useAuth();
+    const [booking, setBooking] = useState(null);
+
+    useEffect(() => {
+        if (token) {
+            getPaymentHistory(token);
+        }
+    }, [token]);
+
     const [visible, setVisible] = useState(false);
-    const [selectedTransaction, setSelectedTransaction] = useState(null);
-    const [tourDetail, setTourDetail] = useState({});
     const columns = [
         {
             title: 'Mã giao dịch',
@@ -53,114 +44,82 @@ export default function HistoryPayment({ data, booking }) {
             render: (status) => (status ? 'Thành công' : 'Thất bại'),
         },
         {
-            title: 'Chi tiết',
+            title: 'Yêu cầu',
             key: 'action',
             render: (record) => (
-                <Tooltip placement="top" title={'Xem chi tiết hóa đơn'}>
-                    <Button icon={<PlusOutlined />} onClick={() => showDetails(record)}></Button>
+                <Tooltip placement="top" title={'Gửi yêu cầu hoàn tiền'}>
+                    <Button
+                        icon={<PlusOutlined />} onClick={() => setVisible(!visible)}></Button>
                 </Tooltip>
             ),
         },
     ];
 
-    const showDetails = async (record) => {
-        setSelectedTransaction(record);
-        try {
-            TourDetailServices.getTourDetailById(booking.tourDetailId).then((res) => {
-                setTourDetail(res.data);
-            }).catch((err) => {
-                console.error(err);
-            });
-        } catch (err) {
-            console.log(err);
-        }
-
-        setVisible(true);
+    const handleSubmit = () => {
+        //
+        setTimeout(() => {
+            message.success('Yêu cầu hoàn tiền đã được gửi thành công!', 1);
+            setVisible(false); // Close modal after submission
+        },300)
+        //
     };
 
+    const handleCancel = () => {
+        setVisible(false); // Close modal
+    };
     return (
         <div className="container mx-auto">
-            <Table columns={columns} dataSource={data} pagination={true} />
+            <Table columns={columns} dataSource={paymentHistory} pagination={true} />
             <Modal
-                width={800}
-                title="Chi tiết thanh toán"
                 open={visible}
-                onCancel={() => setVisible(false)}
+                onCancel={handleCancel}
                 footer={null}
+                width={600} // Slightly reduced width for better focus
+                className="rounded-xl overflow-hidden shadow-2xl"
+                closeIcon={<span className="text-gray-500 text-xl hover:text-gray-700">×</span>}
+                centered // Center the modal on screen
             >
-                {selectedTransaction && (
-                    <div>
-                        <div className={'grid grid-cols-2 gap-3'}>
-                            <div>
-                                <label className="font-semibold text-black">Mã giao dịch</label>
-                                <p>{selectedTransaction.transactionId}</p>
-                            </div>
-                            <div>
-                                <label className="font-semibold text-black">Ngày</label>
-                                <p>{config.webConfig.convertDateNoTime(selectedTransaction.createdAt)}</p>
-                            </div>
-                            <div>
-                                <label className="font-semibold text-black">Số tiền</label>
-                                <p>{config.webConfig.getCurrency(selectedTransaction.totalAmount)}</p>
-                            </div>
-                            <div>
-                                <label className="font-semibold text-black">Trạng thái</label>
-                                <p>{selectedTransaction.status ? 'Thành công' : 'Thất bại'}</p>
-                            </div>
-                        </div>
-                        <Card className={'shadow-lg'}>
-                            {booking && (
-                                <>
-                                    <div className={'grid grid-cols-2 gap-4'}>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Số lượng người lớn</label>
-                                            <p>{booking.adultNum}</p>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Số lượng trẻ em</
-                                                label>
-                                            <p>{booking.adultNum}</p>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Số điện thoại</label>
-                                            <p>{booking.phone}</p>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Tổng tiền</label>
-                                            <p>{config.webConfig.getCurrency(booking.totalAmount)}</p>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Hình thức thanh toán</label>
-                                            <p>{booking.paymentMethod}</p>
-                                        </div>
-                                    </div>
-                                    <Divider
-                                        orientation="center"
-                                        style={{ borderColor: '#7cb305' }}
-                                    />
-                                    <div className={'grid grid-cols-2 gap-4'}>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Mã tour</label>
-                                            <p>{tourDetail.id}</p>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Ngày khởi hành</label>
-                                            <p>{moment(tourDetail.startDate).format('DD/MM/YYYY')}</p>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Người lớn</label>
-                                            <p>{config.webConfig.getCurrency(tourDetail.priceAdults)}</p>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <label className="font-semibold text-black">Trẻ em</label>
-                                            <p>{config.webConfig.getCurrency(tourDetail.priceChildren)}</p>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </Card>
+                <div className="p-8 bg-white">
+                    {/* Header with Icon and Title */}
+                    <div className="flex items-center justify-center mb-6">
+                        <ExclamationCircleOutlined style={{ fontSize: '32px', color: '#faad14' }} />
+                        <Title level={3} className="ml-3 mb-0 uppercase text-red-800">
+                            Xác nhận yêu cầu hoàn tiền
+                        </Title>
                     </div>
-                )}
+
+                    {/* Description */}
+                    <Text className="block text-center text-gray-600 text-lg mb-8">
+                        Bạn có chắc chắn muốn gửi yêu cầu hoàn tiền cho giao dịch này không?
+                        Hành động này không thể hoàn tác.
+                    </Text>
+                    <div className={"flex flex-col w-full justify-center mb-6"}>
+                        <label className={"text-gray-600 text-lg mr-2"}>Lý do hoàn tiền:</label>
+                        <Input.TextArea className={"max-h-80"} rows={4} placeholder={"Nhập lý do hoàn tiền..."} />
+                    </div>
+                    <span className={"text-red-500 text-md mb-4"}>(* Quý khách sẽ được hoàn tiền 80% số tiền gốc)</span>
+                    {/* Buttons */}
+                    <Space direction="horizontal" size="large" className="flex justify-center">
+                        <Button
+                            type="primary"
+                            size="large"
+                            onClick={handleSubmit}
+                            className="rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
+                            style={{ minWidth: '120px' }}
+                        >
+                            Gửi yêu cầu
+                        </Button>
+                        <Button
+                            type="default"
+                            size="large"
+                            onClick={handleCancel}
+                            className="rounded-lg border-gray-300 hover:border-gray-400 transition-colors duration-300"
+                            style={{ minWidth: '120px' }}
+                        >
+                            Hủy
+                        </Button>
+                    </Space>
+                </div>
             </Modal>
         </div>
     );

@@ -11,14 +11,9 @@ import { WishListIndex } from '~/pages/Account/ProfileUI/sections/WishList/WishL
 
 const { TabPane } = Tabs;
 export const ProfileUI = () => {
-    const { currentUser, getPaymentHistory, paymentHistory, bookLists } = useAuth();
+    const { currentUser } = useAuth();
     const token = localStorage.getItem('accessToken');
 
-    useEffect(() => {
-        if(token){
-            getPaymentHistory(token);
-        }
-    }, [token]);
     const [active, setActive] = useState(true);
     return (
         <div className="flex gap-6 p-6 bg-gray-100 min-h-screen">
@@ -37,7 +32,7 @@ export const ProfileUI = () => {
                         <ProfileInformation />
                     </TabPane>
                     <TabPane tab={'Lịch sử thanh toán'} key={'2'}>
-                        <HistoryPayment booking={bookLists} data={paymentHistory} />
+                        <HistoryPayment />
                     </TabPane>
                     <TabPane tab="Lịch sử đặt tour" key="3">
                         <BookedTour />

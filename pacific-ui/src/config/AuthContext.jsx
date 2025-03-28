@@ -18,8 +18,6 @@ export function useAuth() {
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [booking, setBooking] = useState({});
-    const [bookLists, setBookLists] = useState([]);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [wishlist, setWishlist] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,7 +29,6 @@ export function AuthProvider({ children }) {
             getUser(token).then(() => {
                 getWishlist();
                 getPaymentHistory();
-                getBooking();
             }).catch((err) => {
                 console.error(err);
                 setLoading(false);
@@ -77,14 +74,6 @@ export function AuthProvider({ children }) {
         }
     }, [token]);
 
-    const getBooking = useCallback(async () => {
-        try {
-            const res = await BookingServices.getBookingByUser(token);
-            setBookLists(res?.data);
-        } catch (err) {
-            console.error(err);
-        }
-    }, [token]);
 
     const handleAddToWishlist = async (id) => {
         if (!token) {
@@ -189,8 +178,6 @@ export function AuthProvider({ children }) {
 
     const value = {
         getToken,
-        getBooking,
-        bookLists,
         currentUser,
         setCurrentUser,
         getUser,
@@ -198,11 +185,10 @@ export function AuthProvider({ children }) {
         loading,
         role,
         paymentHistory,
-        booking,
-        setBooking,
         setPaymentHistory,
         getPaymentHistory,
         wishlist,
+        token,
         getWishlist,
         handleAddToWishlist,
         handleRemoveWishlist,

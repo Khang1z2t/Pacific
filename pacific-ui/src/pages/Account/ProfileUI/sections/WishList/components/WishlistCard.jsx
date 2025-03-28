@@ -7,13 +7,13 @@ export const WishlistCard = ({ data, wishlistId, onWishlistChange }) => {
     const { handleRemoveWishlist } = useAuth();
 
     return (
-        <div className="relative border border-gray-200 hover:border-orange-600 hover:text-orange-400 rounded-lg hover:shadow-lg transition-all max-h-44 w-full">
+        <div className="relative border border-gray-200 hover:border-orange-600 hover:text-orange-400 rounded-lg hover:shadow-lg transition-all duration-300 max-h-44 w-full">
             <Link to={`${config.routes.tourDetail}${data.id}`} className="grid grid-cols-5 items-center h-full">
                 <div className="col-span-1 p-2">
                     <img
                         src={config.imageConfig.getImage(data.thumbnail) || config.webConfig.defaultTour}
                         alt="TourLogo"
-                        className="rounded-lg lg:w-full w-42"
+                        className="rounded-lg lg:w-full w-42 object-cover"
                     />
                 </div>
 
@@ -31,9 +31,31 @@ export const WishlistCard = ({ data, wishlistId, onWishlistChange }) => {
 
             <button
                 onClick={() => handleRemoveWishlist(wishlistId, onWishlistChange)}
-                className="absolute top-2 right-2 text-red-500 hover:fill-red-500 transition-all"
+                className="absolute top-2 right-2 group p-1 rounded-full hover:bg-red-50 transition-all duration-200"
             >
-                <Heart size={24} />
+                <Heart
+                    size={24}
+                    className="
+                        fill-red-500
+                        text-red-500
+                        group-hover:scale-110
+                        group-active:scale-90
+                        transform
+                        transition-transform
+                        duration-200
+                        ease-in-out
+                    "
+                />
+                {/* Ripple effect */}
+                <span className="
+                    absolute
+                    inset-0
+                    rounded-full
+                    bg-red-200
+                    opacity-0
+                    group-active:opacity-50
+                    group-active:animate-[ripple_0.4s_ease-out]
+                " />
             </button>
         </div>
     );
