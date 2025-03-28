@@ -92,7 +92,7 @@ export const BookedTourCard = ({ data, tour }) => {
                                     className="font-semibold">{config.webConfig.convertDateNoTime(data.createdAt)}</span>
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                    Mã đặt tour: <span className="font-semibold">{data.id}</span>
+                                    Mã đặt tour: <span className="font-semibold">{data.bookingNo}</span>
                                 </p>
                                 <p className="text-lg font-semibold text-orange-600">
                                     {config.webConfig.getCurrency(data.totalAmount || 0)}

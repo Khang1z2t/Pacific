@@ -13,7 +13,6 @@ export const BookedTour = () => {
     const [tours, setTours] = useState({});
     const [loading, setLoading] = useState(true);
 
-
     useEffect(() => {
         const fetchBookingsAndTours = async () => {
             try {
@@ -47,13 +46,12 @@ export const BookedTour = () => {
         fetchBookingsAndTours();
     }, [token]);
 
-
     const onChange = (page) => {
-        setLoading(true)
+        setLoading(true);
         setCurrentPage(page);
         setTimeout(() => {
-            setLoading(false)
-        },400)
+            setLoading(false);
+        }, 400);
     };
     const pageItems = tourInfo.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 

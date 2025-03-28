@@ -11,10 +11,11 @@ import { useAuth } from '~/config/AuthContext';
 
 const { TextArea } = Input;
 
-export const BookingInfo1 = ({ data, setStep }) => {
+export const BookingInfo1 = ({ data }) => {
     const { id } = useParams();
-    const { currentUser, booking, setBooking } = useAuth();
+    const { currentUser } = useAuth();
 
+    const [booking, setBooking] = useState({});
     const [fullName, setFullName] = useState(currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : '');
     const [address, setAddress] = useState(currentUser ? `${currentUser.address}` : '');
     const [adults, setAdults] = useState(1);
@@ -135,12 +136,13 @@ export const BookingInfo1 = ({ data, setStep }) => {
         await BookingServices.getBookingByTourId(data.id, body)
             .then((res) => {
                 setBooking(res.data);
+                // console.log(res.data);
             })
             .catch((err) => {
                 console.error(err);
             });
 
-        await BookingServices.checkOut({ amount: amount, orderInfo: info || `TOURID : ${data.id}` })
+        await BookingServices.checkOut({ amount: amount, orderInfo: info || `${booking.bookingNo}` })
             .then((res) => {
                 window.location.href = res;
             })
