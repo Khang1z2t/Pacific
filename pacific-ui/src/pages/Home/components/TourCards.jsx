@@ -3,9 +3,7 @@ import config from '~/config';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import { useAuth } from '~/config/AuthContext';
-import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
-import WishlistServices from '~/services/WishlistServices';
+import { t } from 'i18next';
 
 export const TourCards = ({ data }) => {
     const { handleAddToWishlist,wishlist } = useAuth();

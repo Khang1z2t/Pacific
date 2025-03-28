@@ -77,7 +77,6 @@ export const SearchBar = ({ onSearch }) => {
                 className="w-[200px] font-bold"
                 size="large"
             />
-            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("searchBar.ti5")}</button>
             <RangePicker
                 size="large"
                 format="DD/MM/YYYY"
@@ -93,9 +92,7 @@ export const SearchBar = ({ onSearch }) => {
                 }}
                 className="flex-grow min-w-[200px] max-w-[300px] font-bold"
             />
-            <button className="bg-orange-500 text-white px-6 py-2 rounded-md max-w-full" onClick={handleSearch}>
-                Tìm kiếm
-            </button>
+            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("searchBar.ti5")}</button>
         </div>
     );
 };
