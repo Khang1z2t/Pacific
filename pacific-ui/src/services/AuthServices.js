@@ -141,13 +141,13 @@ const AuthService = {
                 },120000);
 
                 //Validate truong hop nguoi dung dong popup
-                const checkedPopupClosed = setInterval(() => {
-                    if(popup.closed){
-                        clearInterval(checkedPopupClosed);
-                        clearTimeout(timeout);
-                        reject("Cửa sổ đăng nhập bị đóng!");
-                    }
-                },500);
+                // const checkedPopupClosed = setInterval(() => {
+                //     if(popup.closed){
+                //         clearInterval(checkedPopupClosed);
+                //         clearTimeout(timeout);
+                //         reject("Cửa sổ đăng nhập bị đóng!");
+                //     }
+                // },500);
 
             } catch (error) {
                 reject(error);
