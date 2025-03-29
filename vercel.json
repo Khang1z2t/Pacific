@@ -3,5 +3,12 @@
     "deploymentEnabled": {
       "main": false
     }
-  }
+  },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/modules"
+    }
+  ],
+  "buildCommand": "npm install --force"
 }
