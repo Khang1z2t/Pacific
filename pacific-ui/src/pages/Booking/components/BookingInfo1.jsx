@@ -130,27 +130,29 @@ export const BookingInfo1 = ({ data }) => {
                 gender: detail.gender || 'MALE',
                 birthday: detail.birthday ? new Date(detail.birthday).toISOString() : null,
                 ageGroup: detail.ageGroup || 'ADULT',
-                price: detail.price || 0, // Sử dụng price từ bookingDetails
+                price: detail.price || 0,
             })),
         };
-        await BookingServices.getBookingByTourId(data.id, body)
-            .then((res) => {
-                setBooking(res.data);
-                // console.log(res.data);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
 
-        await BookingServices.checkOut({ amount: amount, orderInfo: info || `${booking.bookingNo}` })
-            .then((res) => {
+        try {
+            // Get booking data
+            const bookingResponse = await BookingServices.getBookingByTourId(data.id, body);
+            const bookingData = bookingResponse.data;
+
+            // Update state
+            setBooking(bookingData);
+
+            // Use the response data directly for checkout
+            await BookingServices.checkOut({
+                amount: amount,
+                orderInfo: `${bookingData.bookingNo}`
+            }).then((res) => {
                 window.location.href = res;
-            })
-            .catch((err) => {
-                console.error(err);
             });
-    };
-
+        } catch (err) {
+            console.error(err);
+        }
+    }
     return (
         <div className={'container mx-auto my-12'}>
             <h1 className="text-5xl font-light text-orange-600 mb-4 text-center">Đặt tour</h1>

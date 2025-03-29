@@ -23,17 +23,17 @@ const Vacations = () => {
     const { t } = useTranslation();
     const [swiper, setSwiper] = useState(null);
 
-const carouselItems = [
-    { title: 'Hà Nội', description: `8 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des1.jpg' },
-    { title: 'Huế', description: `2 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des2.jpg' },
-    { title: 'Thành phố Hồ Chí Minh', description: `5 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des3.jpg' },
-    { title: 'Cần Thơ', description: `5 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des4.jpg' },
-    { title: 'Hà Nội', description: `8 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des1.jpg' },
-    { title: 'Huế', description: `2 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des2.jpg' },
-    { title: 'Thành phố Hồ Chí Minh', description: `5 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des3.jpg' },
-    { title: 'Cần Thơ', description: `5 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des4.jpg' },
-    { title: 'Hà Nội', description: `8 ${t("vacation.va1")}`, imageUrl: '/img/vacation/des1.jpg' },
-];
+    const carouselItems = [
+        { title: 'Pháp', imageUrl: '/img/vacation/Paris.jpg' },
+        { title: 'Mỹ', imageUrl: '/img/vacation/newyork.jpg' },
+        { title: 'Nhật Bản - TOKYO', imageUrl: '/img/vacation/Tokyo.jpg' },
+        { title: 'Anh Quốc', imageUrl: '/img/vacation/England.jpg' },
+        { title: 'Hàn Quốc', imageUrl: '/img/vacation/Korea.jpg' },
+        { title: 'Mexico', imageUrl: '/img/vacation/Mexico.jpg' },
+        { title: 'Nhật Bản - OSAKA', imageUrl: '/img/vacation/Osaka.jpg' },
+        { title: 'Sao Hỏa', imageUrl: '/img/vacation/Mars.jpg' },
+        { title: 'Sao Mộc', imageUrl: '/img/vacation/Jupiter.jpg' },
+    ];
 
     return (
         <div className="container mx-auto max-w-7xl px-4 py-12">
