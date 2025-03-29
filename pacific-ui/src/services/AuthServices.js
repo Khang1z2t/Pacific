@@ -90,7 +90,7 @@ const AuthService = {
         }
     },
 
-    loginGoogle: async () => {
+    loginGoogle: async (getUser) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await AxiosConfig.get(config.api.auth + "/oauth2/google");
@@ -121,6 +121,7 @@ const AuthService = {
                         localStorage.setItem("accessToken", event.data.accessToken);
                         localStorage.setItem("refreshToken", event.data.refreshToken);
 
+                        await getUser();
 
                         resolve();
                     }
