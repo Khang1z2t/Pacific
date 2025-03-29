@@ -143,16 +143,16 @@ export function AuthProvider({ children }) {
         setIsModalVisible(false);
     };
 
-    const handleGoogleLogin = async (navigate) => {
-        try {
-            await AuthService.loginGoogle();
-            await getUser(localStorage.getItem('accessToken'));
-            message.success('Đăng nhập thành công!', 1);
-            navigate('/');
-        } catch (error) {
-            message.error(`Đăng nhập thất bại: ${error.message}`, 1);
-        }
-    };
+    // const handleGoogleLogin = async (navigate) => {
+    //     try {
+    //         await AuthService.loginGoogle();
+    //         await getUser(localStorage.getItem('accessToken'));
+    //         message.success('Đăng nhập thành công!', 1);
+    //         navigate('/');
+    //     } catch (error) {
+    //         message.error(`Đăng nhập thất bại: ${error.message}`, 1);
+    //     }
+    // };
 
     const handleLogout = async (navigate) => {
         try {
@@ -193,7 +193,6 @@ export function AuthProvider({ children }) {
         handleAddToWishlist,
         handleRemoveWishlist,
         setWishlist,
-        handleGoogleLogin,
     };
 
     return (

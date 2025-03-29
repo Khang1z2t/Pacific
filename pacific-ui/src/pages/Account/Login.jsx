@@ -14,7 +14,7 @@ export const Login = () => {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { setCurrentUser, getUser, handleGoogleLogin } = useAuth();
+    const { setCurrentUser, getUser } = useAuth();
     const [password, setPassword] = useState('');
     const [identifier, setIdentifier] = useState('');
     const [isSignIn, setIsSignIn] = useState(false);
@@ -48,18 +48,18 @@ export const Login = () => {
     };
 
 
-    // const handleGoogleLogin = async (e) => {
-    //     e.preventDefault();
-    //     if (!isSignIn) {
-    //         setIsSignIn(true);
-    //         await AuthService.loginGoogle(getUser).then(() => {
-    //             navigate('/');
-    //             message.success(t("login.ti2"), 2);
-    //         }).catch(() => {
-    //             message.error(t("login.ti4"), 5);
-    //         });
-    //     }
-    // };
+    const handleGoogleLogin = async (e) => {
+        e.preventDefault();
+        if (!isSignIn) {
+            setIsSignIn(true);
+            await AuthService.loginGoogle(getUser).then(() => {
+                navigate('/');
+                message.success(t("login.ti2"), 2);
+            }).catch(() => {
+                message.error(t("login.ti4"), 5);
+            });
+        }
+    };
 
 
     const handleFacebookLogin = async (e) => {
@@ -118,7 +118,7 @@ export const Login = () => {
                 <Divider plain children={t("login.ti15")} />
                 <div className="flex gap-4 justify-between">
                     <button
-                        onClick={() => handleGoogleLogin(navigate)}
+                        onClick={handleGoogleLogin}
                         className="p-2 bg-red-500 text-white rounded-md font-semibold hover:bg-red-600"
                     >
                         {t("login.ti16")}
