@@ -17,7 +17,7 @@ const VoucherServices = {
     getVoucherByCode: async (codeVoucher) => {
         try {
             const response = await axiosConfig.get(`${API_BASE}/by-code`, {
-                params: { codeVoucher }  // Sử dụng query param thay vì path param
+                params: { codeVoucher },  // Sử dụng query param thay vì path param
             });
             return response.data;
         } catch (error) {
@@ -65,7 +65,41 @@ const VoucherServices = {
             console.error(`Lỗi khi xóa voucher ID ${id}:`, error);
             return Promise.reject(error);
         }
-    }
+    },
+
+    checkVoucher: async (params) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await axiosConfig.get(`${API_BASE}/check-voucher`, {
+                params,
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Lỗi khi kiểm tra voucher:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    getVoucher: async (codeVoucher) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await axiosConfig.get(`${API_BASE}/codeVoucher`, {
+                params: { codeVoucher },
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Lỗi khi lấy voucher:', error);
+            return Promise.reject(error);
+        }
+    },
 };
 
 export default VoucherServices;

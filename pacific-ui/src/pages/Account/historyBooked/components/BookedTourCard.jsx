@@ -12,12 +12,12 @@ import {
     Typography,
     Input,
     Progress,
-    Form,
+    Form, Space,
 } from 'antd';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '~/config';
-import { UserOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '~/config/AuthContext';
 import RatingServices from '~/services/RatingServices';
 import BookingServices from '~/services/BookingServices';
@@ -37,10 +37,18 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [showReview, setShowReview] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [visible, setVisible] = useState(false);
 
     const showModal = () => setIsModalOpen(true);
     const handleCancel = () => setIsModalOpen(false);
-
+    const handleSubmit = () => {
+        //
+        setTimeout(() => {
+            message.success('Yêu cầu hoàn tiền đã được gửi thành công!', 1);
+            setVisible(false); // Close modal after submission
+        }, 300);
+        //
+    };
     const columns = [
         { title: 'Họ và tên', dataIndex: 'fullName', key: 'fullName' },
         { title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber' },
@@ -165,8 +173,8 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
             const amount = data.totalAmount || 0; // Tổng tiền từ booking đã có sẵn
             const orderInfo = data.bookingNo || 'N/A'; // Mã booking làm thông tin đơn hàng
 
-            await BookingServices.checkOut({amount : amount, orderInfo : orderInfo}).then((res) => {
-                window.location.href = res
+            await BookingServices.checkOut({ amount: amount, orderInfo: orderInfo }).then((res) => {
+                window.location.href = res;
             }).catch((err) => {
                 console.error('Error during checkout:', err);
                 message.error('Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!');
@@ -268,6 +276,15 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                                         </button>
                                     </>
                                 )}
+                                {data.status === 'CONFIRMED' && (
+                                    <button
+                                        type="primary"
+                                        onClick={() => setVisible(!visible)}
+                                        className="w-40 mt-2 p-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 border-none"
+                                    >
+                                        Yêu cầu hoàn tiền
+                                    </button>
+                                    )}
                                 <p className="text-sm text-gray-600 mt-1">
                                     Thanh toán: <span className="font-semibold">{data.paymentMethod || 'N/A'}</span>
                                 </p>
@@ -452,7 +469,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                 open={isReviewModalOpen}
                 onCancel={handleReviewCancel}
                 footer={null}
-                width={700}
+                width={1200}
                 bodyStyle={{ padding: '24px', background: '#f9fafb' }} // Nền nhẹ nhàng
                 className="rounded-lg shadow-xl"
             >
@@ -476,8 +493,8 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                             className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                             <Avatar
                                 size={64}
-                                src={currentUser.avatar}
-                                icon={!currentUser.avatar && <UserOutlined />}
+                                src={config.imageConfig.getAvatar(currentUser.avatarUrl)}
+                                icon={!currentUser.avatarUrl && <UserOutlined />}
                                 className="border-2 border-blue-200"
                             />
                             <div>
@@ -485,7 +502,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                                     {currentUser.firstName} {currentUser.lastName}
                                 </Text>
                                 <Text className="block text-sm text-gray-500">
-                                    Đánh giá tour: {tour.title || 'N/A'}
+                                    Đánh giá tour: <span className={'font-bold'}>{tour.title || 'N/A'}</span>
                                 </Text>
                             </div>
                         </div>
@@ -499,7 +516,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                                         className="text-base font-medium text-gray-700">Đánh giá tổng thể</span>}
                                     className="mb-0"
                                 >
-                                    <Rate allowHalf disabled className="text-lg" />
+                                    <Rate allowHalf disabled className="text-xl" />
                                 </Form.Item>
                                 <Text className="text-gray-600">
                                     (Tự động tính từ các hạng mục bên dưới)
@@ -533,7 +550,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                             <Title level={4} className="text-gray-800 mb-4 font-semibold">
                                 Chi tiết đánh giá
                             </Title>
-                            <div className="grid grid-cols-2 gap-6">
+                            <div className="grid grid-cols-3 gap-4 ">
                                 {[
                                     { name: 'price', label: 'Giá cả' },
                                     { name: 'transportation', label: 'Phương tiện' },
@@ -550,7 +567,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                                         <Rate
                                             allowHalf
                                             onChange={calculateOverallRating}
-                                            className="text-yellow-500"
+                                            className="text-yellow-500 text-3xl"
                                         />
                                     </Form.Item>
                                 ))}
@@ -578,6 +595,57 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                         </div>
                     </div>
                 </Form>
+            </Modal>
+            <Modal
+                open={visible}
+                onCancel={handleCancel}
+                footer={null}
+                width={600} // Slightly reduced width for better focus
+                className="rounded-xl overflow-hidden shadow-2xl"
+                closeIcon={<span className="text-gray-500 text-xl hover:text-gray-700">×</span>}
+                centered // Center the modal on screen
+            >
+                <div className="p-8 bg-white">
+                    {/* Header with Icon and Title */}
+                    <div className="flex items-center justify-center mb-6">
+                        <ExclamationCircleOutlined style={{ fontSize: '32px', color: '#faad14' }} />
+                        <Title level={3} className="ml-3 mb-0 uppercase text-red-800">
+                            Xác nhận yêu cầu hoàn tiền
+                        </Title>
+                    </div>
+
+                    {/* Description */}
+                    <Text className="block text-center text-gray-600 text-lg mb-8">
+                        Bạn có chắc chắn muốn gửi yêu cầu hoàn tiền cho giao dịch này không?
+                        Hành động này không thể hoàn tác.
+                    </Text>
+                    <div className={'flex flex-col w-full justify-center mb-6'}>
+                        <label className={'text-gray-600 text-lg mr-2'}>Lý do hoàn tiền:</label>
+                        <Input.TextArea className={'max-h-80'} rows={4} placeholder={'Nhập lý do hoàn tiền...'} />
+                    </div>
+                    <span className={'text-red-500 text-md mb-4'}>(* Quý khách sẽ được hoàn tiền 80% số tiền gốc)</span>
+                    {/* Buttons */}
+                    <Space direction="horizontal" size="large" className="flex justify-center">
+                        <Button
+                            type="primary"
+                            size="large"
+                            onClick={handleSubmit}
+                            className="rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
+                            style={{ minWidth: '120px' }}
+                        >
+                            Gửi yêu cầu
+                        </Button>
+                        <Button
+                            type="default"
+                            size="large"
+                            onClick={handleCancel}
+                            className="rounded-lg border-gray-300 hover:border-gray-400 transition-colors duration-300"
+                            style={{ minWidth: '120px' }}
+                        >
+                            Hủy
+                        </Button>
+                    </Space>
+                </div>
             </Modal>
         </>
     );

@@ -52,12 +52,10 @@ export const SearchBar = ({ onSearch }) => {
                 optionLabelProp={'title'}
                 className={'w-96 font-bold '}
             />
-
-            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("search.ti3")}</button>
             <RangePicker
                 size={'large'}
                 format={"DD/MM/YYYY"}
-                placeholder={[t("search.ti6"), t("search.ti7")]}
+                placeholder={['Ngày bắt đầu','Ngày kết thúc']}
                 onChange={(dates) => {
                     if (dates) {
                         setStartDate(dates[0].format("YYYY-MM-DD"));
@@ -69,7 +67,8 @@ export const SearchBar = ({ onSearch }) => {
                 }}
                 className={'w-96 font-bold'}
             />
-            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("search.ti5")}</button>
+            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("search.ti3")}</button>
+
         </div>
     );
 };
