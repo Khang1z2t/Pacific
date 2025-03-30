@@ -92,8 +92,8 @@ const AdminHome = () => {
             key: 'sub6',
             icon: <HistoryOutlined />,
             children: [
-                { label: 'Đang chờ duyệt', key: '15', content: <Rating /> },
-                { label: 'Đã duyệt', key: '16', content: <ConfirmRating /> },
+                { label: 'Đánh Giá', key: '15', content: <Rating /> },
+                { label: 'Đã Ẩn', key: '16', content: <ConfirmRating /> },
             ],
         },
         {
