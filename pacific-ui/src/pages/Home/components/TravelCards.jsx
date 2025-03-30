@@ -1,21 +1,22 @@
 import AnimatedContent from '~/component/Animation/AnimatedUI/AnimatedContent';
 
-const TravelCard = ({ imageSrc, altText, title, description, icon }) => {
+const TravelCard = ({ imageSrc, altText, title, description }) => {
     return (
-        <div
-            className="relative rounded-lg overflow-hidden shadow-md hover:transform transition-transform hover:scale-105">
+        <div className="relative rounded-xl overflow-hidden shadow-lg group transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
             {/* Hình ảnh */}
             <img
                 src={imageSrc}
                 alt={altText}
-                className="w-full h-56 object-cover"
+                className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
             />
             {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
             {/* Nội dung */}
-            <div className="absolute inset-0 flex flex-col justify-end p-4 text-white">
-                <h3 className="text-lg font-semibold">{title}</h3>
-                <p className="text-sm">{description}</p>
+            <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
+                <h3 className="text-xl font-bold tracking-tight">{title}</h3>
+                <p className="text-sm opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                    {description}
+                </p>
             </div>
         </div>
     );
@@ -24,16 +25,16 @@ const TravelCard = ({ imageSrc, altText, title, description, icon }) => {
 const TravelCards = ({ cards }) => {
     return (
         <AnimatedContent
-            distance={150}
+            distance={200}
             direction="horizontal"
             reverse={false}
-            config={{ tension: 80, friction: 20 }}
-            initialOpacity={0.2}
+            config={{ tension: 120, friction: 14 }}
+            initialOpacity={0}
             animateOpacity
-            scale={1.1}
-            threshold={0.2}
+            scale={1.05}
+            threshold={0.1}
         >
-            <div className="grid grid-cols-2 gap-6 lg:gap-8 lg:grid-cols-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
                 {cards.map((card, index) => (
                     <TravelCard
                         key={index}
@@ -41,11 +42,11 @@ const TravelCards = ({ cards }) => {
                         altText={card.altText}
                         title={card.title}
                         description={card.description}
-                        icon={card.icon}
                     />
                 ))}
             </div>
         </AnimatedContent>
     );
 };
+
 export default TravelCards;

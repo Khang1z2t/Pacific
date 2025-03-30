@@ -2,6 +2,7 @@ import config from '~/config/index';
 
 const webConfig = {
     defaultUser: 'defaultL.png',
+    defaultLogo: '/img/logo.jpg',
     defaultTour: '/img/user_null.png',
     defaultTitle: 'Pacific - Hành trình khám phá mọi nơi',
     defaultQrCode: '103-RmMCZ1D3qJujRSOu02I65_gNdgIFW',

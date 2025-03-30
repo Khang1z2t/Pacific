@@ -6,7 +6,7 @@ export const AnimatedHomeBanner = () => {
     const {t} = useTranslation();
 
     return (
-        <div className="relative h-[500px] bg-cover bg-center"
+        <div className="relative h-[500px] bg-gradient-to-br from-gray-50 via-white to-orange-50 bg-cover bg-center"
              style={{ backgroundImage: 'url(\'/img/banner/3.jpg\')' }}>
             {/* Overlay */}
             <div className="absolute inset-0 bg-black bg-opacity-40"></div>

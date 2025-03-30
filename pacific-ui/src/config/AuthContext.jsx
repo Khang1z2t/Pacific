@@ -9,6 +9,7 @@ import { EyeInvisibleOutlined, EyeTwoTone, GoogleOutlined, LoginOutlined } from 
 import { BiRegistered } from 'react-icons/bi';
 import { GoSignOut } from 'react-icons/go';
 import AuthServices from '~/services/AuthServices';
+import VoucherServices from '~/services/VoucherServices';
 
 const AuthContext = createContext();
 
@@ -23,25 +24,36 @@ export function AuthProvider({ children }) {
     const [wishlist, setWishlist] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
-    const [loginPopup, setLoginPopup] = useState(false);
+    const [vouchers, setVouchers] = useState([]);
+    const [isVoucherMessageShown, setIsVoucherMessageShown] = useState(false);
 
     const [role, setRole] = useState(null);
     const token = localStorage.getItem('accessToken');
 
-    useEffect(() => {
-        if (token) {
-            getUser(token).then(() => {
-                getWishlist();
-                getPaymentHistory();
-            }).catch((err) => {
-                console.error(err);
-                setLoading(false);
-            });
-        } else {
-            setLoading(false);
-        }
-    }, [token]);
 
+    const checkVoucherStartDate = useCallback(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const hasShownNotification = localStorage.getItem('voucherNotificationShown');
+        const lastShownDate = localStorage.getItem('voucherNotificationDate');
+        if (hasShownNotification && lastShownDate === today.toISOString().split('T')[0]) {
+            return;
+        }
+        const hasActiveVoucher = vouchers.some((voucher) => {
+            const startDate = new Date(voucher.start_date);
+            const endDate = new Date(voucher.end_date);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+
+            return today.getTime() >= startDate.getTime() && today.getTime() <= endDate.getTime();
+        });
+        if (hasActiveVoucher) {
+            message.info('Pacific có quà tặng bạn nhé! Hãy kiểm tra thông báo!');
+            // Lưu trạng thái đã hiển thị và ngày hiển thị
+            localStorage.setItem('voucherNotificationShown', 'true');
+            localStorage.setItem('voucherNotificationDate', today.toISOString().split('T')[0]);
+        }
+    }, [vouchers]);
     const getUser = useCallback(async (token) => {
         try {
             const res = await AuthService.authToken(token);
@@ -62,6 +74,15 @@ export function AuthProvider({ children }) {
             throw err;
         }
     }, []);
+    const getVouchers = useCallback(async () => {
+        try {
+            const res = await VoucherServices.getAllVouchers();
+            setVouchers(res?.data);
+        } catch (err) {
+            console.error(err);
+        }
+    }, []);
+
 
     const getPaymentHistory = useCallback(async () => {
         try {
@@ -80,6 +101,34 @@ export function AuthProvider({ children }) {
             console.error(err);
         }
     }, [token]);
+
+
+    // Gọi hàm kiểm tra startDate mỗi khi vouchers thay đổi hoặc mỗi ngày
+    useEffect(() => {
+        checkVoucherStartDate(); // Kiểm tra ngay khi vouchers được cập nhật
+
+        // Thiết lập interval để kiểm tra mỗi ngày (vào lúc 00:00)
+        const interval = setInterval(() => {
+            checkVoucherStartDate();
+        }, 24 * 60 * 60 * 1000); // 24 giờ
+
+        return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
+    }, [checkVoucherStartDate]);
+
+    useEffect(() => {
+        if (token) {
+            getUser(token).then(() => {
+                getWishlist();
+                getPaymentHistory();
+                getVouchers();
+            }).catch((err) => {
+                console.error(err);
+                setLoading(false);
+            });
+        } else {
+            setLoading(false);
+        }
+    }, [token, getUser, getWishlist, getPaymentHistory, getVouchers]);
 
 
     const handleAddToWishlist = async (id) => {
@@ -222,6 +271,7 @@ export function AuthProvider({ children }) {
         handleAddToWishlist,
         handleRemoveWishlist,
         setWishlist,
+        vouchers,
     };
 
     return (

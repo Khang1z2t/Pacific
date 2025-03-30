@@ -20,7 +20,7 @@ const Footer = () => {
                         <a href="#" className="text-white bg-orange-500 p-3 rounded-full hover:bg-orange-600 transition duration-300">
                             <FaTwitter className="w-4 h-4" />
                         </a>
-                        <a href="#" className="text-white bg-orange-500 p-3 rounded-full hover:bg-orange-600 transition duration-300">
+                        <a href="https://www.facebook.com/profile.php?id=61574947133985" className="text-white bg-orange-500 p-3 rounded-full hover:bg-orange-600 transition duration-300">
                             <FaFacebookF className="w-4 h-4" />
                         </a>
                         <a href="#" className="text-white bg-orange-500 p-3 rounded-full hover:bg-orange-600 transition duration-300">
@@ -60,8 +60,8 @@ const Footer = () => {
                     <h3 className="text-xl font-semibold mb-4 uppercase">{t("footer.ti17")}</h3>
                     <address className="not-italic text-sm opacity-90 space-y-3">
                         <p>{t("footer.ti18")}</p>
-                        <p>{t("footer.ti19")} <a href="tel:+8419001987" className="hover:text-orange-400 transition duration-300">+84 1900 1987</a></p>
-                        <p>Email: <a href="mailto:cdfptpolytechnic@fpt.vn.com" className="hover:text-orange-400 transition duration-300">cdfptpolytechnic@fpt.vn.com</a></p>
+                        <p>{t("footer.ti19")} <a href="tel:+080xxxxxx" className="hover:text-orange-400 transition duration-300">+84 xxxx xxxx</a></p>
+                        <p>Email: <a href="mailto:pacific.musketeers.tni@gmail.com" className="hover:text-orange-400 transition duration-300">pacific.musketeers.tni@gmail.com</a></p>
                     </address>
                 </div>
             </div>

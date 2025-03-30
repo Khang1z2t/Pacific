@@ -62,24 +62,8 @@ function Home() {
             initialOpacity={0}
         >
             <AnimatedHomeBanner />
-            <div className={'container mx-auto py-12'}>
-                <Divider className={'font-bold uppercase'}
-                         style={{
-                             borderColor: '#7cb305',
-                         }}
-                         orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>{t("index.ind1")}</h2>
-                    <p className={'lg:text-xl text-sm'}>{t("index.ind2")}</p>
-                </Divider>
+            <div className={'container mx-auto'}>
                 <TravelCardLists />
-                <Divider className={'font-bold uppercase'}
-                         style={{
-                             borderColor: '#7cb305',
-                         }}
-                         orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>{t("index.ind3")}</h2>
-                    <p className={'lg:text-xl text-sm'}>{t("index.ind4")}</p>
-                </Divider>
                 <Vacations />
                 <AboutSection />
                 <TourLists />
@@ -89,8 +73,9 @@ function Home() {
                              borderColor: '#7cb305',
                          }}
                          orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>{t("index.ind5")}</h2>
-                    <p className={'lg:text-xl text-sm'}>{t("index.ind6")}</p>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
+                        {t("index.ind5")}</h2>
+                    <p className={"text-sm sm:text-lg text-gray-600 mt-2"}>{t("index.ind6")}</p>
                 </Divider>
                 <BlogSection />
                 {currentUser ? null : <AboutLogin />}

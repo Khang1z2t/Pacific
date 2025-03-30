@@ -4,39 +4,53 @@ import 'swiper/css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Autoplay } from 'swiper/modules';
 import { useTranslation } from 'react-i18next';
-import { Card } from 'antd';
+import { Card, Divider } from 'antd';
 
-const carouselItems = [
-    { title: 'Pháp', imageUrl: '/img/vacation/Paris.jpg' },
-    { title: 'Mỹ', imageUrl: '/img/vacation/newyork.jpg' },
-    { title: 'Nhật Bản - TOKYO', imageUrl: '/img/vacation/Tokyo.jpg' },
-    { title: 'Anh Quốc', imageUrl: '/img/vacation/England.jpg' },
-    { title: 'Hàn Quốc', imageUrl: '/img/vacation/Korea.jpg' },
-    { title: 'Mexico', imageUrl: '/img/vacation/Mexico.jpg' },
-    { title: 'Nhật Bản - OSAKA', imageUrl: '/img/vacation/Osaka.jpg' },
-    { title: 'Sao Hỏa', imageUrl: '/img/vacation/Mars.jpg' },
-    { title: 'Sao Mộc', imageUrl: '/img/vacation/Jupiter.jpg' },
-];
 
 const Vacations = () => {
-    const { Meta } = Card;
     const { t } = useTranslation();
     const [swiper, setSwiper] = useState(null);
+    const [hoveredIndex, setHoveredIndex] = useState(null); // Theo dõi card đang hover
 
     const carouselItems = [
-        { title: 'Pháp', imageUrl: '/img/vacation/Paris.jpg' },
-        { title: 'Mỹ', imageUrl: '/img/vacation/newyork.jpg' },
-        { title: 'Nhật Bản - TOKYO', imageUrl: '/img/vacation/Tokyo.jpg' },
-        { title: 'Anh Quốc', imageUrl: '/img/vacation/England.jpg' },
-        { title: 'Hàn Quốc', imageUrl: '/img/vacation/Korea.jpg' },
-        { title: 'Mexico', imageUrl: '/img/vacation/Mexico.jpg' },
-        { title: 'Nhật Bản - OSAKA', imageUrl: '/img/vacation/Osaka.jpg' },
-        { title: 'Sao Hỏa', imageUrl: '/img/vacation/Mars.jpg' },
-        { title: 'Sao Mộc', imageUrl: '/img/vacation/Jupiter.jpg' },
+        { title: 'Pháp', imageUrl: '/img/vacation/Paris.jpg', hoverImageUrl: '/img/vacation/Paris-hover.jpg' },
+        { title: 'Mỹ', imageUrl: '/img/vacation/newyork.jpg', hoverImageUrl: '/img/vacation/Newyork-hover.jpg' },
+        {
+            title: 'Nhật Bản - TOKYO',
+            imageUrl: '/img/vacation/Tokyo.jpg',
+            hoverImageUrl: '/img/vacation/Tokyo-hover.jpg',
+        },
+        { title: 'Anh Quốc', imageUrl: '/img/vacation/England.jpg', hoverImageUrl: '/img/vacation/England-hover.jpg' },
+        { title: 'Hàn Quốc', imageUrl: '/img/vacation/Korea.jpg', hoverImageUrl: '/img/vacation/Korea-hover.jpg' },
+        { title: 'Mexico', imageUrl: '/img/vacation/Mexico.jpg', hoverImageUrl: '/img/vacation/Mexico-hover.jpg' },
+        {
+            title: 'Nhật Bản - OSAKA',
+            imageUrl: '/img/vacation/Osaka.jpg',
+            hoverImageUrl: '/img/vacation/Osaka-hover.jpg',
+        },
+        { title: 'Sao Hỏa', imageUrl: '/img/vacation/Mars.jpg', hoverImageUrl: '/img/vacation/Mars-hover.jpg' },
+        { title: 'Sao Mộc', imageUrl: '/img/vacation/Jupiter.jpg', hoverImageUrl: '/img/vacation/Jupiter-hover.jpg' },
     ];
 
     return (
-        <div className="container mx-auto max-w-7xl px-4 py-12">
+        <div
+            className="relative bg-gradient-to-br from-gray-50 via-white to-orange-50 justify-center mx-auto max-w-full p-12">
+            <Divider
+                className="my-12 font-bold uppercase"
+                style={{ borderColor: '#7cb305' }}
+                orientation="center"
+            >
+                <div className="text-center">
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
+                        {t('index.ind3')}
+                    </h2>
+                    <p className="text-sm sm:text-lg text-gray-600 mt-2">
+                        {t('index.ind4')}
+                    </p>
+                </div>
+            </Divider>
+            <div
+                className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_rgba(255,167,38,0.2),_transparent_70%)] pointer-events-none"></div>
             <Swiper
                 onSwiper={setSwiper}
                 spaceBetween={30}
@@ -72,13 +86,14 @@ const Vacations = () => {
                 {carouselItems.map((item, index) => (
                     <SwiperSlide key={index}>
                         <div
+                            onMouseEnter={() => setHoveredIndex(index)}
+                            onMouseLeave={() => setHoveredIndex(null)}
                             className="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
-                            {/* Image */}
                             <img
                                 alt={item.title}
-                                src={item.imageUrl}
-                                className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500"
-                            />
+                                src={hoveredIndex === index ? item.hoverImageUrl : item.imageUrl}
+                                className="w-full h-80 object-cover transform transition-transform duration-700 ease-in-out group-hover:scale-105 group-hover:opacity-75"
+                                loading="lazy" />
                             {/* Overlay */}
                             <div
                                 className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -86,7 +101,7 @@ const Vacations = () => {
                             <div
                                 className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                                 <div
-                                    className="bg-orange-500 text-sm px-3 py-1.5 rounded-full inline-block font-medium">
+                                    className="bg-gradient-to-r from-orange-500 to-yellow-500 text-sm px-4 py-2 rounded-full inline-block font-semibold shadow-md">
                                     {item.title}
                                 </div>
                             </div>

@@ -53,8 +53,9 @@ export const TourLists = () => {
                 style={{ borderColor: '#7cb305' }}
                 orientation="center"
             >
-                <h2 className="lg:text-3xl text-md">{t("comboTour.tour1")}</h2>
-                <p className="lg:text-xl text-sm">{t("comboTour.tour3")}</p>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
+                    {t("comboTour.tour1")}</h2>
+                <p className="text-sm sm:text-lg text-gray-600 mt-2">{t("comboTour.tour3")}</p>
             </Divider>
             <SearchBar onSearch={handleSearch} />
             <div
