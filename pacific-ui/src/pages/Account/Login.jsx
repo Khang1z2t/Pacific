@@ -2,22 +2,22 @@ import '~/pages/j.css';
 import React, { useState } from 'react';
 import { Divider, Form, Input, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import Iridescence from '~/component/Animation/AnimatedUI/Background/Iridescence';
 import AuthService from '~/services/AuthServices';
 import { useAuth } from '~/config/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Login = () => {
+    const navigate = useNavigate();
     //healing async
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-    const { setCurrentUser, getUser } = useAuth();
+    const { setCurrentUser, handleGoogleLogin } = useAuth();
     const [password, setPassword] = useState('');
     const [identifier, setIdentifier] = useState('');
-    const [isSignIn, setIsSignIn] = useState(false);
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -48,18 +48,18 @@ export const Login = () => {
     };
 
 
-    const handleGoogleLogin = async (e) => {
-        e.preventDefault();
-        if (!isSignIn) {
-            setIsSignIn(true);
-            await AuthService.loginGoogle(getUser).then(() => {
-                navigate('/');
-                message.success(t("login.ti2"), 2);
-            }).catch(() => {
-                message.error(t("login.ti4"), 5);
-            });
-        }
-    };
+    // const handleGoogleLogin = async (e) => {
+    //     e.preventDefault();
+    //     if (!isSignIn) {
+    //         setIsSignIn(true);
+    //         await AuthService.loginGoogle(getUser).then(() => {
+    //             navigate('/');
+    //             message.success(t("login.ti2"), 2);
+    //         }).catch(() => {
+    //             message.error(t("login.ti4"), 5);
+    //         });
+    //     }
+    // };
 
 
     const handleFacebookLogin = async (e) => {
@@ -118,7 +118,7 @@ export const Login = () => {
                 <Divider plain children={t("login.ti15")} />
                 <div className="flex gap-4 justify-between">
                     <button
-                        onClick={handleGoogleLogin}
+                        onClick={() => handleGoogleLogin(navigate)}
                         className="p-2 bg-red-500 text-white rounded-md font-semibold hover:bg-red-600"
                     >
                         {t("login.ti16")}

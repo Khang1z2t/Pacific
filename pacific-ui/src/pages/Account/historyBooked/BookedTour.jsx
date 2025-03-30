@@ -3,6 +3,7 @@ import { BookedTourCard } from '~/pages/Account/historyBooked/components/BookedT
 import { useEffect, useState } from 'react';
 import BookingServices from '~/services/BookingServices';
 import TourServices from '~/services/TourServices';
+import VoucherServices from '~/services/VoucherServices';
 
 export const BookedTour = () => {
     const ITEM_PER_PAGE = 3;
@@ -16,6 +17,7 @@ export const BookedTour = () => {
     const [tourInfo, setTourInfo] = useState([]);
     const [tours, setTours] = useState({});
     const [loading, setLoading] = useState(true);
+    const [vouchers, setVouchers] = useState({})
 
     useEffect(() => {
         const fetchBookingsAndTours = async () => {
@@ -36,6 +38,21 @@ export const BookedTour = () => {
                 const tourResults = await Promise.all(tourPromises);
                 const toursData = tourResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
                 setTours(toursData);
+                const voucherPromises = bookingRes.data
+                    .filter((booking) => booking.voucherId) // Chỉ lấy những booking có voucherId
+                    .map((booking) =>
+                        VoucherServices.getById(booking.voucherId)
+                            .then((res) => ({ [booking.voucherId]: res.data }))
+                            .catch((err) => {
+                                console.error('Error fetching voucher:', err);
+                                return { [booking.voucherId]: null }; // Fallback khi lỗi
+                            }),
+                    );
+
+                const voucherResults = await Promise.all(voucherPromises);
+                const vouchersData = voucherResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+                setVouchers(vouchersData);
+
                 setLoading(false);
             } catch (err) {
                 console.error(err);
@@ -102,6 +119,7 @@ export const BookedTour = () => {
                                 key={item.id || index}
                                 data={item}
                                 tour={tours[item.tourDetailId]}
+                                voucher={vouchers[item.voucherId] || null}
                                 onUpdateBooking={handleUpdateBooking}
                             />
                         ))

@@ -21,11 +21,13 @@ import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '~/config/AuthContext';
 import RatingServices from '~/services/RatingServices';
 import BookingServices from '~/services/BookingServices';
+import VoucherServices from '~/services/VoucherServices';
+import { FaTags } from 'react-icons/fa';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
 
-export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
+export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
     const { currentUser } = useAuth();
 
     const [timeLeft, setTimeLeft] = useState('');
@@ -38,6 +40,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
     const [showReview, setShowReview] = useState(false);
     const [loading, setLoading] = useState(false);
     const [visible, setVisible] = useState(false);
+
 
     const showModal = () => setIsModalOpen(true);
     const handleCancel = () => setIsModalOpen(false);
@@ -96,6 +99,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
             return () => clearInterval(timer);
         }
     }, [data.status, data.createdAt]);
+
 
     if (!tour) {
         return (
@@ -198,7 +202,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                         <div className="flex justify-between items-start gap-4">
                             <div>
                                 <h3
-                                    className="text-xl font-bold text-blue-900 hover:text-orange-600 cursor-pointer transition-colors duration-200"
+                                    className="text-xl font-bold text-orange-500 hover:underline hover:text-orange-600 cursor-pointer transition-colors duration-200"
                                     onClick={() => navigate(config.routes.tourDetail + tour.id)}
                                 >
                                     {tour.title || 'N/A'}
@@ -220,7 +224,9 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                                     Mã đặt tour: <span className="font-semibold">{data.bookingNo}</span>
                                 </p>
                                 <p className="text-lg font-semibold text-orange-600">
-                                    {config.webConfig.getCurrency(data.totalAmount || 0)}
+                                    {config.webConfig.getCurrency(data.totalAmount || 0)} {' '} {voucher && (
+                                        <sup className="text-sm text-green-500">(-{voucher.discountValue || 0}%)</sup>
+                                )}
                                 </p>
                                 <Divider className="my-2" />
                                 {reviewed ? (
@@ -263,18 +269,27 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                                                         data.status || 'N/A'}
                                 </p>
                                 {data.status === 'PENDING' && (
-                                    <>
-                                        <p className="text-red-500">
-                                            {timeLeft ? `Còn lại: ${timeLeft}` : 'Đang tính toán...'}
+                                    <div className="flex flex-col items-end gap-2 w-full">
+                                        <p className="text-sm text-red-500 font-medium">
+                                            {timeLeft ? `Thời gian thanh toán còn lại: ${timeLeft}` : 'Đang tính toán...'}
                                         </p>
-                                        <button
+                                        {data.voucherId && (
+                                            <div
+                                                className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full shadow-sm">
+                                                <FaTags className="text-green-500" />
+                                                <span className="text-sm text-green-600 font-semibold">
+                                                  Voucher: {voucher.codeVoucher || 'N/A'} (-{voucher.discountValue || 0}%)
+                                                </span>
+                                            </div>
+                                        )}
+                                        <Button
                                             type="primary"
                                             onClick={handleCheckout}
-                                            className="w-40 mt-2 p-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 border-none"
+                                            className="w-1/2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold py-2 shadow-md hover:shadow-lg transition-all duration-300"
                                         >
                                             Thanh toán ngay
-                                        </button>
-                                    </>
+                                        </Button>
+                                    </div>
                                 )}
                                 {data.status === 'CONFIRMED' && (
                                     <button
@@ -284,7 +299,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking }) => {
                                     >
                                         Yêu cầu hoàn tiền
                                     </button>
-                                    )}
+                                )}
                                 <p className="text-sm text-gray-600 mt-1">
                                     Thanh toán: <span className="font-semibold">{data.paymentMethod || 'N/A'}</span>
                                 </p>

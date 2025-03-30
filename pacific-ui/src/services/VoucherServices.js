@@ -84,6 +84,16 @@ const VoucherServices = {
         }
     },
 
+    getById: async (id) => {
+        try{
+            const response = await axiosConfig.get(`${API_BASE}/${id}`);
+            return response.data;
+        }catch (err) {
+            console.error('Lỗi khi lấy voucher theo ID:', err);
+            return Promise.reject(err);
+        }
+    },
+
     getVoucher: async (codeVoucher) => {
         try {
             const token = localStorage.getItem('accessToken');

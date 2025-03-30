@@ -28,8 +28,7 @@ export const ChangePassword = () => {
             message.warning('Mật khẩu phải dài hơn 6 ký tự', 1);
             return;
         }
-        console.log(currentUser.email, password, confirmPassword);
-        await AuthServices.resetPassword(currentUser.email, password, confirmPassword);
+        await AuthServices.resetPassword({email: currentUser.email, newPassword: password, confirmPassword: confirmPassword});
         message.success('Đổi mật khẩu thành công', 1);
         navigate(config.routes.profile);
     }

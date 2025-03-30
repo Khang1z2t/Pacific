@@ -7,7 +7,7 @@ import HotelServices from '~/services/HotelServices';
 import TransportServices from '~/services/TransportServices';
 import { useNavigate } from 'react-router-dom';
 
-export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, voucher, voucherValid, discount }) => {
+export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, voucherValid, discount }) => {
     const [hotel, setHotel] = useState({});
     const [transport, setTransport] = useState({});
     const navigate = useNavigate();
@@ -33,15 +33,9 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
         }
     }, [detailData?.hotelId, detailData?.transportId]);
 
-    // Tính giá sau khi giảm (nếu voucher hợp lệ)
-    const finalPrice = voucherValid ? totalPrice * (1 - discount / 100) : totalPrice;
-
     return (
         <Card className="w-[500px] h-fit sticky top-24 transition-all p-4 shadow-lg border rounded-xl">
-            {/* Tiêu đề */}
             <h2 className="text-lg font-bold uppercase text-gray-800">Tóm Tắt Chuyến Đi</h2>
-
-            {/* Hình ảnh + Thông tin tour */}
             <div className="flex gap-3 mt-2">
                 <img
                     src={config.imageConfig.getImage(data.thumbnail)}
@@ -61,8 +55,6 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                     <p className="text-xs text-gray-500 line-clamp-3">{data.description}</p>
                 </div>
             </div>
-
-            {/* Thông tin khởi hành */}
             <div className="mt-3 text-sm text-gray-700">
                 <p>
                     <strong>Khởi hành:</strong>{' '}
@@ -73,10 +65,7 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                     <span className="text-blue-500 font-semibold">{data.duration}N{data.duration - 1}Đ</span>
                 </p>
             </div>
-
             <Divider className="my-3" />
-
-            {/* Thông tin chuyến đi */}
             <div className="text-sm text-gray-700">
                 <h3 className="text-lg font-bold flex items-center gap-2">
                     <FaInfoCircle className="text-indigo-500" /> Thông tin chuyến đi
@@ -106,10 +95,7 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                     <strong>Giá:</strong> {config.webConfig.getCurrency(transport.cost) || 'N/A'}
                 </p>
             </div>
-
             <Divider className="my-3" />
-
-            {/* Khách hàng & phụ thu */}
             <div className="text-sm text-gray-700">
                 <h3 className="text-lg font-bold flex items-center gap-2">
                     <BiSolidUserDetail className="text-orange-400" /> Khách hàng + Phụ thu
@@ -129,21 +115,18 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                 </p>
             </div>
             <span className="text-xs text-red-500 mt-2 block">
-        * Giá trên đã bao gồm các phụ thu: giá dịch vụ, giá vé máy bay, giá khách sạn, giá ăn uống, giá vận chuyển, giá phí tham quan, giá phí hướng dẫn viên, giá phí bảo hiểm, giá phí visa, giá phí phục vụ, giá phí khác.
-      </span>
-
+                * Giá trên đã bao gồm các phụ thu: giá dịch vụ, giá vé máy bay, giá khách sạn, giá ăn uống, giá vận chuyển, giá phí tham quan, giá phí hướng dẫn viên, giá phí bảo hiểm, giá phí visa, giá phí phục vụ, giá phí khác.
+            </span>
             <Divider className="my-3" />
-
-            {/* Tổng tiền */}
             <div className="text-right">
                 <p className="text-lg font-bold text-gray-800">Tổng tiền cần thanh toán:</p>
                 <p className="text-xl font-bold text-red-500 flex justify-end items-center gap-2">
                     {voucherValid ? (
                         <>
-                            {config.webConfig.getCurrency(finalPrice)}
+                            {config.webConfig.getCurrency(totalPrice)}
                             <span className="text-xs text-green-500 animate-fade-in">
-                (Giảm {discount}%)
-              </span>
+                                (Giảm {discount}%)
+                            </span>
                         </>
                     ) : (
                         config.webConfig.getCurrency(totalPrice)

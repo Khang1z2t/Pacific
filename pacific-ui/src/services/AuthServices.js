@@ -3,8 +3,8 @@ import config from '~/config';
 
 const AuthService = {
 
-    register : async (username, password, firstName, lastName, email) => {
-        try{
+    register: async (username, password, firstName, lastName, email) => {
+        try {
             const response = await AxiosConfig.post(config.api.auth + '/register', {
                 username,
                 password,
@@ -13,60 +13,56 @@ const AuthService = {
                 email,
             });
             return response.data;
-        }catch (error){
+        } catch (error) {
             console.error('Error:', error);
             return Promise.reject(error);
         }
     },
 
     login: async (identifier, password) => {
-        try{
+        try {
             const response = await AxiosConfig.post(config.api.auth + '/login', {
                 identifier,
                 password,
             });
             localStorage.setItem('accessToken', response.data.data.accessToken);
             return response.data;
-        }catch (error){
+        } catch (error) {
             console.error('Error:', error);
             return Promise.reject(error);
         }
     },
 
-    sendVerifyEmail : async (email) => {
-        try{
-            const response = await AxiosConfig.post(config.api.auth + `/send-reset-password-mail?email=${email}`, {} , {
-                timeout : 60000,
-            })
+    sendVerifyEmail: async (email) => {
+        try {
+            const response = await AxiosConfig.post(config.api.auth + `/send-reset-password-mail?email=${email}`, {}, {
+                timeout: 60000,
+            });
             return response.data;
-        }catch (error){
+        } catch (error) {
             console.error('Error:', error);
             return Promise.reject(error);
         }
     },
 
-    verifyEmail : async (email,otp) => {
-        try{
+    verifyEmail: async (email, otp) => {
+        try {
             const response = await AxiosConfig.post(config.api.auth + '/verify-reset-password', {
                 email,
                 otp,
             });
             return response.data;
-        }catch (error){
+        } catch (error) {
             console.error('Error:', error);
             return Promise.reject(error);
         }
     },
 
-    resetPassword : async (email,newPassword,confirmPassword) => {
-        try{
-            const response = await AxiosConfig.post(config.api.auth + '/reset-password', {
-                email,
-                newPassword,
-                confirmPassword,
-            });
+    resetPassword: async (body) => {
+        try {
+            const response = await AxiosConfig.post(config.api.auth + '/reset-password', body);
             return response.data;
-        }catch (error){
+        } catch (error) {
             console.error('Error:', error);
             return Promise.reject(error);
         }
@@ -74,86 +70,85 @@ const AuthService = {
 
     authToken: async (token) => {
         try {
-            if(!token){
+            if (!token) {
                 return Promise.resolve(null);
-            }else{
+            } else {
                 const response = await AxiosConfig.get(`${config.api.auth}/authenticate-token`, {
                     headers: {
-                        'Authorization': 'Bearer ' + token
-                    }
+                        'Authorization': 'Bearer ' + token,
+                    },
                 });
                 return response.data;
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
             return Promise.reject(error);
         }
     },
 
-    loginGoogle: async (getUser) => {
+    loginGoogle: async () => {
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await AxiosConfig.get(config.api.auth + "/oauth2/google");
+                // Gọi API để lấy URL đăng nhập Google
+                const response = await AxiosConfig.get(config.api.auth + '/oauth2/google');
+                const googleAuthUrl = response.data.data;
 
+                if (!googleAuthUrl) {
+                    return reject(new Error('Không thể lấy URL đăng nhập Google'));
+                }
+
+                // Mở popup để người dùng đăng nhập
                 const width = 600;
                 const height = 600;
                 const left = (window.screen.width - width) / 2;
                 const top = (window.screen.height - height) / 2;
 
                 const popup = window.open(
-                    response.data.data,
-                    "Google Login",
-                    `width=${width},height=${height},top=${top},left=${left}`
+                    googleAuthUrl,
+                    'Google Login',
+                    `width=${width},height=${height},top=${top},left=${left}`,
                 );
 
                 if (!popup) {
-                    return;
+                    return reject(new Error('Không thể mở popup. Vui lòng cho phép popup trong trình duyệt.'));
                 }
 
-                const handleMessage = async (event) => {
-                    if (event.origin !== window.location.origin) return;
+                // Xử lý message từ popup
+                const handleMessage = (event) => {
+                    // Kiểm tra origin để đảm bảo an toàn
+                    const allowedOrigins = [window.location.origin, 'https://pacific-vn.vercel.app'];
+                    if (!allowedOrigins.includes(event.origin)) {
+                        return;
+                    }
 
                     if (event.data.error) {
-                        reject(event.data.error);
+                        reject(new Error(event.data.error));
                     }
 
                     if (event.data.accessToken) {
-                        localStorage.setItem("accessToken", event.data.accessToken);
-                        localStorage.setItem("refreshToken", event.data.refreshToken);
-
-                        await getUser();
-
-                        resolve();
+                        // Lưu token vào localStorage
+                        localStorage.setItem('accessToken', event.data.accessToken);
+                        localStorage.setItem('refreshToken', event.data.refreshToken);
+                        resolve({ accessToken: event.data.accessToken, refreshToken: event.data.refreshToken });
                     }
 
-                    window.removeEventListener("message", handleMessage);
+                    window.removeEventListener('message', handleMessage);
                 };
 
-                window.addEventListener("message", handleMessage);
+                window.addEventListener('message', handleMessage);
 
-                //Validate truong hop treo popup
+                // Timeout nếu người dùng không thao tác trong 120 giây
                 const timeout = setTimeout(() => {
-                    if(!popup.closed){
+                    if (!popup.closed) {
                         popup.close();
-                        reject(new Error("Popup closed"));
                     }
-                    reject('Quá thời gian đăng nhập')
-                },120000);
-
-                //Validate truong hop nguoi dung dong popup
-                // const checkedPopupClosed = setInterval(() => {
-                //     if(popup.closed){
-                //         clearInterval(checkedPopupClosed);
-                //         clearTimeout(timeout);
-                //         reject("Cửa sổ đăng nhập bị đóng!");
-                //     }
-                // },500);
-
+                    reject(new Error('Quá thời gian đăng nhập. Vui lòng thử lại.'));
+                }, 120000);
             } catch (error) {
                 reject(error);
             }
         });
-    }
-}
+    },
+};
 
-export default AuthService
+export default AuthService;

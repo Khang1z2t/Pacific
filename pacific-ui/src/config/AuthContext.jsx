@@ -1,13 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AuthService from '~/services/AuthServices';
-import { Button, message, Modal } from 'antd';
+import { Button, Form, message, Modal, Input } from 'antd';
 import WishlistServices from '~/services/WishlistServices';
 import PaymentServices from '~/services/PaymentServices';
 import BookingServices from '~/services/BookingServices';
 import config from '~/config/index';
-import { GoogleOutlined, LoginOutlined } from '@ant-design/icons';
+import { EyeInvisibleOutlined, EyeTwoTone, GoogleOutlined, LoginOutlined } from '@ant-design/icons';
 import { BiRegistered } from 'react-icons/bi';
 import { GoSignOut } from 'react-icons/go';
+import AuthServices from '~/services/AuthServices';
 
 const AuthContext = createContext();
 
@@ -21,6 +22,9 @@ export function AuthProvider({ children }) {
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [wishlist, setWishlist] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
+    const [loginPopup, setLoginPopup] = useState(false);
+
     const [role, setRole] = useState(null);
     const token = localStorage.getItem('accessToken');
 
@@ -43,6 +47,9 @@ export function AuthProvider({ children }) {
             const res = await AuthService.authToken(token);
             setCurrentUser(res?.data);
             setRole(res?.data.role);
+            if (res?.data?.status === 'REQUIRE_USERNAME_PASSWORD_CHANGE') {
+                setIsPasswordModalVisible(true);
+            }
             setLoading(false);
         } catch (err) {
             console.error(err);
@@ -134,26 +141,47 @@ export function AuthProvider({ children }) {
         window.location.href = config.routes.login;
     };
 
+    const handlePasswordModalCancel = () => {
+        setIsPasswordModalVisible(false);
+    };
+
     const handleModalRegister = () => {
         setIsModalVisible(false);
         // Có thể thêm logic chuyển hướng đến trang đăng ký nếu muốn
         window.location.href = config.routes.register;
-    }
+    };
     const handleModalCancel = () => {
         setIsModalVisible(false);
     };
 
-    // const handleGoogleLogin = async (navigate) => {
-    //     try {
-    //         await AuthService.loginGoogle();
-    //         await getUser(localStorage.getItem('accessToken'));
-    //         message.success('Đăng nhập thành công!', 1);
-    //         navigate('/');
-    //     } catch (error) {
-    //         message.error(`Đăng nhập thất bại: ${error.message}`, 1);
-    //     }
-    // };
-
+// Hàm xử lý đăng nhập bằng Google
+    const handleGoogleLogin = async (navigate) => {
+        try {
+            await AuthService.loginGoogle();
+            const token = localStorage.getItem('accessToken');
+            await getUser(token);
+            message.success('Đăng nhập thành công!', 1);
+            navigate('/');
+        } catch (error) {
+            message.error(`Đăng nhập thất bại: ${error.message}`, 1);
+        }
+    };
+    const handlePasswordSubmit = async (values) => {
+        try {
+            const { password, confirmPassword } = values;
+            // Gọi API để cập nhật mật khẩu và username
+            await AuthServices.resetPassword({
+                email: currentUser.email,
+                newPassword: password,
+                confirmPassword: confirmPassword,
+            });
+            message.success('Cập nhật mật khẩu thành công!');
+            setIsPasswordModalVisible(false);
+            await getUser(token);
+        } catch (error) {
+            message.error(`Cập nhật thất bại: ${error.message}`);
+        }
+    };
     const handleLogout = async (navigate) => {
         try {
             localStorage.removeItem('accessToken');
@@ -182,6 +210,7 @@ export function AuthProvider({ children }) {
         setCurrentUser,
         getUser,
         handleLogout,
+        handleGoogleLogin,
         loading,
         role,
         paymentHistory,
@@ -199,7 +228,7 @@ export function AuthProvider({ children }) {
         <AuthContext.Provider value={value}>
             {!loading && children}
             <Modal
-                visible={isModalVisible}
+                open={isModalVisible}
                 onOk={handleModalOk}
                 onCancel={handleModalCancel}
                 footer={null}
@@ -227,13 +256,73 @@ export function AuthProvider({ children }) {
 
                         <Button
                             size="large"
-                            icon={<GoSignOut/>}
+                            icon={<GoSignOut />}
                             onClick={handleModalRegister}
                             className="w-full bg-white border border-gray-300 hover:border-gray-400 text-gray-700 rounded-md h-11 text-base font-medium shadow-sm transition-all duration-200"
                         >
                             Chưa có tài khoản? Đi tới đăng ký!
                         </Button>
                     </div>
+                </div>
+            </Modal>
+            <Modal
+                open={isPasswordModalVisible}
+                onCancel={handlePasswordModalCancel}
+                footer={null}
+                width={400}
+                className="rounded-xl overflow-hidden shadow-2xl"
+                closeIcon={<span className="text-white text-lg">×</span>}
+            >
+                <div className="p-6 text-center bg-gray-50">
+                    <h2 className="text-xl font-bold mb-4">Cập nhật thông tin tài khoản</h2>
+                    <p className="text-gray-600 text-base mb-6">
+                        Bạn đã đăng nhập bằng Google. Để bảo mật tài khoản, vui lòng tạo mật khẩu mới.
+                    </p>
+                    <Form onFinish={handlePasswordSubmit} className="space-y-4">
+                        <Form.Item
+                            InitialValue={currentUser?.username}
+                            disabled
+                            rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!' }]}
+                        >
+                            <Input placeholder="Tên người dùng" value={currentUser?.username} disabled />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+                        >
+                            <Input.Password
+                                placeholder="Mật khẩu mới"
+                                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="confirmPassword"
+                            dependencies={['password']}
+                            rules={[
+                                { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('Mật khẩu xác nhận không khớp!'));
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password
+                                placeholder="Xác nhận mật khẩu"
+                                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            />
+                        </Form.Item>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            className="w-full bg-blue-500 hover:bg-blue-600 border-none rounded-md h-11 text-base font-medium transition-all duration-200"
+                        >
+                            Cập nhật
+                        </Button>
+                    </Form>
                 </div>
             </Modal>
         </AuthContext.Provider>
