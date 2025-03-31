@@ -162,11 +162,7 @@ export const Navbar = () => {
 
             if (!hasShownToday && activeVouchers.length > 0) {
                 activeVouchers.forEach((voucher) => {
-                    message.info(
-                        `${new Date(voucher.startDate).toLocaleDateString()} có voucher giảm giá ${
-                            voucher.discount_value
-                        }% - ${voucher.title}`,
-                    );
+                    message.info('Pacific có quà tặng bạn, hãy kiểm tra thông báo nhé!',1);
                 });
                 localStorage.setItem(todayKey, 'true'); // Đánh dấu là đã hiển thị cho ngày hôm nay
             }

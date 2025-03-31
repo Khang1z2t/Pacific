@@ -25,11 +25,9 @@ export function AuthProvider({ children }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
     const [vouchers, setVouchers] = useState([]);
-    const [isVoucherMessageShown, setIsVoucherMessageShown] = useState(false);
 
     const [role, setRole] = useState(null);
     const token = localStorage.getItem('accessToken');
-
 
     const checkVoucherStartDate = useCallback(() => {
         const today = new Date();
@@ -54,6 +52,7 @@ export function AuthProvider({ children }) {
             localStorage.setItem('voucherNotificationDate', today.toISOString().split('T')[0]);
         }
     }, [vouchers]);
+
     const getUser = useCallback(async (token) => {
         try {
             const res = await AuthService.authToken(token);
@@ -74,6 +73,7 @@ export function AuthProvider({ children }) {
             throw err;
         }
     }, []);
+
     const getVouchers = useCallback(async () => {
         try {
             const res = await VoucherServices.getAllVouchers();
@@ -82,7 +82,6 @@ export function AuthProvider({ children }) {
             console.error(err);
         }
     }, []);
-
 
     const getPaymentHistory = useCallback(async () => {
         try {
@@ -101,7 +100,6 @@ export function AuthProvider({ children }) {
             console.error(err);
         }
     }, [token]);
-
 
     // Gọi hàm kiểm tra startDate mỗi khi vouchers thay đổi hoặc mỗi ngày
     useEffect(() => {
@@ -130,10 +128,8 @@ export function AuthProvider({ children }) {
         }
     }, [token, getUser, getWishlist, getPaymentHistory, getVouchers]);
 
-
     const handleAddToWishlist = async (id) => {
         if (!token) {
-            // message.error('Bạn cần đăng nhập để thực hiện thao tác này.');
             setIsModalVisible(true);
             return;
         }
@@ -141,7 +137,6 @@ export function AuthProvider({ children }) {
         const existingItem = wishlist.find((item) => item?.tourId === id);
 
         if (existingItem) {
-            // Nếu tour đã có trong wishlist, xóa nó
             try {
                 await WishlistServices.removeWishlist(existingItem.id, token);
                 setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== existingItem.id));
@@ -151,7 +146,6 @@ export function AuthProvider({ children }) {
                 message.error('Đã xảy ra lỗi khi xóa, vui lòng thử lại');
             }
         } else {
-            // Nếu tour chưa có trong wishlist, thêm nó
             try {
                 const res = await WishlistServices.AddToWishlist(id, token);
                 setWishlist((prevWishlist) => [...prevWishlist, res.data]);
@@ -186,7 +180,6 @@ export function AuthProvider({ children }) {
 
     const handleModalOk = () => {
         setIsModalVisible(false);
-        // Có thể thêm logic chuyển hướng đến trang đăng nhập nếu muốn
         window.location.href = config.routes.login;
     };
 
@@ -196,14 +189,13 @@ export function AuthProvider({ children }) {
 
     const handleModalRegister = () => {
         setIsModalVisible(false);
-        // Có thể thêm logic chuyển hướng đến trang đăng ký nếu muốn
         window.location.href = config.routes.register;
     };
+
     const handleModalCancel = () => {
         setIsModalVisible(false);
     };
 
-// Hàm xử lý đăng nhập bằng Google
     const handleGoogleLogin = async (navigate) => {
         try {
             await AuthService.loginGoogle();
@@ -215,10 +207,10 @@ export function AuthProvider({ children }) {
             message.error(`Đăng nhập thất bại: ${error.message}`, 1);
         }
     };
+
     const handlePasswordSubmit = async (values) => {
         try {
             const { password, confirmPassword } = values;
-            // Gọi API để cập nhật mật khẩu và username
             await AuthServices.resetPassword({
                 email: currentUser.email,
                 newPassword: password,
@@ -231,12 +223,17 @@ export function AuthProvider({ children }) {
             message.error(`Cập nhật thất bại: ${error.message}`);
         }
     };
+
     const handleLogout = async (navigate) => {
         try {
+            // Xóa trạng thái thông báo khi đăng xuất
+            localStorage.removeItem('voucherNotificationShown');
+            localStorage.removeItem('voucherNotificationDate');
+
+            // Xóa token và các trạng thái khác
             localStorage.removeItem('accessToken');
             setCurrentUser(null);
             setRole(null);
-            //reload
             message.success('Đăng xuất thành công!', 1);
             navigate('/');
             window.location.reload();
@@ -244,6 +241,7 @@ export function AuthProvider({ children }) {
             message.error(`Đăng xuất thất bại: ${error.message}`, 1);
         }
     };
+
     const getToken = async () => {
         try {
             return localStorage.getItem('accessToken');
@@ -286,13 +284,10 @@ export function AuthProvider({ children }) {
                 className="rounded-xl overflow-hidden shadow-2xl"
                 closeIcon={<span className="text-white text-lg">×</span>}
             >
-
-                {/* Body */}
                 <div className="p-6 text-center bg-gray-50">
                     <p className="text-gray-600 text-base mb-6">
                         Để trải nghiệm tốt hơn! Hãy đăng nhập để sử dụng đầy đủ tính năng của chúng tôi.
                     </p>
-
                     <div className="space-y-4">
                         <Button
                             type="primary"
@@ -303,7 +298,6 @@ export function AuthProvider({ children }) {
                         >
                             Đi đến trang đăng nhập
                         </Button>
-
                         <Button
                             size="large"
                             icon={<GoSignOut />}
@@ -330,7 +324,7 @@ export function AuthProvider({ children }) {
                     </p>
                     <Form onFinish={handlePasswordSubmit} className="space-y-4">
                         <Form.Item
-                            InitialValue={currentUser?.username}
+                            initialValue={currentUser?.username}
                             disabled
                             rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!' }]}
                         >

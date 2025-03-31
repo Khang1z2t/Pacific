@@ -45,7 +45,7 @@ export const TourLists = ({ titleType }) => {
         let sortedTours = [...tours];
 
         if (query.rate) {
-            sortedTours = sortedTours.filter((tour) => tour.ratingAvg >= query.rate);
+            sortedTours = sortedTours.filter((tour) => tour.ratingAvg === query.rate);
         }
         sortedTours.sort((a, b) => a.ratingAvg - b.ratingAvg);
 
