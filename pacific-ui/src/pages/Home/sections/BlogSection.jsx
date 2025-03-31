@@ -1,5 +1,5 @@
 import { message, Pagination } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import routes from '~/config/routes';

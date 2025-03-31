@@ -3,10 +3,10 @@ import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
-import { Button, Dropdown, Menu, message } from 'antd';
+import { Dropdown, Menu, message } from 'antd';
 import { motion } from 'framer-motion';
 import config from '~/config';
-import { faBell, faGift, faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
 
 export const Navbar = () => {

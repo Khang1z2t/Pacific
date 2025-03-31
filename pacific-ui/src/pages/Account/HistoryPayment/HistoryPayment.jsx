@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Space, Modal, Table, Typography, Tooltip, message, Input } from 'antd';
+import { Button, Input, message, Modal, Space, Table, Tooltip, Typography } from 'antd';
 import config from '~/config';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import TourDetailServices from '~/services/TourDetailServices';
-import moment from 'moment';
 import { useAuth } from '~/config/AuthContext';
 
 const { Title, Text } = Typography;

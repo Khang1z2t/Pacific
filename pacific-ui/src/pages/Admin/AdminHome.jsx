@@ -22,7 +22,6 @@ import TourList from '~/pages/Admin/sections/ToursPage/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
 import Transport from '~/pages/Admin/sections/Transport';
 import Hotel from '~/pages/Admin/sections/Hotel';
-import Promotion from '~/pages/Admin/sections/Promotion';
 import { Link } from 'react-router-dom';
 import { Category } from '@react-buddy/ide-toolbox';
 import BookingCancel from '~/pages/Admin/sections/BookingCancel';

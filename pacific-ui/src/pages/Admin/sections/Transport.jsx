@@ -1,7 +1,22 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Button, Form, Input, InputNumber, message, Modal, Select, Space, Switch, Table, Tag, Upload, Spin, Image as AntImage } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from "@ant-design/icons";
-import TransportServices from "~/services/TransportServices";
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+    Button,
+    Form,
+    Image as AntImage,
+    Input,
+    InputNumber,
+    message,
+    Modal,
+    Select,
+    Space,
+    Spin,
+    Switch,
+    Table,
+    Tag,
+    Upload,
+} from 'antd';
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import TransportServices from '~/services/TransportServices';
 
 const { Option } = Select;
 

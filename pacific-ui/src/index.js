@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import GlobalStyles from '~/component/GlobalStyles';
 import { AuthProvider } from './config/AuthContext';
-import "./i18n";
+import './i18n';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

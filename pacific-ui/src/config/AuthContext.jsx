@@ -1,14 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AuthService from '~/services/AuthServices';
-import { Button, Form, message, Modal, Input } from 'antd';
+import AuthServices from '~/services/AuthServices';
+import { Button, Form, Input, message, Modal } from 'antd';
 import WishlistServices from '~/services/WishlistServices';
 import PaymentServices from '~/services/PaymentServices';
-import BookingServices from '~/services/BookingServices';
 import config from '~/config/index';
-import { EyeInvisibleOutlined, EyeTwoTone, GoogleOutlined, LoginOutlined } from '@ant-design/icons';
-import { BiRegistered } from 'react-icons/bi';
+import { EyeInvisibleOutlined, EyeTwoTone, LoginOutlined } from '@ant-design/icons';
 import { GoSignOut } from 'react-icons/go';
-import AuthServices from '~/services/AuthServices';
 import VoucherServices from '~/services/VoucherServices';
 
 const AuthContext = createContext();

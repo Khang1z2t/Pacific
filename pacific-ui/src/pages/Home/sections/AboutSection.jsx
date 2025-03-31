@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import config from '~/config';
 
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
 
 export const AboutSection = () => {
     const navigate = useNavigate();

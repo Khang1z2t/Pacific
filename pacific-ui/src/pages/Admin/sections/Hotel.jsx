@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Button, Modal, Form, Input, Space, message, Select, Upload, InputNumber } from "antd";
-import { PlusOutlined, SearchOutlined, UploadOutlined } from "@ant-design/icons";
-import HotelServices from "~/services/HotelServices";
-import HotelCard from "~/pages/Admin/components/HotelCard";
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, InputNumber, message, Modal, Select, Space, Upload } from 'antd';
+import { PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import HotelServices from '~/services/HotelServices';
+import HotelCard from '~/pages/Admin/components/HotelCard';
 
 const { Option } = Select;
 

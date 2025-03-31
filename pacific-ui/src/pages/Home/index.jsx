@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Divider } from 'antd';
 import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';

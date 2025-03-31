@@ -1,6 +1,6 @@
-import React from "react";
-import { Button, Space, Switch, Tag } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import React from 'react';
+import { Button, Space, Switch } from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 const TransportCard = ({
                            record,

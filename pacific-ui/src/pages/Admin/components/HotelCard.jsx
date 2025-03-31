@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Button, Space, Tag, Table, Image, message, Popconfirm, Upload, Spin } from "antd";
-import { EditOutlined, DeleteOutlined, UploadOutlined } from "@ant-design/icons";
+import React, { useState } from 'react';
+import { Button, Image, message, Popconfirm, Space, Spin, Table, Tag, Upload } from 'antd';
+import { DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons';
 
 const HotelCard = ({ hotels = [], onEdit, onDelete, onUpdateImage, loading }) => {
     const [fileLists, setFileLists] = useState({});

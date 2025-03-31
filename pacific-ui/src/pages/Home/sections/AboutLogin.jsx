@@ -2,6 +2,7 @@ import { Button, Typography } from 'antd';
 import Particles from '~/component/Animation/AnimatedUI/Background/Particles';
 import { useNavigate } from 'react-router-dom';
 import config from '~/config';
+
 const { Title, Text } = Typography;
 
 export const AboutLogin = () => {

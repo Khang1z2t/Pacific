@@ -7,7 +7,7 @@ import { Fragment, useEffect } from 'react';
 import ScrollToTop from '~/component/Animation/ScrollToTop';
 import webConfig from '~/config/webConfig';
 import config from '~/config';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import { ProtectedRoute } from '~/config/ProtecteRoute';
 
 function App() {

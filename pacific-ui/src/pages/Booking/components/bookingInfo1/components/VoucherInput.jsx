@@ -1,4 +1,3 @@
-import { FaTags } from 'react-icons/fa';
 import { useState } from 'react';
 
 export const VoucherInput = ({ voucher, setVoucher, applyVoucher, voucherValid }) => {

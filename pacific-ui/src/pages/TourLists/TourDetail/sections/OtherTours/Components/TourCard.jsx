@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Rate, Skeleton } from 'antd';
+import { Rate } from 'antd';
 import config from '~/config';
 import { useAuth } from '~/config/AuthContext';
 import { Heart } from 'lucide-react';

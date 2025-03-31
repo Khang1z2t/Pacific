@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Autoplay } from 'swiper/modules';
 import { useTranslation } from 'react-i18next';
-import { Card, Divider } from 'antd';
+import { Divider } from 'antd';
 import config from '~/config';
 
 const Vacations = () => {

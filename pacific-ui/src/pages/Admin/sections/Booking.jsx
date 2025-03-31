@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Table, Tag, message } from "antd";
-import BookingServices from "~/services/BookingServices";
-import BookingCard from "~/pages/Admin/components/BookingCard";
-// Booking.jsx
-import React, { useState } from 'react';
-import { Button, Card, Input, Space, Table, Tag, Typography } from 'antd';
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { message, Table, Tag, Typography } from 'antd';
+import BookingServices from '~/services/BookingServices';
+import BookingCard from '~/pages/Admin/components/BookingCard';
 
 const { Title } = Typography;
 

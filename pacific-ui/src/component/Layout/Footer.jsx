@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
+import React from 'react';
+import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {

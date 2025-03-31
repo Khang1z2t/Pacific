@@ -1,18 +1,19 @@
 import {
+    Avatar,
     Button,
     Card,
+    Divider,
+    Form,
     Image,
+    Input,
     message,
     Modal,
-    Table,
-    QRCode,
-    Divider,
-    Rate,
-    Avatar,
-    Typography,
-    Input,
     Progress,
-    Form, Space,
+    QRCode,
+    Rate,
+    Space,
+    Table,
+    Typography,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +22,6 @@ import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '~/config/AuthContext';
 import RatingServices from '~/services/RatingServices';
 import BookingServices from '~/services/BookingServices';
-import VoucherServices from '~/services/VoucherServices';
 import { FaTags } from 'react-icons/fa';
 
 const { Text, Title } = Typography;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, Space, Table, Tag, message, Select, Dropdown, Menu } from 'antd';
-import { EyeOutlined, DownOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Menu, message, Modal, Select, Space, Table, Tag } from 'antd';
+import { DownOutlined, EyeOutlined } from '@ant-design/icons';
 import RatingService from '~/services/RatingService';
 
 const { Option } = Select;
