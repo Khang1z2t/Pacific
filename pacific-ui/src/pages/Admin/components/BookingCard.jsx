@@ -2,54 +2,58 @@ import React, { useState } from 'react';
 import { Button, Card, Modal, Space, Tag } from 'antd';
 import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 
-const BookingCard = ({ booking, onEdit, onDelete }) => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
+const BookingCard = ({ visible, onClose, booking }) => {
+    const [form] = Form.useForm();
 
-    const getStatusTag = (status) => {
-        return status === "Đã thanh toán" ? <Tag color="green">Đã thanh toán</Tag> : <Tag color="red">Chưa thanh toán</Tag>;
-    };
+    useEffect(() => {
+        if (booking) {
+            form.setFieldsValue(booking);
+        } else {
+            form.resetFields();
+        }
+    }, [booking, form]);
 
     return (
-        <>
-            <Card
-                title={booking.name}
-                bordered={false}
-                className="booking-card"
-                extra={getStatusTag(booking.status)}
-            >
-                <p>🗺️ <strong>Tour:</strong> {booking.tour}</p>
-                <p>📅 <strong>Ngày:</strong> {booking.date}</p>
-                <p>💳 <strong>PTTT:</strong> {booking.method}</p>
-                <p>💰 <strong>Giá:</strong> {booking.price.toLocaleString()} đ</p>
+        <Modal
+            title="Chi tiết booking"
+            open={visible}
+            onCancel={onClose}
+            footer={[
+                <Button key="close" onClick={onClose}>
+                    Đóng
+                </Button>,
+            ]}
+        >
+            <Form form={form} layout="vertical">
+                <Row gutter={16}>
+                    <Col span={12}>
+                        <Form.Item label="Tên người dùng" name="name">
+                            <Input disabled />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label="Booking ID" name="bookingId">
+                            <Input disabled />
+                        </Form.Item>
+                    </Col>
+                </Row>
 
-                <Space style={{ marginTop: "10px" }}>
-                    <Button icon={<EyeOutlined />} type="primary" onClick={() => setIsModalVisible(true)}>
-                        Xem
-                    </Button>
-                    <Button icon={<EditOutlined />} type="default" onClick={() => onEdit(booking)}>
-                        Sửa
-                    </Button>
-                    <Button icon={<DeleteOutlined />} type="danger" onClick={() => onDelete(booking.id)}>
-                        Xóa
-                    </Button>
-                </Space>
-            </Card>
+                <Form.Item label="Tên Tour" name="tour">
+                    <Input disabled />
+                </Form.Item>
 
-            {/* Popup Modal Chi Tiết */}
-            <Modal
-                title={`Chi tiết Booking - ${booking.name}`}
-                open={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                footer={null}
-                width={700}
-            >
-                <p>🗺️ <strong>Tour:</strong> {booking.tour}</p>
-                <p>📅 <strong>Ngày khởi hành:</strong> {booking.date}</p>
-                <p>📌 <strong>Trạng thái:</strong> {getStatusTag(booking.status)}</p>
-                <p>💳 <strong>Phương thức thanh toán:</strong> {booking.method}</p>
-                <p>💰 <strong>Giá tour:</strong> {booking.price.toLocaleString()} đ</p>
-            </Modal>
-        </>
+                <Form.Item label="Ngày khởi hành" name="date">
+                    <Input type="date" disabled />
+                </Form.Item>
+
+                <Form.Item label="Trạng thái" name="status">
+                    <Select disabled>
+                        <Select.Option value="Đã thanh toán">Đã thanh toán</Select.Option>
+                        <Select.Option value="Chưa thanh toán">Chưa thanh toán</Select.Option>
+                    </Select>
+                </Form.Item>
+            </Form>
+        </Modal>
     );
 };
 

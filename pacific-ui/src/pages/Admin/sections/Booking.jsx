@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from "react";
+import { Table, Tag, message } from "antd";
+import BookingServices from "~/services/BookingServices";
+import BookingCard from "~/pages/Admin/components/BookingCard";
 // Booking.jsx
 import React, { useState } from 'react';
 import { Button, Card, Input, Space, Table, Tag, Typography } from 'antd';
@@ -6,52 +10,71 @@ import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 const { Title } = Typography;
 
 const Booking = () => {
-    const [searchText, setSearchText] = useState("");
-    const [bookings, setBookings] = useState([
-        { id: 1, name: "Tí Ní", bookingId: "ID21", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Tiền mặt", status: "Đã thanh toán", price: "9.000.000 đ", discount: 0 },
-        { id: 2, name: "Long Đại", bookingId: "ID98", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Thanh toán online", status: "Chưa thanh toán", price: "9.000.000 đ", discount: 0 },
-        { id: 3, name: "Tí Đẹp", bookingId: "ID26", tour: "Hạ Long Bay", date: "2025/02/22", payment: "Thanh toán online", status: "Đã thanh toán", price: "9.000.000 đ", discount: 0 },
-    ]);
+    const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState(null);
 
-    const handleDelete = (id) => {
-        setBookings(bookings.filter((b) => b.id !== id));
+    const fetchBookings = async () => {
+        setLoading(true);
+        try {
+            const data = await BookingServices.getBookings();
+            setBookings(Array.isArray(data) ? data : []);
+        } catch (error) {
+            message.error("Không thể tải danh sách booking.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchBookings();
+    }, []);
+
+    const openModal = (booking) => {
+        setSelectedBooking(booking);
+        setModalVisible(true);
     };
 
     const columns = [
         { title: "ID", dataIndex: "id", key: "id" },
         { title: "Tên người dùng", dataIndex: "name", key: "name" },
         { title: "Booking ID", dataIndex: "bookingId", key: "bookingId" },
-        { title: "Tên Tour", dataIndex: "tour", key: "tour" },
-        { title: "Ngày khởi hành", dataIndex: "date", key: "date" },
-        { title: "PTTT", dataIndex: "payment", key: "payment" },
-        { title: "Trạng thái", dataIndex: "status", key: "status", render: (status) => (
-                <Tag color={status === "Đã thanh toán" ? "green" : "red"}>{status}</Tag>
-            )},
-        { title: "Giá tour", dataIndex: "price", key: "price" },
-        { title: "Giảm giá", dataIndex: "discount", key: "discount" },
-        { title: "Thao tác", key: "action", render: (_, record) => (
-                <Space>
-                    <Button icon={<EditOutlined />} />
-                    <Button icon={<DeleteOutlined />} danger onClick={() => handleDelete(record.id)} />
-                </Space>
-            )},
+        {
+            title: "Trạng thái",
+            dataIndex: "status",
+            key: "status",
+            render: (status) => (
+                <Tag color={status === "Đã xác nhận" ? "green" : "volcano"}>
+                    {status.toUpperCase()}
+                </Tag>
+            ),
+        },
+        {
+            title: "Chi tiết",
+            key: "actions",
+            render: (_, record) => (
+                <a onClick={() => openModal(record)}>Xem chi tiết</a>
+            ),
+        },
     ];
 
     return (
-        <div className="container">
-            <Title level={2}>QUẢN LÝ BOOKING</Title>
-            <Space style={{ marginBottom: 16 }}>
-                <Input
-                    placeholder="Tìm kiếm"
-                    prefix={<SearchOutlined />}
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
+        <div>
+            <h2>Danh sách Booking</h2>
+            <Table
+                columns={columns}
+                dataSource={bookings}
+                loading={loading}
+                rowKey="id"
+            />
+            {selectedBooking && (
+                <BookingCard
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    booking={selectedBooking}
                 />
-                <Button> Sắp xếp theo </Button>
-            </Space>
-            <Card>
-                <Table columns={columns} dataSource={bookings} rowKey="id" />
-            </Card>
+            )}
         </div>
     );
 };
