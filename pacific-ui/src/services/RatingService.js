@@ -13,14 +13,14 @@ const RatingService = {
         }
     },
 
-    // getRatingById: async (id) => {
-    //     try {
-    //         const { data } = await axiosConfig.get(`${API_BASE}/rating/${id}`);
-    //         return data;
-    //     } catch (error) {
-    //         return handleError(error);
-    //     }
-    // },
+    getRatingsByTourId: async (tourId) => {
+        try {
+            const { data } = await axiosConfig.get(`${API_BASE}/tour/${tourId}`); // Corrected URL
+            return data;
+        } catch (error) {
+            return handleError(error);
+        }
+    },
 
     createRating: async (ratingData) => {
         try {
@@ -41,8 +41,8 @@ const RatingService = {
             console.error("Error updating status:", error.response?.data || error.message);
             return handleError(error);
         }
-    },    
-    
+    },
+
 
     deleteRating: async (id) => {
         try {
@@ -52,12 +52,12 @@ const RatingService = {
             return handleError(error);
         }
     },
-    
-    
+
+
 };
 
 
-    const handleError = (error) => {
+const handleError = (error) => {
     console.error('API Error:', error.response ? error.response.data : error.message);
     return Promise.reject(error);
 };

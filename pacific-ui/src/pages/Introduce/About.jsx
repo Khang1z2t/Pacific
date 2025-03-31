@@ -10,102 +10,103 @@ import {
     FaUmbrellaBeach,
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-
-
-const services = [
-  {
-    icon: <FaHiking className="text-white text-3xl" />, 
-    title: "Hoạt động phiêu lưu", 
-    description: "Khám phá những hoạt động mạo hiểm thú vị và đầy thử thách.",
-    image: "/img/cards/card1.jpg"
-  },
-  {
-    icon: <FaUmbrellaBeach className="text-white text-3xl" />, 
-    title: "Kỳ nghỉ biển", 
-    description: "Tận hưởng không gian biển xanh, cát trắng và nắng vàng.",
-    image: "/img/cards/card1.jpg"
-  },
-  {
-    icon: <FaCity className="text-white text-3xl" />, 
-    title: "Thành phố sôi động", 
-    description: "Trải nghiệm cuộc sống đô thị hiện đại và nhộn nhịp.",
-    image: "/img/cards/card1.jpg"
-  },
-  {
-    icon: <FaMapMarkedAlt className="text-white text-3xl" />, 
-    title: "Hướng dẫn du lịch", 
-    description: "Dịch vụ hướng dẫn viên chuyên nghiệp giúp bạn khám phá dễ dàng.",
-    image: "/img/cards/card1.jpg"
-  },
-  {
-    icon: <FaMountain className="text-white text-3xl" />, 
-    title: "Leo núi", 
-    description: "Chinh phục những ngọn núi cao và tận hưởng phong cảnh tuyệt vời.",
-    image: "/img/cards/card1.jpg"
-  },
-  {
-    icon: <FaShip className="text-white text-3xl" />, 
-    title: "Du thuyền", 
-    description: "Trải nghiệm kỳ nghỉ sang trọng trên những chiếc du thuyền hiện đại.",
-    image: "/img/cards/card1.jpg"
-  },
-  {
-    icon: <FaCampground className="text-white text-3xl" />, 
-    title: "Cắm trại", 
-    description: "Tận hưởng không khí thiên nhiên với những chuyến cắm trại thú vị.",
-    image: "/img/cards/card1.jpg"
-  },
-  {
-    icon: <FaCampground className="text-white text-3xl" />, 
-    title: "Dịch vụ", 
-    description: "Tận hưởng các gói dịch vụ tuyệt vời và cao cấp tại Pacific.",
-    image: "/img/cards/card1.jpg"
-  }
-];
-
-const testimonials = [
-  {
-    name: "Nguyễn Dương Thiên Lý",
-    review: "Một trải nghiệm tuyệt vời! Dịch vụ chuyên nghiệp, địa điểm đẹp, chắc chắn tôi sẽ quay lại!",
-    rating: 5,
-    avatar:"/img/cards/card1.jpg"
-  },
-  {
-    name: "Trần Thanh Tâm",
-    review: "Chuyến đi này đã giúp tôi khám phá nhiều điều mới lạ và thú vị. Cảm ơn đội ngũ hướng dẫn!",
-    rating: 4.5,
-    avatar:"/img/cards/card1.jpg"
-  },
-  {
-    name: "Lê Văn Chung",
-    review: "Mọi thứ đều hoàn hảo từ khách sạn đến lịch trình. Tôi rất hài lòng!",
-    rating: 5,
-    avatar:"/img/cards/card1.jpg"
-  },
-  {
-    name: "Phạm Thu Hường",
-    review: "Chương trình du lịch phong phú, dịch vụ chuyên nghiệp, rất đáng để trải nghiệm!",
-    rating: 4.8,
-    avatar:"/img/cards/card1.jpg"
-  },
-  {
-    name: "Bùi Quốc Huy",
-    review: "Tôi rất thích cách tổ chức chuyến đi, mọi thứ đều được chuẩn bị kỹ càng và chu đáo!",
-    rating: 5,
-    avatar:"/img/cards/card1.jpg"
-  },
-  {
-    name: "Nguyễn Đình Tuấn",
-    review: "Vừa ấy vừa ấy ấy quá đi",
-    rating: 5,
-    avatar:"/img/cards/card1.jpg"
-  }
-];
+import { useTranslation } from 'react-i18next';
 
 const About = () => {
+  const { t } = useTranslation();
+  const services = [
+    {
+      icon: <FaHiking className="text-white text-3xl" />,
+      title: t("about.ti1"),
+      description: t("about.ti2"),
+      image: "/img/cards/card1.jpg"
+    },
+    {
+      icon: <FaUmbrellaBeach className="text-white text-3xl" />,
+      title: t("about.ti3"),
+      description: t("about.ti4"),
+      image: "/img/cards/card1.jpg"
+    },
+    {
+      icon: <FaCity className="text-white text-3xl" />,
+      title: t("about.ti5"),
+      description: t("about.ti6"),
+      image: "/img/cards/card1.jpg"
+    },
+    {
+      icon: <FaMapMarkedAlt className="text-white text-3xl" />,
+      title: t("about.ti7"),
+      description: t("about.ti8"),
+      image: "/img/cards/card1.jpg"
+    },
+    {
+      icon: <FaMountain className="text-white text-3xl" />,
+      title: t("about.ti9"),
+      description: t("about.ti10"),
+      image: "/img/cards/card1.jpg"
+    },
+    {
+      icon: <FaShip className="text-white text-3xl" />,
+      title: t("about.ti11"),
+      description: t("about.ti12"),
+      image: "/img/cards/card1.jpg"
+    },
+    {
+      icon: <FaCampground className="text-white text-3xl" />,
+      title: t("about.ti13"),
+      description: t("about.ti14"),
+      image: "/img/cards/card1.jpg"
+    },
+    {
+      icon: <FaCampground className="text-white text-3xl" />,
+      title: t("about.ti15"),
+      description: t("about.ti16"),
+      image: "/img/cards/card1.jpg"
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: "Nguyễn Dương Thiên Lý",
+      review: t("about.ti17"),
+      rating: 5,
+      avatar:"/img/cards/card1.jpg"
+    },
+    {
+      name: "Trần Thanh Tâm",
+      review: t("about.ti18"),
+      rating: 4.5,
+      avatar:"/img/cards/card1.jpg"
+    },
+    {
+      name: "Lê Văn Chung",
+      review: t("about.ti19"),
+      rating: 5,
+      avatar:"/img/cards/card1.jpg"
+    },
+    {
+      name: "Phạm Thu Hường",
+      review: t("about.ti20"),
+      rating: 4.8,
+      avatar:"/img/cards/card1.jpg"
+    },
+    {
+      name: "Bùi Quốc Huy",
+      review: t("about.ti21"),
+      rating: 5,
+      avatar:"/img/cards/card1.jpg"
+    },
+    {
+      name: "Nguyễn Đình Tuấn",
+      review: t("about.ti22"),
+      rating: 5,
+      avatar:"/img/cards/card1.jpg"
+    }
+  ];
+
   return (
     <div className="bg-gray-100 py-16 px-6 lg:px-20">
-      <h2 className="text-4xl font-bold text-black text-center">Giới thiệu</h2>
+      <h2 className="text-4xl font-bold text-black text-center">{t("about.ti23")}</h2>
       {/* Giới thiệu */}
       <div className="container mx-auto px-6 py-12">
   <div className="flex flex-col lg:flex-row items-center">
@@ -118,8 +119,8 @@ const About = () => {
           <div className="bg-orange-500 p-3 rounded-lg inline-block mb-4">
             <i className="fas fa-water text-white text-2xl"></i>
           </div>
-          <h3 className="text-2xl font-bold">Hoạt động</h3>
-          <p>Một dòng sông nhỏ mang tên Duden chảy qua nơi đây và cung cấp cho nó những điều cần thiết.</p>
+          <h3 className="text-2xl font-bold">{t("about.ti24")}</h3>
+          <p>{t("about.ti25")}</p>
         </div>
       </div>
 
@@ -130,8 +131,8 @@ const About = () => {
           <div className="bg-orange-500 p-3 rounded-lg inline-block mb-4">
             <i className="fas fa-plane text-white text-2xl"></i>
           </div>
-          <h3 className="text-2xl font-bold">Sắp xếp chuyến đi</h3>
-          <p>Một dòng sông nhỏ mang tên Duden chảy qua nơi đây và cung cấp cho nó những điều cần thiết.</p>
+          <h3 className="text-2xl font-bold">{t("about.ti26")}</h3>
+          <p>M{t("about.ti25")}</p>
         </div>
       </div>
 
@@ -142,8 +143,8 @@ const About = () => {
           <div className="bg-orange-500 p-3 rounded-lg inline-block mb-4">
             <i className="fas fa-user text-white text-2xl"></i>
           </div>
-          <h3 className="text-2xl font-bold">Hướng dẫn viên riêng</h3>
-          <p>Một dòng sông nhỏ mang tên Duden chảy qua nơi đây và cung cấp cho nó những điều cần thiết.</p>
+          <h3 className="text-2xl font-bold">{t("about.ti27")}</h3>
+          <p>{t("about.ti25")}</p>
         </div>
       </div>
 
@@ -154,8 +155,8 @@ const About = () => {
           <div className="bg-orange-500 p-3 rounded-lg inline-block mb-4">
             <i className="fas fa-map text-white text-2xl"></i>
           </div>
-          <h3 className="text-2xl font-bold">Quản lý địa điểm</h3>
-          <p>Một dòng sông nhỏ mang tên Duden chảy qua nơi đây và cung cấp cho nó những điều cần thiết.</p>
+          <h3 className="text-2xl font-bold">{t("about.ti28")}</h3>
+          <p>{t("about.ti25")}</p>
         </div>
       </div>
     </div>
@@ -168,7 +169,7 @@ const About = () => {
         animate={{ opacity: 1, x: 0 }} 
         transition={{ duration: 0.8 }}
       >
-        Chào mừng đến với Pacific
+        {t("about.ti29")}
       </motion.p>
       <motion.h2 
         className="text-5xl font-extrabold text-gray-900 leading-tight mb-4"
@@ -176,13 +177,13 @@ const About = () => {
         animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.8 }}
       >
-        Hãy bắt đầu hành trình khám phá quê hương
+        {t("about.ti30")}
       </motion.h2>
       <p className="text-gray-700 max-w-3xl">
-        Một con sông nhỏ uốn lượn qua ngôi làng này, mang đến nguồn nước trong lành và cuộc sống êm đềm. Đây là một miền đất thanh bình, nơi bạn có thể tận hưởng những món ăn đậm chất quê hương trong khung cảnh yên tĩnh và thoải mái.
+        {t("about.ti31")}
       </p>
       <p className="text-gray-700 max-w-3xl mt-4">
-        Xa xa, phía sau những dãy núi trùng điệp, có một vùng đất nơi các câu chuyện cổ tích trở thành hiện thực. Người dân ở đó sống chậm rãi và bình yên, tại những làng chài ven biển, nơi dòng sông đổ ra biển Đông bao la, mang theo hy vọng và bình an.
+        {t("about.ti32")}
       </p>
       <motion.button 
         className="mt-6 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all"
@@ -190,7 +191,7 @@ const About = () => {
         animate={{ opacity: 1, scale: 1 }} 
         transition={{ duration: 0.6 }}
       >
-        Tìm kiếm điểm đến
+        {t("about.ti33")}
       </motion.button>
     </div>
   </div>
@@ -240,7 +241,7 @@ const About = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Về chúng tôi
+            {t("about.ti34")}
           </motion.p>
           <motion.h2
             className="text-5xl font-extrabold leading-tight mb-4 text-white"
@@ -248,11 +249,10 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Hãy làm cho chuyến đi của bạn trở nên đáng nhớ và an toàn cùng chúng tôi
+            {t("about.ti35")}
           </motion.h2>
           <p className="text-lg text-gray-300 leading-relaxed">
-            Chúng tôi mang đến những trải nghiệm du lịch tuyệt vời, giúp bạn khám phá những vùng đất mới,
-            tận hưởng những khoảnh khắc khó quên, và đảm bảo chuyến đi của bạn luôn an toàn.
+            {t("about.ti36")}
           </p>
         </div>
       </div>
@@ -288,8 +288,8 @@ const About = () => {
       <div className="absolute inset-0 bg-green-900 opacity-40"></div>
 
       <div className="relative z-10 text-center mb-12">
-        <h2 className="text-lg italic text-orange-300">Nhận Xét</h2>
-        <h2 className="text-4xl font-bold text-white">Phản Hồi Của Khách Hàng</h2>
+        <h2 className="text-lg italic text-orange-300">{t("about.ti37")}</h2>
+        <h2 className="text-4xl font-bold text-white">{t("about.ti38")}</h2>
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -323,9 +323,9 @@ const About = () => {
     <section className="relative bg-cover bg-center py-24 text-white text-center" style={{ backgroundImage: "url('/img/vacation/des5.jpg')" }}>
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative z-10 px-6">
-          <h2 className="text-5xl font-bold mb-4">Chúng Tôi Là Pacific, Một Đại Lý Du Lịch</h2>
-            <p className="text-lg mb-6">Chúng tôi có thể quản lý ước mơ của bạn, xây dựng một con đường đi đến khắp nơi trên thế giới.</p>
-            <a href="#" className="inline-block bg-yellow-500 text-black py-3 px-8 rounded-lg text-lg font-semibold hover:bg-yellow-600 transition duration-300">Yêu Cầu Báo Giá</a>
+          <h2 className="text-5xl font-bold mb-4">{t("about.ti39")}</h2>
+            <p className="text-lg mb-6">{t("about.ti40")}</p>
+            <a href="#" className="inline-block bg-yellow-500 text-black py-3 px-8 rounded-lg text-lg font-semibold hover:bg-yellow-600 transition duration-300">{t("about.ti41")}</a>
         </div>
     </section>
     </div>

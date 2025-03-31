@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Divider } from 'antd';
 import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';
@@ -9,12 +9,18 @@ import { AnimatedHomeBanner } from '~/pages/Home/components/AnimatedHomeBanner/A
 import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
 import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { ComboTour } from '~/pages/Home/sections/ComboTour';
+import { useTranslation } from 'react-i18next';
 import { AboutLogin } from '~/pages/Home/sections/AboutLogin';
+import { useAuth } from '~/config/AuthContext';
 
 function Home() {
+    const { currentUser } = useAuth();
+    const { t } = useTranslation();
+
     useEffect(() => {
         document.title = 'Pacific - Hành trình khám phá mọi nơi.';
     }, []);
+
     const FloatBtnItems = [
         {
             icon: 'fas fa-link',
@@ -56,24 +62,8 @@ function Home() {
             initialOpacity={0}
         >
             <AnimatedHomeBanner />
-            <div className={'container mx-auto py-12'}>
-                <Divider className={'font-bold uppercase'}
-                         style={{
-                             borderColor: '#7cb305',
-                         }}
-                         orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>Cùng khám phá với pacific</h2>
-                    <p className={'lg:text-xl text-sm'}>Những điểm đến phổ biến</p>
-                </Divider>
+            <div className={'container mx-auto'}>
                 <TravelCardLists />
-                <Divider className={'font-bold uppercase'}
-                         style={{
-                             borderColor: '#7cb305',
-                         }}
-                         orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>Lựa chọn điểm đến của chính mình</h2>
-                    <p className={'lg:text-xl text-sm'}>Đặt chân tới địa điểm mới</p>
-                </Divider>
                 <Vacations />
                 <AboutSection />
                 <TourLists />
@@ -83,11 +73,12 @@ function Home() {
                              borderColor: '#7cb305',
                          }}
                          orientation="center">
-                    <h2 className={'lg:text-3xl text-md'}>Blog của chúng tôi</h2>
-                    <p className={'lg:text-xl text-sm'}>Những bài viết mới nhất</p>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
+                        {t("index.ind5")}</h2>
+                    <p className={"text-sm sm:text-lg text-gray-600 mt-2"}>{t("index.ind6")}</p>
                 </Divider>
                 <BlogSection />
-                <AboutLogin/>
+                {currentUser ? null : <AboutLogin />}
             </div>
         </FadeContent>
     );

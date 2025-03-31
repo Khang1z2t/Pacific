@@ -32,11 +32,11 @@ export const Booking = () => {
 
 
     return (
-        <div className={"container mx-auto px-6 my-12"}>
-            <p className={"text-gray-500"}>{step < 2 && (
-                <p className={"text-gray-500"}>Bước {step} / 2</p>
+        <div className={'container mx-auto px-6 my-12'}>
+            <p className={'text-gray-500'}>{step < 2 && (
+                <p className={'text-gray-500'}>Bước {step} / 2</p>
             )}</p>
-            {step === 1 && <BookingInfo1 data={tour} setStep={setStep} />}
+            {step === 1 && <BookingInfo1 data={tour} />}
             {/*{step === 2 && <BookingInfo2 tourInfo={tour} setStep={setStep} />}*/}
             {/*{step === 2 && <Success/>}*/}
         </div>

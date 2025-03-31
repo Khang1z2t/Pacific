@@ -1,9 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AuthService from '~/services/AuthServices';
-import { message } from 'antd';
+import { Button, Form, message, Modal, Input } from 'antd';
 import WishlistServices from '~/services/WishlistServices';
 import PaymentServices from '~/services/PaymentServices';
 import BookingServices from '~/services/BookingServices';
+import config from '~/config/index';
+import { EyeInvisibleOutlined, EyeTwoTone, GoogleOutlined, LoginOutlined } from '@ant-design/icons';
+import { BiRegistered } from 'react-icons/bi';
+import { GoSignOut } from 'react-icons/go';
+import AuthServices from '~/services/AuthServices';
+import VoucherServices from '~/services/VoucherServices';
 
 const AuthContext = createContext();
 
@@ -13,37 +19,69 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [booking, setBooking] = useState({});
-    const [bookLists, setBookLists] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [paymentHistory, setPaymentHistory] = useState([]);
     const [wishlist, setWishlist] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
+    const [vouchers, setVouchers] = useState([]);
+
     const [role, setRole] = useState(null);
     const token = localStorage.getItem('accessToken');
 
-    useEffect(() => {
-        if (token) {
-            getUser(token).then(() => {
-                getWishlist();
-                getPaymentHistory();
-                getBooking();
-            }).catch((err) => {
-                console.error(err);
-            });
-        } else {
-            setLoading(false);
+    const checkVoucherStartDate = useCallback(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const hasShownNotification = localStorage.getItem('voucherNotificationShown');
+        const lastShownDate = localStorage.getItem('voucherNotificationDate');
+        if (hasShownNotification && lastShownDate === today.toISOString().split('T')[0]) {
+            return;
         }
-    }, [token]);
+        const hasActiveVoucher = vouchers.some((voucher) => {
+            const startDate = new Date(voucher.start_date);
+            const endDate = new Date(voucher.end_date);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+
+            return today.getTime() >= startDate.getTime() && today.getTime() <= endDate.getTime();
+        });
+        if (hasActiveVoucher) {
+            message.info('Pacific có quà tặng bạn nhé! Hãy kiểm tra thông báo!');
+            // Lưu trạng thái đã hiển thị và ngày hiển thị
+            localStorage.setItem('voucherNotificationShown', 'true');
+            localStorage.setItem('voucherNotificationDate', today.toISOString().split('T')[0]);
+        }
+    }, [vouchers]);
 
     const getUser = useCallback(async (token) => {
-        await AuthService.authToken(token).then((res) => {
+        try {
+            const res = await AuthService.authToken(token);
             setCurrentUser(res?.data);
             setRole(res?.data.role);
+            if (res?.data?.status === 'REQUIRE_USERNAME_PASSWORD_CHANGE') {
+                setIsPasswordModalVisible(true);
+            }
             setLoading(false);
-        }).catch((err) => {
+        } catch (err) {
             console.error(err);
-        });
-    },[]);
+            if (err.response?.status === 401) {
+                localStorage.removeItem('accessToken');
+            }
+            setCurrentUser(null);
+            setRole(null);
+            setLoading(false);
+            throw err;
+        }
+    }, []);
+
+    const getVouchers = useCallback(async () => {
+        try {
+            const res = await VoucherServices.getAllVouchers();
+            setVouchers(res?.data);
+        } catch (err) {
+            console.error(err);
+        }
+    }, []);
 
     const getPaymentHistory = useCallback(async () => {
         try {
@@ -63,32 +101,59 @@ export function AuthProvider({ children }) {
         }
     }, [token]);
 
-    const getBooking = useCallback(async () => {
-        try {
-            const res = await BookingServices.getBookingByUser(token);
-            setBookLists(res?.data);
-        } catch (err) {
-            console.error(err);
+    // Gọi hàm kiểm tra startDate mỗi khi vouchers thay đổi hoặc mỗi ngày
+    useEffect(() => {
+        checkVoucherStartDate(); // Kiểm tra ngay khi vouchers được cập nhật
+
+        // Thiết lập interval để kiểm tra mỗi ngày (vào lúc 00:00)
+        const interval = setInterval(() => {
+            checkVoucherStartDate();
+        }, 24 * 60 * 60 * 1000); // 24 giờ
+
+        return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
+    }, [checkVoucherStartDate]);
+
+    useEffect(() => {
+        if (token) {
+            getUser(token).then(() => {
+                getWishlist();
+                getPaymentHistory();
+                getVouchers();
+            }).catch((err) => {
+                console.error(err);
+                setLoading(false);
+            });
+        } else {
+            setLoading(false);
         }
-    },[token]);
+    }, [token, getUser, getWishlist, getPaymentHistory, getVouchers]);
 
     const handleAddToWishlist = async (id) => {
         if (!token) {
-            message.error('Bạn cần đăng nhập để thực hiện thao tác này.');
+            setIsModalVisible(true);
             return;
         }
 
-        if (Array.isArray(wishlist) && wishlist.some(item => item?.tourId === id)) {
-            message.error('Tour đã có trong danh sách yêu thích');
-            return;
-        }
-        try {
-            const res = await WishlistServices.AddToWishlist(id, token);
-            setWishlist(prevWishlist => [...prevWishlist, res.data]);
-            message.success('Đã thêm vào danh sách yêu thích');
-        } catch (err) {
-            console.error('Error:', err);
-            message.error('Đã xảy ra lỗi, vui lòng thử lại');
+        const existingItem = wishlist.find((item) => item?.tourId === id);
+
+        if (existingItem) {
+            try {
+                await WishlistServices.removeWishlist(existingItem.id, token);
+                setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== existingItem.id));
+                message.success('Đã xóa khỏi danh sách yêu thích');
+            } catch (err) {
+                console.error('Error removing from wishlist:', err);
+                message.error('Đã xảy ra lỗi khi xóa, vui lòng thử lại');
+            }
+        } else {
+            try {
+                const res = await WishlistServices.AddToWishlist(id, token);
+                setWishlist((prevWishlist) => [...prevWishlist, res.data]);
+                message.success('Đã thêm vào danh sách yêu thích');
+            } catch (err) {
+                console.error('Error adding to wishlist:', err);
+                message.error('Đã xảy ra lỗi khi thêm, vui lòng thử lại');
+            }
         }
     };
 
@@ -112,10 +177,30 @@ export function AuthProvider({ children }) {
             message.error('Đã xảy ra lỗi, vui lòng thử lại');
         }
     };
+
+    const handleModalOk = () => {
+        setIsModalVisible(false);
+        window.location.href = config.routes.login;
+    };
+
+    const handlePasswordModalCancel = () => {
+        setIsPasswordModalVisible(false);
+    };
+
+    const handleModalRegister = () => {
+        setIsModalVisible(false);
+        window.location.href = config.routes.register;
+    };
+
+    const handleModalCancel = () => {
+        setIsModalVisible(false);
+    };
+
     const handleGoogleLogin = async (navigate) => {
         try {
             await AuthService.loginGoogle();
-            await getUser(localStorage.getItem('accessToken'));
+            const token = localStorage.getItem('accessToken');
+            await getUser(token);
             message.success('Đăng nhập thành công!', 1);
             navigate('/');
         } catch (error) {
@@ -123,17 +208,40 @@ export function AuthProvider({ children }) {
         }
     };
 
+    const handlePasswordSubmit = async (values) => {
+        try {
+            const { password, confirmPassword } = values;
+            await AuthServices.resetPassword({
+                email: currentUser.email,
+                newPassword: password,
+                confirmPassword: confirmPassword,
+            });
+            message.success('Cập nhật mật khẩu thành công!');
+            setIsPasswordModalVisible(false);
+            await getUser(token);
+        } catch (error) {
+            message.error(`Cập nhật thất bại: ${error.message}`);
+        }
+    };
+
     const handleLogout = async (navigate) => {
         try {
+            // Xóa trạng thái thông báo khi đăng xuất
+            localStorage.removeItem('voucherNotificationShown');
+            localStorage.removeItem('voucherNotificationDate');
+
+            // Xóa token và các trạng thái khác
             localStorage.removeItem('accessToken');
             setCurrentUser(null);
             setRole(null);
             message.success('Đăng xuất thành công!', 1);
             navigate('/');
+            window.location.reload();
         } catch (error) {
             message.error(`Đăng xuất thất bại: ${error.message}`, 1);
         }
     };
+
     const getToken = async () => {
         try {
             return localStorage.getItem('accessToken');
@@ -145,29 +253,122 @@ export function AuthProvider({ children }) {
 
     const value = {
         getToken,
-        getBooking,
         currentUser,
         setCurrentUser,
         getUser,
         handleLogout,
+        handleGoogleLogin,
         loading,
         role,
         paymentHistory,
-        booking,
-        setBooking,
         setPaymentHistory,
         getPaymentHistory,
         wishlist,
+        token,
         getWishlist,
         handleAddToWishlist,
         handleRemoveWishlist,
         setWishlist,
-        handleGoogleLogin,
+        vouchers,
     };
 
     return (
         <AuthContext.Provider value={value}>
             {!loading && children}
+            <Modal
+                open={isModalVisible}
+                onOk={handleModalOk}
+                onCancel={handleModalCancel}
+                footer={null}
+                width={400}
+                className="rounded-xl overflow-hidden shadow-2xl"
+                closeIcon={<span className="text-white text-lg">×</span>}
+            >
+                <div className="p-6 text-center bg-gray-50">
+                    <p className="text-gray-600 text-base mb-6">
+                        Để trải nghiệm tốt hơn! Hãy đăng nhập để sử dụng đầy đủ tính năng của chúng tôi.
+                    </p>
+                    <div className="space-y-4">
+                        <Button
+                            type="primary"
+                            size="large"
+                            icon={<LoginOutlined />}
+                            onClick={handleModalOk}
+                            className="w-full bg-blue-500 hover:bg-blue-600 border-none rounded-md h-11 text-base font-medium transition-all duration-200"
+                        >
+                            Đi đến trang đăng nhập
+                        </Button>
+                        <Button
+                            size="large"
+                            icon={<GoSignOut />}
+                            onClick={handleModalRegister}
+                            className="w-full bg-white border border-gray-300 hover:border-gray-400 text-gray-700 rounded-md h-11 text-base font-medium shadow-sm transition-all duration-200"
+                        >
+                            Chưa có tài khoản? Đi tới đăng ký!
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+            <Modal
+                open={isPasswordModalVisible}
+                onCancel={handlePasswordModalCancel}
+                footer={null}
+                width={400}
+                className="rounded-xl overflow-hidden shadow-2xl"
+                closeIcon={<span className="text-white text-lg">×</span>}
+            >
+                <div className="p-6 text-center bg-gray-50">
+                    <h2 className="text-xl font-bold mb-4">Cập nhật thông tin tài khoản</h2>
+                    <p className="text-gray-600 text-base mb-6">
+                        Bạn đã đăng nhập bằng Google. Để bảo mật tài khoản, vui lòng tạo mật khẩu mới.
+                    </p>
+                    <Form onFinish={handlePasswordSubmit} className="space-y-4">
+                        <Form.Item
+                            initialValue={currentUser?.username}
+                            disabled
+                            rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!' }]}
+                        >
+                            <Input placeholder="Tên người dùng" value={currentUser?.username} disabled />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+                        >
+                            <Input.Password
+                                placeholder="Mật khẩu mới"
+                                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="confirmPassword"
+                            dependencies={['password']}
+                            rules={[
+                                { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('Mật khẩu xác nhận không khớp!'));
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password
+                                placeholder="Xác nhận mật khẩu"
+                                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            />
+                        </Form.Item>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            className="w-full bg-blue-500 hover:bg-blue-600 border-none rounded-md h-11 text-base font-medium transition-all duration-200"
+                        >
+                            Cập nhật
+                        </Button>
+                    </Form>
+                </div>
+            </Modal>
         </AuthContext.Provider>
     );
 }

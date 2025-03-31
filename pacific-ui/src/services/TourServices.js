@@ -5,7 +5,10 @@ import config from '~/config';
 const TourServices = {
     getAllTour: async (params) => {
         try {
-            const response = await axiosConfig.get(config.api.tours + '/all', { params });
+            const response = await axiosConfig.get(config.api.tours + '/all', {
+                params,
+                timeout: 60000,
+            });
             return response.data;
         } catch (error) {
             console.error('Error:', error);
@@ -44,6 +47,14 @@ const TourServices = {
             return Promise.reject(error);
         }
     },
-
+    getTourByTourDetailId: async (id) => {
+        try {
+            const response = await axiosConfig.get(config.api.tours + `/tour-detail/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 };
 export default TourServices;

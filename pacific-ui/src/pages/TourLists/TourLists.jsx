@@ -7,11 +7,13 @@ import TourServices from '~/services/TourServices';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
 import { useAuth } from '~/config/AuthContext';
 import { LoadingOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 export const TourLists = ({ titleType }) => {
     const token = localStorage.getItem('accessToken');
     const { getWishlist } = useAuth()
 
+    const { t } = useTranslation();
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
@@ -42,10 +44,10 @@ export const TourLists = ({ titleType }) => {
     useEffect(() => {
         let sortedTours = [...tours];
 
-        // Lọc theo đánh giá lớn hơn hoặc bằng `query.rate`
         if (query.rate) {
-            sortedTours = sortedTours.filter((tour) => tour.ratingAvg >= query.rate);
+            sortedTours = sortedTours.filter((tour) => tour.ratingAvg === query.rate);
         }
+        sortedTours.sort((a, b) => a.ratingAvg - b.ratingAvg);
 
         // Sắp xếp theo giá
         if (query.searchPrices === 'HighToLow') {
@@ -55,6 +57,7 @@ export const TourLists = ({ titleType }) => {
         }
 
         setFilteredTours(sortedTours);
+        setCurrentPage(1)
     }, [query.rate, query.searchPrices, tours]);
 
     useEffect(() => {
@@ -75,9 +78,8 @@ export const TourLists = ({ titleType }) => {
             <img src={'/img/Pages/TourLists/bg.jpg'} alt={'bg'} className="w-full h-96 object-cover" />
             <SearchBar onSearch={handleSearch} />
             <div className="mt-24 mx-24 justify-center min-h-[800px]">
-                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>Danh sách
-                    tour du
-                    lịch {titleType} </p></Divider>
+                {/*<Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>{t("tourList.ti1")} {titleType} </p></Divider>*/}
+                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>{t("tourList.ti1")}</p></Divider>
                 <div className="flex">
                     <Aside query={query} setQuery={setQuery} titleType={titleType} />
                     {loading ? (
@@ -95,7 +97,9 @@ export const TourLists = ({ titleType }) => {
                     )}
                 </div>
             </div>
-            <Pagination rootClassName={'my-10'} align={'center'} defaultCurrent={1} total={filteredTours.length}
+            <Pagination rootClassName={'my-10'} align={'center'}
+                        current={currentPage}
+                        defaultCurrent={1} total={filteredTours.length}
                         pageSize={ITEM_PER_PAGE} onChange={(e) => onChange(e)} />
         </div>
     );

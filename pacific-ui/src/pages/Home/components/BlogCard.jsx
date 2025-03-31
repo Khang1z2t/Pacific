@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom'; // Import Link để dùng điều hướng nội bộ
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const BlogCards = ({ title, img, date, link }) => {
-    // const navigate = useNavigate(); // Hook điều hướng
+    const { t } = useTranslation();
+
     return (
         <div className="max-w-sm mx-auto max-h-full rounded-lg overflow-hidden shadow-lg relative">
             <img src={img} alt="Landscape" className="w-full h-48 object-cover" />
@@ -15,7 +17,7 @@ const BlogCards = ({ title, img, date, link }) => {
                     to={link}
                     className="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 inline-block text-center"
                 >
-                    Đọc thêm
+                    {t("blog.blog6")}
                 </Link>
             </div>
         </div>

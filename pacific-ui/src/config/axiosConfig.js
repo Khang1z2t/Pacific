@@ -1,4 +1,5 @@
 import axios from 'axios';
+import i18next from 'i18next';
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:8080',
@@ -25,7 +26,13 @@ axiosInstance.interceptors.request.use(
         console.error('Error:', error);
         return Promise.reject(error);
     }
-)
+);
+
+// Interceptor để gán "Accept-Language" vào mọi request
+axiosInstance.interceptors.request.use((config) => {
+    config.headers["Accept-Language"] = i18next.language || "vi";
+    return config;
+});
 
 export default axiosInstance;
 

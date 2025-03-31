@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Dropdown, Form, Input, Menu, message, Modal, Space, Switch, Table, Tag } from 'antd';
+import { Button, Dropdown, Form, Input, Menu, message, Modal, Select, Space, Switch, Table, Tag } from 'antd';
 import { DeleteOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import RatingService from '~/services/RatingService';
 import dayjs from 'dayjs';
+
+const { Option } = Select;
 
 const ConfirmRating = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -15,19 +17,51 @@ const ConfirmRating = () => {
     const [loading, setLoading] = useState(false);
     const ITEM_PER_PAGE = 7;
     const [filteredRatings, setFilteredRatings] = useState([]);
+    const [tourIdFilter, setTourIdFilter] = useState(null);
+    const [tourIdOptions, setTourIdOptions] = useState([]);
 
     useEffect(() => {
-        setLoading(true);
-        RatingService.getAllRatings()
-            .then((res) => {
-                const activeRatings = res.data.filter((rating) => rating.status === "active");
-                setRatings(activeRatings);
-                setFilteredRatings(activeRatings);
-            })
-            .catch((err) => console.error(err))
-            .finally(() => setLoading(false));
+        fetchData();
     }, []);
-    
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const response = await RatingService.getAllRatings();
+            const disabledRatings = response.data.filter((rating) => rating.status === "disable");
+            setRatings(disabledRatings);
+            setFilteredRatings(disabledRatings);
+
+            // Lấy danh sách tourId duy nhất để hiển thị trong dropdown
+            const uniqueTourIds = [...new Set(disabledRatings.map(rating => rating.tourId))];
+            setTourIdOptions(uniqueTourIds);
+
+        } catch (err) {
+            console.error(err);
+            message.error("Lỗi khi lấy dữ liệu đánh giá!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        let newList = ratings.filter(rating =>
+            rating.tuorName && rating.tuorName.toLowerCase().includes(searchText.toLowerCase())
+        );
+
+        if (tourIdFilter) {
+            newList = newList.filter(rating => rating.tourId === tourIdFilter);
+        }
+
+        if (selectedSort === "1-5") {
+            newList.sort((a, b) => a.rating - b.rating);
+        } else if (selectedSort === "5-1") {
+            newList.sort((a, b) => b.rating - a.rating);
+        }
+
+        setFilteredRatings(newList);
+    }, [searchText, selectedSort, ratings, tourIdFilter]);
+
     const handleDelete = async (id) => {
         Modal.confirm({
             title: "Bạn có chắc chắn muốn xóa đánh giá này?",
@@ -53,29 +87,13 @@ const ConfirmRating = () => {
         "5-1": "Đánh giá (5-1)",
     };
 
-    useEffect(() => {
-        let newList = ratings.filter(rating =>
-            rating.tuorName && rating.tuorName.toLowerCase().includes(searchText.toLowerCase())
-        );
-    
-        if (selectedSort === "1-5") {
-            newList.sort((a, b) => a.rating - b.rating);
-        } else if (selectedSort === "5-1") {
-            newList.sort((a, b) => b.rating - a.rating);
-        }
-    
-        setFilteredRatings(newList);
-    }, [searchText, selectedSort, ratings]);
-    
 
     const handleSwitchChange = async (id, checked) => {
-        const newStatus = checked ? "active" : "inactive";
+        const newStatus = checked ? "active" : "disable"; // Đảo ngược trạng thái
         try {
             await RatingService.updateRatingStatus(id, newStatus);
-            setRatings(prevRatings =>
-                prevRatings.map(rating => (rating.id === id ? { ...rating, status: newStatus } : rating))
-            );
             message.success("Cập nhật trạng thái thành công!");
+            fetchData()
         } catch (error) {
             console.error("Lỗi khi cập nhật trạng thái:", error);
             message.error("Lỗi khi cập nhật trạng thái!");
@@ -86,6 +104,7 @@ const ConfirmRating = () => {
         { title: "Người đánh giá", dataIndex: "email", key: "email" },
         { title: "Đánh giá", dataIndex: "rating", key: "rating" },
         { title: "Tour", dataIndex: "tuorName", key: "tuorName" },
+        { title: "Tour ID", dataIndex: "tourId", key: "tourId" },
         { title: "Nội dung", dataIndex: "comment", key: "comment" },
         {
             title: "Ngày đánh giá",
@@ -114,7 +133,7 @@ const ConfirmRating = () => {
             ),
         },
     ];
-    
+
 
     return (
         <div className="container mx-auto p-2">
@@ -141,6 +160,16 @@ const ConfirmRating = () => {
                         {sortTypes[selectedSort] || "Sắp xếp theo"} <DownOutlined />
                     </Button>
                 </Dropdown>
+                <Select
+                    placeholder="Lọc theo Tour ID"
+                    style={{ width: 200 }}
+                    onChange={(value) => setTourIdFilter(value)}
+                    allowClear
+                >
+                    {tourIdOptions.map(tourId => (
+                        <Option key={tourId} value={tourId}>{tourId}</Option>
+                    ))}
+                </Select>
             </Space>
 
             <Table

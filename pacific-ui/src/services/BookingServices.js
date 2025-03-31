@@ -66,13 +66,27 @@ const BookingServices = {
             return Promise.reject(error);
         }
     },
-    getBookingByUser: async (token) => {
+    // getBookingByUser: async (token) => {
+    //     try{
+    //         const response = await axiosConfig.get(config.api.booking + '/book/user', {
+    //             headers: {
+    //                 'Authorization': 'Bearer ' + token,
+    //             },
+    //         });
+    //         return response.data;
+    //     }catch (error) {
+    //         console.error('Error:', error);
+    //         return Promise.reject(error);
+    //     }
+    // },
+    getBookingList: async (token) => {
         try{
             const response = await axiosConfig.get(config.api.booking + '/book/user', {
                 headers: {
                     'Authorization': 'Bearer ' + token,
                 },
             });
+            return response.data;
         }catch (error) {
             console.error('Error:', error);
             return Promise.reject(error);

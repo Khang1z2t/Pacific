@@ -19,7 +19,8 @@ const api = {
     adminVoucher: '/api/admin/voucher',
     payment: '/api/payments',
     adminTourDetails: '/api/tour-details',
-
+    translator: '/api/translator',
+    rating: '/api/rating',
 };
 
 export default api;

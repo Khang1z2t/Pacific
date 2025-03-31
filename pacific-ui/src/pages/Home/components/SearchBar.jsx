@@ -1,6 +1,7 @@
 import { DatePicker, Input, InputNumber, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
+import { useTranslation } from 'react-i18next';
 
 export const SearchBar = ({ onSearch }) => {
     const { RangePicker } = DatePicker;
@@ -12,6 +13,7 @@ export const SearchBar = ({ onSearch }) => {
     const [minPrice, setMinPrice] = useState(null);
 
     const [sides, setSides] = useState([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         CategoryServices.getCategories().then((res) => {
@@ -19,13 +21,13 @@ export const SearchBar = ({ onSearch }) => {
                 [
                     {
                         id: null,
-                        title: 'Tất cả khu vực',
+                        title: t("searchBar.ti1"),
                     },
                     ...res,
                 ]
             ));
         });
-    }, []);
+    }, [t]);
     const handleSearch = () => {
         onSearch({ searchText, searchSides, maxPrice, minPrice, startDate, endDate });
     };
@@ -38,7 +40,7 @@ export const SearchBar = ({ onSearch }) => {
             }}
             className="flex flex-wrap items-center justify-center bg-gradient-to-b from-orange-200 to-orange-700 shadow-md rounded-lg p-4 gap-4 max-w-screen-lg mx-auto">
             <Input
-                placeholder="Tìm kiếm tour"
+                placeholder={t("searchBar.ti2")}
                 allowClear
                 onChange={(e) => setSearchText(e.target.value)}
                 className="flex-grow min-w-[200px] max-w-[300px] font-bold rounded-lg"
@@ -55,19 +57,23 @@ export const SearchBar = ({ onSearch }) => {
             />
             <InputNumber
                 allowClear
+                min={0}
+                step={100000}
                 formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 suffix={"VND"}
-                placeholder="Giá thấp nhất"
-                onChange={(e) => setMinPrice(e.target.value)}
+                placeholder={t("searchBar.ti3")}
+                onChange={(e) => setMinPrice(e)}
                 className="w-[200px] font-bold"
                 size="large"
-            />
+                />
             <InputNumber
+                min={0}
+                step={100000}
                 allowClear
                 formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 suffix={"VND"}
-                placeholder="Giá cao nhất"
-                onChange={(e) => setMaxPrice(e.target.value)}
+                placeholder={t("searchBar.ti4")}
+                onChange={(e) => setMaxPrice(e)}
                 className="w-[200px] font-bold"
                 size="large"
             />
@@ -86,9 +92,7 @@ export const SearchBar = ({ onSearch }) => {
                 }}
                 className="flex-grow min-w-[200px] max-w-[300px] font-bold"
             />
-            <button className="bg-orange-500 text-white px-6 py-2 rounded-md max-w-full" onClick={handleSearch}>
-                Tìm kiếm
-            </button>
+            <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'} onClick={handleSearch}>{t("searchBar.ti5")}</button>
         </div>
     );
 };

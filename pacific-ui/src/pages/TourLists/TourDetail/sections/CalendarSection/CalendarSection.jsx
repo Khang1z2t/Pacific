@@ -25,8 +25,6 @@ export const CalendarSection = ({ data }) => {
     const [selectedDay, setSelectedDay] = useState();
 
     const [toggle, setToggle] = useState(true);
-    const [display, setDisplay] = useState(false);
-
 
     // useEffect
     useEffect(() => {
