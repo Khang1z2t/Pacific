@@ -313,23 +313,41 @@ export function AuthProvider({ children }) {
                 open={isPasswordModalVisible}
                 onCancel={handlePasswordModalCancel}
                 footer={null}
-                width={400}
-                className="rounded-xl overflow-hidden shadow-2xl"
-                closeIcon={<span className="text-white text-lg">×</span>}
+                width={450}
+                className="rounded-2xl overflow-hidden shadow-xl animate-fade-in"
+                closeIcon={<span className="text-gray-500 text-2xl font-semibold hover:text-gray-700 transition-colors">×</span>}
+                centered
             >
-                <div className="p-6 text-center bg-gray-50">
-                    <h2 className="text-xl font-bold mb-4">Cập nhật thông tin tài khoản</h2>
-                    <p className="text-gray-600 text-base mb-6">
+                <div className="p-8 bg-gradient-to-b from-white to-gray-50">
+                    {/* Tiêu đề */}
+                    <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">
+                        Cập nhật thông tin tài khoản
+                    </h2>
+                    <p className="text-gray-500 text-center text-sm mb-6 leading-relaxed">
                         Bạn đã đăng nhập bằng Google. Để bảo mật tài khoản, vui lòng tạo mật khẩu mới.
                     </p>
-                    <Form onFinish={handlePasswordSubmit} className="space-y-4">
+
+                    {/* Form */}
+                    <Form
+                        onFinish={handlePasswordSubmit}
+                        className="space-y-5"
+                        layout="vertical"
+                    >
+                        {/* Tên người dùng (disabled) */}
                         <Form.Item
+                            name="username"
                             initialValue={currentUser?.username}
-                            disabled
                             rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!' }]}
                         >
-                            <Input placeholder="Tên người dùng" value={currentUser?.username} disabled />
+                            <Input
+                                placeholder="Tên người dùng"
+                                value={currentUser?.username}
+                                disabled
+                                className="rounded-lg border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
+                            />
                         </Form.Item>
+
+                        {/* Mật khẩu mới */}
                         <Form.Item
                             name="password"
                             rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
@@ -337,8 +355,11 @@ export function AuthProvider({ children }) {
                             <Input.Password
                                 placeholder="Mật khẩu mới"
                                 iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                                className="rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                             />
                         </Form.Item>
+
+                        {/* Xác nhận mật khẩu */}
                         <Form.Item
                             name="confirmPassword"
                             dependencies={['password']}
@@ -357,15 +378,18 @@ export function AuthProvider({ children }) {
                             <Input.Password
                                 placeholder="Xác nhận mật khẩu"
                                 iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                                className="rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                             />
                         </Form.Item>
-                        <Button
+
+                        {/* Nút Cập nhật */}
+                        <button
                             type="primary"
                             htmlType="submit"
-                            className="w-full bg-blue-500 hover:bg-blue-600 border-none rounded-md h-11 text-base font-medium transition-all duration-200"
+                            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-none rounded-lg h-12 text-white text-base font-semibold shadow-md transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-opacity-50"
                         >
                             Cập nhật
-                        </Button>
+                        </button>
                     </Form>
                 </div>
             </Modal>

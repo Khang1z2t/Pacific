@@ -1,6 +1,6 @@
 import { SearchBar } from '~/pages/TourLists/components/SearchBar';
 import { TourCards } from '~/pages/TourLists/components/TourCards';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Divider, Pagination, Spin } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
@@ -11,75 +11,133 @@ import { useTranslation } from 'react-i18next';
 
 export const TourLists = ({ titleType }) => {
     const token = localStorage.getItem('accessToken');
-    const { getWishlist } = useAuth()
-
+    const { getWishlist } = useAuth();
     const { t } = useTranslation();
+
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [tours, setTours] = useState([]);
-    const [query, setQuery] = useState({});
-    const [filteredTours, setFilteredTours] = useState([]);
+    const [query, setQuery] = useState({
+        title: '',
+        categoryId: null,
+        startDate: null,
+        endDate: null,
+        rate: null, // Khởi tạo rate là null
+        searchPrices: 'All', // Khởi tạo searchPrices là 'All'
+    });
     const [loading, setLoading] = useState(true);
+
     const onChange = (e) => {
         setCurrentPage(e);
     };
 
-    const handleSearch = (query) => {
-        const filterSearch = {};
+    const handleSearch = (searchQuery) => {
+        const filterSearch = { ...query }; // Giữ các giá trị hiện tại của query
 
-        if (query.searchText) filterSearch.title = query.searchText;
-        if (query.searchPrices !== null) filterSearch.categoryId = query.searchSides;
-        if (query.startDate !== null) filterSearch.startDate = query.startDate;
-        if (query.endDate !== null) filterSearch.endDate = query.endDate;
-        // if (query.rate !== null) filterSearch.ratingAvg = query.rate;
-        // if (query.searchPrices === "HighToLow") filterSearch.maxPrice = filterSearch.maxPrice.sort((a, b) => b.maxPrice - a.maxPrice);
-        // if (query.searchPrices === "LowToHigh") filterSearch.minPrice = filterSearch.minPrice.sort((a, b) => a.minPrice - b.minPrice);
+        if (searchQuery.searchText) filterSearch.title = searchQuery.searchText;
+        if (searchQuery.searchSides !== null) filterSearch.categoryId = searchQuery.searchSides;
+        if (searchQuery.startDate !== null) filterSearch.startDate = searchQuery.startDate;
+        if (searchQuery.endDate !== null) filterSearch.endDate = searchQuery.endDate;
+
         setQuery(filterSearch);
+        setLoading(true);
     };
 
     useEffect(() => {
-        getWishlist(token);
+        if (token) {
+            getWishlist(token);
+        }
     }, [token]);
 
     useEffect(() => {
-        let sortedTours = [...tours];
+        const fetchTours = async () => {
+            setLoading(true);
+            try {
+                const res = await TourServices.getAllTour({
+                    title: query.title,
+                    categoryId: query.categoryId,
+                    startDate: query.startDate,
+                    endDate: query.endDate,
+                });
+                const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
+                console.log('Published tours:', published);
+                setTours(published);
+            } catch (error) {
+                console.error('Error fetching tours:', error);
+                setTours([]);
+            } finally {
+                setLoading(false);
+            }
+            setCurrentPage(1);
+        };
 
-        if (query.rate) {
-            sortedTours = sortedTours.filter((tour) => tour.ratingAvg === query.rate);
+        fetchTours();
+    }, [query.title, query.categoryId, query.startDate, query.endDate]);
+
+    const filteredTours = useMemo(() => {
+        if (!tours || tours.length === 0) {
+            console.log('Tours is empty, returning empty filteredTours');
+            return [];
         }
-        sortedTours.sort((a, b) => a.ratingAvg - b.ratingAvg);
+
+        let result = [...tours];
+
+        // Lọc theo rate
+        if (query.rate !== null && query.rate !== undefined) {
+            result = result.filter((tour) => {
+                if (!tour.ratingAvg) return false;
+                return tour.ratingAvg === query.rate;
+            });
+        }
+
+        // Sắp xếp theo ratingAvg
+        if (result.length > 0) {
+            result.sort((a, b) => {
+                const ratingA = a.ratingAvg || 0;
+                const ratingB = b.ratingAvg || 0;
+                return ratingA - ratingB;
+            });
+        }
 
         // Sắp xếp theo giá
-        if (query.searchPrices === 'HighToLow') {
-            sortedTours.sort((a, b) => b.maxPrice - a.maxPrice);
-        } else if (query.searchPrices === 'LowToHigh') {
-            sortedTours.sort((a, b) => a.maxPrice - b.maxPrice);
+        if (query.searchPrices && query.searchPrices !== 'All') {
+            if (query.searchPrices === 'HighToLow') {
+                result.sort((a, b) => {
+                    const priceA = a.maxPrice || 0;
+                    const priceB = b.maxPrice || 0;
+                    return priceB - priceA;
+                });
+            } else if (query.searchPrices === 'LowToHigh') {
+                result.sort((a, b) => {
+                    const priceA = a.maxPrice || 0;
+                    const priceB = b.maxPrice || 0;
+                    return priceA - priceB;
+                });
+            }
         }
 
-        setFilteredTours(sortedTours);
-        setCurrentPage(1)
-    }, [query.rate, query.searchPrices, tours]);
+        console.log('Filtered tours:', result);
+        return result;
+    }, [tours, query.rate, query.searchPrices]);
 
+    const totalPages = Math.ceil(filteredTours.length / ITEM_PER_PAGE);
     useEffect(() => {
-        setLoading(true);
-        TourServices.getAllTour(query).then((res) => {
-            const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
-            setTours(published);
-            setFilteredTours(published);
-        }).catch((error) => {
-            console.error(error);
-        }).finally(() => setLoading(false))
-        setCurrentPage(1);
-    }, [query]);
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        }
+    }, [filteredTours, currentPage, totalPages]);
+
     const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
+    console.log('Page data:', page);
 
     return (
-        <div className="w-full h-full">
+        <div className="w W-full h-full">
             <img src={'/img/Pages/TourLists/bg.jpg'} alt={'bg'} className="w-full h-96 object-cover" />
             <SearchBar onSearch={handleSearch} />
             <div className="mt-24 mx-24 justify-center min-h-[800px]">
-                {/*<Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>{t("tourList.ti1")} {titleType} </p></Divider>*/}
-                <Divider orientation={'center'}><p className={'text-orange-400 text-2xl font-bold uppercase'}>{t("tourList.ti1")}</p></Divider>
+                <Divider orientation={'center'}>
+                    <p className={'text-orange-400 text-2xl font-bold uppercase'}>{t('tourList.ti1')}</p>
+                </Divider>
                 <div className="flex">
                     <Aside query={query} setQuery={setQuery} titleType={titleType} />
                     {loading ? (
@@ -97,10 +155,15 @@ export const TourLists = ({ titleType }) => {
                     )}
                 </div>
             </div>
-            <Pagination rootClassName={'my-10'} align={'center'}
-                        current={currentPage}
-                        defaultCurrent={1} total={filteredTours.length}
-                        pageSize={ITEM_PER_PAGE} onChange={(e) => onChange(e)} />
+            <Pagination
+                rootClassName={'my-10'}
+                align={'center'}
+                current={currentPage}
+                defaultCurrent={1}
+                total={filteredTours.length}
+                pageSize={ITEM_PER_PAGE}
+                onChange={onChange}
+            />
         </div>
     );
 };
