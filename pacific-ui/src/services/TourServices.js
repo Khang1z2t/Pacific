@@ -6,8 +6,18 @@ const TourServices = {
     getAllTour: async (params) => {
         try {
             const response = await axiosConfig.get(config.api.tours + '/all', {
-                params,
-                timeout: 60000,
+                    params: {
+                        title: params.title || '',
+                        minPrice: params.minPrice || null,
+                        maxPrice: params.maxPrice || null,
+                        categoryId: params.categoryId || null,
+                        startDate: params.startDate || null,
+                        endDate: params.endDate || null,
+                        status: params.status || null,
+                        currentPage: params.currentPage || 1,
+                        pageSize: params.pageSize || 6,
+                    },
+                timeout: 10000,
             });
             return response.data;
         } catch (error) {

@@ -8,6 +8,7 @@ import { EmptyComponent } from '~/component/ui/EmptyComponent';
 import { useAuth } from '~/config/AuthContext';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { debounce } from 'lodash';
 
 export const TourLists = ({ titleType }) => {
     const token = localStorage.getItem('accessToken');
@@ -16,6 +17,8 @@ export const TourLists = ({ titleType }) => {
 
     const ITEM_PER_PAGE = 6;
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalItems, setTotalItems] = useState(0);
     const [tours, setTours] = useState([]);
     const [query, setQuery] = useState({
         title: '',
@@ -38,8 +41,8 @@ export const TourLists = ({ titleType }) => {
         if (searchQuery.searchSides !== null) filterSearch.categoryId = searchQuery.searchSides;
         if (searchQuery.startDate !== null) filterSearch.startDate = searchQuery.startDate;
         if (searchQuery.endDate !== null) filterSearch.endDate = searchQuery.endDate;
-
         setQuery(filterSearch);
+        setCurrentPage(1);
         setLoading(true);
     };
 
@@ -49,34 +52,44 @@ export const TourLists = ({ titleType }) => {
         }
     }, [token]);
 
-    useEffect(() => {
-        const fetchTours = async () => {
-            setLoading(true);
-            try {
-                const res = await TourServices.getAllTour({
-                    title: query.title,
-                    categoryId: query.categoryId,
-                    startDate: query.startDate,
-                    endDate: query.endDate,
-                });
-                const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
-                console.log('Published tours:', published);
-                setTours(published);
-            } catch (error) {
-                console.error('Error fetching tours:', error);
-                setTours([]);
-            } finally {
-                setLoading(false);
-            }
-            setCurrentPage(1);
-        };
+    const fetchTours = async () => {
+        setLoading(true);
+        try {
+            const res = await TourServices.getAllTour({
+                title: query.title,
+                categoryId: query.categoryId,
+                startDate: query.startDate,
+                endDate: query.endDate,
+                status: 'PUBLISHED',
+                minPrice: null,
+                maxPrice: null,
+                currentPage: currentPage,
+                pageSize: ITEM_PER_PAGE,
+            });
+            // const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
+            setTours(res.data.content);
+            setTotalItems(res.data.totalItems);
+            setTotalPages(res.data.totalPages);
+        } catch (error) {
+            console.error('Error fetching tours:', error);
+            setTours([]);
+            setTotalItems(0);
+            setTotalPages(0);
+        } finally {
+            setLoading(false);
+        }
+        setCurrentPage(1);
+    };
 
-        fetchTours();
-    }, [query.title, query.categoryId, query.startDate, query.endDate]);
+    const debouncedFetchTours = useMemo(() => debounce(fetchTours, 500), []);
+
+    useEffect(() => {
+        debouncedFetchTours(query, currentPage);
+        return () => debouncedFetchTours.cancel();
+    }, [query.title, query.categoryId, query.startDate, query.endDate, currentPage, debouncedFetchTours]);
 
     const filteredTours = useMemo(() => {
         if (!tours || tours.length === 0) {
-            console.log('Tours is empty, returning empty filteredTours');
             return [];
         }
 
@@ -86,7 +99,7 @@ export const TourLists = ({ titleType }) => {
         if (query.rate !== null && query.rate !== undefined) {
             result = result.filter((tour) => {
                 if (!tour.ratingAvg) return false;
-                return tour.ratingAvg === query.rate;
+                return tour.ratingAvg >= query.rate;
             });
         }
 
@@ -115,23 +128,20 @@ export const TourLists = ({ titleType }) => {
                 });
             }
         }
-
-        console.log('Filtered tours:', result);
         return result;
     }, [tours, query.rate, query.searchPrices]);
 
-    const totalPages = Math.ceil(filteredTours.length / ITEM_PER_PAGE);
-    useEffect(() => {
-        if (currentPage > totalPages && totalPages > 0) {
-            setCurrentPage(totalPages);
-        }
-    }, [filteredTours, currentPage, totalPages]);
+    // const totalPages = Math.ceil(filteredTours.length / ITEM_PER_PAGE);
+    // useEffect(() => {
+    //     if (currentPage > totalPages && totalPages > 0) {
+    //         setCurrentPage(totalPages);
+    //     }
+    // }, [filteredTours, currentPage, totalPages]);
 
-    const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
-    console.log('Page data:', page);
+    // const page = filteredTours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 
     return (
-        <div className="w W-full h-full">
+        <div className="w-full h-full">
             <img src={'/img/Pages/TourLists/bg.jpg'} alt={'bg'} className="w-full h-96 object-cover" />
             <SearchBar onSearch={handleSearch} />
             <div className="mt-24 mx-24 justify-center min-h-[800px]">
@@ -144,9 +154,9 @@ export const TourLists = ({ titleType }) => {
                         <div className="w-full h-[400px] col-span-4 flex items-center justify-center">
                             <Spin indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />
                         </div>
-                    ) : page.length > 0 ? (
+                    ) : filteredTours.length > 0 ? (
                         <div className="flex flex-wrap gap-4 w-full px-4">
-                            {page.map((tour) => (
+                            {filteredTours.map((tour) => (
                                 <TourCards key={tour.id} data={tour} />
                             ))}
                         </div>
@@ -160,7 +170,7 @@ export const TourLists = ({ titleType }) => {
                 align={'center'}
                 current={currentPage}
                 defaultCurrent={1}
-                total={filteredTours.length}
+                total={totalItems}
                 pageSize={ITEM_PER_PAGE}
                 onChange={onChange}
             />

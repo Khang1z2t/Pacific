@@ -21,6 +21,7 @@ const api = {
     adminTourDetails: '/api/tour-details',
     translator: '/api/translator',
     rating: '/api/rating',
+    imageAPI: '/api/image/',
 };
 
 export default api;

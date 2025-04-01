@@ -34,12 +34,12 @@ export const ComboTour = () => {
     };
 
     useEffect(() => {
-        setLoading(true); // Bắt đầu loading khi query thay đổi
         TourServices.getAllTour(query)
             .then((res) => {
+                setLoading(true);
                 const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
                 setTours(published);
-                setLoading(false); // Tắt loading khi có dữ liệu
+                setLoading(false);
             })
             .catch((err) => {
                 console.error(err);

@@ -41,7 +41,6 @@ const webConfig = {
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'localhost:3000'; // Fallback for SSR
         return `${baseUrl}${config.routes.tourDetail}${tourId}`;
     },
-
 };
 
 export default webConfig;
