@@ -20,10 +20,10 @@ export const TourLists = () => {
 
         if (query.searchText) filterSearch.title = query.searchText;
         if (query.searchSides !== null) filterSearch.categoryId = query.searchSides;
-        if(query.maxPrice) filterSearch.maxPrice = query.maxPrice;
-        if(query.minPrice) filterSearch.minPrice = query.minPrice;
-        if(query.startDate) filterSearch.startDate = query.startDate;
-        if(query.endDate) filterSearch.endDate = query.endDate;
+        if (query.maxPrice) filterSearch.maxPrice = query.maxPrice;
+        if (query.minPrice) filterSearch.minPrice = query.minPrice;
+        if (query.startDate) filterSearch.startDate = query.startDate;
+        if (query.endDate) filterSearch.endDate = query.endDate;
 
         setQuery(filterSearch);
         setLoading(true);
@@ -57,9 +57,9 @@ export const TourLists = () => {
                 orientation="center"
             >
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
-                    {t("comboTour.tour1")}
+                    {t('comboTour.tour1')}
                 </h2>
-                <p className="text-sm sm:text-lg text-gray-600 mt-2">{t("comboTour.tour3")}</p>
+                <p className="text-sm sm:text-lg text-gray-600 mt-2">{t('comboTour.tour3')}</p>
             </Divider>
             <SearchBar onSearch={handleSearch} />
             <div className="mt-6 grid grid-cols-4 gap-4 justify-center px-14 w-fit mx-auto min-h-[500px]">

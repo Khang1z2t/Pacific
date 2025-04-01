@@ -144,15 +144,24 @@ export const BookingInfo1 = ({ data }) => {
         });
     };
 
+    // useEffect(() => {
+    //     TourService.getById('TOUR001')
+    //         .then((res) => {
+    //             setTour(res.data);
+    //         })
+    //         .catch((err) => {
+    //             console.error(err);
+    //         });
+    // }, []);
     useEffect(() => {
-        TourService.getById('TOUR001')
-            .then((res) => {
-                setTour(res.data);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+        TourService.getTourByTourDetailId(id).then((res) => {
+            setTour(res.data);
+        }).catch((err) => {
+            console.error(err);
+            message.error('Có lỗi xảy ra khi lấy thông tin tour!');
+        })
     }, []);
+
 
     const BookTour = async () => {
         const basePrice = adults * data.priceAdults + children * data.priceChildren;

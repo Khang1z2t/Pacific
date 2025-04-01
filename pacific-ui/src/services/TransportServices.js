@@ -25,6 +25,15 @@ const TransportServices = {
         }
     },
 
+    getTransportById: async (id) => {
+        try{
+            const resp = await axiosConfig.get(config.api.transport + `/${id}` );
+            return resp.data;
+        }catch (err) {
+            console.error(err);
+            return Promise.reject(err);
+        }
+    },
     addTransport: async (transportData) => {
         try {
             validateTransportData(transportData);

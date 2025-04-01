@@ -47,6 +47,7 @@ export const CalendarSection = ({ data }) => {
         });
     };
     const selectTourDetail = async (id) => {
+        console.log(id);
         await TourDetailServices.getTourDetailById(id).then((res) => {
             setTourDetail(res.data);
             setLoading(true);
@@ -103,7 +104,7 @@ export const CalendarSection = ({ data }) => {
                     <div className="space-y-2">
                         <p><strong>Mã tour:</strong> {data.id}</p>
                         <p><strong>Khởi hành:</strong> {data.destination}</p>
-                        <p><strong>Ngày khởi hành:</strong> {config.webConfig.convertDateNoTime(tourDetail?.startDate)}</p>
+                        <p><strong>Ngày khởi hành:</strong> {config.webConfig.convertDateNoTime(tourDetail?.startDate) || tourDetail.startDate}</p>
                         <p><strong>Thời gian:</strong> {data.duration} ngày {data.duration - 1} đêm</p>
                     </div>
                     <div className="flex space-x-4 mt-4">

@@ -6,18 +6,15 @@ const TourServices = {
     getAllTour: async (params) => {
         try {
             const response = await axiosConfig.get(config.api.tours + '/all', {
-                    params: {
-                        title: params.title || '',
-                        minPrice: params.minPrice || null,
-                        maxPrice: params.maxPrice || null,
-                        categoryId: params.categoryId || null,
-                        startDate: params.startDate || null,
-                        endDate: params.endDate || null,
-                        status: params.status || null,
-                        currentPage: params.currentPage || 1,
-                        pageSize: params.pageSize || 6,
-                    },
-                timeout: 10000,
+                params: {
+                    title: params.title || null,
+                    minPrice: params.minPrice || null,
+                    maxPrice: params.maxPrice || null,
+                    categoryId: params.categoryId || null,
+                    startDate: params.startDate || null,
+                    endDate: params.endDate || null,
+                },
+                timeout: 60000,
             });
             return response.data;
         } catch (error) {
@@ -36,11 +33,11 @@ const TourServices = {
     },
     AddTour: async (params) => {
         try {
-            const resp = await AxiosConfig.post(config.api.tours + '/add', params , {
+            const resp = await AxiosConfig.post(config.api.tours + '/add', params, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                timeout : 60000
+                timeout: 60000,
             });
             return resp.data;
         } catch (error) {
@@ -48,7 +45,7 @@ const TourServices = {
             return Promise.reject(error);
         }
     },
-    HideTour: async (id,active) => {
+    HideTour: async (id, active) => {
         try {
             const resp = await AxiosConfig.post(config.api.tours + `/delete/${id}?active=${active}`);
             return resp.data;
