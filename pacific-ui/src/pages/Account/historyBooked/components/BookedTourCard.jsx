@@ -259,9 +259,9 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             </div>
 
                             <div
-                                className={`text-right ${data.status === 'CONFIRMED' || data.status === 'COMPLETED' || data.status === 'ONGOING' ? 'text-green-600' : data.status === 'PENDING' ? 'text-yellow-600' : 'text-red-600'}`}>
+                                className={`text-right ${data.status === 'PAID' || data.status === 'COMPLETED' || data.status === 'ONGOING' ? 'text-green-600' : data.status === 'PENDING' ? 'text-yellow-600' : 'text-red-600'}`}>
                                 <p className="text-sm font-semibold"> Trạng thái: {' '}
-                                    {data.status === 'CONFIRMED' ? 'Thành công' :
+                                    {data.status === 'PAID' ? 'Thành công' :
                                         data.status === 'PENDING' ? 'Đang chờ thanh toán' :
                                             data.status === 'FAILED' ? 'Thất bại' :
                                                 data.status === 'COMPLETED' ? 'Hoàn thành' :
@@ -291,7 +291,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                         </Button>
                                     </div>
                                 )}
-                                {data.status === 'CONFIRMED' && (
+                                {data.status === 'PAID' && (
                                     <button
                                         type="primary"
                                         onClick={() => setVisible(!visible)}

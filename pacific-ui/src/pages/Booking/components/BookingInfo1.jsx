@@ -29,6 +29,7 @@ export const BookingInfo1 = ({ data }) => {
     const [voucherValid, setVoucherValid] = useState(false);
     const [open, setOpen] = useState(false);
     const [voucher, setVoucher] = useState('');
+    const [voucherCode, setVoucherCode] = useState('');
     const [tour, setTour] = useState({});
     const [bookingDetails, setBookingDetails] = useState([]);
     const [totalPrice, setTotalPrice] = useState(adults * data.priceAdults + children * data.priceChildren);
@@ -89,31 +90,16 @@ export const BookingInfo1 = ({ data }) => {
 
     // Hàm kiểm tra và áp dụng voucher
     const applyVoucher = async (voucherCode) => {
-        if (!voucherCode) {
-            setDiscount(0);
-            setVoucherValid(false);
-            return;
-        }
-
         try {
             const checkResponse = await VoucherServices.checkVoucher({
                 codeVoucher: voucherCode,
-                tourId: data.id,
-                orderValue: totalPrice,
+                tourId: id || null,
+                orderValue: totalPrice || 0,
             });
-
-            if (checkResponse === true) {
-                const voucherDetails = await VoucherServices.getVoucher(voucherCode);
-                const voucherData = voucherDetails.data;
-
-                if (totalPrice >= voucherData.minOrderValue && voucherData.status === 'ACTIVE') {
-                    const discountValue = voucherData.discountValue;
-                    setDiscount(discountValue);
-                    setVoucherValid(true);
-                } else {
-                    setDiscount(0);
-                    setVoucherValid(false);
-                }
+            if (checkResponse.data.valid === true) {
+                setDiscount(checkResponse.data.discountValue);
+                setVoucherCode(checkResponse.data.voucherCode)
+                setVoucherValid(true);
             } else {
                 setDiscount(0);
                 setVoucherValid(false);

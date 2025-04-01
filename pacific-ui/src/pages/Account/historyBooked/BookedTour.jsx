@@ -10,7 +10,7 @@ export const BookedTour = () => {
     const token = localStorage.getItem('accessToken');
     const [currentPage, setCurrentPage] = useState({
         PENDING: 1,
-        CONFIRMED: 1,
+        PAID: 1,
         FAILED: 1,
         COMPLETED: 1,
     });
@@ -147,9 +147,9 @@ export const BookedTour = () => {
             children: renderTabContent('PENDING'),
         },
         {
-            key: 'CONFIRMED',
-            label: 'Đã xác nhận',
-            children: renderTabContent('CONFIRMED'),
+            key: 'PAID',
+            label: 'Đã trả tiền',
+            children: renderTabContent('PAID'),
         },
         {
             key: 'FAILED',
