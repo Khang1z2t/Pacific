@@ -165,6 +165,25 @@ const AuthService = {
             return Promise.reject(error);
         }
     },
+
+    sendMailVerify: async (email) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await AxiosConfig.post(config.api.auth + '/send-verify-mail', {
+                email,
+            }, {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
+
 };
 
 export default AuthService;

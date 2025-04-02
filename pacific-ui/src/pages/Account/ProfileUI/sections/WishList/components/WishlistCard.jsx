@@ -17,8 +17,8 @@ export const WishlistCard = ({ data, wishlistId, onWishlistChange }) => {
                     />
                 </div>
 
-                <div className="col-span-2 p-2 flex flex-col justify-between w-full">
-                    <h2 className="text-lg font-bold truncate">{data.title}</h2>
+                <div className="col-span-3 p-2 flex flex-col justify-between w-full">
+                    <h2 className="text-lg font-bold line-clamp-1 text-orange-400 hover:text-orange-600 hover:underline">{data.title}</h2>
                     <p className="text-gray-500 line-clamp-2">{data.description}</p>
                     <div className="flex gap-2 my-2 flex-wrap">
                         <span className="font-semibold">{data.duration} Ngày {data.duration - 1} đêm</span>

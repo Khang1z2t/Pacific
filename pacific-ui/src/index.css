@@ -37,3 +37,10 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #555; /* Đổi màu khi hover */
 }
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #ff7e00 !important;
+  font-weight: 600;
+}
+.ant-tabs-ink-bar {
+  background-color: #ff7e00 !important;
+}
