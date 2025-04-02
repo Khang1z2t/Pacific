@@ -306,9 +306,9 @@ export const AccountInformation = ({ data, switchTab }) => {
                             )}
                             {!data?.emailVerified && (
                                 <button
-                                    onClick={() => switchTab('3')}
-                                    className={"w-fit p-2 -mt-4 bg-red-200 transition-all hover:bg-red-600 rounded-lg text-sm"}>
-                                    <p className={'font-medium text-red-600 hover:text-white'}>Xác thực ngay!</p>
+                                    onClick={() => switchTab('2')}
+                                    className={"w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm"}>
+                                    <p className={'font-medium '}>Xác thực ngay!</p>
                                 </button>
                             )}
                         </div>
@@ -329,9 +329,9 @@ export const AccountInformation = ({ data, switchTab }) => {
                             )}
                             {!data?.phoneVerified && (
                                 <button
-                                    onClick={() => switchTab('3')}
-                                    className={"w-fit p-2 -mt-4 bg-red-200 transition-all hover:bg-red-600 rounded-lg text-sm"}>
-                                    <p className={'font-medium text-red-600 hover:text-white'}>Xác thực ngay!</p>
+                                    onClick={() => switchTab('2')}
+                                    className={"w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm"}>
+                                    <p className={'font-medium'}>Xác thực ngay!</p>
                                 </button>
                             )}
                         </div>

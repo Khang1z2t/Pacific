@@ -41,7 +41,7 @@ export const ProfileUI = () => {
                         <AccountInformation data={currentUser} switchTab={switchTab} />
                     </TabPane>
                     <TabPane tab="Xác thực thông tin" key="2">
-                        <VerifyInformation onUserUpdate={handleUserUpdate} />
+                        <VerifyInformation data={currentUser} onUserUpdate={handleUserUpdate} />
                     </TabPane>
                     <TabPane tab="Bảo mật tài khoản" key="3">
                         <AccountSecurity data={currentUser} />

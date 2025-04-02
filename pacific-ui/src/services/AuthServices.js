@@ -153,7 +153,7 @@ const AuthService = {
     updateUsername: async (params) => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await AxiosConfig.post(config.api.auth + '/update-username',  {},{
+            const response = await AxiosConfig.post(config.api.auth + '/update-username', {}, {
                 params,
                 headers: {
                     'Authorization': 'Bearer ' + token,
@@ -166,15 +166,15 @@ const AuthService = {
         }
     },
 
-    sendMailVerify: async (email) => {
+    sendMailVerify: async (body) => {
         try {
+            console.log(body);
             const token = localStorage.getItem('accessToken');
-            const response = await AxiosConfig.post(config.api.auth + '/send-verify-mail', {
-                email,
-            }, {
+            const response = await AxiosConfig.post(config.api.auth + '/send-verify-mail', { body }, {
                 headers: {
                     'Authorization': 'Bearer ' + token,
                 },
+                'content-type': 'application/json',
             });
             return response.data;
         } catch (error) {
@@ -182,8 +182,6 @@ const AuthService = {
             return Promise.reject(error);
         }
     },
-
-
 };
 
 export default AuthService;
