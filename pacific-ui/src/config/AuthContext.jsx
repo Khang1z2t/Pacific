@@ -208,15 +208,28 @@ export function AuthProvider({ children }) {
 
     const handlePasswordSubmit = async (values) => {
         try {
-            const { password, confirmPassword } = values;
+            const { username, password, confirmPassword } = values;
+
+            // Cập nhật username nếu có thay đổi
+            if (username !== currentUser.username) {
+                await AuthService.updateUsername({ username: username }).then((res) => {
+                    setCurrentUser((prevUser) => ({
+                        ...prevUser,
+                        username: username,
+                    }));
+                });
+            }
+
+            // Cập nhật mật khẩu
             await AuthServices.resetPassword({
                 email: currentUser.email,
                 newPassword: password,
                 confirmPassword: confirmPassword,
             });
-            message.success('Cập nhật mật khẩu thành công!');
+
+            message.success('Cập nhật thông tin thành công!');
             setIsPasswordModalVisible(false);
-            await getUser(token);
+            await getUser(token); // Cập nhật lại thông tin người dùng sau khi thay đổi
         } catch (error) {
             message.error(`Cập nhật thất bại: ${error.message}`);
         }
@@ -313,7 +326,8 @@ export function AuthProvider({ children }) {
                 footer={null}
                 width={450}
                 className="rounded-2xl overflow-hidden shadow-xl animate-fade-in"
-                closeIcon={<span className="text-gray-500 text-2xl font-semibold hover:text-gray-700 transition-colors">×</span>}
+                closeIcon={<span
+                    className="text-gray-500 text-2xl font-semibold hover:text-gray-700 transition-colors">×</span>}
                 centered
             >
                 <div className="p-8 bg-gradient-to-b from-white to-gray-50">
@@ -339,16 +353,14 @@ export function AuthProvider({ children }) {
                         >
                             <Input
                                 placeholder="Tên người dùng"
-                                value={currentUser?.username}
-                                disabled
-                                className="rounded-lg border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
-                            />
+                                className="rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200" />
                         </Form.Item>
 
                         {/* Mật khẩu mới */}
                         <Form.Item
                             name="password"
-                            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+                            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' },
+                                {min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!'},]}
                         >
                             <Input.Password
                                 placeholder="Mật khẩu mới"

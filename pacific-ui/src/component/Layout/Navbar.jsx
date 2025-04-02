@@ -162,7 +162,7 @@ export const Navbar = () => {
 
             if (!hasShownToday && activeVouchers.length > 0) {
                 activeVouchers.forEach((voucher) => {
-                    message.info('Pacific có quà tặng bạn, hãy kiểm tra thông báo nhé!',1);
+                    message.info('Pacific có quà tặng bạn, hãy kiểm tra thông báo nhé!', 1);
                 });
                 localStorage.setItem(todayKey, 'true'); // Đánh dấu là đã hiển thị cho ngày hôm nay
             }
@@ -194,7 +194,7 @@ export const Navbar = () => {
         const updatedViewedVouchers = [...new Set([...viewedVouchers, ...allVoucherIds])]; // Sử dụng Set để tránh trùng lặp
         setViewedVouchers(updatedViewedVouchers);
         localStorage.setItem('viewedVouchers', JSON.stringify(updatedViewedVouchers));
-        message.success('Xóa tất cả thông báo thành công',1);
+        message.success('Xóa tất cả thông báo thành công', 1);
     };
 
     const voucherMenu = (
@@ -204,7 +204,7 @@ export const Navbar = () => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
         >
-            <div className={"bg-white shadow-lg rounded-lg overflow-y-scroll"}>
+            <div className={'bg-white shadow-lg rounded-lg overflow-y-scroll'}>
                 <Menu className="max-h-96">
                     {visibleVouchers.length > 0 ? (
                         <>
@@ -218,6 +218,24 @@ export const Navbar = () => {
                                         <div>
                                             <p className="font-semibold text-blue-600 text-sm">
                                                 {voucher.title}
+                                            </p>
+                                            <p className="text-gray-600 text-md">
+                                                Mã voucher:{' '}
+                                                <span
+                                                    className="font-medium text-red-600 cursor-pointer hover:underline"
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(voucher.codeVoucher);
+                                                        message.success('Bạn đã lưu mã voucher vào bộ nhớ tạm!', 1);
+                                                    }}
+                                                >
+                                                {voucher.codeVoucher}
+                                            </span>
+                                            </p>
+                                            <p className={'text-gray-700 text-xs'}>
+                                                Trạng thái: <span
+                                                className={`font-medium ${voucher.isUsed ? 'text-green-600' : 'text-red-600'}`}>
+                                                {voucher.isUsed ? 'Đã sử dụng' : 'Chưa sử dụng'}
+                                            </span>
                                             </p>
                                             <p className="text-gray-700 text-xs">
                                                 Giảm giá: <span
@@ -239,7 +257,7 @@ export const Navbar = () => {
                                     </div>
                                 </Menu.Item>
                             ))}
-                            <Menu.Item style={{ padding: '12px 16px' }}>
+                            <Menu.Item className={"bg-gray-100 hover:text-red-600 transition-all hover:bg-gray-50"} style={{ padding: '12px 16px' }}>
                                 <button
                                     onClick={handleClearAll}
                                     className="w-full text-center text-sm text-red-500 hover:text-red-600"

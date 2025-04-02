@@ -3,35 +3,43 @@ import { Divider, Form, Input, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { useState } from 'react';
 import { useAuth } from '~/config/AuthContext';
 import AuthServices from '~/services/AuthServices';
-
 
 export const ChangePassword = () => {
     const { currentUser } = useAuth();
     const navigate = useNavigate();
+    const [form] = Form.useForm(); // Tạo instance của Form
 
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const handleChangePassword = async (values) => {
+        const { oldPassword, password, confirmPassword } = values;
 
-    const handleChangePassword = async () => {
-        if (password !== confirmPassword) {
-            message.warning('Mật khẩu không khớp', 1);
+        // Validation
+        if (!oldPassword) {
+            message.warning('Mật khẩu cũ không được để trống', 2);
             return;
         }
-        if(password === '' || confirmPassword === ''){
-            message.warning('Mật khẩu không được để trống', 1);
+        if (password === currentUser.password) {
+            message.warning('Mật khẩu mới không được giống mật khẩu cũ', 2);
             return;
         }
-        if (password.length < 6) {
-            message.warning('Mật khẩu phải dài hơn 6 ký tự', 1);
+        if (oldPassword !== currentUser.password) {
+            message.warning('Mật khẩu cũ không đúng', 2);
             return;
         }
-        await AuthServices.resetPassword({email: currentUser.email, newPassword: password, confirmPassword: confirmPassword});
-        message.success('Đổi mật khẩu thành công', 1);
-        navigate(config.routes.profile);
-    }
+        try {
+            await AuthServices.resetPassword({
+                email: currentUser.email,
+                newPassword: password,
+                confirmPassword: confirmPassword,
+            });
+            message.success('Đổi mật khẩu thành công', 1);
+            navigate(config.routes.profile);
+        } catch (error) {
+            message.error('Đổi mật khẩu thất bại', 1);
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center">
             <Iridescence
@@ -42,42 +50,79 @@ export const ChangePassword = () => {
                 className="absolute inset-0 z-0"
             />
             <div className="bg-white relative p-8 rounded-lg shadow-lg w-full uppercase max-w-md border">
-                <h2 className="text-2xl font-bold mb-2 text-center text-orange-400">Đổi mật khẩu</h2><Divider />
-                <Form className="space-y-4">
-                    <div className={'space-y-2'}>
+                <h2 className="text-2xl font-bold mb-2 text-center text-orange-400">Đổi mật khẩu</h2>
+                <Divider />
+                <Form
+                    form={form}
+                    onFinish={handleChangePassword}
+                    className="space-y-4"
+                    layout="vertical"
+                >
+                    <Form.Item>
                         <label className="block text-sm font-medium">Tên tài khoản</label>
-                        <Input value={currentUser.username} disabled/>
-                    </div>
-                    <div className={'space-y-2'}>
-                        <div className={'flex justify-between'}>
-                            <label className="block text-sm font-medium">Email đang sử dụng</label>
-                            <a className={"text-sm text-blue-500 items-center"}>Email không đúng?</a>
+                        <Input value={currentUser?.username} disabled />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <div className="flex justify-between items-center">
+                            <label className="block text-sm font-medium">EMAIL ĐANG SỬ DỤNG</label>
+                            <a className="text-sm text-blue-500">Email không đúng?</a>
                         </div>
-                        <Input value={currentUser.email} disabled/>
-                    </div>
-                    <div className={'space-y-2'}>
-                        <label className="block text-sm font-medium">Mật khẩu</label>
+                        <Input value={currentUser?.email} disabled />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Mật khẩu cũ"
+                        name="oldPassword"
+                        rules={[{ required: true, message: 'Vui lòng nhập mật khẩu cũ!' }]}
+                    >
                         <Input.Password
                             placeholder="Mật khẩu"
                             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                            onChange={(e) => setPassword(e.target.value)}
                         />
-                    </div>
-                    <div className={'space-y-2'}>
-                        <label className="block text-sm font-medium">Xác nhận mật khẩu</label>
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Mật khẩu"
+                        name="password"
+                        rules={[{ required: true, message: 'Vui lòng nhập mật khẩu mới!' },
+                            {min: 6, message: 'Mật khẩu phải dài hơn 6 ký tự!'}]}>
                         <Input.Password
                             placeholder="Mật khẩu"
                             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
                         />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Xác nhận mật khẩu"
+                        name="confirmPassword"
+                        dependencies={['password']}
+                        rules={[
+                            { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    if (!value || getFieldValue('password') === value) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error('Mật khẩu không khớp!'));
+                                },
+                            }),
+                        ]}
+                    >
+                        <Input.Password
+                            placeholder="Mật khẩu"
+                            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                        />
+                    </Form.Item>
+
+                    <div className="justify-center flex items-center gap-2">
+                        <p className="text-sm font-medium">Không phải bạn? {' '}</p>
+                        <Link to="#" className="text-red-500">Báo cáo!</Link>
                     </div>
-                    <div className={"justify-center flex items-center gap-2"}>
-                        <p className={"text-sm font-medium"}>Không phải bạn? {' '}</p>
-                        <Link to={"#"} className={"text-red-500"}>Báo cáo!</Link>
-                    </div>
+
                     <div className="flex justify-center">
                         <button
-                            onClick={handleChangePassword}
+                            type="submit"
                             className="px-6 py-2 w-1/2 bg-black text-white rounded-md font-semibold hover:bg-gray-800"
                         >
                             Đổi mật khẩu
@@ -86,6 +131,5 @@ export const ChangePassword = () => {
                 </Form>
             </div>
         </div>
-
     );
 };

@@ -149,6 +149,22 @@ const AuthService = {
             }
         });
     },
+
+    updateUsername: async (params) => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await AxiosConfig.post(config.api.auth + '/update-username',  {},{
+                params,
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 };
 
 export default AuthService;
