@@ -1,6 +1,6 @@
 const imageConfig = {
     getImage: (imageId) => {
-        return `https://lh3.googleusercontent.com/d/${imageId}`;
+            return `http://localhost:8080/api/image/${imageId}`;
     },
     getAvatar: (imageId) => {
         return `https://lh3.googleusercontent.com/a/${imageId}`;
