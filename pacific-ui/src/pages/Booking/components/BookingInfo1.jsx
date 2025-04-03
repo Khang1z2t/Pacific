@@ -281,7 +281,7 @@ export const BookingInfo1 = ({ data }) => {
                             </div>
                             <Divider />
                             <h2 className="text-lg font-semibold text-orange-500">Thông tin từng hành khách</h2>
-                            <div className="overflow-y-scroll space-y-4 p-5 max-h-96">
+                            <div className="overflow-y-scroll space-y-4 p-5 max-h-96 ">
                                 {bookingDetails.map((item, index) => {
                                     const isAdult = item.ageGroup === 'ADULT';
                                     const passengerNumber = isAdult
@@ -298,7 +298,7 @@ export const BookingInfo1 = ({ data }) => {
                                             key={item.id}
                                         >
                                             <div
-                                                className="grid grid-cols-2 gap-2 mb-4 rounded-lg border border-gray-100 transition-all hover:border-orange-600 p-4 shadow-lg">
+                                                className="grid grid-cols-2 gap-2 mb-4 rounded-lg border bg-orange-50 border-gray-100 transition-all hover:border-orange-600 p-4 shadow-lg">
                                                 <div className={'gap-2 flex flex-col mb-2'}>
                                                     <label className={'font-bold'}>Họ và tên</label>
                                                     <Input
