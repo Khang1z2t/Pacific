@@ -9,6 +9,8 @@ import TourService from '~/services/TourServices';
 import { TourInfoCard } from '~/pages/Booking/components/bookingInfo1/components/TourInfoCard';
 import { useAuth } from '~/config/AuthContext';
 import VoucherServices from '~/services/VoucherServices';
+import HotelServices from '~/services/HotelServices'; // Thêm HotelServices
+import TransportServices from '~/services/TransportServices'; // Thêm TransportServices
 
 const { TextArea } = Input;
 
@@ -32,9 +34,25 @@ export const BookingInfo1 = ({ data }) => {
     const [voucherCode, setVoucherCode] = useState('');
     const [tour, setTour] = useState({});
     const [bookingDetails, setBookingDetails] = useState([]);
-    const [totalPrice, setTotalPrice] = useState(adults * data.priceAdults + children * data.priceChildren);
+    const [hotel, setHotel] = useState({}); // Thêm state cho hotel
+    const [transport, setTransport] = useState({}); // Thêm state cho transport
+    const [totalPrice, setTotalPrice] = useState(0); // Khởi tạo totalPrice
 
     const MAX_TOTAL_PASSENGERS = 10;
+
+    // Lấy thông tin hotel và transport
+    useEffect(() => {
+        if (data?.hotelId) {
+            HotelServices.getHotelById(data.hotelId)
+                .then((res) => setHotel(res))
+                .catch((err) => console.error(err));
+        }
+        if (data?.transportId) {
+            TransportServices.getTransportById(data.transportId)
+                .then((res) => setTransport(res))
+                .catch((err) => console.error(err));
+        }
+    }, [data?.hotelId, data?.transportId]);
 
     const handleAdultsChange = (value) => {
         const total = value + children;
@@ -98,7 +116,7 @@ export const BookingInfo1 = ({ data }) => {
             });
             if (checkResponse.data.valid === true) {
                 setDiscount(checkResponse.data.discountValue);
-                setVoucherCode(checkResponse.data.voucherCode)
+                setVoucherCode(checkResponse.data.voucherCode);
                 setVoucherValid(true);
             } else {
                 setDiscount(0);
@@ -112,12 +130,15 @@ export const BookingInfo1 = ({ data }) => {
         }
     };
 
-    // Cập nhật totalPrice
+    // Cập nhật totalPrice (bao gồm hotel.cost và transport.cost)
     useEffect(() => {
         const basePrice = adults * data.priceAdults + children * data.priceChildren;
-        const discountedPrice = voucherValid ? basePrice * (1 - discount / 100) : basePrice;
+        const hotelCost = hotel.cost || 0; // Giá khách sạn, mặc định 0 nếu chưa có
+        const transportCost = transport.cost || 0; // Giá phương tiện, mặc định 0 nếu chưa có
+        const totalBasePrice = basePrice + hotelCost + transportCost; // Tổng giá trước giảm giá
+        const discountedPrice = voucherValid ? totalBasePrice * (1 - discount / 100) : totalBasePrice;
         setTotalPrice(discountedPrice);
-    }, [adults, children, data.priceAdults, data.priceChildren, discount, voucherValid]);
+    }, [adults, children, data.priceAdults, data.priceChildren, hotel.cost, transport.cost, discount, voucherValid]);
 
     const updateBookingDetail = (id, field, value) => {
         setBookingDetails((prev) => {
@@ -130,27 +151,19 @@ export const BookingInfo1 = ({ data }) => {
         });
     };
 
-    // useEffect(() => {
-    //     TourService.getById('TOUR001')
-    //         .then((res) => {
-    //             setTour(res.data);
-    //         })
-    //         .catch((err) => {
-    //             console.error(err);
-    //         });
-    // }, []);
     useEffect(() => {
-        TourService.getTourByTourDetailId(id).then((res) => {
-            setTour(res.data);
-        }).catch((err) => {
-            console.error(err);
-            message.error('Có lỗi xảy ra khi lấy thông tin tour!');
-        })
-    }, []);
-
+        TourService.getTourByTourDetailId(id)
+            .then((res) => {
+                setTour(res.data);
+            })
+            .catch((err) => {
+                console.error(err);
+                message.error('Có lỗi xảy ra khi lấy thông tin tour!');
+            });
+    }, [id]);
 
     const BookTour = async () => {
-        const basePrice = adults * data.priceAdults + children * data.priceChildren;
+        const basePrice = adults * data.priceAdults + children * data.priceChildren + (hotel.cost || 0) + (transport.cost || 0);
         const finalPrice = voucherValid ? basePrice * (1 - discount / 100) : basePrice;
         const body = {
             paymentMethod: 'VNPAY',
@@ -236,8 +249,8 @@ export const BookingInfo1 = ({ data }) => {
                                         <div className="text-lg font-semibold flex flex-col">
                                             Người lớn
                                             <span className={'text-red-300 text-sm font-mono'}>
-                        {config.webConfig.getCurrency(data.priceAdults)}/Người
-                      </span>
+                                                {config.webConfig.getCurrency(data.priceAdults)}/Người
+                                            </span>
                                         </div>
                                         <InputNumber
                                             className={'w-full mt-5'}
@@ -250,10 +263,11 @@ export const BookingInfo1 = ({ data }) => {
                                     <Card className={'flex flex-col bg-gray-50 shadow-lg'}>
                                         <div className="text-lg font-semibold flex flex-col">
                                             Trẻ em
-                                            <span className={'text-red-300 text-sm font-mono'}>(30% giá người lớn)</span>
+                                            <span
+                                                className={'text-red-300 text-sm font-mono'}>(30% giá người lớn)</span>
                                             <span className={'text-red-300 text-sm font-mono'}>
-                        {config.webConfig.getCurrency(data.priceChildren)}/Người
-                      </span>
+                                                {config.webConfig.getCurrency(data.priceChildren)}/Người
+                                            </span>
                                         </div>
                                         <InputNumber
                                             className={'w-full'}
@@ -283,7 +297,8 @@ export const BookingInfo1 = ({ data }) => {
                                             }
                                             key={item.id}
                                         >
-                                            <div className="grid grid-cols-2 gap-2 mb-4 rounded-lg border border-gray-100 transition-all hover:border-orange-600 p-4 shadow-lg">
+                                            <div
+                                                className="grid grid-cols-2 gap-2 mb-4 rounded-lg border border-gray-100 transition-all hover:border-orange-600 p-4 shadow-lg">
                                                 <div className={'gap-2 flex flex-col mb-2'}>
                                                     <label className={'font-bold'}>Họ và tên</label>
                                                     <Input
@@ -364,13 +379,13 @@ export const BookingInfo1 = ({ data }) => {
                                 />
                                 {voucherValid && (
                                     <span className={'text-green-500 text-sm font-semibold'}>
-                    Voucher hợp lệ! Giảm {discount}% cho tổng giá trị đơn hàng
-                  </span>
+                                        Voucher hợp lệ! Giảm {discount}% cho tổng giá trị đơn hàng
+                                    </span>
                                 )}
                                 {!voucherValid && voucher && (
                                     <span className={'text-red-500 text-sm font-semibold'}>
-                    Voucher không hợp lệ hoặc không đủ điều kiện!
-                  </span>
+                                        Voucher không hợp lệ hoặc không đủ điều kiện!
+                                    </span>
                                 )}
                             </div>
                             <div className={'justify-start flex items-center mb-3 mt-4'}>
@@ -393,6 +408,9 @@ export const BookingInfo1 = ({ data }) => {
                                     config.webConfig.getCurrency(totalPrice)
                                 )}
                             </div>
+                            <span className="text-xs text-red-500">
+                                * Giá trên đã bao gồm các phụ thu: giá dịch vụ, giá vé máy bay, giá khách sạn, giá ăn uống, giá vận chuyển, giá phí tham quan, giá phí hướng dẫn viên, giá phí bảo hiểm, giá phí visa, giá phí phục vụ, giá phí khác.
+                            </span>
                             <Form.Item>
                                 <Button
                                     disabled={!confirm}
@@ -405,7 +423,8 @@ export const BookingInfo1 = ({ data }) => {
                                 </Button>
                             </Form.Item>
                         </Form>
-                        <Modal open={open} footer={null} width={800} onCancel={() => setOpen(!open)} title={'Điều khoản và điều kiện'}>
+                        <Modal open={open} footer={null} width={800} onCancel={() => setOpen(!open)}
+                               title={'Điều khoản và điều kiện'}>
                             <Card className={'overflow-y-scroll max-h-screen'}>
                                 <ModalTerms />
                             </Card>
@@ -421,6 +440,8 @@ export const BookingInfo1 = ({ data }) => {
                     data={tour}
                     voucherValid={voucherValid}
                     discount={discount}
+                    hotel={hotel} // Truyền hotel xuống
+                    transport={transport} // Truyền transport xuống
                 />
             </div>
         </div>

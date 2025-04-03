@@ -1,37 +1,21 @@
 import { Card, Divider } from 'antd';
 import { FaHotel, FaInfoCircle, FaPlaneDeparture } from 'react-icons/fa';
 import { BiSolidUserDetail } from 'react-icons/bi';
-import { useEffect, useState } from 'react';
 import config from '~/config';
-import HotelServices from '~/services/HotelServices';
-import TransportServices from '~/services/TransportServices';
 import { useNavigate } from 'react-router-dom';
 
-export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, voucherValid, discount }) => {
-    const [hotel, setHotel] = useState({});
-    const [transport, setTransport] = useState({});
+export const TourInfoCard = ({
+                                 data,
+                                 detailData,
+                                 adults,
+                                 children,
+                                 totalPrice,
+                                 voucherValid,
+                                 discount,
+                                 hotel,
+                                 transport,
+                             }) => {
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (detailData?.hotelId) {
-            HotelServices.getHotelById(detailData.hotelId)
-                .then((res) => {
-                    setHotel(res);
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-        }
-        if (detailData?.transportId) {
-            TransportServices.getTransportById(detailData.transportId)
-                .then((res) => {
-                    setTransport(res);
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-        }
-    }, [detailData?.hotelId, detailData?.transportId]);
 
     return (
         <Card className="w-[500px] h-fit sticky top-24 transition-all p-4 shadow-lg border rounded-xl">
@@ -110,6 +94,12 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                         {config.webConfig.getCurrency(detailData.priceChildren)}/Người
                     </p>
                 )}
+                <p>
+                    <strong>Khách sạn:</strong> {config.webConfig.getCurrency(hotel.cost) || 'N/A'}
+                </p>
+                <p>
+                    <strong>Phương tiện:</strong> {config.webConfig.getCurrency(transport.cost) || 'N/A'}
+                </p>
                 <p className="text-red-500 text-lg font-bold text-right">
                     {config.webConfig.getCurrency(totalPrice)}
                 </p>
@@ -132,6 +122,7 @@ export const TourInfoCard = ({ data, detailData, adults, children, totalPrice, v
                         config.webConfig.getCurrency(totalPrice)
                     )}
                 </p>
+
             </div>
         </Card>
     );
