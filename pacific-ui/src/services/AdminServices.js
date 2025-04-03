@@ -53,6 +53,15 @@ const AdminServices = {
         }
     },
 
+    getBookingCount: async (params) => {
+        try {
+            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/bookingCount', { params });
+            return resp.data;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    }
 
 };
 

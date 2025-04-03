@@ -4,6 +4,7 @@ import { StatisticSection } from '~/pages/Admin/sections/HomePage/Sections/Stati
 import { StatisticTourSection } from '~/pages/Admin/sections/HomePage/Sections/StatisticTourSection';
 import { useEffect, useState } from 'react';
 import AdminServices from '~/services/AdminServices';
+import config from '~/config';
 
 export const HomePage = () => {
     const [data, setData] = useState([]);
@@ -24,7 +25,7 @@ export const HomePage = () => {
         const temp = data.map(item => {
             return {
                 name: item.bookingDate,
-                value: item.tourRevenue || 100,
+                value: item.tourRevenue || 0,
             }
         })
         setChartData(temp);
@@ -62,10 +63,10 @@ export const HomePage = () => {
                 {/*sơ đồ thống kê theo null*/}
                 <ChartCard
                     title="Doanh thu tuần"
-                    totalAmount="¥ 126,560"
+                    totalAmount={45124}
                     weekChange={{ value: 12, type: 'increase' }}
                     dayChange={{ value: 11, type: 'decrease' }}
-                    dailyAmount="¥ 12,423"
+                    dailyAmount={15612}
                     chartData={chartData}
                     chartType="line" // Hoặc "bar"
                 />

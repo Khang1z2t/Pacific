@@ -3,6 +3,7 @@ import { Card, DatePicker, Table, Tabs } from 'antd';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import AdminServices from '~/services/AdminServices';
 import moment from 'moment';
+import config from '~/config';
 
 const { RangePicker } = DatePicker;
 
@@ -80,8 +81,8 @@ export const StatisticSection = () => {
             return {
                 key: index,
                 rank: index,
-                name: item.tourId,
-                value: item.tourRevenue || 'KHÔNG CÓ DỮ LIỆU',
+                name: item.tourTitle,
+                value: config.webConfig.getCurrency(item.tourRevenue) || 'KHÔNG CÓ DỮ LIỆU',
             };
         });
         setSalesRanking(datas);
@@ -163,6 +164,7 @@ export const StatisticSection = () => {
                         size="small"
                     />
                 </div>
+
             </div>
         </Card>
     );

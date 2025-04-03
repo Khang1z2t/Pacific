@@ -77,29 +77,10 @@ export const Navbar = () => {
             href: config.routes.changePassword,
         },
     ];
-
-    const menuItemsTour = [
-        {
-            key: 'thong-tin-tour',
-            title: t('menu.title9'),
-            icon: <FontAwesomeIcon icon="info" />,
-            href: config.routes.tourInfo,
-        },
-    ];
     const menuGroup = (
         <Menu>
             <Menu.ItemGroup title={t('menu.title10')}>
                 {menuItems.map((item) => (
-                    <Menu.Item icon={item.icon} key={item.key}>
-                        <Link to={item.href}
-                              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                            {item.title}
-                        </Link>
-                    </Menu.Item>
-                ))}
-            </Menu.ItemGroup>
-            <Menu.ItemGroup title={t('menu.title11')}>
-                {menuItemsTour.map((item) => (
                     <Menu.Item icon={item.icon} key={item.key}>
                         <Link to={item.href}
                               className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
