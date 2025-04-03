@@ -8,6 +8,13 @@ import { EmptyComponent } from '~/component/ui/EmptyComponent';
 import { useAuth } from '~/config/AuthContext';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination as SwiperPagination, Autoplay, EffectFade } from 'swiper/modules'; // Thêm EffectFade
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/effect-fade'; // CSS cho hiệu ứng fade
+import config from '~/config';
 
 export const TourLists = ({ titleType }) => {
     const token = localStorage.getItem('accessToken');
@@ -35,7 +42,6 @@ export const TourLists = ({ titleType }) => {
         const fetchTours = async () => {
             setLoading(true);
             try {
-                // Nếu query rỗng, gửi request lấy tất cả tour mà không cần lọc
                 const params = Object.keys(query).length === 0 ? { status: 'PUBLISHED' } : {
                     title: query.title || null,
                     categoryId: query.categoryId || null,
@@ -43,8 +49,6 @@ export const TourLists = ({ titleType }) => {
                     endDate: query.endDate || null,
                     minPrice: query.minPrice || null,
                     maxPrice: query.maxPrice || null,
-                    // currentPage: currentPage - 1,
-                    // pageSize: ITEM_PER_PAGE,
                 };
 
                 const res = await TourServices.getAllTour(params);
@@ -54,12 +58,12 @@ export const TourLists = ({ titleType }) => {
                 console.error('Error fetching tours:', error);
                 setTours([]);
             } finally {
-                setLoading(false); // Đảm bảo loading luôn được tắt
+                setLoading(false);
             }
         };
 
         fetchTours();
-    }, [query, currentPage]); // Chỉ phụ thuộc vào query và currentPage
+    }, [query, currentPage]);
 
     const filteredTours = useMemo(() => {
         if (!tours || tours.length === 0) return [];
@@ -87,7 +91,6 @@ export const TourLists = ({ titleType }) => {
         if (query.maxPrice && query.maxPrice > 0) {
             result = result.filter((tour) => tour.maxPrice <= query.maxPrice);
         }
-        // Phân trang thủ công nếu API không hỗ trợ
         const startIndex = (currentPage - 1) * ITEM_PER_PAGE;
         const endIndex = startIndex + ITEM_PER_PAGE;
         return result.slice(startIndex, endIndex);
@@ -109,16 +112,49 @@ export const TourLists = ({ titleType }) => {
         setLoading(true);
     };
 
-    const pageItem = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
+    // Danh sách ảnh banner cho Swiper
+    const bannerImages = [
+        { src: config.webConfig.banner1, title: 'Khám phá đất nước', subtitle: 'Chuyến đi khó quên' },
+        { src: config.webConfig.banner2, title: 'Khám phá mọi nơi', subtitle: 'Trở lại với ván cờ thực tế' },
+        { src: config.webConfig.banner3, title: 'Du lịch đầy phong cách', subtitle: 'Cuộc phiêu lưu mới, kí niệm mới' },
+    ];
 
     return (
         <div className="w-full h-full">
-            <img src={'/img/Pages/TourLists/bg.jpg'} alt={'bg'} className="w-full h-96 object-cover" />
+            {/* Swiper cải tiến */}
+            <Swiper
+                modules={[Autoplay, EffectFade]} // Thêm EffectFade
+                spaceBetween={0}
+                loop={true}
+                slidesPerView={1}
+                autoplay={{ delay: 4000, disableOnInteraction: false }} // Chuyển slide sau 4 giây
+                effect="fade" // Hiệu ứng chuyển slide mượt mà
+                fadeEffect={{ crossFade: true }} // Tinh chỉnh hiệu ứng fade
+                className="w-full h-96 relative"
+            >
+                {bannerImages.map((banner, index) => (
+                    <SwiperSlide
+                        key={index}>
+                        <div className="relative w-full h-96">
+                            <img
+                                src={banner.src}
+                                alt={`banner-${index}`}
+                                className="w-full h-full object-cover brightness-[60%]" // Làm mờ nhẹ ảnh để nổi bật text
+                            />
+                            {/* Overlay text */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                                <h1 className="text-4xl font-bold drop-shadow-lg">{banner.title}</h1>
+                                <p className="text-lg mt-2 drop-shadow-md">{banner.subtitle}</p>
+                            </div>
+                        </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+            <Divider orientation={'center'}>
+                <p className={'text-orange-400 text-2xl font-bold uppercase'}>{t('tourList.ti1')}</p>
+            </Divider>
             <SearchBar onSearch={handleSearch} />
-            <div className="mt-24 mx-24 justify-center min-h-[800px]">
-                <Divider orientation={'center'}>
-                    <p className={'text-orange-400 text-2xl font-bold uppercase'}>{t('tourList.ti1')}</p>
-                </Divider>
+            <div className="mt-24 mx-24 space-y-8 justify-center min-h-[800px]">
                 <div className="flex">
                     <Aside query={query} setQuery={setQuery} titleType={titleType} />
                     <div className="flex-1">
@@ -143,7 +179,7 @@ export const TourLists = ({ titleType }) => {
                 align={'center'}
                 current={currentPage}
                 defaultCurrent={1}
-                total={tours.length} // Sử dụng totalItems thực tế
+                total={tours.length}
                 pageSize={ITEM_PER_PAGE}
                 onChange={onChange}
             />

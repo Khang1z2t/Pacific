@@ -2,6 +2,9 @@ import config from '~/config/index';
 
 const webConfig = {
     defaultUser: 'defaultL.png',
+    banner1: '/img/Pages/TourLists/bg.jpg',
+    banner2: '/img/carousel-1.jpg',
+    banner3: '/img/carousel-2.jpg',
     defaultLogo: '/img/logo.jpg',
     defaultTour: '/img/user_null.png',
     defaultTitle: 'Pacific - Hành trình khám phá mọi nơi',

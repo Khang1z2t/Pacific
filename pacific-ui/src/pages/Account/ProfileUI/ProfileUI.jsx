@@ -1,8 +1,6 @@
 import { Tabs } from 'antd';
 import { useState } from 'react';
 import { ProfileCard } from '~/pages/Account/ProfileUI/components/ProfileCard';
-import { EmptyProfileCard } from '~/pages/Account/ProfileUI/components/EmptyProfileCard';
-import { AccountSecurity } from '~/pages/Account/ProfileUI/sections/ProfileInformation/components/AccountSecurity';
 import { BookedTour } from '~/pages/Account/historyBooked/BookedTour';
 import { useAuth } from '~/config/AuthContext';
 import { WishListIndex } from '~/pages/Account/ProfileUI/sections/WishList/WishListIndex';
@@ -43,13 +41,10 @@ export const ProfileUI = () => {
                     <TabPane tab="Xác thực thông tin" key="2">
                         <VerifyInformation data={currentUser} onUserUpdate={handleUserUpdate} />
                     </TabPane>
-                    <TabPane tab="Bảo mật tài khoản" key="3">
-                        <AccountSecurity data={currentUser} />
-                    </TabPane>
-                    <TabPane tab="Lịch sử đặt tour" key="4">
+                    <TabPane tab="Lịch sử đặt tour" key="3">
                         <BookedTour />
                     </TabPane>
-                    <TabPane className={' max-h-full overflow-y-scroll'} tab={'Danh sách yêu thích'} key={'5'}>
+                    <TabPane className={' max-h-full overflow-y-scroll'} tab={'Danh sách yêu thích'} key={'4'}>
                         <WishListIndex />
                     </TabPane>
                 </Tabs>

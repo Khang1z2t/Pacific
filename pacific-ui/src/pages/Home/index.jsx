@@ -21,39 +21,6 @@ function Home() {
         document.title = 'Pacific - Hành trình khám phá mọi nơi.';
     }, []);
 
-    const FloatBtnItems = [
-        {
-            icon: 'fas fa-link',
-            href: '#link1',
-        },
-        {
-            icon: 'fas fa-comments',
-            href: '#link2',
-        },
-        {
-            icon: 'fas fa-envelope',
-            href: '#link3',
-        },
-    ];
-    const CardItems = [
-        {
-            src: '/img/cards/card1.jpg',
-            title: 'Hawaii',
-        },
-        {
-            src: '/img/cards/card2.jpg',
-            title: 'Paris',
-        },
-        {
-            src: '/img/cards/card3.jpg',
-            title: 'Japan',
-        },
-        {
-            src: '/img/cards/card4.jpg',
-            title: 'Korea',
-        },
-    ];
-
     return (
         <FadeContent
             blur={true}
