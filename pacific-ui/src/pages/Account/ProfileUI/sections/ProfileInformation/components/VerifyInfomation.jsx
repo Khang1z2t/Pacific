@@ -25,9 +25,11 @@ export const VerifyInformation = ({ data, onUserUpdate }) => {
     // Giả lập API gửi mã OTP
     const sendOtp = async (type) => {
         try {
-            await AuthServices.sendMailVerify(data.email);
-            message.success(`Mã OTP đã được gửi đến ${type === 'email' ? 'email' : 'số điện thoại'} của bạn!`, 1.5);
+            console.log(data.email);
+
             if (type === 'email') {
+                await AuthServices.sendMailVerify(data.email);
+                message.success(`Mã OTP đã được gửi đến ${type === 'email' ? 'email' : 'số điện thoại'} của bạn!`, 1.5);
                 setIsEmailOtpSent(true);
                 setEmailOtpCooldown(60);
             } else {
@@ -46,26 +48,30 @@ export const VerifyInformation = ({ data, onUserUpdate }) => {
     }, [emailOtpCooldown]);
     // Giả lập API xác minh OTP
     const verifyOtp = async (type, otp) => {
-        const { email, phone } = userData;
+        // const { email, phone } = userData;
+        console.log(data.email);
+        console.log(otp);
         try {
-            await AuthServices.verifyEmail(email, otp);
-            message.success(`${type === 'email' ? 'Email' : 'Số điện thoại'} đã được xác minh thành công!`, 1.5);
-
             // Giả lập API lấy lại thông tin user
-            const updatedUser = {
-                ...userData,
-                ...(type === 'email' ? { emailVerified: true } : { phoneVerified: true }),
-            };
-
-            // Cập nhật userData
-            setUserData(updatedUser);
-            // Gọi callback để cập nhật currentUser ở component cha (nếu cần)
-            if (onUserUpdate) {
-                onUserUpdate(updatedUser);
-            }
+            // const updatedUser = {
+            //     ...userData,
+            //     ...(type === 'email' ? { emailVerified: true } : { phoneVerified: true }),
+            // };
+            //
+            // // Cập nhật userData
+            // setUserData(updatedUser);
+            // // Gọi callback để cập nhật currentUser ở component cha (nếu cần)
+            // if (onUserUpdate) {
+            //     onUserUpdate(updatedUser);
+            // }
 
             // Reset trạng thái OTP
             if (type === 'email') {
+                await AuthServices.verifyEmail({
+                    email: data.email,
+                    otp: otp,
+                });
+                message.success(`${type === 'email' ? 'Email' : 'Số điện thoại'} đã được xác minh thành công!`, 1.5);
                 setIsEmailOtpSent(false);
                 setEmailOtp('');
             } else {
@@ -203,17 +209,6 @@ export const VerifyInformation = ({ data, onUserUpdate }) => {
                                 </div>
                             )}
                         </div>
-                    </div>
-
-                    {/* Nút Lưu thay đổi */}
-                    <div className="flex justify-end">
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            className="bg-green-500 text-white hover:bg-green-600 border-none rounded-lg px-6 py-2 font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
-                        >
-                            Lưu thay đổi
-                        </Button>
                     </div>
                 </Form>
             </div>

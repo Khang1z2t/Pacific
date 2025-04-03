@@ -1,11 +1,11 @@
-import AxiosConfig from '~/config/axiosConfig';
 import config from '~/config';
+import axiosConfig from '~/config/axiosConfig';
 
 const AuthService = {
 
     register: async (username, password, firstName, lastName, email) => {
         try {
-            const response = await AxiosConfig.post(config.api.auth + '/register', {
+            const response = await axiosConfig.post(config.api.auth + '/register', {
                 username,
                 password,
                 firstName,
@@ -21,7 +21,7 @@ const AuthService = {
 
     login: async (identifier, password) => {
         try {
-            const response = await AxiosConfig.post(config.api.auth + '/login', {
+            const response = await axiosConfig.post(config.api.auth + '/login', {
                 identifier,
                 password,
             });
@@ -33,9 +33,9 @@ const AuthService = {
         }
     },
 
-    sendVerifyEmail: async (email) => {
+    sendVerifyEmailPass: async (email) => {
         try {
-            const response = await AxiosConfig.post(config.api.auth + `/send-reset-password-mail?email=${email}`, {}, {
+            const response = await axiosConfig.post(config.api.auth + `/send-reset-password-mail?email=${email}`, {}, {
                 timeout: 60000,
             });
             return response.data;
@@ -45,9 +45,9 @@ const AuthService = {
         }
     },
 
-    verifyEmail: async (email, otp) => {
+    verifyEmailPass: async (email, otp) => {
         try {
-            const response = await AxiosConfig.post(config.api.auth + '/verify-reset-password', {
+            const response = await axiosConfig.post(config.api.auth + '/verify-reset-password', {
                 email,
                 otp,
             });
@@ -60,7 +60,7 @@ const AuthService = {
 
     resetPassword: async (body) => {
         try {
-            const response = await AxiosConfig.post(config.api.auth + '/reset-password', body);
+            const response = await axiosConfig.post(config.api.auth + '/reset-password', body);
             return response.data;
         } catch (error) {
             console.error('Error:', error);
@@ -73,7 +73,7 @@ const AuthService = {
             if (!token) {
                 return Promise.resolve(null);
             } else {
-                const response = await AxiosConfig.get(`${config.api.auth}/authenticate-token`, {
+                const response = await axiosConfig.get(`${config.api.auth}/authenticate-token`, {
                     headers: {
                         'Authorization': 'Bearer ' + token,
                     },
@@ -90,7 +90,7 @@ const AuthService = {
         return new Promise(async (resolve, reject) => {
             try {
                 // Gọi API để lấy URL đăng nhập Google
-                const response = await AxiosConfig.get(config.api.auth + '/oauth2/google');
+                const response = await axiosConfig.get(config.api.auth + '/oauth2/google');
                 const googleAuthUrl = response.data.data;
 
                 if (!googleAuthUrl) {
@@ -153,7 +153,7 @@ const AuthService = {
     updateUsername: async (params) => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await AxiosConfig.post(config.api.auth + '/update-username', {}, {
+            const response = await axiosConfig.post(config.api.auth + '/update-username', {}, {
                 params,
                 headers: {
                     'Authorization': 'Bearer ' + token,
@@ -166,16 +166,19 @@ const AuthService = {
         }
     },
 
-    sendMailVerify: async (body) => {
+    sendMailVerify: async (email) => {
         try {
-            console.log(body);
-            const token = localStorage.getItem('accessToken');
-            const response = await AxiosConfig.post(config.api.auth + '/send-verify-mail', { body }, {
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                },
-                'content-type': 'application/json',
-            });
+            const response = await axiosConfig.post(config.api.auth + `/send-verify-mail?email=${email}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    verifyEmail: async (body) => {
+        try {
+            const response = await axiosConfig.post(config.api.auth + '/verify-email', body);
             return response.data;
         } catch (error) {
             console.error('Error:', error);

@@ -25,7 +25,7 @@ export const ForgetPassword = () => {
 
         setLoading(true);
         try {
-            await AuthServices.sendVerifyEmail(email);
+            await AuthServices.sendVerifyEmailPass(email);
             notification.success({
                 message: 'Gửi mã xác nhận thành công',
                 description: `Mã xác nhận đã được gửi đến email của bạn: ${email}`,
@@ -48,7 +48,7 @@ export const ForgetPassword = () => {
             message.error('Mật khẩu xác nhận không khớp', 1);
             return;
         }
-        const verify = await AuthServices.verifyEmail(email, verificationCode);
+        const verify = await AuthServices.verifyEmailPass(email, verificationCode);
         if (!verify) {
             message.error('Mã xác nhận không chính xác', 1);
             return;
