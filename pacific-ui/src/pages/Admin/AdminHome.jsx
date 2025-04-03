@@ -33,6 +33,9 @@ import Blog from '~/pages/Admin/Blog';
 import Support from '~/pages/Admin/Support';
 import { useAuth } from '~/config/AuthContext';
 import Voucher from '~/pages/Admin/Voucher';
+import { BookingStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/BookingStatistic';
+import { TourStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/TourStatistic';
+import { RevenueStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/RevenueStatistic';
 
 
 const { Content } = Layout;
@@ -48,9 +51,9 @@ const AdminHome = () => {
             key: 'sub1',
             icon: <PieChartOutlined />,
             children: [
-                { label: 'Booking', key: '2', content: 'Bill is a cat.' },
-                { label: 'Tour', key: '3', content: 'Bill is a cat.' },
-                { label: 'Doanh thu', key: '4', content: 'Bill is a cat.' },
+                { label: 'Booking', key: '2', content: <BookingStatistic/> },
+                { label: 'Tour', key: '3', content: <TourStatistic/> },
+                { label: 'Doanh thu', key: '4', content: <RevenueStatistic/> },
             ],
         },
         {
