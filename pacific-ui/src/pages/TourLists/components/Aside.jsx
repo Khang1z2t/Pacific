@@ -1,4 +1,4 @@
-import { Divider, Radio, Rate, Select } from 'antd';
+import { Divider, Input, InputNumber, Radio, Rate, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CloseCircleOutlined } from '@ant-design/icons';
@@ -9,12 +9,16 @@ export const Aside = ({ query, setQuery, titleType }) => {
     const [rate, setRate] = useState(query.rate || null); // Đồng bộ với query.rate
     const [searchPrices, setSearchPrices] = useState(query.searchPrices || 'All'); // Đồng bộ với query.searchPrices
     const [checkedTour, setCheckedTour] = useState(titleType === t('search.ti4') ? 1 : 2);
+    const [maxPrice, setMaxPrice] = useState(0);
+    const [minPrice, setMinPrice] = useState(0);
 
     useEffect(() => {
         setCheckedTour(titleType === t('search.ti4') ? 1 : 2);
         setQuery((prevQuery) => ({
             ...prevQuery,
             rate,
+            minPrice,
+            maxPrice,
             searchPrices,
         }));
     }, [titleType, rate, searchPrices, setQuery]);
@@ -22,10 +26,14 @@ export const Aside = ({ query, setQuery, titleType }) => {
     const handleClear = () => {
         setRate(null);
         setSearchPrices('All');
+        setMinPrice(0);
+        setMaxPrice(0);
         setCheckedTour(1);
         setQuery((prevQuery) => ({
             ...prevQuery,
             rate: null,
+            minPrice: null,
+            maxPrice: null,
             searchPrices: 'All',
         }));
     }
@@ -45,6 +53,39 @@ export const Aside = ({ query, setQuery, titleType }) => {
                     { label: t('search.ti8'), value: 'LowToHigh' },
                 ]}
             />
+            <div className={"grid grid-cols-2 items-center gap-2"}>
+                <InputNumber
+                    className="w-full mt-4"
+                    placeholder="Giá thấp nhất"
+                    min={0}
+                    formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    suffix={"VND"}
+                    value={minPrice}
+                    onChange={(value) => {
+                        setMinPrice(value);
+                        setQuery((prevQuery) => ({
+                            ...prevQuery,
+                            minPrice: value,
+                        }));
+                    }}
+                />
+                <InputNumber
+                    className="w-full mt-4"
+                    placeholder="Giá cao nhất"
+                    min={0}
+                    formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    suffix={"VND"}
+                    value={maxPrice}
+                    onChange={(value) => {
+                        setMaxPrice(value);
+                        setQuery((prevQuery) => ({
+                            ...prevQuery,
+                            maxPrice: value,
+                        }));
+                    }}
+                />
+            </div>
+
             <Divider>{t('search.ti9')}</Divider>
             <Radio.Group
                 value={rate}

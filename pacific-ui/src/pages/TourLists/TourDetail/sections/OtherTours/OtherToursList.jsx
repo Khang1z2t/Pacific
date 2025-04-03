@@ -29,16 +29,21 @@ export const OtherToursList = () => {
                 startDate: null,
                 endDate: null,
             }
-            const res = TourServices.getAllTour(params);
-            const published = res.data.filter((tour) => tour.status === 'PUBLISHED' && tour.id !== id);
-            setTours(published);
-            setLoading(false);
+            const fetched = TourServices.getAllTour(params).then((res) => {
+                const published = res.data.filter((tour) => tour.status === 'PUBLISHED' && tour.id !== id);
+                setTours(published || []);
+                setCurrentPage(1);
+            }).catch((err) => {
+                console.error(err);
+                setTours([]);
+            })
+
+            fetched();
         } catch (error) {
             console.error('Error fetching tours:', error);
             setTours([]);
         }
 
-        setCurrentPage(1);
     }, [id]);
 
     const handleTourClick = (id) => {

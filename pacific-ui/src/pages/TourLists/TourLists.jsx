@@ -81,12 +81,17 @@ export const TourLists = ({ titleType }) => {
                 result.sort((a, b) => (a.maxPrice || 0) - (b.maxPrice || 0));
             }
         }
-
+        if (query.minPrice && query.minPrice > 0) {
+            result = result.filter((tour) => tour.maxPrice >= query.minPrice);
+        }
+        if (query.maxPrice && query.maxPrice > 0) {
+            result = result.filter((tour) => tour.maxPrice <= query.maxPrice);
+        }
         // Phân trang thủ công nếu API không hỗ trợ
         const startIndex = (currentPage - 1) * ITEM_PER_PAGE;
         const endIndex = startIndex + ITEM_PER_PAGE;
         return result.slice(startIndex, endIndex);
-    }, [tours, query.rate, query.searchPrices, currentPage]);
+    }, [tours, query.rate, query.searchPrices, currentPage, query.minPrice, query.maxPrice]);
 
     const handleSearch = (query) => {
         const filterSearch = {};
