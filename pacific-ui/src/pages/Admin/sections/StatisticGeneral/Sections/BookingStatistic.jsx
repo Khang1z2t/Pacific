@@ -152,7 +152,7 @@ export const BookingStatistic = () => {
                         <Statistic
                             title="Doanh thu"
                             value={revenueData?.totalRevenue || 0}
-                            prefix="VNĐ"
+                            suffix="VNĐ"
                             valueStyle={{ color: '#14b8a6' }}
                             loading={loading}
                         />
@@ -343,7 +343,8 @@ export const BookingStatistic = () => {
                                 </Pie>
                                 <Tooltip />
                                 <Legend />
-                            </PieChart>                        )}
+                            </PieChart>
+                        )}
                     </Card>
                 </Col> </Row>
 

@@ -4,6 +4,7 @@ import config from '~/config';
 import { PlusOutlined } from '@ant-design/icons';
 import AdminServices from '~/services/AdminServices';
 import TourServices from '~/services/TourServices';
+import moment from 'moment';
 
 export const StatisticTourSection = () => {
     const [open, setOpen] = useState(false);
@@ -92,14 +93,14 @@ export const StatisticTourSection = () => {
         {
             title: 'Ngày bắt đầu tour',
             dataIndex: 'startDate',
-            render: (text) => `${config.webConfig.convertDateNoTime(text)}`,
+            render: (text) => `${text}`,
             sorter: (a, b) => new Date(a.startDate) - new Date(b.startDate),
             sortDirections: ['ascend', 'descend'],
         },
         {
             title: 'Ngày kết thúc tour',
             dataIndex: 'endDate',
-            render: (text) => `${config.webConfig.convertDateNoTime(text)}`,
+            render: (text) =>  `${text}`,
             sorter: (a, b) => new Date(a.endDate) - new Date(b.endDate),
             sortDirections: ['ascend', 'descend'],
         },
@@ -130,7 +131,6 @@ export const StatisticTourSection = () => {
             ),
         },
     ];
-
     const onChange = (pagination, filters, sorter, extra) => {
         console.log('params', pagination, filters, sorter, extra);
     };

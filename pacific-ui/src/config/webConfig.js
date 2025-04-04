@@ -19,9 +19,17 @@ const webConfig = {
     convertDate: (date) => {
         return new Intl.DateTimeFormat('vi-VN').format(date);
     },
-    convertDateFromString: (date) => {
+    convertLocalDateTime: (date) => {
+        return new Intl.DateTimeFormat('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        }).format(new Date(date));
+    },
+    convertNormalDate: (date) => {
         return new Intl.DateTimeFormat('vi-VN').format(new Date(date));
     },
+
     convertDateNoTime: (date) => {
         return new Intl.DateTimeFormat('vi-VN', {
             year: 'numeric',
