@@ -44,7 +44,7 @@ export const StatisticSection = () => {
         }).catch((error) => {
             console.error(error);
         });
-    }, [startDate,endDate]);
+    }, [startDate, endDate]);
     // BAO CAO NAM
     useEffect(() => {
         AdminServices.getBookingRevenuesByYear().then((res) => {
@@ -122,10 +122,10 @@ export const StatisticSection = () => {
                     <RangePicker
                         format={'DD-MM-YYYY'}
                         onChange={(date, dateString) => {
-                            if(!dateString[0] || !dateString[1]) {
+                            if (!dateString[0] || !dateString[1]) {
                                 setStartDate(null);
                                 setEndDate(null);
-                            }else {
+                            } else {
                                 const formattedStartDate = moment(dateString[0], 'DD-MM-YYYY').format('YYYY-MM-DD');
                                 const formattedEndDate = moment(dateString[1], 'DD-MM-YYYY').format('YYYY-MM-DD');
                                 setStartDate(formattedStartDate);
@@ -145,7 +145,11 @@ export const StatisticSection = () => {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="bookingDate" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip
+                                formatter={(value) => {
+                                    return [config.webConfig.getCurrency(value), 'Doanh thu'];
+                                }}
+                            />
                             <Bar dataKey="totalRevenue" fill={activeTab === '1' ? '#1890ff' : '#ff4d4f'} />
                         </BarChart>
                     </ResponsiveContainer>
@@ -154,7 +158,7 @@ export const StatisticSection = () => {
                 {/* Bảng dữ liệu */}
                 <div>
                     <h3 className="mb-2 uppercase font-semibold">
-                        {activeTab === '1' ? 'Danh sách tour được book nhiều nhất' : 'Danh sách tour được xem nhiều nhất'}
+                        {activeTab === '1' ? <p className={"text-orange-400 font-bold"}>Danh sách doanh thu tour</p> : 'Danh sách tour được xem nhiều nhất'}
                     </h3>
                     <Table
                         className={'overflow-y-scroll max-h-60'}

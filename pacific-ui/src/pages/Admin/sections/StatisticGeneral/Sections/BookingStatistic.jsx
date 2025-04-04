@@ -41,8 +41,8 @@ export const BookingStatistic = () => {
         setLoading(true);
         const params = { period }; // Có thể thêm startDate và endDate nếu dùng khoảng thời gian tùy chỉnh
         const dateParams = {
-            startDate: dateRange[0].format('YYYY-MM-DD'),
-            endDate: dateRange[1].format('YYYY-MM-DD'),
+            startDate: dateRange[0]?.format('YYYY-MM-DD'),
+            endDate: dateRange[1]?.format('YYYY-MM-DD'),
             limit: limit,
         };
         Promise.all([
