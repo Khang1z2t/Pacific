@@ -61,8 +61,57 @@ const AdminServices = {
             console.error(error);
             return Promise.reject(error);
         }
-    }
+    },
 
+    getBookingStatusStats: async () => {
+        try {
+            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/booking-status-stats');
+            return resp.data;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    },
+
+    getRevenueStats: async (params) => {
+        try {
+            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/stats', {params});
+            return resp.data;
+        } catch (err) {
+            console.error(err);
+            return Promise.reject(err);
+        }
+    },
+
+    getReviewStats: async (params) => {
+        try {
+            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/review-stats', { params });
+            return resp.data;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    },
+
+    getDetailReviewStats: async (params) => {
+        try {
+            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/review-detail-stats', { params });
+            return resp.data;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    },
+
+    getTopBookedTours: async (params) => {
+        try {
+            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/top-booked', { params });
+            return resp.data;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    }
 };
 
 export default AdminServices;
