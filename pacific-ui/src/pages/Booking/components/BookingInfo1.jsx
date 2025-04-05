@@ -20,10 +20,10 @@ export const BookingInfo1 = ({ data }) => {
 
     const [booking, setBooking] = useState({});
     const [fullName, setFullName] = useState(currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : '');
-    const [address, setAddress] = useState(currentUser ? `${currentUser.address}` : '');
+    const [address, setAddress] = useState(currentUser === 'null' ? '' : `${currentUser.address}`);
     const [adults, setAdults] = useState(1);
     const [children, setChildren] = useState(0);
-    const [phone, setPhone] = useState(currentUser ? `${currentUser.phone}` : '');
+    const [phone, setPhone] = useState(currentUser === 'null' ? '' : `${currentUser.phone}`);
     const [email, setEmail] = useState(currentUser ? `${currentUser.email}` : '');
     const [note, setNote] = useState('');
     const [confirm, setConfirm] = useState(false);
@@ -213,7 +213,7 @@ export const BookingInfo1 = ({ data }) => {
                                     <label className={'font-bold'}>Họ và tên</label>
                                     <Input
                                         placeholder="Nhập họ và tên"
-                                        onChange={(e) => setFullName(e.target.value)}
+                                            onChange={(e) => setFullName(e.target.value)}
                                         value={fullName}
                                     />
                                 </div>

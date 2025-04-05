@@ -24,22 +24,28 @@ import { AddTourDetail } from '~/pages/Admin/sections/ToursPage/components/AddTo
 
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const TourList = () => {
     const [modalVisible, setModalVisible] = useState(false);
-
     const [loading, setLoading] = useState(false);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [tours, setTours] = useState([]);
     const [tourDetail, setTourDetail] = useState([]);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [addDetailModalVisible, setAddDetailModalVisible] = useState(false);
-
-    // add tourDetail
+    const [searchText, setSearchText] = useState('');
     const [id, setId] = useState(null);
 
     useEffect(() => {
-        TourServices.getAllTour().then((res) => {
+        TourServices.getAllTour({
+            title: null,
+            minPrice: null,
+            maxPrice: null,
+            categoryId: null,
+            startDate: null,
+            endDate: null,
+        }).then((res) => {
             setTours(res.data);
             setLoading(false);
         });
@@ -54,6 +60,7 @@ const TourList = () => {
         });
         setDetailModalVisible(true);
     };
+
     const handleOpenAddTourDetail = (key) => {
         setId(key);
         setAddDetailModalVisible(true);
@@ -69,59 +76,140 @@ const TourList = () => {
             message.success('Thay đổi thành công');
         }).catch((err) => {
             console.log(err);
-            message.error('Thay đôi thất bại');
+            message.error('Thay đổi thất bại');
         });
     };
-    //
+
     const columns = [
-        // { title: 'ID', dataIndex: 'id', key: 'id' },
-        { title: 'Tên tour', dataIndex: 'title', key: 'title' },
+        {
+            title: 'Tên tour',
+            dataIndex: 'title',
+            key: 'title',
+            filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+                <div style={{ padding: 8 }}>
+                    <Space>
+                        <Button
+                            type="primary"
+                            onClick={() => confirm()}
+                            icon={<SearchOutlined />}
+                            size="small"
+                            style={{ width: 90 }}
+                        >
+                            Tìm
+                        </Button>
+                        <Button onClick={() => clearFilters()} size="small" style={{ width: 90 }}>
+                            Reset
+                        </Button>
+                    </Space>
+                </div>
+            ),
+            filterIcon: (filtered) => (
+                <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+            ),
+            onFilter: (value, record) =>
+                record.title.toLowerCase().includes(value.toLowerCase()),
+        },
         {
             title: 'Giá tour',
             dataIndex: 'maxPrice',
             key: 'maxPrice',
             render: (maxPrice) => `${config.webConfig.getCurrency(maxPrice)}`,
-        },
-        { title: 'Điểm đến', dataIndex: 'destination', key: 'destination' },
-        {
-            title: 'Trạng thái', dataIndex: 'status', key: 'status', render: (e) => {
-                return (
-                    <Switch checked={e === 'PUBLISHED'} />
-                );
+            filters: [
+                { text: 'Dưới 5 triệu', value: [0, 5000000] },
+                { text: '5 - 10 triệu', value: [5000000, 10000000] },
+                { text: '10 - 20 triệu', value: [10000000, 20000000] },
+                { text: 'Trên 20 triệu', value: [20000000, Infinity] },
+            ],
+            onFilter: (value, record) => {
+                const [min, max] = value;
+                return record.maxPrice >= min && record.maxPrice <= max;
             },
         },
         {
-            title: 'Ẩn/Hiện tour', key: 'active', render: (e) => {
-                return (
-                    <Switch value={e.active} loading={loading} onClick={(checked) => handleHideTour(e.id, checked)} />
-                );
-            },
-        },
-        {
-            title: 'Chi tiết tour', key: 'id', render: (e) => {
-                return (
-                    <Button onClick={() => {
-                        handleCheckDetail(e.id);
-                    }}>Xem chi tiết</Button>
-                );
-            },
-        },
-        {
-            title: 'Thao tác', key: 'actions', render: (e) => {
-                return (
+            title: 'Điểm đến',
+            dataIndex: 'destination',
+            key: 'destination',
+            filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+                <div style={{ padding: 8 }}>
+                    <Input
+                        placeholder="Tìm kiếm điểm đến"
+                        value={selectedKeys[0]}
+                        onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                        onPressEnter={() => confirm()}
+                        style={{ width: 188, marginBottom: 8, display: 'block' }}
+                    />
                     <Space>
-                        <Button icon={<EditOutlined />} onClick={() => setEditModalVisible(true)} />
-                        <Tooltip placement={'top'} title={'Xóa tour'}>
-                            <Button icon={<DeleteOutlined />} danger onClick={() => {
-                                message.warning('Dang phat trien');
-                            }} />
-                        </Tooltip>
-                        <Tooltip placement="top" title={'Thêm chi tiết tour'}>
-                            <Button icon={<PlusOutlined />} onClick={() => handleOpenAddTourDetail(e.id)}></Button>
-                        </Tooltip>
+                        <Button
+                            type="primary"
+                            onClick={() => confirm()}
+                            icon={<SearchOutlined />}
+                            size="small"
+                            style={{ width: 90 }}
+                        >
+                            Tìm
+                        </Button>
+                        <Button onClick={() => clearFilters()} size="small" style={{ width: 90 }}>
+                            Reset
+                        </Button>
                     </Space>
-                );
-            },
+                </div>
+            ),
+            filterIcon: (filtered) => (
+                <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+            ),
+            onFilter: (value, record) =>
+                record.destination.toLowerCase().includes(value.toLowerCase()),
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            key: 'status',
+            render: (e) => <Switch checked={e === 'PUBLISHED'} />,
+            filters: [
+                { text: 'Đang bán', value: 'PUBLISHED' },
+                { text: 'Hết tour', value: 'UNPUBLISHED' },
+            ],
+            onFilter: (value, record) => record.status === value,
+        },
+        {
+            title: 'Ẩn/Hiện tour',
+            key: 'active',
+            render: (e) => (
+                <Switch
+                    value={e.active}
+                    loading={loading}
+                    onClick={(checked) => handleHideTour(e.id, checked)}
+                />
+            ),
+        },
+        {
+            title: 'Chi tiết tour',
+            key: 'id',
+            render: (e) => (
+                <Button onClick={() => handleCheckDetail(e.id)}>Xem chi tiết</Button>
+            ),
+        },
+        {
+            title: 'Thao tác',
+            key: 'actions',
+            render: (e) => (
+                <Space>
+                    <Button icon={<EditOutlined />} onClick={() => setEditModalVisible(true)} />
+                    <Tooltip placement={'top'} title={'Xóa tour'}>
+                        <Button
+                            icon={<DeleteOutlined />}
+                            danger
+                            onClick={() => message.warning('Đang phát triển')}
+                        />
+                    </Tooltip>
+                    <Tooltip placement="top" title={'Thêm chi tiết tour'}>
+                        <Button
+                            icon={<PlusOutlined />}
+                            onClick={() => handleOpenAddTourDetail(e.id)}
+                        />
+                    </Tooltip>
+                </Space>
+            ),
         },
     ];
 
@@ -164,12 +252,10 @@ const TourList = () => {
         <div className={'bg-white p-4 rounded shadow-lg'}>
             <Title level={2}>QUẢN LÝ TOUR</Title>
             <div className={'mb-2 w-full flex gap-4 items-center flex-wrap'}>
-                <Input rootClassName={'w-fit'} placeholder="Tìm kieê" prefix={<SearchOutlined />} />
-                <Select className={'w-fit'}
-                        placeholder={'Chọn giá'}
-                        options={prices}
-                />
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>Thêm</Button>
+                <Input rootClassName={'w-fit'} placeholder="Tìm kiếm" prefix={<SearchOutlined />} />
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
+                    Thêm
+                </Button>
             </div>
             <Table
                 columns={columns}
@@ -181,7 +267,7 @@ const TourList = () => {
 
 
             <Modal title={'Chi tiết tour'}
-                   width={850}
+                   width={950}
                    okText={'Lưu'}
                    cancelText={'Đóng'}
                    open={detailModalVisible}
@@ -206,7 +292,7 @@ const TourList = () => {
                     </div>
                     <Divider />
                     <h3 className={'text-lg font-semibold'}>Thông tin cơ bản</h3>
-                    <div className={"grid grid-cols-2 gap-4"}>
+                    <div className={'grid grid-cols-2 gap-4'}>
                         <div className={'gap-2 mb-4 items-center'}>
                             <p><span className={'font-semibold'}>Điểm đến:</span> {tourDetail.destination}</p>
                             <p><span
@@ -217,9 +303,11 @@ const TourList = () => {
                             </p>
                         </div>
                         <div className={'gap-2 mb-4 items-center'}>
-                            <p><span className={'font-semibold'}>Trạng thái(Ẩn/Hiện):</span> {tourDetail.active ? "Đang được sử dụng" : "Đang được ẩn"}</p>
                             <p><span
-                                className={'font-semibold'}>Trạng thái bán:</span> {tourDetail.active === "PUBLISHED" ? "Đã hết tour" : "Đang được bán"}
+                                className={'font-semibold'}>Trạng thái(Ẩn/Hiện):</span> {tourDetail.active ? 'Đang được sử dụng' : 'Đang được ẩn'}
+                            </p>
+                            <p><span
+                                className={'font-semibold'}>Trạng thái bán:</span> {tourDetail.active === 'PUBLISHED' ? 'Đã hết tour' : 'Đang được bán'}
                             </p>
                         </div>
                     </div>

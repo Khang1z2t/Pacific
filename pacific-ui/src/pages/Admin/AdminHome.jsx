@@ -36,6 +36,7 @@ import Voucher from '~/pages/Admin/Voucher';
 import { BookingStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/BookingStatistic';
 import { TourStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/TourStatistic';
 import { RevenueStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/RevenueStatistic';
+import { BiCategory } from 'react-icons/bi';
 
 
 const { Content } = Layout;
@@ -47,14 +48,10 @@ const AdminHome = () => {
     const menuItems = [
         { label: 'Trang chủ', key: '1', icon: <DesktopOutlined />, content: <HomePage /> },
         {
-            label: 'Thống kê',
+            label: 'Thống kê booking',
             key: 'sub1',
             icon: <PieChartOutlined />,
-            children: [
-                { label: 'Booking', key: '2', content: <BookingStatistic/> },
-                { label: 'Tour', key: '3', content: <TourStatistic/> },
-                { label: 'Doanh thu', key: '4', content: <RevenueStatistic/> },
-            ],
+            content: <BookingStatistic />,
         },
         {
             label: 'Tài khoản',
@@ -93,17 +90,26 @@ const AdminHome = () => {
             ],
         },
         {
-            label: 'Đánh giá',
+            label: 'Danh mục',
             key: 'sub6',
+            icon: <BiCategory/>,
+            children: [
+                {label: 'Khách sạn', key: '14', content: <Hotel />},
+                {label: 'Phương tiện', key: '15', content: <Transport />},
+            ]
+        },
+        {
+            label: 'Đánh giá',
+            key: 'sub7',
             icon: <HistoryOutlined />,
             children: [
-                { label: 'Đánh Giá', key: '15', content: <Rating /> },
-                { label: 'Đã Ẩn', key: '16', content: <ConfirmRating /> },
+                { label: 'Đánh Giá', key: '16', content: <Rating /> },
+                { label: 'Đã Ẩn', key: '17', content: <ConfirmRating /> },
             ],
         },
         {
             label: 'Blogs',
-            key: 'sub7',
+            key: 'sub8',
             icon: <BlockOutlined />,
             children: [
 
@@ -112,9 +118,6 @@ const AdminHome = () => {
             ],
         },
         { label: 'Hỗ trợ', key: '19', icon: <CommentOutlined />, content: <Support /> },
-        { label: 'Logout', key: '20', icon: <LogoutOutlined />, content: 'File management system.' },
-        { label: 'Phương tiện', key: '21', icon: <LogoutOutlined />, content: <Transport /> },
-        { label: 'Khách sạn', key: '22', icon: <LogoutOutlined />, content: <Hotel /> },
 
     ];
     const [selectedContent, setSelectedContent] = useState(menuItems[0].content);
@@ -143,7 +146,7 @@ const AdminHome = () => {
     );
 
     const footer = (
-        <Tooltip title={"ĐƯỢC TẠO VÀ THIẾT KẾ BỞI TUNZ - TN1608"}>
+        <Tooltip title={'ĐƯỢC TẠO VÀ THIẾT KẾ BỞI TUNZ - TN1608'}>
             Pacific ©2025 Created by Pacific Team
         </Tooltip>
     );

@@ -31,7 +31,7 @@ export const AddTourDetail = ({ tourId, setAddDetailModalVisible, addDetailModal
 
     // Modules
     useEffect(() => {
-        HotelServices.getHotels().then((res) => {
+        HotelServices.getAllHotels().then((res) => {
             setHotels(res);
         });
     }, []);

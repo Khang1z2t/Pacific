@@ -34,7 +34,7 @@ export const BookingStatistic = () => {
     const [limit, setLimit] = useState(5);
 
     useEffect(() => {
-        fetchData();
+        fetchData();    
     }, [period,limit,dateRange]);
 
     const fetchData = () => {
