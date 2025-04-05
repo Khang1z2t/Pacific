@@ -280,7 +280,7 @@ export const HotelPage = () => {
                             danger
                             icon={<DeleteOutlined />} />
                     </Tooltip>
-                    <Tooltip title="Xem chi tiết">
+                    <Tooltip title="Chỉnh sửa thông tin">
                         <Button
                             onClick={() => {
                                 setSelectedHotel(record);

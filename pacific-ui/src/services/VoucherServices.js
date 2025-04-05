@@ -28,7 +28,7 @@ const VoucherServices = {
 
     updateVoucher: async (id, voucherData) => {
         try {
-            const response = await axiosConfig.put(`${API_BASE}/update/${id}`, voucherData);
+            const response = await axiosConfig.put(config.api.adminVoucher + `/update/` + id, voucherData);
             return response.data;
         } catch (error) {
             console.error(`Lỗi khi cập nhật voucher:`, error.response?.data || error.message);
@@ -39,7 +39,7 @@ const VoucherServices = {
 
     updateVoucherStatus: async (id, status) => {
         try {
-            const response = await axiosConfig.patch(`${API_BASE}/updateStatus/${id}`, { status });
+            const response = await axiosConfig.patch(config.api.adminVoucher + `/updateStatus/${id}?status=${status}`);
             return response.data;
         } catch (error) {
             console.error(`Lỗi khi cập nhật trạng thái voucher ID ${id}:`, error);
@@ -59,7 +59,7 @@ const VoucherServices = {
 
     deleteVoucher: async (id) => {
         try {
-            const response = await axiosConfig.delete(`${API_BASE}/delete/${id}`);
+            const response = await axiosConfig.delete(config.api.adminVoucher + `/delete/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Lỗi khi xóa voucher ID ${id}:`, error);
