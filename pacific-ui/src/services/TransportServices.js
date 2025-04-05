@@ -34,11 +34,14 @@ const TransportServices = {
             return Promise.reject(err);
         }
     },
-    addTransport: async (transportData) => {
+    addTransport: async (body) => {
         try {
-            validateTransportData(transportData);
-            const response = await axiosConfig.post(`${config.api.transport}/add`, transportData);
-            return response.data?.data || response.data;
+            const response = await axiosConfig.post(config.api.transport + '/add', body,{
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
         } catch (error) {
             handleError(error, "Thêm phương tiện");
         }
