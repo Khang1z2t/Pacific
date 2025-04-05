@@ -16,10 +16,10 @@
     "title14": "LOGIN",
     "title15": "REGISTER"
   },
-  "welcome": "Welcome to Pacific Travel Company.",
+  "welcome": "Welcome to Pacific Travel Company",
   "text": {
-    "t1": "We are Pacific Travel Company.",
-    "t2": "Travel anywhere in the world without taking detours."
+    "t1": "We are Pacific Travel Company",
+    "t2": "Travel anywhere in the world without taking detours"
   },
   "message": {
     "mes1": "Logout successful!",
@@ -235,5 +235,4 @@
   "tourList": {
     "ti1": "Tour lists"
   }
-
 }
