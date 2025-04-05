@@ -70,7 +70,6 @@ export const HotelPage = () => {
         try {
             const response = await HotelServices.getAllHotels();
             setHotels(response.data || []);
-            message.success('Danh sách khách sạn đã được cập nhật!',1);
         } catch (error) {
             console.error('Error fetching hotels:', error);
             message.error('Không thể tải danh sách khách sạn!');
@@ -309,6 +308,11 @@ export const HotelPage = () => {
         </button>
     );
 
+    const handleRefresh = () => {
+        setLoading(true);
+        message.success('Danh sách khách sạn đã được cập nhật!',1);
+        fetchHotels();
+    }
     return (
         <>
             <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans">
@@ -321,7 +325,7 @@ export const HotelPage = () => {
                             <Button
                                 icon={<RefreshCwIcon size={16} />}
                                 loading={loading}
-                                onClick={fetchHotels}
+                                onClick={handleRefresh}
                                 type="text"
                                 className="flex items-center border border-gray-300"
                             >

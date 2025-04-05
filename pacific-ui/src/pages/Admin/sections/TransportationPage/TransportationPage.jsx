@@ -75,7 +75,6 @@ export const TransportationPage = () => {
         try {
             const response = await TransportServices.getTransports();
             setTransports(response || []);
-            message.success('Danh sách phương tiện đã được cập nhật!');
         } catch (error) {
             console.error('Error fetching transports:', error);
             message.error('Không thể tải danh sách phương tiện!');
@@ -271,6 +270,11 @@ export const TransportationPage = () => {
         </button>
     );
 
+    const handleRefresh = () => {
+        setLoading(true);
+        message.success('Danh sách phương tiện đã được cập nhật!');
+        fetchTransports();
+    }
     return (
         <>
             <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans">
@@ -283,7 +287,7 @@ export const TransportationPage = () => {
                             <Button
                                 icon={<RefreshCwIcon size={16} />}
                                 loading={loading}
-                                onClick={fetchTransports}
+                                onClick={handleRefresh}
                                 type="text"
                                 className="flex items-center border border-gray-300"
                             >
