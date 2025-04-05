@@ -47,9 +47,9 @@ const VoucherServices = {
         }
     },
 
-    addVoucher: async (voucherData) => {
+    addVoucher: async (body) => {
         try {
-            const response = await axiosConfig.post(`${API_BASE}/create`, voucherData);
+            const response = await axiosConfig.post(config.api.adminVoucher + '/create', body);
             return response.data;
         } catch (error) {
             console.error('Lỗi khi thêm voucher:', error);

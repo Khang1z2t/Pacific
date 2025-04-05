@@ -28,8 +28,8 @@ const validateImageFile = (file) => {
 const HotelServices = {
     getAllHotels: async () => {
         try {
-            const response = await axiosConfig.get(`${config.api.hotel}/all`);
-            return response.data?.data || response.data || [];
+            const response = await axiosConfig.get(config.api.hotel + '/all');
+            return response.data;
         } catch (error) {
             handleError(error, "Lấy danh sách khách sạn");
         }
@@ -45,11 +45,10 @@ const HotelServices = {
         }
     },
 
-    createHotel: async (hotelData) => {
+    createHotel: async (body) => {
         try {
-            validateHotelData(hotelData);
-            const response = await axiosConfig.post(`${config.api.hotel}/add`, hotelData);
-            return response.data?.data || response.data;
+            const response = await axiosConfig.post(config.api.hotel + '/add', body);
+            return response.data;
         } catch (error) {
             handleError(error, "Thêm khách sạn");
         }

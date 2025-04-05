@@ -43,7 +43,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
 
 
     const showModal = () => setIsModalOpen(true);
-    const handleCancel = () => setIsModalOpen(false);
+    const handleCancel = () => setVisible(false);
     const handleSubmit = () => {
         //
         setTimeout(() => {

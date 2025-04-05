@@ -22,7 +22,6 @@ import { News } from '~/pages/News/News';
 import Users from '~/pages/Admin/Users';
 import Guide from '~/pages/Admin/Guide';
 import AddGuide from '~/pages/Admin/AddGuide';
-import AddVoucher from '~/pages/Admin/AddVoucher';
 import { Error } from '~/pages/Booking/status/Error';
 import { GoogleRedirect } from '~/pages/Account/components/GoogleRedirect';
 import { Terms } from '~/pages/Terms/Terms';
@@ -148,20 +147,4 @@ export const RouterContent = [
             </AdminLayout>
         ),
     },
-    {
-        path: config.routes.addVoucher,
-        element: (
-            <AdminLayout>
-                <AddVoucher/>
-            </AdminLayout>
-        ),
-    },
-    // {
-    //     path: config.routes.addTourDetail,
-    //     element: (
-    //         <AdminLayout>
-    //             <AddTourDetail/>
-    //         </AdminLayout>
-    //     ),
-    // },
 ];

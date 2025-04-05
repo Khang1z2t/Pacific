@@ -167,7 +167,7 @@ const TourList = () => {
             render: (e) => <Switch checked={e === 'PUBLISHED'} />,
             filters: [
                 { text: 'Đang bán', value: 'PUBLISHED' },
-                { text: 'Hết tour', value: 'UNPUBLISHED' },
+                { text: 'Hết tour', value: 'DRAFT' },
             ],
             onFilter: (value, record) => record.status === value,
         },
@@ -252,7 +252,6 @@ const TourList = () => {
         <div className={'bg-white p-4 rounded shadow-lg'}>
             <Title level={2}>QUẢN LÝ TOUR</Title>
             <div className={'mb-2 w-full flex gap-4 items-center flex-wrap'}>
-                <Input rootClassName={'w-fit'} placeholder="Tìm kiếm" prefix={<SearchOutlined />} />
                 <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
                     Thêm
                 </Button>

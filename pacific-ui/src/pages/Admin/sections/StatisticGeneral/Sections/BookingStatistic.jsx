@@ -34,7 +34,7 @@ export const BookingStatistic = () => {
     const [limit, setLimit] = useState(5);
 
     useEffect(() => {
-        fetchData();    
+        fetchData();
     }, [period,limit,dateRange]);
 
     const fetchData = () => {
@@ -86,7 +86,7 @@ export const BookingStatistic = () => {
     };
 
     return (
-        <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans">
+        <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg min-h-screen font-sans">
             {/* Header */}
             <div className="mb-6 flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-800">Thống kê Booking</h1>
