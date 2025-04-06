@@ -92,7 +92,7 @@ export const CalendarSection = ({ data }) => {
                         <p><strong>Mã tour:</strong> {data.id}</p>
                         <p><strong>Khởi hành:</strong> {data.destination}</p>
                         <p><strong>Ngày khởi
-                            hành:</strong> {config.webConfig.convertDateNoTime(tourDetail?.startDate) || tourDetail.startDate}
+                            hành:</strong> {tourDetail.startDate ? config.webConfig.convertDateNoTime(tourDetail.startDate) : 'Chưa có thông tin'}
                         </p>
                         <p><strong>Thời gian:</strong> {data.duration} ngày {data.duration - 1} đêm</p>
                     </div>

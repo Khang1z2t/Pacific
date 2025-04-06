@@ -22,15 +22,6 @@ const RatingService = {
         }
     },
 
-    createRating: async (ratingData) => {
-        try {
-            const { data } = await axiosConfig.post(`${API_BASE}/create`, ratingData);
-            return data;
-        } catch (error) {
-            return handleError(error);
-        }
-    },
-
     updateRatingStatus: async (id, status) => {
         try {
             console.log(`Updating status: ${status} for ID: ${id}`);

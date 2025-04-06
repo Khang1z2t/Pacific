@@ -225,7 +225,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 </p>
                                 <p className="text-lg font-semibold text-orange-600">
                                     {config.webConfig.getCurrency(data.totalAmount || 0)} {' '} {voucher && (
-                                        <sup className="text-sm text-green-500">(-{voucher.discountValue || 0}%)</sup>
+                                    <sup className="text-sm text-green-500">(-{voucher.discountValue || 0}%)</sup>
                                 )}
                                 </p>
                                 <Divider className="my-2" />
@@ -259,14 +259,15 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             </div>
 
                             <div
-                                className={`text-right ${data.status === 'PAID' || data.status === 'COMPLETED' || data.status === 'ONGOING' ? 'text-green-600' : data.status === 'PENDING' ? 'text-yellow-600' : 'text-red-600'}`}>
+                                className={`text-right ${data.status === 'PAID' || data.status === 'COMPLETED' || data.status === 'ON_GOING' || data.status === 'EXPIRED' ? 'text-yellow-500' : data.status === 'PENDING' ? 'text-green-600' : 'text-red-600'}`}>
                                 <p className="text-sm font-semibold"> Trạng thái: {' '}
                                     {data.status === 'PAID' ? 'Thành công' :
                                         data.status === 'PENDING' ? 'Đang chờ thanh toán' :
                                             data.status === 'FAILED' ? 'Thất bại' :
                                                 data.status === 'COMPLETED' ? 'Hoàn thành' :
-                                                    data.status === 'ONGOING' ? 'Đang đi' :
-                                                        data.status || 'N/A'}
+                                                    data.status === 'ON_GOING' ? 'Đang đi' :
+                                                        data.status === 'EXPIRED' ? 'Đã hết hạn' :
+                                                            data.status || 'N/A'}
                                 </p>
                                 {data.status === 'PENDING' && (
                                     <div className="flex flex-col items-end gap-2 w-full">

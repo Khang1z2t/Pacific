@@ -39,6 +39,7 @@ import { CiLight } from 'react-icons/ci';
 import { CategoryPage } from '~/pages/Admin/sections/CategoryPage/CategoryPage';
 import { HotelPage } from '~/pages/Admin/sections/HotelPage/HotelPage';
 import { TransportationPage } from '~/pages/Admin/sections/TransportationPage/TransportationPage';
+import { ReviewPage } from '~/pages/Admin/sections/ReviewPage/ReviewPage';
 
 
 const { Content } = Layout;
@@ -118,10 +119,8 @@ const AdminHome = () => {
             label: 'Đánh giá',
             key: 'sub7',
             icon: <HistoryOutlined />,
-            children: [
-                { label: 'Đánh Giá', key: '16', content: <Rating /> },
-                { label: 'Đã Ẩn', key: '17', content: <ConfirmRating /> },
-            ],
+            content: <ReviewPage/>
+
         },
         {
             label: 'Blogs',

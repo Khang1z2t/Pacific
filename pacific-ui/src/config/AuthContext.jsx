@@ -75,7 +75,8 @@ export function AuthProvider({ children }) {
     const getVouchers = useCallback(async () => {
         try {
             const res = await VoucherServices.getAllVouchers();
-            setVouchers(res?.data);
+            const activeVouchers = res?.data?.filter((voucher) => voucher.status === 'ACTIVE');
+            setVouchers(activeVouchers);
         } catch (err) {
             console.error(err);
         }
@@ -360,7 +361,7 @@ export function AuthProvider({ children }) {
                         <Form.Item
                             name="password"
                             rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' },
-                                {min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!'},]}
+                                { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }]}
                         >
                             <Input.Password
                                 placeholder="Mật khẩu mới"

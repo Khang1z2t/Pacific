@@ -12,54 +12,57 @@ export const BookedTour = () => {
         PENDING: 1,
         PAID: 1,
         FAILED: 1,
+        EXPIRED: 1,
+        ON_GOING:1,
         COMPLETED: 1,
     });
     const [tourInfo, setTourInfo] = useState([]);
     const [tours, setTours] = useState({});
     const [loading, setLoading] = useState(true);
-    const [vouchers, setVouchers] = useState({})
+    const [vouchers, setVouchers] = useState({});
 
-    useEffect(() => {
-        const fetchBookingsAndTours = async () => {
-            try {
-                setLoading(true);
-                const bookingRes = await BookingServices.getBookingList(token);
-                setTourInfo(bookingRes.data);
+    const fetchBookingsAndTours = async () => {
+        try {
+            setLoading(true);
+            const bookingRes = await BookingServices.getBookingList(token);
+            setTourInfo(bookingRes.data);
 
-                const tourPromises = bookingRes.data.map(booking =>
-                    TourServices.getTourByTourDetailId(booking.tourDetailId)
-                        .then(res => ({ [booking.tourDetailId]: res.data }))
-                        .catch(err => {
-                            console.error(err);
-                            return { [booking.tourDetailId]: null };
+            const tourPromises = bookingRes.data.map(booking =>
+                TourServices.getTourByTourDetailId(booking.tourDetailId)
+                    .then(res => ({ [booking.tourDetailId]: res.data }))
+                    .catch(err => {
+                        console.error(err);
+                        return { [booking.tourDetailId]: null };
+                    }),
+            );
+
+            const tourResults = await Promise.all(tourPromises);
+            const toursData = tourResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+            setTours(toursData);
+            const voucherPromises = bookingRes.data
+                .filter((booking) => booking.voucherId) // Chỉ lấy những booking có voucherId
+                .map((booking) =>
+                    VoucherServices.getById(booking.voucherId)
+                        .then((res) => ({ [booking.voucherId]: res.data }))
+                        .catch((err) => {
+                            console.error('Error fetching voucher:', err);
+                            return { [booking.voucherId]: null }; // Fallback khi lỗi
                         }),
                 );
 
-                const tourResults = await Promise.all(tourPromises);
-                const toursData = tourResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-                setTours(toursData);
-                const voucherPromises = bookingRes.data
-                    .filter((booking) => booking.voucherId) // Chỉ lấy những booking có voucherId
-                    .map((booking) =>
-                        VoucherServices.getById(booking.voucherId)
-                            .then((res) => ({ [booking.voucherId]: res.data }))
-                            .catch((err) => {
-                                console.error('Error fetching voucher:', err);
-                                return { [booking.voucherId]: null }; // Fallback khi lỗi
-                            }),
-                    );
+            const voucherResults = await Promise.all(voucherPromises);
+            const vouchersData = voucherResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+            setVouchers(vouchersData);
 
-                const voucherResults = await Promise.all(voucherPromises);
-                const vouchersData = voucherResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-                setVouchers(vouchersData);
+            setLoading(false);
+        } catch (err) {
+            console.error(err);
+            setLoading(false);
+            message.error('Có lỗi xảy ra! Vui lòng báo cáo với quản trị viên.', 1);
+        }
+    };
 
-                setLoading(false);
-            } catch (err) {
-                console.error(err);
-                setLoading(false);
-                message.error('Có lỗi xảy ra! Vui lòng báo cáo với quản trị viên.', 1);
-            }
-        };
+    useEffect(() => {
 
         fetchBookingsAndTours();
     }, [token]);
@@ -98,7 +101,6 @@ export const BookedTour = () => {
     const renderTabContent = (status) => {
         const pageItems = getPageItems(status);
         const totalItems = filterToursByStatus(status).length;
-
         return (
             <div className="space-y-4">
                 <div className="flex flex-col gap-4">
@@ -157,9 +159,14 @@ export const BookedTour = () => {
             children: renderTabContent('FAILED'),
         },
         {
-            key: 'ONGOING',
+            key: 'EXPIRED',
+            label: 'Đã hết hạn',
+            children: renderTabContent('EXPIRED'),
+        },
+        {
+            key: 'ON_GOING',
             label: 'Tour đang đi',
-            children: renderTabContent('ONGOING'),
+            children: renderTabContent('ON_GOING'),
         },
         {
             key: 'COMPLETED',
