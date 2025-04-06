@@ -40,7 +40,7 @@ const GuideServices = {
 
     updateGuideStatus: async (id, status) => {
         try {
-            const { data } = await AxiosConfig.patch(config.api.guide + `/updateStatus/${id}`, { status });
+            const { data } = await AxiosConfig.patch(config.api.guide + `/updateStatus/${id}?active=${status}`);
             return data;
         } catch (error) {
             return handleError(error);

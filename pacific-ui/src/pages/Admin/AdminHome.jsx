@@ -26,9 +26,9 @@ import Blog from '~/pages/Admin/Blog';
 import Support from '~/pages/Admin/Support';
 import { useAuth } from '~/config/AuthContext';
 import { BookingStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/BookingStatistic';
-import { BiCategory } from 'react-icons/bi';
+import { BiCategory, BiSolidCategory } from 'react-icons/bi';
 import { VoucherPage } from '~/pages/Admin/sections/VoucherPage/VoucherPage';
-import { FaMoon } from 'react-icons/fa';
+import { FaMoneyCheckAlt, FaMoon } from 'react-icons/fa';
 import { CiLight } from 'react-icons/ci';
 import { CategoryPage } from '~/pages/Admin/sections/CategoryPage/CategoryPage';
 import { HotelPage } from '~/pages/Admin/sections/HotelPage/HotelPage';
@@ -36,6 +36,9 @@ import { TransportationPage } from '~/pages/Admin/sections/TransportationPage/Tr
 import { ReviewPage } from '~/pages/Admin/sections/ReviewPage/ReviewPage';
 import { IoIosStar } from 'react-icons/io';
 import { DestinationPage } from '~/pages/Admin/sections/DestinationPage/DestinationPage';
+import { MdTour } from 'react-icons/md';
+import { TbMessage2Dollar } from 'react-icons/tb';
+import { GuidePage } from '~/pages/Admin/sections/GuidePage/GuidePage';
 
 const { Content } = Layout;
 
@@ -72,13 +75,13 @@ const AdminHome = () => {
             icon: <TeamOutlined />,
             children: [
                 { label: <Tooltip placement={'right'} title={"Danh sách tài khoản"}>Danh sách tài khoản</Tooltip>, key: '5', content: <Users /> },
-                { label: 'Hướng dẫn viên', key: '6', content: <Guide /> },
+                { label: 'Hướng dẫn viên', key: '6', content: <GuidePage/> },
             ],
         },
         {
             label: 'Tour',
             key: 'sub3',
-            icon: <FileOutlined />,
+            icon: <MdTour color={'orange'} />,
             children: [
                 { label: <Tooltip placement={'right'} title={"Danh sách danh mục con"}>Danh sách danh mục con</Tooltip>, key: '7', content: <CategoryPage /> },
                 { label: 'Danh sách tour', key: '8', content: <TourList /> },
@@ -88,7 +91,7 @@ const AdminHome = () => {
         {
             label: 'Booking',
             key: 'sub4',
-            icon: <PaperClipOutlined />,
+            icon: <FaMoneyCheckAlt color={'green'} />,
             children: [{ label: 'Đang chờ xác nhận', key: '10', content: <Booking /> },
                 { label: 'Đã hoàn thành', key: '11', content: <BookingDone /> },
                 { label: 'Đã hủy', key: '12', content: <BookingCancel /> }],
@@ -96,7 +99,7 @@ const AdminHome = () => {
         {
             label: 'Khuyến mãi',
             key: 'sub5',
-            icon: <DollarCircleOutlined />,
+            icon: <TbMessage2Dollar color={'yellow'} />,
             children: [
                 { label: 'Danh sách', key: '13', content: <VoucherPage /> },
             ],
@@ -104,7 +107,7 @@ const AdminHome = () => {
         {
             label: 'Danh mục',
             key: 'sub6',
-            icon: <BiCategory />,
+            icon: <BiSolidCategory color={'yellow'} />,
             children: [
                 { label: 'Khách sạn', key: '14', content: <HotelPage /> },
                 { label: 'Phương tiện', key: '15', content: <TransportationPage/> },
