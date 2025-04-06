@@ -151,7 +151,7 @@ export const HotelPage = () => {
                 rating: values.rating,
                 cost: values.cost,
                 typeHotel: values.typeHotel,
-            }
+            };
             await HotelServices.updateHotel(selectedHotel.id, body); // Assuming this handles FormData
             message.success('Cập nhật khách sạn thành công!');
             setEditHotelModalVisible(false);
@@ -310,9 +310,9 @@ export const HotelPage = () => {
 
     const handleRefresh = () => {
         setLoading(true);
-        message.success('Danh sách khách sạn đã được cập nhật!',1);
+        message.success('Danh sách khách sạn đã được cập nhật!', 1);
         fetchHotels();
-    }
+    };
     return (
         <>
             <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans">
@@ -346,7 +346,7 @@ export const HotelPage = () => {
                         columns={columns}
                         dataSource={hotels}
                         loading={loading}
-                        pagination={{ pageSize: 10 }}
+                        pagination={{ pageSize: 4, showSizeChanger: false }}
                         rowKey="id"
                         bordered
                         className="bg-white shadow-md rounded-lg"

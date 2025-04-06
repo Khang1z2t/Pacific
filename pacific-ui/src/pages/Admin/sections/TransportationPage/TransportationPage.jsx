@@ -231,7 +231,11 @@ export const TransportationPage = () => {
             title: 'Trạng thái',
             dataIndex: 'active',
             key: 'active',
-            render: (active) => (active ? 'Không hoạt động' : 'Hoạt động'),
+            render: (active) => (
+                <span className={`text-sm font-semibold ${active ? 'text-red-500' : 'text-green-500'}`}>
+                    {active ? 'Không hoạt động' : 'Hoạt động'}
+                </span>
+            ),
             filters: [
                 { text: 'Hoạt động', value: true },
                 { text: 'Không hoạt động', value: false },
@@ -274,7 +278,7 @@ export const TransportationPage = () => {
         setLoading(true);
         message.success('Danh sách phương tiện đã được cập nhật!');
         fetchTransports();
-    }
+    };
     return (
         <>
             <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans">
@@ -308,7 +312,7 @@ export const TransportationPage = () => {
                         columns={columns}
                         dataSource={transports}
                         loading={loading}
-                        pagination={{ pageSize: 10 }}
+                        pagination={{ pageSize: 4, showSizeChanger: false }}
                         rowKey="id"
                         bordered
                         className="bg-white shadow-md rounded-lg"
