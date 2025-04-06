@@ -92,21 +92,94 @@ export const ReviewPage = () => {
             dataIndex: 'rating',
             key: 'rating',
             render: (text) => <Rate disabled defaultValue={text} allowHalf />,
+            filters: [
+                { text: '5 sao', value: 5 },
+                { text: '4 sao trở lên', value: 4 },
+                { text: '3 sao trở lên', value: 3 },
+                { text: 'Dưới 3 sao', value: 2 },
+            ],
+            onFilter: (value, record) => {
+                if (value === 5) return record.rating === 5;
+                if (value === 4) return record.rating >= 4;
+                if (value === 3) return record.rating >= 3;
+                if (value === 2) return record.rating < 3;
+            },
+            filterMultiple: false,
         },
         {
             title: 'Nội dung',
             dataIndex: 'comment',
             key: 'comment',
+            filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+                <div style={{ padding: 8 }}>
+                    <input
+                        placeholder="Tìm kiếm nội dung"
+                        value={selectedKeys[0]}
+                        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                        onPressEnter={() => confirm()}
+                        style={{ width: 188, marginBottom: 8, display: 'block' }}
+                    />
+                    <Space>
+                        <Button
+                            type="primary"
+                            onClick={() => confirm()}
+                            size="small"
+                            style={{ width: 90 }}
+                        >
+                            Tìm
+                        </Button>
+                        <Button onClick={() => clearFilters()} size="small" style={{ width: 90 }}>
+                            Reset
+                        </Button>
+                    </Space>
+                </div>
+            ),
+            onFilter: (value, record) =>
+                record.comment.toLowerCase().includes(value.toLowerCase()),
+            filterSearch: true,
         },
         {
             title: 'Tour',
             dataIndex: 'tourName',
             key: 'tourName',
+            filters: tours.map(tour => ({
+                text: tour.title,
+                value: tour.title,
+            })),
+            onFilter: (value, record) => record.tourName === value,
+            filterSearch: true,
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
+            filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+                <div style={{ padding: 8 }}>
+                    <input
+                        placeholder="Tìm kiếm email"
+                        value={selectedKeys[0]}
+                        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                        onPressEnter={() => confirm()}
+                        style={{ width: 188, marginBottom: 8, display: 'block' }}
+                    />
+                    <Space>
+                        <Button
+                            type="primary"
+                            onClick={() => confirm()}
+                            size="small"
+                            style={{ width: 90 }}
+                        >
+                            Tìm
+                        </Button>
+                        <Button onClick={() => clearFilters()} size="small" style={{ width: 90 }}>
+                            Reset
+                        </Button>
+                    </Space>
+                </div>
+            ),
+            onFilter: (value, record) =>
+                record.email.toLowerCase().includes(value.toLowerCase()),
+            filterSearch: true,
         },
         {
             title: 'Trạng thái',
@@ -117,6 +190,11 @@ export const ReviewPage = () => {
                     {text === 'approved' ? 'Đã duyệt' : 'Chưa duyệt'}
                 </span>
             ),
+            filters: [
+                { text: 'Đã duyệt', value: 'approved' },
+                { text: 'Chưa duyệt', value: 'rejected' },
+            ],
+            onFilter: (value, record) => record.status === value,
         },
         {
             title: 'Hành động',
@@ -183,7 +261,6 @@ export const ReviewPage = () => {
                 />
             </div>
 
-            {/* Review Details Modal */}
             <Modal
                 title="Chi tiết Đánh giá"
                 visible={isModalVisible}

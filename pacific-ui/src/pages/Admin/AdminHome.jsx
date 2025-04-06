@@ -40,6 +40,7 @@ import { CategoryPage } from '~/pages/Admin/sections/CategoryPage/CategoryPage';
 import { HotelPage } from '~/pages/Admin/sections/HotelPage/HotelPage';
 import { TransportationPage } from '~/pages/Admin/sections/TransportationPage/TransportationPage';
 import { ReviewPage } from '~/pages/Admin/sections/ReviewPage/ReviewPage';
+import { IoIosStar } from 'react-icons/io';
 
 
 const { Content } = Layout;
@@ -118,7 +119,7 @@ const AdminHome = () => {
         {
             label: 'Đánh giá',
             key: 'sub7',
-            icon: <HistoryOutlined />,
+            icon: <IoIosStar color={'yellow'} />,
             content: <ReviewPage/>
 
         },
