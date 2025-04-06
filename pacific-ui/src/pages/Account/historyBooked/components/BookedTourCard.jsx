@@ -29,29 +29,25 @@ const { TextArea } = Input;
 
 export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
     const { currentUser } = useAuth();
-
     const [timeLeft, setTimeLeft] = useState('');
     const [form] = Form.useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
-    // State để control dđánh giá hay chưa
     const [reviewed, setReviewed] = useState(!!data.review);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [showReview, setShowReview] = useState(false);
     const [loading, setLoading] = useState(false);
     const [visible, setVisible] = useState(false);
 
-
     const showModal = () => setIsModalOpen(true);
-    const handleCancel = () => setVisible(false);
+    const handleCancel = () => setIsModalOpen(false);
     const handleSubmit = () => {
-        //
         setTimeout(() => {
             message.success('Yêu cầu hoàn tiền đã được gửi thành công!', 1);
-            setVisible(false); // Close modal after submission
+            setVisible(false);
         }, 300);
-        //
     };
+
     const columns = [
         { title: 'Họ và tên', dataIndex: 'fullName', key: 'fullName' },
         { title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber' },
@@ -70,36 +66,30 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             render: (text) => config.webConfig.getCurrency(text),
         },
     ];
+
     useEffect(() => {
         if (data.status === 'PENDING' && data.createdAt) {
             const calculateTimeLeft = () => {
-                // Giả sử thời hạn là 24 giờ từ khi tạo
                 const createdTime = new Date(data.createdAt);
                 const expiryTime = new Date(createdTime.getTime() + 24 * 60 * 60 * 1000);
                 const now = new Date();
-
                 const difference = expiryTime - now;
 
                 if (difference > 0) {
                     const hours = Math.floor(difference / (1000 * 60 * 60));
                     const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
                     setTimeLeft(`${hours} giờ ${minutes} phút ${seconds} giây`);
                 } else {
                     setTimeLeft('Hết hạn');
                 }
             };
 
-            // Cập nhật mỗi giây
             calculateTimeLeft();
             const timer = setInterval(calculateTimeLeft, 1000);
-
-            // Cleanup interval khi component unmount
             return () => clearInterval(timer);
         }
     }, [data.status, data.createdAt]);
-
 
     if (!tour) {
         return (
@@ -116,7 +106,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
         form.setFieldsValue({ overallRating: average });
     };
 
-    // Xử lý submit đánh giá
     const handleReviewSubmit = async (values) => {
         setLoading(true);
         try {
@@ -136,23 +125,21 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             setIsReviewModalOpen(false);
             message.success('Đánh giá của bạn đã được gửi thành công!');
 
-            // Cập nhật data với review mới từ response
             const updatedData = {
                 ...data,
                 review: {
-                    id: response.id, // Giả sử response trả về id của review
+                    id: response.id,
                     comment: ratingData.comment,
                     priceRating: ratingData.priceRating,
                     serviceRating: ratingData.serviceRating,
                     facilityRating: ratingData.facilityRating,
                     foodRating: ratingData.foodRating,
                     accommodationRating: ratingData.accommodationRating,
-                    rating: response.rating || values.overallRating, // Lấy rating từ response hoặc overallRating
-                    createdAt: response.createdAt || new Date().toISOString(), // Lấy từ response hoặc thời gian hiện tại
+                    rating: response.rating || values.overallRating,
+                    createdAt: response.createdAt || new Date().toISOString(),
                 },
             };
 
-            // Gọi callback để cập nhật state ở component cha
             if (onUpdateBooking) {
                 onUpdateBooking(updatedData);
             }
@@ -164,6 +151,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             setLoading(false);
         }
     };
+
     const showReviewModal = () => setIsReviewModalOpen(true);
     const handleReviewCancel = () => setIsReviewModalOpen(false);
 
@@ -174,8 +162,8 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                 return;
             }
 
-            const amount = data.totalAmount || 0; // Tổng tiền từ booking đã có sẵn
-            const orderInfo = data.bookingNo || 'N/A'; // Mã booking làm thông tin đơn hàng
+            const amount = data.totalAmount || 0;
+            const orderInfo = data.bookingNo || 'N/A';
 
             await BookingServices.checkOut({ amount: amount, orderInfo: orderInfo }).then((res) => {
                 window.location.href = res;
@@ -188,6 +176,16 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!';
             message.error(errorMessage);
         }
+    };
+
+    // Định nghĩa màu cho từng trạng thái
+    const statusColors = {
+        PENDING: 'text-blue-500',
+        PAID: 'text-green-600',
+        FAILED: 'text-red-600',
+        COMPLETED: 'text-purple-600',
+        ON_GOING: 'text-orange-500',
+        EXPIRED: 'text-gray-500',
     };
 
     return (
@@ -210,8 +208,8 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 <p className="text-sm text-gray-600 mt-1">
                                     Ngày đi:{' '}
                                     <span className="font-semibold">
-                                    {tour.duration ? `${tour.duration}N${tour.duration - 1}Đ` : 'N/A'}
-                                </span>
+                                        {tour.duration ? `${tour.duration}N${tour.duration - 1}Đ` : 'N/A'}
+                                    </span>
                                 </p>
                                 <p className="text-sm text-gray-600 mt-1">
                                     Số người: <span className="font-semibold">{data.totalNumber || 0}</span>
@@ -224,9 +222,10 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                     Mã đặt tour: <span className="font-semibold">{data.bookingNo}</span>
                                 </p>
                                 <p className="text-lg font-semibold text-orange-600">
-                                    {config.webConfig.getCurrency(data.totalAmount || 0)} {' '} {voucher && (
-                                    <sup className="text-sm text-green-500">(-{voucher.discountValue || 0}%)</sup>
-                                )}
+                                    {config.webConfig.getCurrency(data.totalAmount || 0)}{' '}
+                                    {voucher && (
+                                        <sup className="text-sm text-green-500">(-{voucher.discountValue || 0}%)</sup>
+                                    )}
                                 </p>
                                 <Divider className="my-2" />
                                 {reviewed ? (
@@ -258,9 +257,9 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 )}
                             </div>
 
-                            <div
-                                className={`text-right ${data.status === 'PAID' || data.status === 'COMPLETED' || data.status === 'ON_GOING' || data.status === 'EXPIRED' ? 'text-yellow-500' : data.status === 'PENDING' ? 'text-green-600' : 'text-red-600'}`}>
-                                <p className="text-sm font-semibold"> Trạng thái: {' '}
+                            <div className={`text-right ${statusColors[data.status] || 'text-gray-600'}`}>
+                                <p className="text-sm font-semibold">
+                                    Trạng thái:{' '}
                                     {data.status === 'PAID' ? 'Thành công' :
                                         data.status === 'PENDING' ? 'Đang chờ thanh toán' :
                                             data.status === 'FAILED' ? 'Thất bại' :
@@ -279,7 +278,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                                 className="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full shadow-sm">
                                                 <FaTags className="text-green-500" />
                                                 <span className="text-sm text-green-600 font-semibold">
-                                                  Voucher: {voucher.codeVoucher || 'N/A'} (-{voucher.discountValue || 0}%)
+                                                    Voucher: {voucher.codeVoucher || 'N/A'} (-{voucher.discountValue || 0}%)
                                                 </span>
                                             </div>
                                         )}
@@ -342,7 +341,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             >
                 <div className="flex flex-col gap-6">
                     <div className="flex items-start gap-6">
-                        {/* Tour Image */}
                         <div className="flex-shrink-0">
                             <Image
                                 src={config.imageConfig.getImage(tour.thumbnail) || config.webConfig.defaultTour}
@@ -352,7 +350,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 className="rounded-lg object-cover shadow-md"
                             />
                         </div>
-
                         <div className="flex-1 flex flex-col justify-center">
                             <h2
                                 onClick={() => navigate(config.routes.tourDetail + tour.id)}
@@ -365,8 +362,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             </p>
                         </div>
                     </div>
-
-                    {/* Booking Details */}
                     <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
                         <div>
                             <p className="text-sm text-gray-500">Số lượng người lớn</p>
@@ -397,18 +392,17 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                     </div>
                 </div>
             </Modal>
-            {/*DANH GIA MODAL*/}
+
             <Modal
                 title={<span className="text-2xl font-bold text-gray-800">Đánh giá của bạn</span>}
                 open={showReview}
                 onCancel={() => setShowReview(false)}
                 footer={null}
                 width={700}
-                bodyStyle={{ padding: '24px', background: '#f9fafb' }} // Đồng bộ với modal đánh giá
+                bodyStyle={{ padding: '24px', background: '#f9fafb' }}
                 className="rounded-lg shadow-xl"
             >
                 <div className="flex flex-col gap-6">
-                    {/* User Info and Overall Rating */}
                     <div className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                         <Avatar
                             size={64}
@@ -430,15 +424,11 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             </Text>
                         </div>
                     </div>
-
-                    {/* Comment */}
                     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
                         <Text className="text-base text-gray-700">
                             {data.review?.comment || 'Chưa có nhận xét'}
                         </Text>
                     </div>
-
-                    {/* Categorized Ratings */}
                     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                         <Title level={4} className="text-gray-800 mb-4 font-semibold">Chi tiết đánh giá</Title>
                         <div className="grid grid-cols-2 gap-4">
@@ -452,7 +442,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 <div key={key} className="flex items-center gap-2">
                                     <Text className="text-gray-600 w-32 font-medium">{label}</Text>
                                     <Progress
-                                        percent={(data.review?.[key] || 0) * 20} // Convert 5-star to percentage
+                                        percent={(data.review?.[key] || 0) * 20}
                                         size="small"
                                         strokeColor="#1890ff"
                                         showInfo={false}
@@ -465,8 +455,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             ))}
                         </div>
                     </div>
-
-                    {/* Action Buttons */}
                     <div className="flex justify-end gap-3">
                         <Button
                             type="primary"
@@ -479,14 +467,13 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                 </div>
             </Modal>
 
-            {/*    Danh gia*/}
             <Modal
                 title={<span className="text-2xl font-bold text-gray-800">Đánh giá Tour</span>}
                 open={isReviewModalOpen}
                 onCancel={handleReviewCancel}
                 footer={null}
                 width={1200}
-                bodyStyle={{ padding: '24px', background: '#f9fafb' }} // Nền nhẹ nhàng
+                bodyStyle={{ padding: '24px', background: '#f9fafb' }}
                 className="rounded-lg shadow-xl"
             >
                 <Form
@@ -504,7 +491,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                     }}
                 >
                     <div className="flex flex-col gap-6">
-                        {/* User Info */}
                         <div
                             className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                             <Avatar
@@ -522,8 +508,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 </Text>
                             </div>
                         </div>
-
-                        {/* Overall Rating and Comment */}
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center gap-4 mb-4">
                                 <Form.Item
@@ -560,13 +544,11 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 />
                             </Form.Item>
                         </div>
-
-                        {/* Detailed Ratings */}
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <Title level={4} className="text-gray-800 mb-4 font-semibold">
                                 Chi tiết đánh giá
                             </Title>
-                            <div className="grid grid-cols-3 gap-4 ">
+                            <div className="grid grid-cols-3 gap-4">
                                 {[
                                     { name: 'price', label: 'Giá cả' },
                                     { name: 'transportation', label: 'Phương tiện' },
@@ -589,8 +571,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 ))}
                             </div>
                         </div>
-
-                        {/* Action Buttons */}
                         <div className="flex justify-end gap-3 mt-4">
                             <Button
                                 type="default"
@@ -612,25 +592,23 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                     </div>
                 </Form>
             </Modal>
+
             <Modal
                 open={visible}
-                onCancel={handleCancel}
+                onCancel={() => setVisible(!visible)}
                 footer={null}
-                width={600} // Slightly reduced width for better focus
+                width={600}
                 className="rounded-xl overflow-hidden shadow-2xl"
                 closeIcon={<span className="text-gray-500 text-xl hover:text-gray-700">×</span>}
-                centered // Center the modal on screen
+                centered
             >
                 <div className="p-8 bg-white">
-                    {/* Header with Icon and Title */}
                     <div className="flex items-center justify-center mb-6">
                         <ExclamationCircleOutlined style={{ fontSize: '32px', color: '#faad14' }} />
                         <Title level={3} className="ml-3 mb-0 uppercase text-red-800">
                             Xác nhận yêu cầu hoàn tiền
                         </Title>
                     </div>
-
-                    {/* Description */}
                     <Text className="block text-center text-gray-600 text-lg mb-8">
                         Bạn có chắc chắn muốn gửi yêu cầu hoàn tiền cho giao dịch này không?
                         Hành động này không thể hoàn tác.
@@ -640,7 +618,6 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                         <Input.TextArea className={'max-h-80'} rows={4} placeholder={'Nhập lý do hoàn tiền...'} />
                     </div>
                     <span className={'text-red-500 text-md mb-4'}>(* Quý khách sẽ được hoàn tiền 80% số tiền gốc)</span>
-                    {/* Buttons */}
                     <Space direction="horizontal" size="large" className="flex justify-center">
                         <Button
                             type="primary"
