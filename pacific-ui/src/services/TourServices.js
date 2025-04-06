@@ -63,5 +63,20 @@ const TourServices = {
             return Promise.reject(error);
         }
     },
+
+    updateTour: async (id, data) => {
+        try {
+            const response = await axiosConfig.put(config.api.tours + `/${id}`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                timeout: 60000,
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    }
 };
 export default TourServices;

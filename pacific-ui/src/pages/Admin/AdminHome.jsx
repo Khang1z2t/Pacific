@@ -5,8 +5,6 @@ import {
     DesktopOutlined,
     DollarCircleOutlined,
     FileOutlined,
-    HistoryOutlined,
-    LogoutOutlined,
     PaperClipOutlined,
     PieChartOutlined,
     TeamOutlined,
@@ -20,13 +18,9 @@ import Users from './Users';
 import Guide from './Guide';
 import TourList from '~/pages/Admin/sections/ToursPage/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
-import Transport from '~/pages/Admin/sections/Transport';
-import Hotel from '~/pages/Admin/sections/Hotel';
 import { Link } from 'react-router-dom';
 import BookingCancel from '~/pages/Admin/sections/BookingCancel';
 import BookingDone from '~/pages/Admin/sections/BookingDone';
-import Rating from '~/pages/Admin/Rating';
-import ConfirmRating from '~/pages/Admin/ConfirmRating';
 import InfoBlog from '~/pages/Admin/InfoBlog';
 import Blog from '~/pages/Admin/Blog';
 import Support from '~/pages/Admin/Support';
@@ -41,7 +35,7 @@ import { HotelPage } from '~/pages/Admin/sections/HotelPage/HotelPage';
 import { TransportationPage } from '~/pages/Admin/sections/TransportationPage/TransportationPage';
 import { ReviewPage } from '~/pages/Admin/sections/ReviewPage/ReviewPage';
 import { IoIosStar } from 'react-icons/io';
-
+import { DestinationPage } from '~/pages/Admin/sections/DestinationPage/DestinationPage';
 
 const { Content } = Layout;
 
@@ -114,6 +108,7 @@ const AdminHome = () => {
             children: [
                 { label: 'Khách sạn', key: '14', content: <HotelPage /> },
                 { label: 'Phương tiện', key: '15', content: <TransportationPage/> },
+                { label: 'Điểm đến', key: '16', content: <DestinationPage /> },
             ],
         },
         {
@@ -129,11 +124,11 @@ const AdminHome = () => {
             icon: <BlockOutlined />,
             children: [
 
-                { label: 'Danh sách Blogs', key: '17', content: <Blog /> },
-                { label: 'Tông tin chi tiết Blogs', key: '18', content: <InfoBlog /> },
+                { label: 'Danh sách Blogs', key: '18', content: <Blog /> },
+                { label: 'Tông tin chi tiết Blogs', key: '19', content: <InfoBlog /> },
             ],
         },
-        { label: 'Hỗ trợ', key: '19', icon: <CommentOutlined />, content: <Support /> },
+        { label: 'Hỗ trợ', key: '20', icon: <CommentOutlined />, content: <Support /> },
 
     ];
     const [selectedContent, setSelectedContent] = useState(menuItems[0].content);

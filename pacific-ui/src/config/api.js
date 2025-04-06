@@ -8,6 +8,7 @@ const api = {
     category: '/api/categories',
     bookingRevenue: '/api/report',
     guide: '/api/guide',
+    destinations: '/api/destinations',
     hotel: '/api/hotels',
     wishlist: '/api/wishlist',
     transport: '/api/transports',

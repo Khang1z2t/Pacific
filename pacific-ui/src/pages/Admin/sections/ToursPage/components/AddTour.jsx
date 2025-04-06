@@ -1,9 +1,9 @@
-import { Divider, Image, Input, InputNumber, message, Modal, Select, Upload } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Divider, Image, Form, Input, InputNumber, message, Modal, Select, Upload, Button, Space } from 'antd';
+import React, { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import AdminServices from '~/services/AdminServices';
 import TourServices from '~/services/TourServices';
-import CategoryServices from '~/services/CategoryServices';
+
+const { TextArea } = Input;
 
 const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -13,36 +13,15 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-export const AddTour = ({modalVisible, setModalVisible, setLoading}) => {
-    // MODAL & IMAGES UPLOAD
+export const AddTour = ({ modalVisible, setModalVisible, category, destination, setLoading }) => {
+    const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const [images, setImages] = useState([]);
     const [thumbnail, setThumbnail] = useState([]);
-    // TOUR MODULES
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [duration, setDuration] = useState('');
-    const [destination, setDestination] = useState('');
-    const [guides, setGuides] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [selectedGuide, setSelectedGuide] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
-    // HANDLE PREVIEW
-    useEffect(() => {
-        AdminServices.getGuides().then((res) => {
-            setGuides(res.data);
-        }).catch((err) => {
-            console.log(err);
-        });
-    }, []);
-    useEffect(() => {
-        CategoryServices.getCategories().then((res) => {
-            setCategories(res);
-        }).catch((err) => {
-            console.log(err);
-        });
-    }, []);
+    const [images, setImages] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
+
+    // Xử lý preview ảnh
     const handlePreview = async (file) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
@@ -50,176 +29,193 @@ export const AddTour = ({modalVisible, setModalVisible, setLoading}) => {
         setPreviewImage(file.url || file.preview);
         setPreviewOpen(true);
     };
-    const handleChange = ({fileList: newFileList}) => setImages(newFileList);
-    const handleChangeThumbnail = ({fileList: newThumbnail}) => setThumbnail(newThumbnail);
-    // Render
+
+    // Xử lý thay đổi file upload
+    const handleChangeThumbnail = ({ fileList }) => setThumbnail(fileList);
+    const handleChangeImages = ({ fileList }) => setImages(fileList);
+
+    // Nút upload
     const uploadButton = (
-        <button
-            style={{
-                border: 0,
-                background: 'none',
-            }}
-            type="button"
-        >
-            <PlusOutlined/>
-            <div
-                style={{
-                    marginTop: 8,
-                }}
-            >
-                Upload
-            </div>
+        <button style={{ border: 0, background: 'none' }} type="button">
+            <PlusOutlined />
+            <div style={{ marginTop: 8 }}>Upload</div>
         </button>
     );
-    //
+
+    // Xử lý submit form
     const handleAdd = async () => {
-        const formData = new FormData();
-
-        // Thêm dữ liệu tour
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('duration', duration);
-        formData.append('destination', destination);
-        formData.append('selectedGuide', selectedGuide);
-        formData.append('selectedCategory', selectedCategory);
-
-        // Thêm thumbnail (1 ảnh)
-        if (thumbnail.length > 0) {
-            formData.append('thumbnail', thumbnail[0].originFileObj);
-        }
-
-        // Thêm danh sách images (nhiều ảnh)
-        images.forEach((file, index) => {
-            formData.append(`images`, file.originFileObj);
-        });
-
-        console.log([...formData]); // Debug xem dữ liệu gửi đi có đúng không
-
         try {
+            // Validate form trước khi submit
+            const values = await form.validateFields();
+            setSubmitting(true);
+
+            const formData = new FormData();
+            formData.append('title', values.title);
+            formData.append('description', values.description);
+            formData.append('duration', values.duration);
+            formData.append('destinationId', values.destinationId);
+            formData.append('categoryId', values.categoryId);
+
+            if (thumbnail.length > 0) {
+                formData.append('thumbnail', thumbnail[0].originFileObj);
+            } else {
+                message.error('Vui lòng chọn ảnh thumbnail!');
+                setSubmitting(false);
+                return;
+            }
+
+            images.forEach((file) => {
+                formData.append('images', file.originFileObj);
+            });
+
             await TourServices.AddTour(formData);
             message.success('Thêm tour thành công', 1);
-            setLoading();
+            setLoading(); // Trigger refresh danh sách tour
+            form.resetFields();
+            setThumbnail([]);
+            setImages([]);
+            setModalVisible(false);
         } catch (err) {
-            message.error('Thêm tour thất bại: ' + err, 1);
+            message.error('Thêm tour thất bại: ' + (err.message || 'Có lỗi xảy ra'), 1);
             console.log(err);
+        } finally {
+            setSubmitting(false);
         }
+    };
+
+    // Xử lý hủy
+    const handleCancel = () => {
+        form.resetFields();
+        setThumbnail([]);
+        setImages([]);
         setModalVisible(false);
     };
 
-
-    //
     return (
-        <Modal title={'Thêm tour'}
-               OkText={'Lưu'}
-               width={800}
-               CancelText={'Đóng'}
-               onOk={handleAdd}
-               open={modalVisible}
-               onCancel={() => setModalVisible(false)}
+        <Modal
+            title="Thêm tour"
+            width={800}
+            open={modalVisible}
+            onCancel={handleCancel}
+            footer={null} // Loại bỏ footer mặc định
         >
-            <div className={'p-4 space-y-2 w-full'}>
-                <div className={'flex flex-col gap-2'}>
-                    <label className={'font-semibold text-gray-500'}>Ảnh tour thumbnail</label>
-                    <Upload
-                        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                        listType="picture-card"
-                        fileList={thumbnail}
-                        onPreview={handlePreview}
-                        onChange={handleChangeThumbnail}
-                    >
-                        {thumbnail.length >= 1 ? null : uploadButton}
-                    </Upload>
-                    {previewImage && (
-                        <Image
-                            wrapperStyle={{
-                                display: 'none',
-                            }}
-                            preview={{
-                                visible: previewOpen,
-                                onVisibleChange: (visible) => setPreviewOpen(visible),
-                                afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                            }}
-                            src={previewImage}
-                        />
-                    )}
-                </div>
-                <div className={'flex flex-col gap-2'}>
-                    <label className={'font-semibold text-gray-500'}>Ảnh phụ <span className={'text-red-500'}>(Số lượng không lớn hơn 8)</span></label>
-                    <Upload
-                        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                        listType="picture-card"
-                        fileList={images}
-                        onPreview={handlePreview}
-                        onChange={handleChange}
-                    >
-                        {images.length >= 8 ? null : uploadButton}
-                    </Upload>
-                    {previewImage && (
-                        <Image
-                            wrapperStyle={{
-                                display: 'none',
-                            }}
-                            preview={{
-                                visible: previewOpen,
-                                onVisibleChange: (visible) => setPreviewOpen(visible),
-                                afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                            }}
-                            src={previewImage}
-                        />
-                    )}
-                </div>
-                <Divider/>
-                <div className={'p-2'}>
-                    <div className={'grid grid-cols-2 gap-4'}>
-                        <div className={'flex flex-col gap-2'}>
-                            <label className={'font-semibold text-black uppercase'}>Tên tour</label>
-                            <Input placeholder={'Tên tour'}
-                                   allowClear
-                                   onChange={(e) => setTitle(e.target.value)}
+            <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleAdd} // Gọi handleAdd khi submit form
+            >
+                <div className="p-4 space-y-2 w-full">
+                    <Form.Item label="Ảnh tour thumbnail" required>
+                        <Upload
+                            listType="picture-card"
+                            fileList={thumbnail}
+                            onPreview={handlePreview}
+                            onChange={handleChangeThumbnail}
+                            beforeUpload={() => false}
+                        >
+                            {thumbnail.length >= 1 ? null : uploadButton}
+                        </Upload>
+                        {thumbnail.length === 0 && (
+                            <div className="text-red-500">Vui lòng chọn ảnh thumbnail</div>
+                        )}
+                    </Form.Item>
+
+                    <Form.Item label="Ảnh phụ (Tối đa 8 ảnh)">
+                        <Upload
+                            listType="picture-card"
+                            fileList={images}
+                            onPreview={handlePreview}
+                            onChange={handleChangeImages}
+                            beforeUpload={() => false}
+                        >
+                            {images.length >= 8 ? null : uploadButton}
+                        </Upload>
+                    </Form.Item>
+
+                    <Divider />
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <Form.Item
+                            name="title"
+                            label="Tên tour"
+                            rules={[{ required: true, message: 'Vui lòng nhập tên tour!' }]}
+                        >
+                            <Input placeholder="Tên tour" allowClear />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="description"
+                            label="Mô tả tour"
+                            rules={[{ required: true, message: 'Vui lòng nhập mô tả tour!' }]}
+                        >
+                            <TextArea className="max-h-24" allowClear placeholder="Mô tả tour" />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="duration"
+                            label="Thời gian"
+                            rules={[
+                                { required: true, message: 'Vui lòng nhập thời gian!' },
+                                { type: 'number', min: 1, message: 'Thời gian phải lớn hơn 0!' },
+                            ]}
+                        >
+                            <InputNumber className="w-full" placeholder="Thời gian" />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="destinationId"
+                            label="Điểm đến"
+                            rules={[{ required: true, message: 'Vui lòng chọn điểm đến!' }]}
+                        >
+                            <Select
+                                showSearch
+                                options={destination}
+                                fieldNames={{ value: 'id', label: 'country' }}
+                                placeholder="Chọn điểm đến"
                             />
-                        </div>
-                        <div className={'flex flex-col gap-2'}>
-                            <label className={'font-semibold text-black uppercase'}>Mô tả tour</label>
-                            <Input.TextArea rootClassName={'max-h-24'}
-                                            allowClear
-                                            onChange={(e) => setDescription(e.target.value)}
-                                            placeholder={'Mô tả tour'}/>
-                        </div>
-                        <div className={'flex flex-col gap-2'}>
-                            <label className={'font-semibold text-black uppercase'}>Thời gian</label>
-                            <InputNumber
-                                className={'w-full'}
-                                onChange={(e) => setDuration(e)}
-                                min={0}
-                                placeholder={'Thời gian'}/>
-                        </div>
-                        <div className={'flex flex-col gap-2'}>
-                            <label className={'font-semibold text-black uppercase'}>Điểm đến</label>
-                            <Input
-                                onChange={(e) => setDestination(e.target.value)}
-                                placeholder={'Điểm đến destination'}/>
-                        </div>
-                        <div className={'flex flex-col gap-2'}>
-                            <label className={'font-semibold text-black uppercase'}>Hướng dẫn viên</label>
+                        </Form.Item>
+
+                        <Form.Item
+                            name="categoryId"
+                            label="Loại tour"
+                            rules={[{ required: true, message: 'Vui lòng chọn loại tour!' }]}
+                        >
                             <Select
                                 showSearch
-                                options={guides}
-                                fieldNames={{value: 'id', label: 'firstname + lastname'}}
-                                onChange={(e) => setSelectedGuide(e)}
-                                placeholder={'Chọn hướng dẫn viên'}/>
-                        </div>
-                        <div className={'flex flex-col gap-2'}>
-                            <label className={'font-semibold text-black uppercase'}>Loại tour</label>
-                            <Select
-                                showSearch
-                                options={categories}
-                                fieldNames={{value: 'id', label: 'title'}}
-                                onChange={(e) => setCategories(e)}
-                                placeholder={'Chọn loại tour'}/>
-                        </div>
+                                options={category}
+                                fieldNames={{ value: 'id', label: 'title' }}
+                                placeholder="Chọn loại tour"
+                            />
+                        </Form.Item>
+                    </div>
+
+                    {/* Nút Add và Hủy */}
+                    <div className="flex justify-end gap-2">
+                        <Button onClick={handleCancel} disabled={submitting}>
+                            Hủy
+                        </Button>
+                        <Button
+                            type="primary"
+                            onClick={() => form.submit()} // Gọi submit form
+                            loading={submitting}
+                        >
+                            Thêm
+                        </Button>
                     </div>
                 </div>
-            </div>
+            </Form>
+
+            {previewImage && (
+                <Image
+                    wrapperStyle={{ display: 'none' }}
+                    preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                        afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                    }}
+                    src={previewImage}
+                />
+            )}
         </Modal>
     );
 };
