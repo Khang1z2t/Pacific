@@ -72,7 +72,11 @@ const UserServices = {
 
     getAllUsers : async () => {
         try{
-            const response = await axiosConfig.get(config.api.adminUser + '/all');
+            const token = localStorage.getItem('accessToken');
+            const response = await axiosConfig.get(config.api.user + '/all', {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                }});
             return response.data;
         }catch (error){
             console.error('Error:', error);
@@ -83,7 +87,7 @@ const UserServices = {
 
     updateUser: async (id, userData) => {
         try {
-            const response = await axiosConfig.put(config.api.adminUser + `/update/${id}`, userData);
+            const response = await axiosConfig.put(config.api.user + `/update/${id}`, userData);
             return response.data;
         } catch (error) {
             console.error('Lỗi khi cập nhật user:', error);
@@ -95,13 +99,33 @@ const UserServices = {
     // Cập nhật trạng thái (active/inactive)
     updateUserStatus: async (id, status) => {
         try {
-            const response = await axiosConfig.patch(config.api.adminUser + `/updateStatus/${id}`, { status });
+            const response = await axiosConfig.patch(config.api.user + `/updateStatus/${id}`, { status });
             return response.data;
         } catch (error) {
             console.error('Error updating user status:', error);
             return Promise.reject(error);
         }
     },
+
+    getCountUsers: async () => {
+        try{
+            const response = await axiosConfig.get(config.api.user + '/count/users');
+            return response.data;
+        }catch (err){
+            console.error('Error:', err);
+            return Promise.reject(err);
+        }
+    },
+
+    getTopBookedUsers: async (limit) => {
+        try {
+            const response = await axiosConfig.get(config.api.user + `/top-booked-users?limit=${limit}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    }
 }
 
 export default UserServices;

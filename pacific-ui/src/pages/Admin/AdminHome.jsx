@@ -39,6 +39,7 @@ import { DestinationPage } from '~/pages/Admin/sections/DestinationPage/Destinat
 import { MdTour } from 'react-icons/md';
 import { TbMessage2Dollar } from 'react-icons/tb';
 import { GuidePage } from '~/pages/Admin/sections/GuidePage/GuidePage';
+import { UserPage } from '~/pages/Admin/sections/UsersPage/UserPage';
 
 const { Content } = Layout;
 
@@ -74,7 +75,7 @@ const AdminHome = () => {
             key: 'sub2',
             icon: <TeamOutlined />,
             children: [
-                { label: <Tooltip placement={'right'} title={"Danh sách tài khoản"}>Danh sách tài khoản</Tooltip>, key: '5', content: <Users /> },
+                { label: <Tooltip placement={'right'} title={"Danh sách tài khoản"}>Danh sách tài khoản</Tooltip>, key: '5', content: <UserPage/> },
                 { label: 'Hướng dẫn viên', key: '6', content: <GuidePage/> },
             ],
         },

@@ -166,6 +166,10 @@ export const BookingInfo1 = ({ data }) => {
         const basePrice = adults * data.priceAdults + children * data.priceChildren + (hotel.cost || 0) + (transport.cost || 0);
         const finalPrice = voucherValid ? basePrice * (1 - discount / 100) : basePrice;
         const body = {
+            bookerFullName: fullName || '',
+            bookerEmail: email || '',
+            bookerPhoneNumber: phone || '',
+            bookerAddress: address || '',
             paymentMethod: 'VNPAY',
             specialRequests: note || 'NO',
             totalAmount: finalPrice,
