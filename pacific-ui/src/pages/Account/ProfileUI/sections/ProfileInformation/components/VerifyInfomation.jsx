@@ -48,23 +48,8 @@ export const VerifyInformation = ({ data, onUserUpdate }) => {
     }, [emailOtpCooldown]);
     // Giả lập API xác minh OTP
     const verifyOtp = async (type, otp) => {
-        // const { email, phone } = userData;
-        console.log(data.email);
-        console.log(otp);
-        try {
-            // Giả lập API lấy lại thông tin user
-            // const updatedUser = {
-            //     ...userData,
-            //     ...(type === 'email' ? { emailVerified: true } : { phoneVerified: true }),
-            // };
-            //
-            // // Cập nhật userData
-            // setUserData(updatedUser);
-            // // Gọi callback để cập nhật currentUser ở component cha (nếu cần)
-            // if (onUserUpdate) {
-            //     onUserUpdate(updatedUser);
-            // }
 
+        try {
             // Reset trạng thái OTP
             if (type === 'email') {
                 await AuthServices.verifyEmail({
