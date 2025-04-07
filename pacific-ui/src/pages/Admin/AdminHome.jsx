@@ -14,8 +14,6 @@ import { AdminSidebar } from '~/pages/Admin/components/AdminHome/AdminSidebar';
 import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';
 import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
-import Users from './Users';
-import Guide from './Guide';
 import TourList from '~/pages/Admin/sections/ToursPage/TourList';
 import Booking from '~/pages/Admin/sections/Booking';
 import { Link } from 'react-router-dom';
