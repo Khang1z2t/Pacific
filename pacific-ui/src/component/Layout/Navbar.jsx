@@ -136,21 +136,18 @@ export const Navbar = () => {
 
 
     useEffect(() => {
-        // Kiểm tra và hiển thị thông báo voucher chỉ một lần
         const checkAndShowVoucherNotification = () => {
-            const todayKey = `voucher_notified_${new Date().toDateString()}`; // Tạo key duy nhất cho mỗi ngày
+            const todayKey = `voucher_notified_${new Date().toDateString()}`;
             const hasShownToday = localStorage.getItem(todayKey);
 
             if (!hasShownToday && activeVouchers.length > 0) {
-                activeVouchers.forEach((voucher) => {
-                    message.info('Pacific có quà tặng bạn, hãy kiểm tra thông báo nhé!', 1);
-                });
-                localStorage.setItem(todayKey, 'true'); // Đánh dấu là đã hiển thị cho ngày hôm nay
+                message.info('Pacific có quà tặng bạn, hãy kiểm tra thông báo nhé!', 1);
+                localStorage.setItem(todayKey, 'true');
             }
         };
 
         checkAndShowVoucherNotification();
-    }, [vouchers]); // Chỉ chạy lại khi vouchers thay đổi
+    }, [vouchers, activeVouchers]);
 
 // Khởi tạo trạng thái viewedVouchers
     const [viewedVouchers, setViewedVouchers] = useState(() => {

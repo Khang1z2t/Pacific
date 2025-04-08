@@ -6,6 +6,7 @@ import { OtherToursList } from '~/pages/TourLists/TourDetail/sections/OtherTours
 import { Loading } from '~/component/ui/Loading';
 import TourServices from '~/services/TourServices';
 import config from '~/config';
+import { ItinerarySection } from '~/pages/TourLists/TourDetail/sections/ItinerarySection/ItinerarySection';
 
 export const TourDetail = () => {
     const [loading, setLoading] = useState(true);
@@ -34,6 +35,7 @@ export const TourDetail = () => {
             <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.title}</h1>
             {/*<DetailSection {...tour}/>*/}
             <CalendarSection data={tour}/>
+            <ItinerarySection/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Tour khác liên quan</p></Divider>
             <OtherToursList/>
         </div>
