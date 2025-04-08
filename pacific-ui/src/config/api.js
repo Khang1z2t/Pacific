@@ -23,6 +23,7 @@ const api = {
     translator: '/api/translator',
     rating: '/api/rating',
     imageAPI: '/api/image/',
+    itinerary: '/api/itinerary',
 };
 
 export default api;

@@ -29,6 +29,7 @@ import { MdTour } from 'react-icons/md';
 import { TbMessage2Dollar } from 'react-icons/tb';
 import { GuidePage } from '~/pages/Admin/sections/GuidePage/GuidePage';
 import { UserPage } from '~/pages/Admin/sections/UsersPage/UserPage';
+import { ItineraryPage } from '~/pages/Admin/sections/ItineraryPage/ItineraryPage';
 
 const { Content } = Layout;
 
@@ -75,7 +76,7 @@ const AdminHome = () => {
             children: [
                 { label: <Tooltip placement={'right'} title={"Danh sách danh mục con"}>Danh sách danh mục con</Tooltip>, key: '7', content: <CategoryPage /> },
                 { label: 'Danh sách tour', key: '8', content: <TourList /> },
-                { label: <Tooltip placement={'right'} title={"Giao diện Lịch trình"}>Giao diện Lịch trình</Tooltip>, key: '9', content: 'Bill is a cat.' },
+                { label: <Tooltip placement={'right'} title={"Giao diện Lịch trình"}>Giao diện Lịch trình</Tooltip>, key: '9', content: <ItineraryPage/> },
             ],
         },
         {
