@@ -1,18 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import {
-    Button,
-    Divider,
-    Image,
-    Input,
-    message,
-    Modal,
-    Rate,
-    Space,
-    Switch,
-    Table,
-    Tooltip,
-    Typography,
-} from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, Divider, Image, Input, message, Modal, Rate, Space, Switch, Table, Tooltip, Typography } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import TourServices from '~/services/TourServices';
 import config from '~/config';

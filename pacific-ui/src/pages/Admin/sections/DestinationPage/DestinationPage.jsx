@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Modal, Form, Input, Select, message, Space } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Form, Input, message, Modal, Select, Space, Table } from 'antd';
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import DestinationServices from '~/services/DestinationServices';
 import { RefreshCwIcon } from 'lucide-react';
 

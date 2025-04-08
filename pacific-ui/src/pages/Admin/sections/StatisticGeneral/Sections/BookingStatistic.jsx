@@ -1,16 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import {
-    PieChart,
-    Pie,
-    Cell,
-    Tooltip,
-    Legend,
-    CartesianGrid,
-    XAxis,
-    YAxis, BarChart, Bar,
-} from 'recharts';
-import { Card, Row, Col, Statistic, Button, Tabs, Badge, Select, Empty, DatePicker, Input, InputNumber } from 'antd';
-import { ArrowUpOutlined, ArrowDownOutlined, CalendarOutlined, UserOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, Tooltip, XAxis, YAxis } from 'recharts';
+import { Badge, Button, Card, Col, DatePicker, Empty, InputNumber, Row, Select, Statistic, Tabs } from 'antd';
+import { ArrowDownOutlined, ArrowUpOutlined, CalendarOutlined, UserOutlined } from '@ant-design/icons';
 import AdminServices from '~/services/AdminServices';
 import moment from 'moment';
 

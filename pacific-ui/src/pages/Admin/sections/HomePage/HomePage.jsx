@@ -4,7 +4,6 @@ import { StatisticSection } from '~/pages/Admin/sections/HomePage/Sections/Stati
 import { StatisticTourSection } from '~/pages/Admin/sections/HomePage/Sections/StatisticTourSection';
 import { useEffect, useState } from 'react';
 import AdminServices from '~/services/AdminServices';
-import config from '~/config';
 
 export const HomePage = () => {
     const [data, setData] = useState([]);

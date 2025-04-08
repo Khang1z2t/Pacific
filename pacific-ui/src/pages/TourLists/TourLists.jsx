@@ -9,7 +9,7 @@ import { useAuth } from '~/config/AuthContext';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination as SwiperPagination, Autoplay, EffectFade } from 'swiper/modules';
+import { Autoplay, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';

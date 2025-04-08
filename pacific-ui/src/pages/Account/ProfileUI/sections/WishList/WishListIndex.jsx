@@ -1,7 +1,7 @@
 import { WishlistCard } from '~/pages/Account/ProfileUI/sections/WishList/components/WishlistCard';
 import { useEffect, useMemo, useState } from 'react';
 import TourServices from '~/services/TourServices';
-import { Empty, Skeleton, Pagination } from 'antd'; // Thêm Pagination từ Ant Design
+import { Empty, Pagination, Skeleton } from 'antd'; // Thêm Pagination từ Ant Design
 import { useAuth } from '~/config/AuthContext';
 
 export const WishListIndex = () => {

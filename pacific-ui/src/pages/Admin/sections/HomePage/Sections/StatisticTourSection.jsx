@@ -4,7 +4,6 @@ import config from '~/config';
 import { PlusOutlined } from '@ant-design/icons';
 import AdminServices from '~/services/AdminServices';
 import TourServices from '~/services/TourServices';
-import moment from 'moment';
 
 export const StatisticTourSection = () => {
     const [open, setOpen] = useState(false);

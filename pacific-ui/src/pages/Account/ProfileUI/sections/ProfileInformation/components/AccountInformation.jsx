@@ -1,11 +1,13 @@
-import { Input, message, Select, Upload, Form, Image, Radio, DatePicker } from 'antd';
-import { useState, useEffect } from 'react';
+import { DatePicker, Form, Input, message, Radio, Select, Spin, Upload, Modal } from 'antd';
+import { useEffect, useState } from 'react';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import config from '~/config';
 import WebServices from '~/services/WebServices';
 import moment from 'moment';
+import UserServices from '~/services/UserServices';
 
 const { Option } = Select;
+const { confirm } = Modal;
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -17,29 +19,30 @@ const beforeUpload = (file) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
         message.error('Bạn chỉ có thể tải lên file JPG/PNG!');
+        return false; // Sửa lại để ngăn upload file không hợp lệ
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
         message.error('Ảnh phải nhỏ hơn 2MB!');
+        return false;
     }
-    return isJpgOrPng && isLt2M;
+    return true;
 };
 
-export const AccountInformation = ({ data, switchTab }) => {
+export const AccountInformation = ({ data, onUserUpdate, switchTab, setParentLoading }) => {
     const [form] = Form.useForm();
-    const [avatar, setAvatar] = useState(data?.avatarUrl || null);
-    const [uploadedImage, setUploadedImage] = useState(null);
+    const [avatar, setAvatar] = useState(data?.avatar || null);
     const [loading, setLoading] = useState(false);
     const [formChanged, setFormChanged] = useState(false);
+    const [fileList, setFileList] = useState([]);
+    const [imageLoading, setImageLoading] = useState(false);
 
-    // State cho danh sách tỉnh, quận, phường
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
     const [selectedProvince, setSelectedProvince] = useState(null);
     const [selectedDistrict, setSelectedDistrict] = useState(null);
 
-    // Gọi API để lấy danh sách tỉnh/thành phố
     useEffect(() => {
         const fetchProvinces = async () => {
             try {
@@ -53,7 +56,6 @@ export const AccountInformation = ({ data, switchTab }) => {
         fetchProvinces();
     }, []);
 
-    // Điền dữ liệu ban đầu từ prop data
     useEffect(() => {
         form.setFieldsValue({
             username: data?.username || '',
@@ -67,17 +69,18 @@ export const AccountInformation = ({ data, switchTab }) => {
             ward: data?.address ? data.address.split(', ')[2] : '',
             address: data?.address ? data.address.split(', ').slice(0, 2).join(', ') : '',
         });
-        if (data?.avatarUrl) {
-            setAvatar(data.avatarUrl);
+        if (data?.avatar) {
+            setAvatar(data.avatar);
+            setFileList([{ uid: '-1', url: data.avatar, status: 'done' }]);
+        } else {
+            setFileList([]);
         }
     }, [data, form]);
 
-    // Theo dõi thay đổi của form
     const handleValuesChange = () => {
         setFormChanged(true);
     };
 
-    // Xử lý khi người dùng rời khỏi trang mà chưa lưu
     useEffect(() => {
         const handleBeforeUnload = (e) => {
             if (formChanged) {
@@ -85,84 +88,126 @@ export const AccountInformation = ({ data, switchTab }) => {
                 e.returnValue = 'Bạn có thay đổi chưa lưu, bạn có chắc muốn rời khỏi trang?';
             }
         };
-
         window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [formChanged]);
 
-    // Xử lý upload avatar
-    const handleChange = (info) => {
-        if (info.file.status === 'uploading') {
-            setLoading(true);
-            return;
-        }
-        if (info.file.status === 'done') {
-            if (info.file.originFileObj) {
-                getBase64(info.file.originFileObj, (url) => {
-                    setLoading(false);
-                    setAvatar(url);
-                    setUploadedImage(info.file.originFileObj);
-                    setFormChanged(true);
-                });
-            } else {
-                setLoading(false);
-                message.error('Không thể lấy dữ liệu file.');
-            }
+    const handleChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+        setImageLoading(true); // Bật loading khi chọn file
+        if (newFileList.length > 0 && newFileList[0].originFileObj) {
+            getBase64(newFileList[0].originFileObj, (url) => {
+                setImageLoading(false); // Tắt loading sau khi có base64
+                setAvatar(url);
+                setFormChanged(true);
+            });
+        } else if (newFileList.length === 0) {
+            setAvatar(data?.avatar || null);
+            setImageLoading(false);
+            setFormChanged(true);
         }
     };
 
-    // Xử lý khi chọn tỉnh/thành phố
     const handleProvinceChange = (value) => {
         const selected = provinces.find((province) => province.name === value);
         setSelectedProvince(selected);
         setDistricts(selected?.districts || []);
-        setWards([]); // Reset danh sách phường
+        setWards([]);
         setSelectedDistrict(null);
-        form.setFieldsValue({ district: null, ward: null }); // Reset giá trị quận và phường
+        form.setFieldsValue({ district: null, ward: null });
     };
 
-    // Xử lý khi chọn quận/huyện
     const handleDistrictChange = (value) => {
         const selected = districts.find((district) => district.name === value);
         setSelectedDistrict(selected);
         setWards(selected?.wards || []);
-        form.setFieldsValue({ ward: null }); // Reset giá trị phường
+        form.setFieldsValue({ ward: null });
     };
 
-    // Xử lý lưu thay đổi
-    const handleSave = async () => {
+    const handleSave = async (values) => {
         try {
-            const values = await form.validateFields();
+            setLoading(true);
+            setParentLoading(true);
             const formData = new FormData();
-            if (uploadedImage) {
-                formData.append('avatar', uploadedImage);
-            }
-            formData.append('username', values.username);
-            formData.append('fullName', values.fullName);
-            formData.append('gender', values.gender);
-            formData.append('birthday', values.birthday ? values.birthday.format('YYYY-MM-DD') : null);
-            formData.append('email', values.email);
-            formData.append('phone', values.phone);
-            formData.append('address', values.address, values.city && values.district && values.ward
-                ? `${values.address}, ${values.ward}, ${values.district}, ${values.city}` : `${values.address}`);
 
-            // Gọi API thực tế ở đây
-            // await YourApiService.updateProfile(formData);
-            // log address
-            console.log('Address:', values.city, values.district, values.ward);
+            if (fileList.length > 0 && fileList[0].originFileObj) {
+                formData.append('avatar', fileList[0].originFileObj);
+            }
+
+            const fullName = values.fullName || '';
+            const nameParts = fullName.trim().split(' ');
+            const firstName = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : '';
+            const lastName = nameParts.length > 0 ? nameParts[nameParts.length - 1] : '';
+
+            const fullAddress = values.city && values.district && values.ward
+                ? `${values.address}, ${values.ward}, ${values.district}, ${values.city}`
+                : values.address || '';
+
+            formData.append('username', values.username);
+            formData.append('firstName', firstName);
+            formData.append('lastName', lastName);
+            formData.append('email', values.email);
+            formData.append('phone', values.phone || '');
+            formData.append('address', fullAddress);
+            formData.append('gender', values.gender);
+            formData.append('birthday', values.birthday ? values.birthday.format('YYYY-MM-DD') : '');
+
+            const response = await UserServices.updateUser(formData);
+
+            const updatedUser = {
+                ...data,
+                username: values.username,
+                firstName: firstName,
+                lastName: lastName,
+                email: values.email,
+                phone: values.phone || '',
+                address: fullAddress,
+                gender: values.gender,
+                birthDay: values.birthday ? values.birthday.format('YYYY-MM-DD') : '',
+                avatar: response.avatar || avatar,
+            };
+
+            onUserUpdate(updatedUser);
             message.success('Lưu thay đổi thành công!', 1.5);
             setFormChanged(false);
+            switchTab('1');
         } catch (error) {
+            console.error('Error updating profile:', error);
             message.error('Lưu thay đổi thất bại!', 1.5);
+        } finally {
+            setLoading(false);
+            setParentLoading(false);
         }
+    };
+
+    const handleSubmit = () => {
+        form.validateFields().then((values) => {
+            // Kiểm tra nếu username thay đổi
+            if (values.username !== data?.username) {
+                confirm({
+                    centered: true,
+                    title: 'Xác nhận thay đổi username',
+                    content: 'Bạn sẽ chỉ có thể thay đổi username sau 7 ngày kể từ lần thay đổi này. Bạn có chắc chắn muốn tiếp tục?',
+                    okText: 'Xác nhận',
+                    cancelText: 'Hủy',
+                    onOk() {
+                        handleSave(values); // Gọi handleSave nếu xác nhận
+                    },
+                    onCancel() {
+                        message.info('Thay đổi username đã bị hủy.');
+                    },
+                });
+            } else {
+                handleSave(values); // Nếu không thay đổi username, lưu luôn
+            }
+        }).catch((error) => {
+            console.error('Validation failed:', error);
+        });
     };
 
     const uploadButton = (
         <div className="flex flex-col items-center justify-center text-gray-500">
-            {loading ? <LoadingOutlined className="text-xl" /> : <PlusOutlined className="text-xl" />}
+            {imageLoading ? <LoadingOutlined className="text-xl" /> : <PlusOutlined className="text-xl" />}
             <div className="mt-2 text-sm">Tải ảnh lên</div>
         </div>
     );
@@ -171,32 +216,18 @@ export const AccountInformation = ({ data, switchTab }) => {
         <div className="p-4">
             <div className="bg-white max-w-3xl p-6">
                 <h2 className="text-2xl font-bold text-blue-600 mb-6">Thông tin tài khoản</h2>
-
-                <Form
-                    form={form}
-                    onValuesChange={handleValuesChange}
-                    onFinish={handleSave}
-                    layout="vertical"
-                >
-                    {/* Phần Avatar và Thông tin cơ bản */}
+                <Form form={form} onValuesChange={handleValuesChange} onFinish={handleSubmit} layout="vertical">
                     <div className="flex flex-wrap items-center gap-6 mb-6">
                         <Upload
                             name="avatar"
                             listType="picture-circle"
                             className="avatar-uploader"
-                            showUploadList={false}
+                            fileList={fileList}
                             beforeUpload={beforeUpload}
                             onChange={handleChange}
+                            maxCount={1}
                         >
-                            {avatar ? (
-                                <img
-                                    src={config.imageConfig.getAvatar(data.avatarUrl)}
-                                    alt="avatar"
-                                    className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
-                                />
-                            ) : (
-                                uploadButton
-                            )}
+                            {fileList.length === 0 && uploadButton}
                         </Upload>
                         <div className="flex-1 space-y-4">
                             <div className={'flex flex-wrap gap-2'}>
@@ -221,26 +252,6 @@ export const AccountInformation = ({ data, switchTab }) => {
                                 </Form.Item>
                             </div>
                             <div className={'flex flex-wrap gap-2'}>
-                                {/*<Form.Item*/}
-                                {/*    name="birthday"*/}
-                                {/*    label={<span className="text-sm font-medium text-gray-700">Ngày sinh</span>}*/}
-                                {/*    rules={[*/}
-                                {/*        { required: true, message: 'Vui lòng chọn ngày sinh!' },*/}
-                                {/*        {*/}
-                                {/*            validator: (_, value) =>*/}
-                                {/*                value && value.isAfter(moment()) // Kiểm tra ngày sinh không được là ngày tương lai*/}
-                                {/*                    ? Promise.reject(new Error('Ngày sinh không hợp lệ!'))*/}
-                                {/*                    : Promise.resolve(),*/}
-                                {/*        },*/}
-                                {/*    ]}*/}
-                                {/*>*/}
-                                {/*    <DatePicker*/}
-                                {/*        format="DD/MM/YYYY"*/}
-                                {/*        value={form.getFieldValue('birthday')}*/}
-                                {/*        className="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all"*/}
-                                {/*        placeholder="Chọn ngày sinh"*/}
-                                {/*    />*/}
-                                {/*</Form.Item>*/}
                                 <Form.Item
                                     name="birthday"
                                     label={<span className="text-sm font-medium text-gray-700">Ngày sinh</span>}
@@ -259,9 +270,7 @@ export const AccountInformation = ({ data, switchTab }) => {
                                         className="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all"
                                         placeholder="Chọn ngày sinh"
                                         disabledDate={(current) => current && current > moment().endOf('day')}
-                                        onChange={(date) => {
-                                            form.setFieldsValue({ birthday: date });
-                                        }}
+                                        onChange={(date) => form.setFieldsValue({ birthday: date })}
                                     />
                                 </Form.Item>
                                 <Form.Item
@@ -277,13 +286,6 @@ export const AccountInformation = ({ data, switchTab }) => {
                         </div>
                     </div>
 
-                    {uploadedImage && (
-                        <p className="text-green-600 text-sm mb-4">
-                            Ảnh đã tải lên: <Image className="font-medium">{uploadedImage.name}</Image>
-                        </p>
-                    )}
-
-                    {/* Phần Email và Số điện thoại */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div className={'flex flex-col'}>
                             <Form.Item
@@ -295,6 +297,7 @@ export const AccountInformation = ({ data, switchTab }) => {
                                 ]}
                             >
                                 <Input
+                                    disabled={data?.emailVerified}
                                     placeholder="Nhập email"
                                     className="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all"
                                 />
@@ -307,8 +310,9 @@ export const AccountInformation = ({ data, switchTab }) => {
                             {!data?.emailVerified && (
                                 <button
                                     onClick={() => switchTab('2')}
-                                    className={"w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm"}>
-                                    <p className={'font-medium '}>Xác thực ngay!</p>
+                                    className={'w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm'}
+                                >
+                                    <p className={'font-medium'}>Xác thực ngay!</p>
                                 </button>
                             )}
                         </div>
@@ -316,8 +320,10 @@ export const AccountInformation = ({ data, switchTab }) => {
                             <Form.Item
                                 name="phone"
                                 label={<span className="text-sm font-medium text-gray-700">Số điện thoại</span>}
-                                rules={[{ pattern: /^[0-9]{10,11}$/, message: 'Số điện thoại không hợp lệ!' }]}>
+                                rules={[{ pattern: /^[0-9]{10,11}$/, message: 'Số điện thoại không hợp lệ!' }]}
+                            >
                                 <Input
+                                    disabled={data?.phoneVerified}
                                     placeholder="Nhập số điện thoại"
                                     className="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all"
                                 />
@@ -330,14 +336,14 @@ export const AccountInformation = ({ data, switchTab }) => {
                             {!data?.phoneVerified && (
                                 <button
                                     onClick={() => switchTab('2')}
-                                    className={"w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm"}>
+                                    className={'w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm'}
+                                >
                                     <p className={'font-medium'}>Xác thực ngay!</p>
                                 </button>
                             )}
                         </div>
                     </div>
 
-                    {/* Phần Vị trí */}
                     <div className="mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Vị trí</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -394,14 +400,16 @@ export const AccountInformation = ({ data, switchTab }) => {
                         </div>
                     </div>
 
-                    {/* Nút Lưu thay đổi */}
                     <div className="flex justify-end">
-                        <button
-                            type="submit"
-                            className="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg"
-                        >
-                            Lưu thay đổi
-                        </button>
+                        <Spin spinning={loading}>
+                            <button
+                                type="submit"
+                                className="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg"
+                                disabled={loading}
+                            >
+                                Lưu thay đổi
+                            </button>
+                        </Spin>
                     </div>
                 </Form>
             </div>

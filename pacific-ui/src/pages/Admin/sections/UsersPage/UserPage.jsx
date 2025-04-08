@@ -1,32 +1,18 @@
-import {
-    Button,
-    Card,
-    Input,
-    message,
-    Skeleton,
-    Space,
-    Table,
-    Spin,
-    Switch,
-    Tooltip,
-    Modal,
-    Descriptions,
-    Image,
-} from 'antd';
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Card, Image, Input, message, Modal, Skeleton, Space, Spin, Switch, Table, Tooltip } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import UserServices from '~/services/UserServices';
 import webConfig from '~/config/webConfig';
 import { BiDetail } from 'react-icons/bi';
 import {
-    BarChart,
     Bar,
-    XAxis,
-    YAxis,
+    BarChart,
     CartesianGrid,
-    Tooltip as ReTooltip,
     Legend,
     ResponsiveContainer,
+    Tooltip as ReTooltip,
+    XAxis,
+    YAxis,
 } from 'recharts';
 import { PhoneCall, RefreshCwIcon } from 'lucide-react';
 import config from '~/config';

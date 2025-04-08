@@ -85,9 +85,15 @@ const UserServices = {
     },
 
 
-    updateUser: async (id, userData) => {
+    updateUser: async (body) => {
         try {
-            const response = await axiosConfig.put(config.api.user + `/update/${id}`, userData);
+            const token = localStorage.getItem('accessToken');
+            const response = await axiosConfig.post(config.api.user + `/update-profile`, body, {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
             return response.data;
         } catch (error) {
             console.error('Lỗi khi cập nhật user:', error);

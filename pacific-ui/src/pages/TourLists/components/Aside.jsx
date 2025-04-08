@@ -1,4 +1,4 @@
-import { Divider, Input, InputNumber, Radio, Rate, Select } from 'antd';
+import { Divider, InputNumber, Radio, Rate, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CloseCircleOutlined } from '@ant-design/icons';

@@ -1,8 +1,7 @@
-import { Button, Rate, Space, Table, Tooltip, Select, Modal, Descriptions } from 'antd';
-import React, { useState, useEffect } from 'react';
+import { Button, Descriptions, Modal, Rate, Select, Space, Table, Tooltip } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '~/config/AuthContext';
 import { FaCheckCircle } from 'react-icons/fa';
-import { DeleteOutlined } from '@ant-design/icons';
 import { BiDetail } from 'react-icons/bi';
 import TourServices from '~/services/TourServices';
 import RatingService from '~/services/RatingService';

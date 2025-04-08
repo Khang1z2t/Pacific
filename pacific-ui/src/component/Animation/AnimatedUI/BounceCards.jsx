@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { gsap } from "gsap";
+import { useEffect } from 'react';
+import { gsap } from 'gsap';
 
 export default function BounceCards({
                                         className = "",

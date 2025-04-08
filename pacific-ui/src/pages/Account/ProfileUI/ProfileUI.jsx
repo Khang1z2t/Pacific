@@ -14,19 +14,22 @@ export const ProfileUI = () => {
     const { currentUser, setCurrentUser } = useAuth();
     const token = localStorage.getItem('accessToken');
     const [activeTab, setActiveTab] = useState('1');
+    const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
 
     const switchTab = (tabKey) => {
         setActiveTab(tabKey);
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn lên đầu tab
     };
     const handleUserUpdate = (updatedUser) => {
+        setIsLoading(true); // Bật loading khi cập nhật
         setCurrentUser(updatedUser);
+        setTimeout(() => setIsLoading(false), 500);
     };
     return (
         <div className="flex gap-6 p-6 bg-gray-100 min-h-screen">
             {/* Sidebar */}
             <div className="w-1/4">
-                <ProfileCard data={currentUser} switchTab={switchTab} />
+                <ProfileCard data={currentUser} isLoading={isLoading} switchTab={switchTab} />
             </div>
             {/* Main Content */}
             <div className="flex-1 ">
@@ -36,7 +39,7 @@ export const ProfileUI = () => {
                     rootClassName={'bg-white p-4 rounded-lg shadow-md'}
                     activeKey={activeTab}>
                     <TabPane tab="Chỉnh sửa thông tin" key="1">
-                        <AccountInformation data={currentUser} switchTab={switchTab} />
+                        <AccountInformation data={currentUser} onUserUpdate={handleUserUpdate} setParentLoading={setIsLoading} switchTab={switchTab} />
                     </TabPane>
                     <TabPane tab="Xác thực thông tin" key="2">
                         <VerifyInformation data={currentUser} onUserUpdate={handleUserUpdate} />

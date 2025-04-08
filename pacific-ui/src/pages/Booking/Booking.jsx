@@ -4,7 +4,6 @@ import { Steps } from 'antd'; // Thêm Steps từ Ant Design
 import { Loading } from '~/component/ui/Loading';
 import { BookingInfo1 } from '~/pages/Booking/components/BookingInfo1';
 import TourDetailServices from '~/services/TourDetailServices';
-import { FaInfoCircle, FaCheckCircle, FaPlaneDeparture } from 'react-icons/fa'; // Icon cho Steps
 
 export const Booking = () => {
     const { id } = useParams();

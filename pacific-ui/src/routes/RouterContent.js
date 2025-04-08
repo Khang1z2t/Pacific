@@ -19,9 +19,6 @@ import { BookedTour } from '~/pages/Account/historyBooked/BookedTour';
 import { AdminLayout } from '~/component/Layout/Admin/AdminLayout';
 import AdminHome from '~/pages/Admin/AdminHome';
 import { News } from '~/pages/News/News';
-// import Users from '~/pages/Admin/Users';
-// import Guide from '~/pages/Admin/Guide';
-// import AddGuide from '~/pages/Admin/AddGuide';
 import { Error } from '~/pages/Booking/status/Error';
 import { GoogleRedirect } from '~/pages/Account/components/GoogleRedirect';
 import { Terms } from '~/pages/Terms/Terms';
@@ -122,29 +119,5 @@ export const RouterContent = [
     {
         path: config.routes.news,
         element: <News/>,
-    },
-    {
-        path: config.routes.adminUsers,
-        element: (
-            <AdminLayout>
-                {/*<Users/>*/}
-            </AdminLayout>
-        ),
-    },
-    {
-        path: config.routes.adminGuide,
-        element: (
-            <AdminLayout>
-                {/*<Guide/>*/}
-            </AdminLayout>
-        ),
-    },
-    {
-        path: config.routes.addGuide,
-        element: (
-            <AdminLayout>
-                {/*<AddGuide/>*/}
-            </AdminLayout>
-        ),
     },
 ];

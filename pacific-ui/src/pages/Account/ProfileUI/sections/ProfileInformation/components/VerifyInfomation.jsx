@@ -1,7 +1,6 @@
-import { Input, message, Form, Button } from 'antd';
-import { useState, useEffect } from 'react';
+import { Form, Input, message } from 'antd';
+import { useEffect, useState } from 'react';
 import { FaCheckCircle, FaLock } from 'react-icons/fa';
-import axios from 'axios';
 import AuthServices from '~/services/AuthServices';
 
 export const VerifyInformation = ({ data, onUserUpdate }) => {

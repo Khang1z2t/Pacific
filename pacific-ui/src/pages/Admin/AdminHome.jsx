@@ -1,14 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-    BlockOutlined, BulbOutlined,
-    CommentOutlined,
-    DesktopOutlined,
-    DollarCircleOutlined,
-    FileOutlined,
-    PaperClipOutlined,
-    PieChartOutlined,
-    TeamOutlined,
-} from '@ant-design/icons';
+import { BlockOutlined, CommentOutlined, DesktopOutlined, PieChartOutlined, TeamOutlined } from '@ant-design/icons';
 import { Breadcrumb, ConfigProvider, Layout, Switch, theme, Tooltip } from 'antd';
 import { AdminSidebar } from '~/pages/Admin/components/AdminHome/AdminSidebar';
 import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';
@@ -24,7 +15,7 @@ import Blog from '~/pages/Admin/Blog';
 import Support from '~/pages/Admin/Support';
 import { useAuth } from '~/config/AuthContext';
 import { BookingStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/BookingStatistic';
-import { BiCategory, BiSolidCategory } from 'react-icons/bi';
+import { BiSolidCategory } from 'react-icons/bi';
 import { VoucherPage } from '~/pages/Admin/sections/VoucherPage/VoucherPage';
 import { FaMoneyCheckAlt, FaMoon } from 'react-icons/fa';
 import { CiLight } from 'react-icons/ci';
