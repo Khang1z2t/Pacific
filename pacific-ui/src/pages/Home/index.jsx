@@ -12,6 +12,7 @@ import { ComboTour } from '~/pages/Home/sections/ComboTour';
 import { useTranslation } from 'react-i18next';
 import { AboutLogin } from '~/pages/Home/sections/AboutLogin';
 import { useAuth } from '~/config/AuthContext';
+import { VouchersPage } from '~/pages/Home/sections/VouchersPage';
 
 function Home() {
     const { currentUser } = useAuth();
@@ -30,6 +31,7 @@ function Home() {
         >
             <AnimatedHomeBanner />
             <div className={'container mx-auto'}>
+                <VouchersPage/>
                 <TravelCardLists />
                 <Vacations />
                 <AboutSection />
