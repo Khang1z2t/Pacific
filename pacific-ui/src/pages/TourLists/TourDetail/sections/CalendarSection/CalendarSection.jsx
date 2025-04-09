@@ -97,9 +97,11 @@ export const CalendarSection = ({data}) => {
                         <p><strong>Thời gian:</strong> {data.duration} ngày {data.duration - 1} đêm</p>
                     </div>
                     <div className="flex space-x-4 mt-4">
-                        <Button disabled={tourDetail?.priceAdults === null}
-                                onClick={() => navigate(config.routes.booking + `${tourDetail.id}`)} type="primary"
-                                className="bg-red-500 hover:bg-red-700 w-full">Đặt tour</Button>
+                        <Button
+                            disabled={tourDetail?.priceAdults === null || !days.some((day) => day.status === 'OPEN')}
+                            onClick={() => navigate(config.routes.booking + `${tourDetail.id}`)}
+                            type="primary"
+                            className="bg-red-500 w-full">Đặt tour</Button>
                     </div>
                     <div className="mt-4">
                         <Button icon={<PhoneOutlined/>} className="w-full bg-gray-100">Gọi miễn phí qua
@@ -131,21 +133,23 @@ export const CalendarSection = ({data}) => {
                                 fullscreen={false}
                                 onPanelChange={(date) => handleSelectedMonth(date.format('YYYY-MM'))}
                                 headerRender={() => null}
-                                dateFullCellRender={(date) => {
+                                fullCellRender={(date) => {
                                     const day = date.date();
                                     const monthYear = date.format('YYYY-MM');
                                     const currentMonth = selectedMonth || dayjs().format('YYYY-MM');
-                                    const validDay = days.find((d) => Number(d.getDate) === day);
+                                    const validDay = days.find((d) => Number(d.getDate) === day && monthYear === currentMonth); // Chỉ lấy ngày trong tháng hiện tại
+
                                     return (
                                         <div
                                             onClick={() => {
-                                                if (validDay && validDay.status !== 'CLOSED' && validDay.status !== 'IN_PROGRESS') {
-                                                    setSelectedDay(validDay.getDate);
-                                                    selectTourDetail(validDay.getId).then(r => r);
+                                                if (validDay && validDay.status !== 'IN_PROGRESS' && validDay.status !== 'CLOSED') {
+                                                    setSelectedDay(validDay.getDate); // Lưu ngày
+                                                    selectTourDetail(validDay.getId).then(r => r); // Gọi API với getId
                                                 }
                                             }}
                                             className={`text-center p-2 rounded-lg transition-colors duration-200 
-                                            ${monthYear !== currentMonth
+                                            ${
+                                                monthYear !== currentMonth
                                                     ? 'text-gray-300'
                                                     : validDay
                                                         ? validDay.status === 'OPEN'
@@ -162,7 +166,7 @@ export const CalendarSection = ({data}) => {
                                             {validDay && (
                                                 <div className="text-xs font-bold">
                                                     {validDay.status === 'OPEN'
-                                                        ? 'Tour đang bán!'
+                                                        ? 'Tour đang mở!'
                                                         : validDay.status === 'IN_PROGRESS'
                                                             ? 'Tour đang diễn ra!'
                                                             : validDay.status === 'CLOSED'
