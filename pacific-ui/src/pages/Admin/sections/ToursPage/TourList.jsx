@@ -22,7 +22,6 @@ const TourList = () => {
     const [addDetailModalVisible, setAddDetailModalVisible] = useState(false);
     const [category, setCategory] = useState([]);
     const [destination, setDestination] = useState([]);
-    const [selectedTourId, setSelectedTourId] = useState(null);
     const [selectedTour, setSelectedTour] = useState(null);
 
     // Hàm fetch dữ liệu dùng Promise.all
@@ -68,11 +67,6 @@ const TourList = () => {
         }
     }, []);
 
-    // Memoize handler mở modal thêm chi tiết tour
-    const handleOpenAddTourDetail = useCallback((id) => {
-        setSelectedTourId(id);
-        setAddDetailModalVisible(true);
-    }, []);
 
     // Memoize handler ẩn/hiện tour
     const handleHideTour = useCallback(async (id, active) => {
@@ -197,7 +191,7 @@ const TourList = () => {
             key: 'actions',
             render: (record) => (
                 <Space>
-                    <Tooltip placement={"top"} title={"Chỉnh sửa tour"}>
+                    <Tooltip placement={'top'} title={'Chỉnh sửa tour'}>
                         <Button icon={<EditOutlined />} onClick={() => {
                             setEditModalVisible(true);
                             setSelectedTour(record);
@@ -213,7 +207,10 @@ const TourList = () => {
                     <Tooltip placement="top" title="Thêm chi tiết tour">
                         <Button
                             icon={<PlusOutlined />}
-                            onClick={() => handleOpenAddTourDetail(record.id)}
+                            onClick={() => {
+                                setSelectedTour(record);
+                                setAddDetailModalVisible(true);
+                            }}
                         />
                     </Tooltip>
                 </Space>
@@ -349,7 +346,7 @@ const TourList = () => {
                 editModalVisible={editModalVisible}
             />
             <AddTourDetail
-                tourId={selectedTourId}
+                tour={selectedTour}
                 setAddDetailModalVisible={setAddDetailModalVisible}
                 addDetailModalVisible={addDetailModalVisible}
             />

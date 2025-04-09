@@ -6,10 +6,7 @@ import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';
 import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
 import TourList from '~/pages/Admin/sections/ToursPage/TourList';
-import Booking from '~/pages/Admin/sections/Booking';
 import { Link } from 'react-router-dom';
-import BookingCancel from '~/pages/Admin/sections/BookingCancel';
-import BookingDone from '~/pages/Admin/sections/BookingDone';
 import InfoBlog from '~/pages/Admin/InfoBlog';
 import Blog from '~/pages/Admin/Blog';
 import Support from '~/pages/Admin/Support';
@@ -83,9 +80,7 @@ const AdminHome = () => {
             label: 'Booking',
             key: 'sub4',
             icon: <FaMoneyCheckAlt color={'green'} />,
-            children: [{ label: 'Đang chờ xác nhận', key: '10', content: <Booking /> },
-                { label: 'Đã hoàn thành', key: '11', content: <BookingDone /> },
-                { label: 'Đã hủy', key: '12', content: <BookingCancel /> }],
+            content: 'HI',
         },
         {
             label: 'Khuyến mãi',
