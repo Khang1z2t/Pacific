@@ -1,5 +1,5 @@
 import { MdAdminPanelSettings, MdEdit, MdEmail } from 'react-icons/md';
-import { Avatar, Card, Divider, Tooltip, Skeleton } from 'antd';
+import { Avatar, Card, Divider, Tooltip, Skeleton, Image } from 'antd';
 import { PhoneCall } from 'lucide-react';
 import config from '~/config';
 import { FaCheckCircle } from 'react-icons/fa';
@@ -40,7 +40,7 @@ export const ProfileCard = ({ data, switchTab, isLoading }) => {
             <div className="flex flex-col items-center text-center">
                 <Avatar
                     size={100}
-                    src={config.imageConfig.getAvatar(data.avatar) || config.webConfig.defaultUser}
+                    src={config.imageConfig.getImage(data.avatar) || config.imageConfig.getImage(data.avatar)}
                     className="border-4 border-orange-100 shadow-md"
                 />
                 <h2 className="mt-4 flex flex-wrap items-center gap-2 text-xl font-bold text-gray-800">

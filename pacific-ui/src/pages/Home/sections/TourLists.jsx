@@ -62,7 +62,7 @@ export const TourLists = () => {
                 <p className="text-sm sm:text-lg text-gray-600 mt-2">{t('comboTour.tour3')}</p>
             </Divider>
             <SearchBar onSearch={handleSearch} />
-            <div className="mt-6 grid grid-cols-4 gap-4 justify-center px-14 w-fit mx-auto min-h-[500px]">
+            <div className="mt-6 grid grid-cols-4 gap-4 justify-center px-14 w-fit mx-auto min-h-[908px]">
                 {loading ? (
                     <div className="w-full h-[400px] col-span-4 flex items-center justify-center">
                         <Spin indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />
