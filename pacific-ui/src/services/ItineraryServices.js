@@ -20,5 +20,25 @@ const ItineraryServices = {
             return Promise.reject(error);
         }
     },
+
+    updateItinerary: async (id, body) => {
+        try {
+            const response = await axiosConfig.put(config.api.itinerary + `/update/${id}`, body);
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    deleteItinerary: async (id) => {
+        try {
+            const response = await axiosConfig.delete(config.api.itinerary + `/delete?itineraryId=${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 }
 export default ItineraryServices;

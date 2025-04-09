@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Select, Button, Table, Modal, Form, Input, InputNumber, Space, Tooltip, Tabs } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, InputNumber, message, Modal, Select, Space, Table, Tabs, Tooltip } from 'antd';
 import ItineraryServices from '~/services/ItineraryServices';
 import TourServices from '~/services/TourServices';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
-const { Option } = Select;
 const { TabPane } = Tabs;
 
 export const ItineraryPage = () => {
-    const [tours, setTours] = useState([]); // Danh sách tours
-    const [selectedTour, setSelectedTour] = useState(null); // Tour được chọn
-    const [itineraries, setItineraries] = useState([]); // Danh sách lịch trình
-    const [editModalVisible, setEditModalVisible] = useState(false); // Trạng thái modal chỉnh sửa
-    const [editItinerary, setEditItinerary] = useState(null); // Lịch trình được chọn để chỉnh sửa
-    const [isModalOpen, setIsModalOpen] = useState(false); // Trạng thái modal thêm
-    const [form] = Form.useForm(); // Form thêm lịch trình
-    const [editForm] = Form.useForm(); // Form chỉnh sửa lịch trình
+    const [tours, setTours] = useState([]);
+    const [selectedTour, setSelectedTour] = useState(null);
+    const [itineraries, setItineraries] = useState([]);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editItinerary, setEditItinerary] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [form] = Form.useForm();
+    const [editForm] = Form.useForm();
 
-    // Lấy danh sách tours khi component mount
     useEffect(() => {
         const fetchTours = async () => {
             try {
@@ -30,31 +28,31 @@ export const ItineraryPage = () => {
         fetchTours();
     }, []);
 
-    // Lấy danh sách lịch trình khi chọn tour
+    // Hàm lấy danh sách lịch trình
+    const fetchItineraries = async (tourId) => {
+        try {
+            const response = await ItineraryServices.getByTourId(tourId);
+            setItineraries(Array.isArray(response.data) ? response.data : []);
+        } catch (error) {
+            console.error('Failed to fetch itineraries:', error);
+            setItineraries([]);
+        }
+    };
+
     useEffect(() => {
         if (selectedTour) {
-            const fetchItineraries = async () => {
-                try {
-                    const response = await ItineraryServices.getByTourId(selectedTour.id);
-                    setItineraries(response.data);
-                } catch (error) {
-                    console.error('Failed to fetch itineraries:', error);
-                }
-            };
-            fetchItineraries();
+            fetchItineraries(selectedTour.id);
         }
     }, [selectedTour]);
 
-    // Xử lý khi chọn tour
     const handleTourChange = (value) => {
         const tour = tours.find(t => t.id === value);
         setSelectedTour(tour);
     };
 
-    // Mở modal thêm lịch trình
     const showModal = () => {
         if (!selectedTour) {
-            alert('Vui lòng chọn một tour trước!');
+            message.warning('Vui lòng chọn một tour trước!');
             return;
         }
         setIsModalOpen(true);
@@ -66,19 +64,19 @@ export const ItineraryPage = () => {
         form.setFieldsValue({ days: initialDays });
     };
 
-    // Xử lý khi submit form thêm lịch trình
     const handleAddItinerary = async (values) => {
         try {
             const response = await ItineraryServices.AddItinerary(selectedTour.id, values);
-            setItineraries(response.data);
+            setItineraries(Array.isArray(response.data) ? response.data : []);
             setIsModalOpen(false);
             form.resetFields();
+            message.success('Thêm lịch trình thành công', 2);
         } catch (error) {
             console.error('Failed to add itinerary:', error);
+            message.error('Thêm lịch trình thất bại', 2);
         }
     };
 
-    // Mở modal chỉnh sửa lịch trình
     const showEditModal = (record) => {
         setEditItinerary(record);
         setEditModalVisible(true);
@@ -89,24 +87,35 @@ export const ItineraryPage = () => {
         });
     };
 
-    // Xử lý khi submit form chỉnh sửa lịch trình
     const handleEditItinerary = async (values) => {
         try {
-            // Giả sử bạn có API update itinerary, thay đổi theo API thực tế của bạn
-            const updatedItinerary = { ...editItinerary, ...values };
-            // Gọi API update (nếu có), tạm thời giả lập cập nhật local
-            const updatedItineraries = itineraries.map(item =>
-                item.id === updatedItinerary.id ? updatedItinerary : item,
-            );
-            setItineraries(updatedItineraries);
+            const updatedItinerary = await ItineraryServices.updateItinerary(editItinerary.id, values); // Lấy ItineraryResponse từ response
+            // Cập nhật local trước để phản ánh ngay lập tức
+            setItineraries(itineraries.map(item =>
+                item.id === editItinerary.id ? updatedItinerary : item
+            ));
+            // Làm mới dữ liệu từ backend
+            await fetchItineraries(selectedTour.id);
             setEditModalVisible(false);
             editForm.resetFields();
+            message.success('Cập nhật lịch trình thành công', 2);
         } catch (error) {
             console.error('Failed to edit itinerary:', error);
+            message.error('Cập nhật lịch trình thất bại', 2);
         }
     };
 
-    // Cột cho Table
+    const handleDeleteItinerary = async (id) => {
+        try {
+            await ItineraryServices.deleteItinerary(id);
+            setItineraries(itineraries.filter(itinerary => itinerary.id !== id));
+            message.success('Xóa lịch trình thành công', 2);
+        } catch (error) {
+            console.error('Failed to delete itinerary:', error);
+            message.error('Xóa lịch trình thất bại', 2);
+        }
+    };
+
     const columns = [
         { title: 'Ngày', dataIndex: 'dayNumber', key: 'dayNumber' },
         { title: 'Tiêu đề', dataIndex: 'title', key: 'title' },
@@ -132,7 +141,7 @@ export const ItineraryPage = () => {
                         <Button
                             icon={<DeleteOutlined />}
                             danger
-                            onClick={() => console.log('Xóa lịch trình:', record)} // Thêm logic xóa nếu có API
+                            onClick={() => handleDeleteItinerary(record.id)}
                         />
                     </Tooltip>
                 </Space>
@@ -161,7 +170,6 @@ export const ItineraryPage = () => {
                 </Space>
             </div>
 
-            {/* Table hiển thị lịch trình */}
             <Table
                 columns={columns}
                 dataSource={itineraries}
@@ -170,7 +178,6 @@ export const ItineraryPage = () => {
                 locale={{ emptyText: 'Chưa có lịch trình nào' }}
             />
 
-            {/* Modal thêm lịch trình */}
             <Modal
                 title={`Thêm lịch trình cho tour ${selectedTour?.title}`}
                 open={isModalOpen}
@@ -214,7 +221,6 @@ export const ItineraryPage = () => {
                 </Form>
             </Modal>
 
-            {/* Modal chỉnh sửa lịch trình */}
             <Modal
                 title={`Chỉnh sửa lịch trình - Ngày ${editItinerary?.dayNumber}`}
                 open={editModalVisible}
