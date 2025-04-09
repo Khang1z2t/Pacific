@@ -5,37 +5,30 @@ import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/module
 import 'swiper/css'; // CSS cơ bản của Swiper
 import 'swiper/css/navigation'; // CSS cho navigation
 import 'swiper/css/pagination'; // CSS cho pagination
-import 'swiper/css/effect-coverflow'; // CSS cho hiệu ứng coverflow
+import 'swiper/css/effect-coverflow';
+import config from '~/config'; // CSS cho hiệu ứng coverflow
 
 export const VouchersPage = () => {
     // Dữ liệu mẫu cho các voucher/sự kiện
     const vouchers = [
         {
             id: 1,
-            title: 'Ưu đãi Tết 2025',
-            description: 'Giảm 30% tất cả tour du lịch trong dịp Tết Nguyên Đán!',
-            image: '/img/Vouchers/TuyetVoiSinhVien.png',
+            image: '1NEMFo2i8XH6oTkUVSpQRXSSUjgy9ooxe',
             cta: 'Đặt ngay',
         },
         {
             id: 2,
-            title: 'Sự kiện Giáng Sinh',
-            description: 'Nhận voucher 500K khi đặt tour trước 24/12!',
-            image: '/img/Vouchers/Pacific.png',
+            image: '1fjMrC_8Jq_I35tD6HjXx_mJh__P-CwZm',
             cta: 'Khám phá',
         },
         {
             id: 3,
-            title: 'Ngày lễ 30/4',
-            description: 'Combo nghỉ dưỡng 3N2Đ chỉ từ 2.5 triệu!',
-            image: '/img/Vouchers/DoiTraNgotNgao.png',
+            image: '1XrG7EJ6ofB6xjjPcjXeeF3cwUfBMdvHM',
             cta: 'Xem chi tiết',
         },
         {
             id: 4,
-            title: 'Khuyến mãi mùa hè',
-            description: 'Giảm giá 50% cho tour du lịch biển!',
-            image: '/img/Vouchers/ChucMungTotNghiep.png',
+            image: '1ofrgv-NljF13ZmdoFBAn_DPVpXMZK4rJ',
             cta: 'Đặt ngay',
         },
     ];
@@ -85,7 +78,7 @@ export const VouchersPage = () => {
                 >
                     {vouchers.map((voucher) => (
                         <SwiperSlide key={voucher.id}>
-                            <img src={voucher.image} alt={voucher.title} className="w-full h-full object-cover rounded-lg" />
+                            <img src={config.imageConfig.getImage(voucher.image)} alt={voucher.title} className="w-full h-full object-cover rounded-lg" />
                         </SwiperSlide>
                     ))}
                 </Swiper>
