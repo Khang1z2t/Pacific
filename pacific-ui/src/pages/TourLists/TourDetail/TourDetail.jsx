@@ -35,7 +35,7 @@ export const TourDetail = () => {
             <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.title}</h1>
             {/*<DetailSection {...tour}/>*/}
             <CalendarSection data={tour}/>
-            <ItinerarySection/>
+            <ItinerarySection data={tour}/>
             <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Tour khác liên quan</p></Divider>
             <OtherToursList/>
         </div>

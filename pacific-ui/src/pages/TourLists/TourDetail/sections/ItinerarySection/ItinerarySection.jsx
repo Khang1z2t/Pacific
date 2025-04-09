@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, Col, Row, Typography } from 'antd';
-import { motion } from 'framer-motion'; // Thêm animation
+import React, { useEffect, useState } from 'react';
+import { Card, Col, Collapse, message, Row, Typography } from 'antd';
+import { motion } from 'framer-motion';
 import {
     FaMapMarkedAlt,
     FaUtensils,
@@ -9,11 +9,37 @@ import {
     FaBus,
     FaTags,
 } from 'react-icons/fa';
-import { ItineraryDetails } from '~/pages/TourLists/TourDetail/sections/ItinerarySection/Components/ItineraryDetails'; // Icon cho từng mục
+import ItineraryServices from '~/services/ItineraryServices';
 
 const { Title, Paragraph } = Typography;
+const { Panel } = Collapse;
 
-export const ItinerarySection = () => {
+export const ItinerarySection = ({ data }) => {
+    const [itineraryDetails, setItineraryDetails] = useState([]);
+
+    // Gọi API để lấy danh sách lịch trình
+    useEffect(() => {
+        const fetchItineraryDetails = async () => {
+            try {
+                const response = await ItineraryServices.getByTourId(data.id);
+                console.log('Fetched itinerary details:', response.data);
+                // Sắp xếp theo dayNumber tăng dần
+                const sortedDetails = Array.isArray(response.data)
+                    ? response.data.sort((a, b) => a.dayNumber - b.dayNumber)
+                    : [];
+                setItineraryDetails(sortedDetails);
+            } catch (err) {
+                console.error('Failed to fetch itinerary details:', err);
+                message.error('Không thể tải lịch trình', 1);
+                setItineraryDetails([]);
+            }
+        };
+
+        if (data?.id) {
+            fetchItineraryDetails();
+        }
+    }, [data?.id]); // Chạy lại khi data.id thay đổi
+
     const itineraryData = [
         {
             icon: <FaMapMarkedAlt className="text-blue-400 text-2xl" />,
@@ -102,7 +128,74 @@ export const ItinerarySection = () => {
                     ))}
                 </Row>
 
-                <ItineraryDetails/>
+                {/* Phần lịch trình */}
+                <div className="py-8 bg-gray-50">
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <motion.div
+                            initial="hidden"
+                            animate="visible"
+                            variants={fadeInUp}
+                            className="text-center mb-8"
+                        >
+                            <Title
+                                level={2}
+                                className="text-3xl md:text-4xl font-bold text-gray-800"
+                            >
+                                LỊCH TRÌNH
+                            </Title>
+                        </motion.div>
+
+                        <Collapse
+                            accordion
+                            expandIconPosition="end"
+                            className="bg-white rounded-lg shadow-md"
+                            expandIcon={({ isActive }) => (
+                                <span className="text-blue-500 text-lg">
+                                    {isActive ? '↑' : '↓'}
+                                </span>
+                            )}
+                        >
+                            {itineraryDetails.length > 0 ? (
+                                itineraryDetails.map((item) => (
+                                    <Panel
+                                        header={
+                                            <div className="flex items-center justify-between">
+                                                <Title level={4} className="text-gray-800 mb-0">
+                                                    Ngày {item.dayNumber}: {item.title}
+                                                </Title>
+                                            </div>
+                                        }
+                                        key={item.id} // Dùng id từ API làm key
+                                        className="border-b border-gray-200"
+                                    >
+                                        <motion.div
+                                            initial="hidden"
+                                            animate="visible"
+                                            variants={fadeInUp}
+                                        >
+                                            <Paragraph className="text-gray-600">
+                                                <div dangerouslySetInnerHTML={{ __html: item.notes }} />
+                                            </Paragraph>
+                                        </motion.div>
+                                    </Panel>
+                                ))
+                            ) : (
+                                <Panel
+                                    header={
+                                        <Title level={4} className="text-gray-800 mb-0">
+                                            Không có lịch trình
+                                        </Title>
+                                    }
+                                    key="no-data"
+                                >
+                                    <Paragraph className="text-gray-500 italic">
+                                        Chưa có thông tin lịch trình cho tour này.
+                                    </Paragraph>
+                                </Panel>
+                            )}
+                        </Collapse>
+                    </div>
+                </div>
             </div>
         </div>
     );
