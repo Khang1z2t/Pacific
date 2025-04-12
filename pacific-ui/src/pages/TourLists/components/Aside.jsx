@@ -6,11 +6,11 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 export const Aside = ({ query, setQuery, titleType }) => {
     const { t } = useTranslation();
     const ratingAvg = [1, 2, 3, 4, 5];
-    const [rate, setRate] = useState(query.rate || null); // Đồng bộ với query.rate
-    const [searchPrices, setSearchPrices] = useState(query.searchPrices || 'All'); // Đồng bộ với query.searchPrices
+    const [rate, setRate] = useState(query.rate || null);
+    const [searchPrices, setSearchPrices] = useState(query.searchPrices || 'All');
     const [checkedTour, setCheckedTour] = useState(titleType === t('search.ti4') ? 1 : 2);
-    const [maxPrice, setMaxPrice] = useState(0);
-    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState(query.maxPrice || 0);
+    const [minPrice, setMinPrice] = useState(query.minPrice || 0);
 
     useEffect(() => {
         setCheckedTour(titleType === t('search.ti4') ? 1 : 2);
@@ -20,26 +20,29 @@ export const Aside = ({ query, setQuery, titleType }) => {
             minPrice,
             maxPrice,
             searchPrices,
+            checkedTour,
         }));
-    }, [titleType, rate, searchPrices, setQuery]);
+    }, [titleType, rate, searchPrices, minPrice, maxPrice, checkedTour, setQuery]);
 
     const handleClear = () => {
         setRate(null);
         setSearchPrices('All');
         setMinPrice(0);
         setMaxPrice(0);
-        setCheckedTour(1);
+        setCheckedTour(titleType === t('search.ti4') ? 1 : 2);
         setQuery((prevQuery) => ({
             ...prevQuery,
             rate: null,
             minPrice: null,
             maxPrice: null,
             searchPrices: 'All',
+            checkedTour: titleType === t('search.ti4') ? 1 : 2,
         }));
-    }
+    };
 
     return (
-        <aside className="w-3/12 sticky h-fit border p-4 bg-gray-50 shadow-md rounded-md">
+        <aside
+            className="hidden w-3/12 md:block lg:block sticky top-4 h-fit border p-4 bg-gray-50 shadow-md rounded-md self-start">
             <Divider>{t('search.ti5')}</Divider>
             <Select
                 className="w-full"
@@ -53,20 +56,16 @@ export const Aside = ({ query, setQuery, titleType }) => {
                     { label: t('search.ti8'), value: 'LowToHigh' },
                 ]}
             />
-            <div className={"grid grid-cols-2 items-center gap-2"}>
+            <div className="grid grid-cols-2 items-center gap-2">
                 <InputNumber
                     className="w-full mt-4"
                     placeholder="Giá thấp nhất"
                     min={0}
                     formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    suffix={"VND"}
+                    suffix="VND"
                     value={minPrice}
                     onChange={(value) => {
                         setMinPrice(value);
-                        setQuery((prevQuery) => ({
-                            ...prevQuery,
-                            minPrice: value,
-                        }));
                     }}
                 />
                 <InputNumber
@@ -74,14 +73,10 @@ export const Aside = ({ query, setQuery, titleType }) => {
                     placeholder="Giá cao nhất"
                     min={0}
                     formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                    suffix={"VND"}
+                    suffix="VND"
                     value={maxPrice}
                     onChange={(value) => {
                         setMaxPrice(value);
-                        setQuery((prevQuery) => ({
-                            ...prevQuery,
-                            maxPrice: value,
-                        }));
                     }}
                 />
             </div>
@@ -98,11 +93,14 @@ export const Aside = ({ query, setQuery, titleType }) => {
                 ))}
             </Radio.Group>
             <Divider>{t('search.ti10')}</Divider>
-            <Radio.Group value={checkedTour}>
+            <Radio.Group
+                value={checkedTour}
+                onChange={(e) => setCheckedTour(e.target.value)}
+            >
                 <Radio value={1}>{t('search.ti11')}</Radio>
                 <Radio value={2}>{t('search.ti12')}</Radio>
             </Radio.Group>
-            <Divider/>
+            <Divider />
             <button
                 onClick={handleClear}
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 flex items-center justify-center gap-2"
