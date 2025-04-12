@@ -34,24 +34,24 @@ export const ProfileCard = ({ data, switchTab, isLoading }) => {
 
     return (
         <Card
-            className="shadow-lg sticky top-20 rounded-xl border border-gray-200 transition-all duration-300 hover:shadow-xl"
-            bodyStyle={{ padding: '24px' }}
+            className="shadow-lg sticky top-20 rounded-xl border border-gray-200 transition-all duration-300 hover:shadow-xl w-full sm:w-80 md:w-96"
+            bodyStyle={{ padding: '16px sm:p-6' }}
         >
             <div className="flex flex-col items-center text-center">
                 <Avatar
-                    size={100}
+                    size={{ xs: 80, sm: 100, lg: 120, xl: 120 }}
                     src={config.imageConfig.getImage(data.avatar) || config.imageConfig.getImage(data.avatar)}
                     className="border-4 border-orange-100 shadow-md"
                 />
-                <h2 className="mt-4 flex flex-wrap items-center gap-2 text-xl font-bold text-gray-800">
+                <h2 className="mt-4 flex flex-wrap items-center gap-2 text-lg sm:text-xl font-bold text-gray-800">
                     {renderValue(data.username, 'Bạn chưa cập nhật tên')}
                     {data?.role === 'ADMIN' && (
                         <Tooltip title="Quản trị viên">
-                            <MdAdminPanelSettings className={'text-yellow-500 text-2xl'} />
+                            <MdAdminPanelSettings className="text-yellow-500 text-xl sm:text-2xl" />
                         </Tooltip>
                     )}
                 </h2>
-                <p className="text-gray-600 text-sm mt-1">
+                <p className="text-gray-600 text-xs sm:text-sm mt-1">
                     {renderValue(
                         data.firstName || data.lastName
                             ? `${data.firstName || ''} ${data.lastName || ''}`.trim()
@@ -63,18 +63,16 @@ export const ProfileCard = ({ data, switchTab, isLoading }) => {
                     <Tooltip title="Chỉnh sửa hồ sơ">
                         <button
                             onClick={() => switchTab('1')}
-                            className="flex items-center gap-1 px-3 py-1 text-sm text-white bg-orange-500 rounded-full hover:bg-orange-600 transition-all duration-200"
+                            className="flex items-center gap-1 px-3 py-1 text-xs sm:text-sm text-white bg-orange-500 rounded-full hover:bg-orange-600 transition-all duration-200"
                         >
                             <MdEdit size={16} /> Chỉnh sửa
                         </button>
                     </Tooltip>
                 </div>
             </div>
-
-            <Divider className="my-6" />
-
-            <div className="space-y-3">
-                <h3 className="font-bold text-lg text-orange-500">Giới thiệu</h3>
+            <Divider className="my-4 sm:my-6" />
+            <div className="space-y-3 text-sm sm:text-base">
+                <h3 className="font-bold text-base sm:text-lg text-orange-500">Giới thiệu</h3>
                 <div className="flex items-center gap-2">
                     <label className="font-semibold text-gray-700 w-24">Ngày sinh:</label>
                     <p className="text-gray-600">
