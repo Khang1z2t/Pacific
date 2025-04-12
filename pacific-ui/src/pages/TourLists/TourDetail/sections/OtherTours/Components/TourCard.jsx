@@ -5,7 +5,7 @@ import config from '~/config';
 import { useAuth } from '~/config/AuthContext';
 import { Heart } from 'lucide-react';
 
-export const TourCard = ({ data, onClick}) => {
+export const TourCard = ({ data, onClick }) => {
     const { handleAddToWishlist, wishlist } = useAuth();
     const handleClick = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -15,45 +15,46 @@ export const TourCard = ({ data, onClick}) => {
     const isInWishlist = wishlist.some((item) => item.tourId === data.id);
 
     return (
-        <div className={"relative"}>
-            <Link to={config.routes.tourDetail + `${data.id}`}
-                  className="grid  grid-cols-5 h-full items-center border shadow-md border-gray-300 bg-gray-50 p-2 rounded-lg hover:border-orange-600 hover:bg-orange-100 transition-all hover:cursor-pointer"
-                  style={{
-                      padding: '0',
-                  }}
-                  onClick={handleClick}>
-                {/* Hình ảnh */}
-                <div className="col-span-1 lg:mb-0 p-2">
+        <div className="relative">
+            <Link
+                to={config.routes.tourDetail + `${data.id}`}
+                className="flex flex-col sm:flex-row items-start sm:items-center border shadow-md border-gray-300 bg-gray-50 p-3 sm:p-4 rounded-lg hover:border-orange-600 hover:bg-orange-100 transition-all hover:cursor-pointer"
+                onClick={handleClick}
+            >
+                <div className="w-full sm:w-24 mb-3 sm:mb-0">
                     <img
                         src={config.imageConfig.getImage(data.thumbnail) || config.webConfig.defaultTour}
                         alt="tour-logo"
-                        className="rounded-lg size-24"
+                        className="rounded-lg w-full sm:w-24 aspect-square object-cover"
                     />
                 </div>
-
-                {/* Nội dung */}
-                <div className="col-span-4 flex flex-col justify-between w-full">
-                    <h2 className="text-lg font-bold line-clamp-1 overflow-ellipsis overflow-hidden lg:whitespace-normal whitespace-nowrap hover:text-orange-400 transition-all">
+                <div className="flex-1 sm:pl-4">
+                    <h2 className="text-base sm:text-lg font-bold line-clamp-1 hover:text-orange-400 transition-all">
                         {data.title}
                     </h2>
-                    <p className="text-sm text-gray-500 line-clamp-2">{data.description}</p>
-                    <div className={'flex gap-2 flex-col w-fit'}>
-                        <p className={'text-red-500 font-semibold'}>{config.webConfig.getCurrency(data.maxPrice)}</p>
-                        <span>
-                        <Rate allowHalf defaultValue={data.ratingAvg} starSize={10} disabled />
-                    </span>
+                    <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">{data.description}</p>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 mt-2">
+                        <p className="text-red-500 font-semibold text-sm sm:text-base">
+                            {config.webConfig.getCurrency(data.maxPrice)}
+                        </p>
+                        <Rate
+                            allowHalf
+                            defaultValue={data.ratingAvg}
+                            disabled
+                            className="text-xs sm:text-sm"
+                        />
                     </div>
                 </div>
             </Link>
             <Heart
                 onClick={(e) => {
-                    e.preventDefault(); // Ngăn hành vi mặc định của Link
-                    handleAddToWishlist(data.id); // Gọi hàm thêm/xóa khỏi wishlist
+                    e.preventDefault();
+                    handleAddToWishlist(data.id);
                 }}
-                className={`absolute bottom-2 right-2 transition-all hover:cursor-pointer ${
+                className={`absolute bottom-3 right-3 transition-all hover:cursor-pointer ${
                     isInWishlist ? 'text-red-500 fill-red-500' : 'text-red-500 hover:fill-red-500'
                 }`}
-                size={24} // Kích thước của icon (tùy chỉnh nếu cần)
+                size={20}
             />
         </div>
     );
