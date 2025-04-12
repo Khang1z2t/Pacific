@@ -16,15 +16,28 @@ const Support = () => {
         fetchSupports();
     }, []);
 
+
     const fetchSupports = async () => {
         try {
             const res = await SupportService.getAllSupports();
-            setSupports(res.data);
+
+            // Support mới lên đầu
+            const sortedSupports = res.data.sort((a, b) => {
+                // Ưu tiên pending lên đầu
+                if (a.status === 'pending' && b.status !== 'pending') return -1;
+                if (a.status !== 'pending' && b.status === 'pending') return 1;
+
+                // Nếu cùng trạng thái, sắp theo ngày mới nhất
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            });
+
+            setSupports(sortedSupports);
         } catch (err) {
             console.error(err);
             message.error("Có lỗi khi lấy danh sách yêu cầu hỗ trợ.");
         }
     };
+
 
     const handleOpenModal = (record) => {
         setSupportId(record.id);
