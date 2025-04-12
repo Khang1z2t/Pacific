@@ -64,15 +64,15 @@ const Vacations = () => {
         <div
             className="relative bg-gradient-to-br from-gray-50 via-white to-orange-50 justify-center mx-auto max-w-full p-12">
             <Divider
-                className="my-12 font-bold uppercase"
+                className="my-6 sm:my-8 md:my-12 font-bold uppercase"
                 style={{ borderColor: '#7cb305' }}
                 orientation="center"
             >
                 <div className="text-center">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
                         {t('index.ind3')}
                     </h2>
-                    <p className="text-sm sm:text-lg text-gray-600 mt-2">
+                    <p className="text-xs sm:text-sm md:text-lg text-gray-600 mt-2">
                         {t('index.ind4')}
                     </p>
                 </div>

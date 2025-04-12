@@ -17,7 +17,6 @@ export const ComboTour = () => {
 
     const handleSearch = (query) => {
         const filterSearch = {};
-
         if (query.searchText) filterSearch.title = query.searchText;
         if (query.searchSides !== null) filterSearch.categoryId = query.searchSides;
         if (query.maxPrice) filterSearch.maxPrice = query.maxPrice;
@@ -26,6 +25,7 @@ export const ComboTour = () => {
         if (query.endDate) filterSearch.endDate = query.endDate;
 
         setQuery(filterSearch);
+        setCurrentPage(1); // Reset to page 1 on new search
         setLoading(true);
     };
 
@@ -34,57 +34,61 @@ export const ComboTour = () => {
     };
 
     useEffect(() => {
-        setLoading(true); // Bắt đầu loading khi query thay đổi
+        setLoading(true);
         TourServices.getAllTour(query)
             .then((res) => {
                 const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
                 setTours(published);
-                setLoading(false); // Tắt loading khi có dữ liệu
+                setLoading(false);
             })
             .catch((err) => {
                 console.error(err);
-                setLoading(false); // Tắt loading khi có lỗi
+                setLoading(false);
             });
     }, [query]);
 
     const pageItem = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 
     return (
-        <div className="container mx-auto justify-center w-full">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <Divider
                 className="font-bold uppercase"
                 style={{ borderColor: '#7cb305' }}
                 orientation="center"
             >
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
                     {t('comboTour.tour1')}
                 </h2>
-                <p className="text-sm sm:text-lg text-gray-600 mt-2">{t('comboTour.tour2')}</p>
+                <p className="text-sm sm:text-base text-gray-600 mt-1">{t('comboTour.tour2')}</p>
             </Divider>
-            <SearchBar onSearch={handleSearch} />
-            <div className="mt-6 grid grid-cols-4 gap-4 justify-center px-14 w-fit mx-auto min-h-[908px]">
+            <div className="max-w-5xl mx-auto">
+                <SearchBar onSearch={handleSearch} />
+            </div>
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
                 {loading ? (
-                    <div className="w-full h-[400px] col-span-4 flex items-center justify-center">
-                        <Spin indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />
+                    <div className="col-span-full min-h-[400px] flex items-center justify-center">
+                        <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
                     </div>
                 ) : pageItem.length === 0 ? (
-                    <div className="col-span-4 w-full">
-                        <EmptyComponent description={'tour'} />
+                    <div className="col-span-full min-h-[400px] flex items-center justify-center">
+                        <EmptyComponent description={t('tour')} />
                     </div>
                 ) : (
-                    pageItem.map((item, index) => (
-                        <TourCards key={index} data={item} />
-                    ))
+                    pageItem.map((item) => <TourCards key={item.id} data={item} />)
                 )}
             </div>
-            <Pagination
-                rootClassName={'flex justify-center mt-6'}
-                align="center"
-                defaultCurrent={1}
-                total={tours.length}
-                pageSize={ITEM_PER_PAGE}
-                onChange={onChange}
-            />
+            {tours.length > 0 && (
+                <Pagination
+                    className="flex justify-center mt-8"
+                    align="center"
+                    current={currentPage}
+                    total={tours.length}
+                    pageSize={ITEM_PER_PAGE}
+                    onChange={onChange}
+                    showSizeChanger={false}
+                    showLessItems={true}
+                />
+            )}
         </div>
     );
 };
