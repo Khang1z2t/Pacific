@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { Steps } from 'antd'; // Thêm Steps từ Ant Design
+import { Steps } from 'antd';
 import { Loading } from '~/component/ui/Loading';
 import { BookingInfo1 } from '~/pages/Booking/components/BookingInfo1';
 import TourDetailServices from '~/services/TourDetailServices';
@@ -8,16 +8,14 @@ import TourDetailServices from '~/services/TourDetailServices';
 export const Booking = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
-    const [tour, setTour] = useState([]);
+    const [tour, setTour] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
         TourDetailServices.getTourDetailById(id)
             .then((res) => {
                 setTour(res.data);
-                setTimeout(() => {
-                    setLoading(false);
-                }, 1000);
+                setLoading(false);
             })
             .catch((err) => {
                 console.error(err);
@@ -30,33 +28,37 @@ export const Booking = () => {
     }
 
     return (
-        <div className={'container mx-auto px-6 my-12'}>
-            <h1 className="text-3xl font-semibold text-orange-600 mb-6 text-center">Quy trình đặt tour</h1>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 my-8 sm:my-12">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-orange-600 mb-6 text-center">
+                Quy trình đặt tour
+            </h1>
 
-            {/* Steps ngang ở trên đầu */}
+            {/* Steps component */}
             <Steps
-                status={'process'}
+                status="process"
                 progressDot
-                size="default"
-                current={1} // Bước hiện tại là 0 (Thông tin đặt tour)
-                className="mb-8 w-full flex justify-center items-center gap-4"
+                size="small"
+                current={1}
+                className="mb-6 sm:mb-8 w-full max-w-3xl mx-auto"
+                direction="horizontal"
+                responsive
                 items={[
                     {
-                        title: 'Chọn tour',
-                        description: 'Chọn tour bạn muốn đặt',
+                        title: <span className="text-xs sm:text-sm">Chọn tour</span>,
+                        description: <span className="text-xs">Chọn tour bạn muốn đặt</span>,
                     },
                     {
-                        title: 'Thông tin đặt tour',
-                        description: 'Điền thông tin khách hàng và tour',
+                        title: <span className="text-xs sm:text-sm">Thông tin đặt tour</span>,
+                        description: <span className="text-xs">Điền thông tin khách hàng và tour</span>,
                     },
                     {
-                        title: 'Hoàn tất thanh toán',
-                        description: 'Xác nhận và thanh toán tour',
+                        title: <span className="text-xs sm:text-sm">Hoàn tất thanh toán</span>,
+                        description: <span className="text-xs">Xác nhận và thanh toán tour</span>,
                     },
                 ]}
             />
 
-            {/* Nội dung chính */}
+            {/* Main content */}
             <div className="w-full">
                 <BookingInfo1 data={tour} />
             </div>
