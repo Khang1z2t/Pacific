@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Drawer, Menu, Dropdown, Button, message, Tooltip } from 'antd';
+import { Drawer, Menu, Dropdown, Button, message, Tooltip, Badge } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -267,7 +267,7 @@ const NavbarMB = () => {
                 placement="right"
                 onClose={onClose}
                 open={open}
-                width={280}
+                width={180}
                 bodyStyle={{ padding: 0 }}
             >
                 <Menu mode="vertical" className="border-none">
@@ -301,10 +301,12 @@ const NavbarMB = () => {
                                 <FontAwesomeIcon icon={faBell} className="mr-2" />
                                 Voucher
                                 {visibleVouchers.length > 0 && (
-                                    <span
-                                        className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-1">
-                                        {visibleVouchers.length}
-                                    </span>
+                                    <Badge
+                                        count={visibleVouchers.length}
+                                        overflowCount={99}
+                                        style={{ backgroundColor: '#f5222d', color: '#fff' }}
+                                        className="absolute -top-1 -right-2"
+                                    />
                                 )}
                             </button>
                         </Dropdown>

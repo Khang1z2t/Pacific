@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
-import { Dropdown, Menu, message, Tooltip } from 'antd';
+import { Badge, Dropdown, Menu, message, Tooltip } from 'antd';
 import { motion } from 'framer-motion';
 import config from '~/config';
 import { faBell, faGlobe } from '@fortawesome/free-solid-svg-icons';
@@ -333,10 +333,12 @@ export const Navbar = () => {
                                             className="text-lg"
                                         />
                                         {visibleVouchers.length > 0 && (
-                                            <span
-                                                className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full px-1">
-                                                {visibleVouchers.length}
-                                            </span>
+                                            <Badge
+                                                count={visibleVouchers.length}
+                                                overflowCount={99}
+                                                style={{ backgroundColor: '#f5222d', color: '#fff' }}
+                                                className="absolute -top-1 -right-2"
+                                            />
                                         )}
                                     </button>
                                 </Dropdown>

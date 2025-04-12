@@ -50,7 +50,7 @@ export const TourLists = () => {
     const pageItem = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-32 py-6">
             <Divider
                 className="font-bold uppercase"
                 style={{ borderColor: '#7cb305' }}
