@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BlockOutlined, CommentOutlined, DesktopOutlined, PieChartOutlined, TeamOutlined } from '@ant-design/icons';
-import { Breadcrumb, ConfigProvider, Layout, Switch, theme, Tooltip } from 'antd';
+import { Breadcrumb, Button, ConfigProvider, Layout, message, Modal, Select, Switch, theme, Tooltip } from 'antd';
 import { AdminSidebar } from '~/pages/Admin/components/AdminHome/AdminSidebar';
 import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';
 import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
@@ -14,7 +14,7 @@ import { useAuth } from '~/config/AuthContext';
 import { BookingStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/BookingStatistic';
 import { BiSolidCategory } from 'react-icons/bi';
 import { VoucherPage } from '~/pages/Admin/sections/VoucherPage/VoucherPage';
-import { FaMoneyCheckAlt, FaMoon } from 'react-icons/fa';
+import { FaFileExport, FaMoon, FaCheck, FaMoneyCheckAlt } from 'react-icons/fa';
 import { CiLight } from 'react-icons/ci';
 import { CategoryPage } from '~/pages/Admin/sections/CategoryPage/CategoryPage';
 import { HotelPage } from '~/pages/Admin/sections/HotelPage/HotelPage';
@@ -32,23 +32,34 @@ const { Content } = Layout;
 
 const AdminHome = () => {
     const { currentUser } = useAuth();
-
-// State để quản lý theme (dark/light)
     const [isDarkTheme, setIsDarkTheme] = useState(() => {
-        // Lấy trạng thái theme từ localStorage, mặc định là light (false)
         const savedTheme = localStorage.getItem('theme');
         return savedTheme ? JSON.parse(savedTheme) : false;
     });
-
-    // Lưu theme vào localStorage mỗi khi thay đổi
+    const [buttonState, setButtonState] = useState('idle'); // idle, loading, success
+    const [exportModalVisible, setExportModalVisible] = useState(false);
     useEffect(() => {
         localStorage.setItem('theme', JSON.stringify(isDarkTheme));
     }, [isDarkTheme]);
 
-    // Hàm chuyển đổi theme
     const toggleTheme = () => {
         setIsDarkTheme(!isDarkTheme);
     };
+
+    // hàm xuất báo cáo
+    const handleExportClick = () => {
+        setButtonState('loading');
+        // Simulate export process
+        setTimeout(() => {
+            setButtonState('success');
+            message.success('Xuất báo cáo thành công!', 1);
+            setTimeout(() => {
+                setButtonState('idle');
+                setExportModalVisible(false);
+            }, 1000); // Show success for 1 second
+        }, 3000); // Simulate 3 seconds of loading
+    };
+
     const menuItems = [
         { label: 'Trang chủ', key: '1', icon: <DesktopOutlined />, content: <HomePage /> },
         {
@@ -62,8 +73,12 @@ const AdminHome = () => {
             key: 'sub2',
             icon: <TeamOutlined />,
             children: [
-                { label: <Tooltip placement={'right'} title={"Danh sách tài khoản"}>Danh sách tài khoản</Tooltip>, key: '5', content: <UserPage/> },
-                { label: 'Hướng dẫn viên', key: '6', content: <GuidePage/> },
+                {
+                    label: <Tooltip placement={'right'} title={'Danh sách tài khoản'}>Danh sách tài khoản</Tooltip>,
+                    key: '5',
+                    content: <UserPage />,
+                },
+                { label: 'Hướng dẫn viên', key: '6', content: <GuidePage /> },
             ],
         },
         {
@@ -71,9 +86,18 @@ const AdminHome = () => {
             key: 'sub3',
             icon: <MdTour color={'orange'} />,
             children: [
-                { label: <Tooltip placement={'right'} title={"Danh sách danh mục con"}>Danh sách danh mục con</Tooltip>, key: '7', content: <CategoryPage /> },
+                {
+                    label: <Tooltip placement={'right'} title={'Danh sách danh mục con'}>Danh sách danh mục
+                        con</Tooltip>,
+                    key: '7',
+                    content: <CategoryPage />,
+                },
                 { label: 'Danh sách tour', key: '8', content: <TourList /> },
-                { label: <Tooltip placement={'right'} title={"Giao diện Lịch trình"}>Giao diện Lịch trình</Tooltip>, key: '9', content: <ItineraryPage/> },
+                {
+                    label: <Tooltip placement={'right'} title={'Giao diện Lịch trình'}>Giao diện Lịch trình</Tooltip>,
+                    key: '9',
+                    content: <ItineraryPage />,
+                },
             ],
         },
         {
@@ -96,7 +120,7 @@ const AdminHome = () => {
             icon: <BiSolidCategory color={'yellow'} />,
             children: [
                 { label: 'Khách sạn', key: '14', content: <HotelPage /> },
-                { label: 'Phương tiện', key: '15', content: <TransportationPage/> },
+                { label: 'Phương tiện', key: '15', content: <TransportationPage /> },
                 { label: 'Điểm đến', key: '16', content: <DestinationPage /> },
             ],
         },
@@ -104,22 +128,20 @@ const AdminHome = () => {
             label: 'Đánh giá',
             key: 'sub7',
             icon: <IoIosStar color={'yellow'} />,
-            content: <ReviewPage/>
-
+            content: <ReviewPage />,
         },
         {
             label: 'Blogs',
             key: 'sub8',
             icon: <BlockOutlined />,
             children: [
-
                 { label: 'Danh sách Blogs', key: '18', content: <Blog /> },
                 { label: 'Tông tin chi tiết Blogs', key: '19', content: <InfoBlog /> },
             ],
         },
         { label: 'Hỗ trợ', key: '20', icon: <CommentOutlined />, content: <Support /> },
-
     ];
+
     const [selectedContent, setSelectedContent] = useState(menuItems[0].content);
     const [selectedLabel, setSelectedLabel] = useState(menuItems[0].label);
 
@@ -128,31 +150,40 @@ const AdminHome = () => {
         setSelectedContent(selectedItem ? selectedItem.content : 'Content not found');
         setSelectedLabel(selectedItem ? selectedItem.label : 'Label not found');
     };
+
     const {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
     const header = (
-        <>
-            <div className={'flex items-center justify-between gap-4'}>
+        <div className="w-full flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
                 <h2 className={isDarkTheme ? 'text-lg font-semibold text-white' : 'text-lg font-semibold text-black'}>Admin
                     Dashboard</h2>
                 <Link className={isDarkTheme ? 'text-blue-300' : 'text-blue-500'} to={'/'}>HomePage</Link>
-                <div className={'flex items-center justify-end mx-auto gap-4'}>
+                <div className="flex items-center justify-end mx-auto gap-4">
                     <span
                         className={isDarkTheme ? 'text-white' : 'text-gray-500'}>Chào mừng, {currentUser.username}</span>
                     <Tooltip title={isDarkTheme ? 'Chuyển sang Light Theme' : 'Chuyển sang Dark Theme'}>
                         <Switch
                             checked={isDarkTheme}
                             onChange={toggleTheme}
-                            checkedChildren={<FaMoon size={16} className={'text-black items-center mt-0.5'} />}
-                            unCheckedChildren={<CiLight size={18} className={'text-white items-center mt-0.5'} />}
+                            checkedChildren={<FaMoon size={16} className="text-black items-center mt-0.5" />}
+                            unCheckedChildren={<CiLight size={18} className="text-white items-center mt-0.5" />}
                         />
                     </Tooltip>
                 </div>
             </div>
-
-        </>
+            <div className="flex items-center justify-end gap-4">
+                <Button
+                    type={'default'}
+                    icon={<FaFileExport size={16} />}
+                    onClick={() => setExportModalVisible(true)}
+                >
+                    Xuất báo cáo
+                </Button>
+            </div>
+        </div>
     );
 
     const footer = (
@@ -169,8 +200,8 @@ const AdminHome = () => {
         },
         components: {
             Table: {
-                colorBgContainer: '#fff', // Màu nền của body table
-                headerBg: '#fff', // Màu nền của header table
+                colorBgContainer: '#fff',
+                headerBg: '#fff',
             },
         },
     };
@@ -184,9 +215,9 @@ const AdminHome = () => {
         },
         components: {
             Table: {
-                colorBgContainer: '#838383', // Màu nền của body table
-                headerBg: '#838383', // Màu nền của header table
-                colorText: '#fff', // Màu chữ trong table (để dễ đọc trên nền trắng)
+                colorBgContainer: '#838383',
+                headerBg: '#838383',
+                colorText: '#fff',
             },
         },
     };
@@ -197,6 +228,67 @@ const AdminHome = () => {
                 <AdminSidebar onSelect={handleMenuSelect} menuItems={menuItems} />
                 <Layout className="site-layout">
                     <AdminHeader theme={isDarkTheme ? 'gray' : 'white'} children={header} />
+                    <Modal
+                        open={exportModalVisible}
+                        onCancel={() => setExportModalVisible(false)}
+                        footer={null}
+                        width={400}
+                        centered
+                        className={`${
+                            isDarkTheme ? 'bg-gray-800 text-white' : 'bg-white text-black'
+                        } rounded-lg`}>
+                        <div className="p-4">
+                            <h3 className={`text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-black'}`}>
+                                Xuất báo cáo
+                            </h3>
+                            <div className={"mt-4"}>
+                                <p className={`text-sm ${isDarkTheme ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    Chọn loại báo cáo muốn xuất:
+                                </p>
+                                {/*Giá trị xuất báo cáo ở BE (switch - case )*/}
+                                <Select
+                                    className="w-full mt-2"
+                                    defaultValue="booking"
+                                    options={[
+                                        { value: 'booking', label: 'Booking' },
+                                        { value: 'tour', label: 'Tour' },
+                                        { value: 'user', label: 'User' },
+                                    ]}/>
+                            </div>
+                            <div className="flex justify-end mt-4">
+                                <Button
+                                    icon={
+                                        buttonState === 'loading' ? (
+                                            <span className="inline-block animate-arrow-down">↓</span>
+                                        ) : buttonState === 'success' ? (
+                                            <FaCheck className="text-white" />
+                                        ) : (
+                                            <FaFileExport className="text-white" />
+                                        )
+                                    }
+                                    className={`
+                        flex items-center
+                        px-4 py-2 rounded-md text-white
+                        transition-all duration-300 ease-in-out
+                        ${
+                                        buttonState === 'success'
+                                            ? 'bg-green-500 border-green-500'
+                                            : buttonState === 'loading'
+                                                ? 'bg-gray-400 border-gray-400 cursor-wait'
+                                                : isDarkTheme
+                                                    ? 'bg-blue-600 border-blue-600 hover:bg-blue-500'
+                                                    : 'bg-blue-500 border-blue-500 hover:bg-blue-600'
+                                    }
+                    `}
+                                    onClick={handleExportClick}
+                                    disabled={buttonState === 'loading'}
+                                >
+                                    {buttonState === 'success' ? 'Hoàn tất' : 'Xuất báo cáo'}
+                                </Button>
+                            </div>
+                        </div>
+                    </Modal>
+
                     <Content className="p-4">
                         <Breadcrumb className="mb-4">
                             <Breadcrumb.Item>Home</Breadcrumb.Item>
@@ -218,4 +310,5 @@ const AdminHome = () => {
         </ConfigProvider>
     );
 };
+
 export default AdminHome;
