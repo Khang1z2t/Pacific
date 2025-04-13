@@ -38,10 +38,15 @@ export const ProfileCard = ({ data, switchTab, isLoading }) => {
             bodyStyle={{ padding: '16px sm:p-6' }}
         >
             <div className="flex flex-col items-center text-center">
-                <Avatar
-                    size={{ xs: 80, sm: 100, lg: 120, xl: 120 }}
+                {/*<Avatar*/}
+                {/*    size={{ xs: 80, sm: 100, lg: 120, xl: 120 }}*/}
+                {/*    src={config.imageConfig.getImage(data.avatar) || config.imageConfig.getImage(data.avatar)}*/}
+                {/*    className="border-4 border-orange-100 shadow-md"*/}
+                {/*/>*/}
+                <img
                     src={config.imageConfig.getImage(data.avatar) || config.imageConfig.getImage(data.avatar)}
-                    className="border-4 border-orange-100 shadow-md"
+                    alt="Avatar"
+                    className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full border-4 border-orange-100 shadow-md"
                 />
                 <h2 className="mt-4 flex flex-wrap items-center gap-2 text-lg sm:text-xl font-bold text-gray-800">
                     {renderValue(data.username, 'Bạn chưa cập nhật tên')}
