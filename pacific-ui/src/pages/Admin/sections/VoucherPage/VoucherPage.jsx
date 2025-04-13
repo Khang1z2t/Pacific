@@ -328,35 +328,30 @@ export const VoucherPage = () => {
 
     return (
         <>
-            <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans">
-                <div className="bg-white p-4 rounded shadow-lg">
-                    <Table
-                        columns={columns}
-                        dataSource={vouchers}
-                        pagination={{
-                            pageSize: 10,
-                            total: vouchers.length,
-                        }}
-                        rowKey="id"
-                        bordered
-                        title={() => (
-                            <div className="flex justify-between items-center">
-                                <Title level={4}>Danh sách voucher</Title>
-                                <div className="flex gap-2">
-                                    <Button onClick={() => setOpen(true)} type="primary">
-                                        Thêm voucher
-                                    </Button>
-                                    <Button onClick={fetchVouchers} icon={<ReloadOutlined />} type="default">
-                                        Làm mới
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
-                        loading={loading}
-                    />
-                </div>
-            </div>
-
+            <Table
+                columns={columns}
+                dataSource={vouchers}
+                pagination={{
+                    pageSize: 10,
+                    total: vouchers.length,
+                }}
+                rowKey="id"
+                bordered
+                title={() => (
+                    <div className="flex justify-between items-center">
+                        <Title level={4}>Danh sách voucher</Title>
+                        <div className="flex gap-2">
+                            <Button onClick={() => setOpen(true)} type="primary">
+                                Thêm voucher
+                            </Button>
+                            <Button onClick={fetchVouchers} icon={<ReloadOutlined />} type="default">
+                                Làm mới
+                            </Button>
+                        </div>
+                    </div>
+                )}
+                loading={loading}
+            />
             {/* Add Voucher Modal */}
             <Modal
                 open={open}
