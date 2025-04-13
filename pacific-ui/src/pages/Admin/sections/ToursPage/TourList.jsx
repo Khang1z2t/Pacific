@@ -1,5 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Divider, Image, Input, message, Modal, Rate, Space, Switch, Table, Tooltip, Typography } from 'antd';
+import {
+    Button,
+    Card,
+    Divider,
+    Image,
+    Input,
+    message,
+    Modal,
+    Rate,
+    Space,
+    Switch,
+    Table,
+    Tooltip,
+    Typography,
+} from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import TourServices from '~/services/TourServices';
 import config from '~/config';
@@ -11,6 +25,7 @@ import { RefreshCwIcon } from 'lucide-react';
 import DestinationServices from '~/services/DestinationServices';
 
 const { Title } = Typography;
+const { Text } = Typography;
 
 const TourList = () => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -161,7 +176,7 @@ const TourList = () => {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
-            render: (e) => <Switch checked={e === 'PUBLISHED'} disabled />,
+            render: (e) => <Switch checked={e === 'PUBLISHED'} />,
             filters: [
                 { text: 'Đang bán', value: 'PUBLISHED' },
                 { text: 'Hết tour', value: 'DRAFT' },
@@ -251,20 +266,41 @@ const TourList = () => {
 
     return (
         <div className="bg-white p-4 rounded shadow-lg">
-            <Title level={2}>QUẢN LÝ TOUR</Title>
-            <div className="mb-2 w-full flex gap-4 items-center flex-wrap">
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
-                    Thêm
-                </Button>
-                <Button
-                    type={'text'}
-                    icon={<RefreshCwIcon />}
-                    onClick={() => {
-                        setLoading(true);
-                        fetchData();
-                    }}
-                    loading={loading}
-                />
+            <div className={'flex flex-col gap-4'}>
+                <Title level={2}>QUẢN LÝ TOUR</Title>
+                <Space>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
+                        Thêm
+                    </Button>
+                    <Button
+                        type={'text'}
+                        icon={<RefreshCwIcon />}
+                        onClick={() => {
+                            setLoading(true);
+                            fetchData();
+                        }}
+                        loading={loading}
+                        className={'border border-gray-300 rounded-md p-2'}
+                    >
+                        Làm mới
+                    </Button>
+                </Space>
+                <Card
+                    className="bg-indigo-50 border border-blue-700 shadow-md w-full md:w-1/2 rounded-lg p-1"
+                    bodyStyle={{ padding: '16px' }}
+                >
+                    <Text strong className="text-red-500 text-lg">
+                        Lưu ý:
+                    </Text>
+                    <Text className="text-gray-800 leading-relaxed">
+                        {' '}"Trạng thái" là <Text strong>DRAFT</Text> là tour đã hết, <Text strong>PUBLISHED</Text> là tour
+                        đang được bán.
+                        Khi tour có Tour chi tiết đầy đủ thì trạng thái tour sẽ chuyển sang <Text
+                        strong>PUBLISHED</Text>.
+                        <br />
+                        "Ẩn/Hiện" là trạng thái tour đang được sử dụng hay không.
+                    </Text>
+                </Card>
             </div>
             <Table
                 columns={columns}
