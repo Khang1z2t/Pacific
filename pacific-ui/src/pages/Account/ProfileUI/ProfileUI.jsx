@@ -8,7 +8,7 @@ import { VerifyInformation } from '~/pages/Account/ProfileUI/sections/ProfileInf
 import {
     AccountInformation,
 } from '~/pages/Account/ProfileUI/sections/ProfileInformation/components/AccountInformation';
-import { Menu, X } from 'lucide-react'; // Icons for hamburger menu
+import { Menu, X } from 'lucide-react';
 
 const { TabPane } = Tabs;
 
@@ -17,11 +17,11 @@ export const ProfileUI = () => {
     const token = localStorage.getItem('accessToken');
     const [activeTab, setActiveTab] = useState('1');
     const [isLoading, setIsLoading] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const switchTab = (tabKey) => {
         setActiveTab(tabKey);
-        setIsMenuOpen(false); // Close menu when a tab is selected
+        setIsMenuOpen(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -35,13 +35,34 @@ export const ProfileUI = () => {
         setIsMenuOpen((prev) => !prev);
     };
 
-    // Menu items for mobile/tablet
     const menuItems = [
         { key: '1', label: 'Chỉnh sửa thông tin' },
         { key: '2', label: 'Xác thực thông tin' },
         { key: '3', label: 'Lịch sử đặt tour' },
         { key: '4', label: 'Danh sách yêu thích' },
     ];
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case '1':
+                return (
+                    <AccountInformation
+                        data={currentUser}
+                        onUserUpdate={handleUserUpdate}
+                        setParentLoading={setIsLoading}
+                        switchTab={switchTab}
+                    />
+                );
+            case '2':
+                return <VerifyInformation data={currentUser} onUserUpdate={handleUserUpdate} />;
+            case '3':
+                return <BookedTour />;
+            case '4':
+                return <WishListIndex />;
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 p-4 sm:p-6 bg-gray-100 min-h-screen">
@@ -62,10 +83,9 @@ export const ProfileUI = () => {
                         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                     <span className="text-base font-semibold">
-                        {menuItems.find((item) => item.key === activeTab)?.label}
+                        {menuItems.find((item) => item.key === activeTab)?.label || 'Menu'}
                     </span>
                     <div className="w-6" />
-                    {/* Spacer for alignment */}
                 </div>
 
                 {/* Mobile/Tablet Menu Dropdown */}
@@ -75,7 +95,7 @@ export const ProfileUI = () => {
                             <button
                                 key={item.key}
                                 onClick={() => switchTab(item.key)}
-                                className={`block w-full text-left py-2 px-4 rounded-md ${
+                                className={`block w-full text-left py-2 px-4 rounded-md text-sm sm:text-base ${
                                     activeTab === item.key
                                         ? 'bg-orange-100 text-orange-600 font-semibold'
                                         : 'hover:bg-gray-100'
@@ -88,37 +108,39 @@ export const ProfileUI = () => {
                     </div>
                 )}
 
-                {/* Tabs Content */}
-                <Tabs
-                    animated={{ inkBar: true, tabPane: true }}
-                    onChange={switchTab}
-                    rootClassName="bg-white p-4 rounded-lg shadow-md"
-                    activeKey={activeTab}
-                    tabBarStyle={{
-                        fontSize: '14px',
-                        padding: '0 8px',
-                        display: 'none', // Hide tab bar by default
-                        '@media (min-width: 1024px)': { display: 'block' }, // Show on desktop
-                    }}
-                >
-                    <TabPane tab="Chỉnh sửa thông tin" key="1">
-                        <AccountInformation
-                            data={currentUser}
-                            onUserUpdate={handleUserUpdate}
-                            setParentLoading={setIsLoading}
-                            switchTab={switchTab}
-                        />
-                    </TabPane>
-                    <TabPane tab="Xác thực thông tin" key="2">
-                        <VerifyInformation data={currentUser} onUserUpdate={handleUserUpdate} />
-                    </TabPane>
-                    <TabPane tab="Lịch sử đặt tour" key="3">
-                        <BookedTour />
-                    </TabPane>
-                    <TabPane className="max-h-full overflow-y-auto" tab="Danh sách yêu thích" key="4">
-                        <WishListIndex />
-                    </TabPane>
-                </Tabs>
+                {/* Desktop Tabs */}
+                <div className="hidden lg:block">
+                    <Tabs
+                        animated={{ inkBar: true, tabPane: true }}
+                        onChange={switchTab}
+                        activeKey={activeTab}
+                        className="bg-white p-4 rounded-lg shadow-md"
+                        tabBarStyle={{ fontSize: '14px', padding: '0 8px' }}
+                    >
+                        <TabPane tab="Chỉnh sửa thông tin" key="1">
+                            <AccountInformation
+                                data={currentUser}
+                                onUserUpdate={handleUserUpdate}
+                                setParentLoading={setIsLoading}
+                                switchTab={switchTab}
+                            />
+                        </TabPane>
+                        <TabPane tab="Xác thực thông tin" key="2">
+                            <VerifyInformation data={currentUser} onUserUpdate={handleUserUpdate} />
+                        </TabPane>
+                        <TabPane tab="Lịch sử đặt tour" key="3">
+                            <BookedTour />
+                        </TabPane>
+                        <TabPane tab="Danh sách yêu thích" key="4">
+                            <WishListIndex />
+                        </TabPane>
+                    </Tabs>
+                </div>
+
+                {/* Mobile/Tablet Content */}
+                <div className="lg:hidden bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                    {renderTabContent()}
+                </div>
             </div>
         </div>
     );
