@@ -1,4 +1,4 @@
-import { DatePicker, Form, Input, message, Radio, Select, Spin, Upload, Modal } from 'antd';
+import { DatePicker, Form, Input, message, Radio, Select, Spin, Upload, Modal, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import config from '~/config';
@@ -306,7 +306,20 @@ export const AccountInformation = ({ data, onUserUpdate, switchTab, setParentLoa
                                     className="w-full rounded-lg border-gray-300 text-sm sm:text-base"
                                 />
                             </Form.Item>
-                            {/* Trạng thái xác thực giữ nguyên, chỉ điều chỉnh font size */}
+                            {/* Trạng thái xác thực giữ nguyên */}
+                            {data?.emailVerified && (
+                                <div className="text-green-500 w-fit p-2 -mt-4 bg-green-50 rounded-lg text-sm">
+                                    <p className={'font-medium text-green-600'}>Email đã được xác thực</p>
+                                </div>
+                            )}
+                            {!data?.emailVerified && (
+                                <button
+                                    onClick={() => switchTab('2')}
+                                    className={'w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm'}
+                                >
+                                    <p className={'font-medium'}>Xác thực ngay!</p>
+                                </button>
+                            )}
                         </div>
                         <div className="flex flex-col">
                             <Form.Item
@@ -321,7 +334,19 @@ export const AccountInformation = ({ data, onUserUpdate, switchTab, setParentLoa
                                     className="w-full rounded-lg border-gray-300 text-sm sm:text-base"
                                 />
                             </Form.Item>
-                            {/* Trạng thái xác thực giữ nguyên */}
+                            {data?.phoneVerified && (
+                                <div className="text-green-500 w-fit p-2 -mt-4 bg-green-50 rounded-lg text-sm">
+                                    <p className={'font-medium text-green-600'}>Số điện thoại đã được xác thực</p>
+                                </div>
+                            )}
+                            {!data?.phoneVerified && (
+                                <button
+                                    onClick={() => switchTab('2')}
+                                    className={'w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm'}
+                                >
+                                    <p className={'font-medium'}>Xác thực ngay!</p>
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className="mb-4 sm:mb-6">

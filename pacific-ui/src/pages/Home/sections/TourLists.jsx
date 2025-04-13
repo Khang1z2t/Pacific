@@ -50,7 +50,7 @@ export const TourLists = () => {
     const pageItem = tours.slice((currentPage - 1) * ITEM_PER_PAGE, currentPage * ITEM_PER_PAGE);
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-32 py-6">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32 py-6">
             <Divider
                 className="font-bold uppercase"
                 style={{ borderColor: '#7cb305' }}
@@ -65,13 +65,14 @@ export const TourLists = () => {
                 <SearchBar onSearch={handleSearch} />
             </div>
             <div
-                className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+                className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 justify-items-center"
+            >
                 {loading ? (
-                    <div className="col-span-full min-h-[400px] flex items-center justify-center">
+                    <div className="col-span-full min-h-[25rem] flex items-center justify-center">
                         <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
                     </div>
                 ) : pageItem.length === 0 ? (
-                    <div className="col-span-full min-h-[400px] flex items-center justify-center">
+                    <div className="col-span-full min-h-[25rem] flex items-center justify-center">
                         <EmptyComponent description={t('tour')} />
                     </div>
                 ) : (
