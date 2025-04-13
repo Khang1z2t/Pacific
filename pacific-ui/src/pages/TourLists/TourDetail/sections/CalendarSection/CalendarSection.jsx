@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Calendar, Card, Divider, Image, Menu, Skeleton } from 'antd';
+import { Button, Calendar, Card, Divider, Image, Menu, Rate, Skeleton } from 'antd';
 import dayjs from 'dayjs';
 import BookingServices from '~/services/BookingServices';
 import config from '~/config';
@@ -95,9 +95,6 @@ export const CalendarSection = ({ data }) => {
                     <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-red-600">
                         Giá: {config.webConfig.getCurrency(tourDetail?.priceAdults)} / Người
                     </h2>
-                    <p className="bg-red-100 text-red-600 p-2 rounded mb-2 text-sm sm:text-base">
-                        Đặt ngay để nhận ưu đãi giờ chót tiết kiệm thêm 300K
-                    </p>
                     <div className="space-y-2 text-sm sm:text-base">
                         <p><strong>Mã tour:</strong> {data.id}</p>
                         <p><strong>Khởi hành:</strong> {data.destination}</p>
@@ -109,6 +106,9 @@ export const CalendarSection = ({ data }) => {
                         </p>
                         <p>
                             <strong>Thời gian:</strong> {data.duration} ngày {data.duration - 1} đêm
+                        </p>
+                        <p>
+                            <strong>Trung bình đánh giá:</strong> <Rate allowHalf defaultValue={data.ratingAvg} disabled />
                         </p>
                     </div>
                     <div className="flex space-x-4 mt-4">
