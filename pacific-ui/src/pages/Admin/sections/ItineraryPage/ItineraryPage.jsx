@@ -4,7 +4,8 @@ import ItineraryServices from '~/services/ItineraryServices';
 import TourServices from '~/services/TourServices';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import ReactQuill from 'react-quill'; // Thêm React-Quill
-import 'react-quill/dist/quill.snow.css'; // Nhập CSS cho giao diện
+import 'react-quill/dist/quill.snow.css';
+import { RefreshCwIcon } from 'lucide-react'; // Nhập CSS cho giao diện
 
 const { TabPane } = Tabs;
 
@@ -53,7 +54,10 @@ export const ItineraryPage = () => {
     const fetchItineraries = async (tourId) => {
         try {
             const response = await ItineraryServices.getByTourId(tourId);
-            setItineraries(Array.isArray(response.data) ? response.data : []);
+            const sortedItineraries = Array.isArray(response.data)
+                ? response.data.sort((a, b) => a.dayNumber - b.dayNumber)
+                : [];
+            setItineraries(sortedItineraries);
         } catch (error) {
             console.error('Failed to fetch itineraries:', error);
             setItineraries([]);
@@ -88,7 +92,10 @@ export const ItineraryPage = () => {
     const handleAddItinerary = async (values) => {
         try {
             const response = await ItineraryServices.AddItinerary(selectedTour.id, values);
-            setItineraries(Array.isArray(response.data) ? response.data : []);
+            const sortedItineraries = Array.isArray(response.data)
+                ? response.data.sort((a, b) => a.dayNumber - b.dayNumber)
+                : [];
+            setItineraries(sortedItineraries);
             setIsModalOpen(false);
             form.resetFields();
             message.success('Thêm lịch trình thành công', 2);
@@ -111,10 +118,11 @@ export const ItineraryPage = () => {
     const handleEditItinerary = async (values) => {
         try {
             const updatedItinerary = await ItineraryServices.updateItinerary(editItinerary.id, values);
-            setItineraries(itineraries.map(item =>
+            const updatedList = itineraries.map(item =>
                 item.id === editItinerary.id ? updatedItinerary : item
-            ));
-            await fetchItineraries(selectedTour.id);
+            );
+            const sortedItineraries = updatedList.sort((a, b) => a.dayNumber - b.dayNumber);
+            setItineraries(sortedItineraries);
             setEditModalVisible(false);
             editForm.resetFields();
             message.success('Cập nhật lịch trình thành công', 2);
@@ -144,7 +152,7 @@ export const ItineraryPage = () => {
     };
 
     const columns = [
-        { title: 'Ngày', dataIndex: 'dayNumber', key: 'dayNumber' },
+        { title: 'Ngày', dataIndex: 'dayNumber', key: 'dayNumber', sorter: (a, b) => a.dayNumber - b.dayNumber },
         { title: 'Tiêu đề', dataIndex: 'title', key: 'title' },
         {
             title: 'Mô tả',
@@ -167,6 +175,13 @@ export const ItineraryPage = () => {
         },
     ];
 
+    const handleRefresh = () => {
+        if (selectedTour) {
+            fetchItineraries(selectedTour.id);
+        }
+        message.success('Làm mới lịch trình thành công', 2);
+    }
+
     return (
         <div style={{ padding: '20px' }}>
             <div className="flex justify-between items-center mb-4">
@@ -182,6 +197,14 @@ export const ItineraryPage = () => {
                         onChange={handleTourChange}
                         value={selectedTour?.id}
                     />
+                    <Button
+                        type={'text'}
+                        icon={<RefreshCwIcon/>}
+                        onClick={handleRefresh}
+                        className={"border border-gray-300 rounded-md hover:bg-gray-100"}
+                        >
+                        Làm mới
+                    </Button>
                     <Button type="primary" icon={<PlusOutlined/>} onClick={showModal}>
                         Thêm lịch trình
                     </Button>
