@@ -3,6 +3,8 @@ import { Button, Form, Input, InputNumber, message, Modal, Select, Space, Table,
 import ItineraryServices from '~/services/ItineraryServices';
 import TourServices from '~/services/TourServices';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import ReactQuill from 'react-quill'; // Thêm React-Quill
+import 'react-quill/dist/quill.snow.css'; // Nhập CSS cho giao diện
 
 const { TabPane } = Tabs;
 
@@ -16,6 +18,26 @@ export const ItineraryPage = () => {
     const [form] = Form.useForm();
     const [editForm] = Form.useForm();
 
+    // Cấu hình toolbar cho React-Quill
+    const quillModules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'image'],
+            [{ 'align': [] }],
+            ['clean']
+        ],
+    };
+
+    const quillFormats = [
+        'header',
+        'bold', 'italic', 'underline', 'strike',
+        'list', 'bullet',
+        'link', 'image',
+        'align',
+    ];
+
     useEffect(() => {
         const fetchTours = async () => {
             try {
@@ -28,7 +50,6 @@ export const ItineraryPage = () => {
         fetchTours();
     }, []);
 
-    // Hàm lấy danh sách lịch trình
     const fetchItineraries = async (tourId) => {
         try {
             const response = await ItineraryServices.getByTourId(tourId);
@@ -89,12 +110,10 @@ export const ItineraryPage = () => {
 
     const handleEditItinerary = async (values) => {
         try {
-            const updatedItinerary = await ItineraryServices.updateItinerary(editItinerary.id, values); // Lấy ItineraryResponse từ response
-            // Cập nhật local trước để phản ánh ngay lập tức
+            const updatedItinerary = await ItineraryServices.updateItinerary(editItinerary.id, values);
             setItineraries(itineraries.map(item =>
                 item.id === editItinerary.id ? updatedItinerary : item
             ));
-            // Làm mới dữ liệu từ backend
             await fetchItineraries(selectedTour.id);
             setEditModalVisible(false);
             editForm.resetFields();
@@ -206,7 +225,12 @@ export const ItineraryPage = () => {
                                             name={[field.name, 'notes']}
                                             rules={[{ required: true, message: 'Vui lòng nhập ghi chú' }]}
                                         >
-                                            <Input.TextArea rows={4} />
+                                            <ReactQuill
+                                                theme="snow"
+                                                modules={quillModules}
+                                                formats={quillFormats}
+                                                style={{ height: '200px', marginBottom: '40px' }}
+                                            />
                                         </Form.Item>
                                     </TabPane>
                                 ))}
@@ -243,7 +267,12 @@ export const ItineraryPage = () => {
                         name="notes"
                         rules={[{ required: true, message: 'Vui lòng nhập ghi chú' }]}
                     >
-                        <Input.TextArea rows={4} />
+                        <ReactQuill
+                            theme="snow"
+                            modules={quillModules}
+                            formats={quillFormats}
+                            style={{ height: '200px', marginBottom: '40px' }}
+                        />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
