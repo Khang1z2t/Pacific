@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, InputNumber, message, Modal, Select, Space, Table, Tabs, Tooltip } from 'antd';
 import ItineraryServices from '~/services/ItineraryServices';
 import TourServices from '~/services/TourServices';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import ReactQuill from 'react-quill'; // Thêm React-Quill
 import 'react-quill/dist/quill.snow.css'; // Nhập CSS cho giao diện
 
@@ -124,13 +124,21 @@ export const ItineraryPage = () => {
         }
     };
 
-    const handleDeleteItinerary = async (id) => {
+    const handleDeleteAllItineraries = async () => {
+        if (!selectedTour) {
+            message.warning('Vui lòng chọn một tour trước!');
+            return;
+        }
+        if(!itineraries.length) {
+            message.warning('Không có lịch trình nào để xóa');
+            return;
+        }
         try {
-            await ItineraryServices.deleteItinerary(id);
-            setItineraries(itineraries.filter(itinerary => itinerary.id !== id));
-            message.success('Xóa lịch trình thành công', 2);
+            await ItineraryServices.deleteItinerary(selectedTour.id);
+            setItineraries([]);
+            message.success('Xóa toàn bộ lịch trình thành công', 2);
         } catch (error) {
-            console.error('Failed to delete itinerary:', error);
+            console.error('Failed to delete itineraries:', error);
             message.error('Xóa lịch trình thất bại', 2);
         }
     };
@@ -148,22 +156,13 @@ export const ItineraryPage = () => {
             title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Tooltip title="Chỉnh sửa lịch trình">
-                        <Button
-                            icon={<EditOutlined />}
-                            type="text"
-                            onClick={() => showEditModal(record)}
-                        />
-                    </Tooltip>
-                    <Tooltip title="Xóa lịch trình">
-                        <Button
-                            icon={<DeleteOutlined />}
-                            danger
-                            onClick={() => handleDeleteItinerary(record.id)}
-                        />
-                    </Tooltip>
-                </Space>
+                <Tooltip title="Chỉnh sửa lịch trình">
+                    <Button
+                        icon={<EditOutlined />}
+                        type="text"
+                        onClick={() => showEditModal(record)}
+                    />
+                </Tooltip>
             ),
         },
     ];
@@ -183,8 +182,11 @@ export const ItineraryPage = () => {
                         onChange={handleTourChange}
                         value={selectedTour?.id}
                     />
-                    <Button type="primary" onClick={showModal}>
+                    <Button type="primary" icon={<PlusOutlined/>} onClick={showModal}>
                         Thêm lịch trình
+                    </Button>
+                    <Button danger icon={<DeleteOutlined/>} onClick={handleDeleteAllItineraries}>
+                        Xóa toàn bộ lịch trình
                     </Button>
                 </Space>
             </div>
