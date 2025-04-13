@@ -10,7 +10,6 @@ import {
     FaTags,
 } from 'react-icons/fa';
 import ItineraryServices from '~/services/ItineraryServices';
-import 'react-quill/dist/quill.snow.css'; // Nhập CSS của Quill
 
 const { Title, Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -167,10 +166,9 @@ export const ItinerarySection = ({ data }) => {
                                         animate="visible"
                                         variants={fadeInUp}
                                     >
-                                        <div
-                                            className="ql-editor"
-                                            dangerouslySetInnerHTML={{ __html: item.notes }}
-                                        />
+                                        <Paragraph className="text-sm sm:text-base text-gray-600">
+                                            <div dangerouslySetInnerHTML={{ __html: item.notes }} />
+                                        </Paragraph>
                                     </motion.div>
                                 </Panel>
                             ))
