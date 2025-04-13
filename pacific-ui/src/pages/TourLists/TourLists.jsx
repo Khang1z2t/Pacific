@@ -186,7 +186,7 @@ export const TourLists = ({ titleType }) => {
                                 ))}
                             </div>
                         ) : (
-                            <EmptyComponent description={t('tour.empty')} />
+                            <EmptyComponent description={"tour"} />
                         )}
                     </div>
                 </div>

@@ -9,8 +9,8 @@ export const Aside = ({ query, setQuery, titleType }) => {
     const [rate, setRate] = useState(query.rate || null);
     const [searchPrices, setSearchPrices] = useState(query.searchPrices || 'All');
     const [checkedTour, setCheckedTour] = useState(titleType === t('search.ti4') ? 1 : 2);
-    const [maxPrice, setMaxPrice] = useState(query.maxPrice || 0);
-    const [minPrice, setMinPrice] = useState(query.minPrice || 0);
+    const [maxPrice, setMaxPrice] = useState(query.maxPrice || null);
+    const [minPrice, setMinPrice] = useState(query.minPrice || null);
 
     useEffect(() => {
         setCheckedTour(titleType === t('search.ti4') ? 1 : 2);
@@ -27,8 +27,8 @@ export const Aside = ({ query, setQuery, titleType }) => {
     const handleClear = () => {
         setRate(null);
         setSearchPrices('All');
-        setMinPrice(0);
-        setMaxPrice(0);
+        setMinPrice(null);
+        setMaxPrice(null);
         setCheckedTour(titleType === t('search.ti4') ? 1 : 2);
         setQuery((prevQuery) => ({
             ...prevQuery,
@@ -61,6 +61,7 @@ export const Aside = ({ query, setQuery, titleType }) => {
                     className="w-full mt-4"
                     placeholder="Giá thấp nhất"
                     min={0}
+                    step={100000}
                     formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     suffix="VND"
                     value={minPrice}
@@ -72,6 +73,7 @@ export const Aside = ({ query, setQuery, titleType }) => {
                     className="w-full mt-4"
                     placeholder="Giá cao nhất"
                     min={0}
+                    step={100000}
                     formatter={(e) => `${e}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     suffix="VND"
                     value={maxPrice}

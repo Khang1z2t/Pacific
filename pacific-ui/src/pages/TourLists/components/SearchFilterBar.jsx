@@ -178,7 +178,7 @@ export const SearchFilterBar = ({ onSearch, query: initialQuery = {}, titleType 
                     open={visible}
                     onClose={() => setVisible(false)}
                     title="Lọc và tìm kiếm"
-                    placement="right"
+                    placement="bottom"
                     width={300}
                     closable={true}
                     destroyOnClose={true}
