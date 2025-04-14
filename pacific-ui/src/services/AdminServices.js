@@ -111,6 +111,16 @@ const AdminServices = {
             console.error(error);
             return Promise.reject(error);
         }
+    },
+
+    getBookingYearlyStats: async () => {
+        try {
+            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/revenue-booking/yearly');
+            return resp.data;
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
     }
 };
 

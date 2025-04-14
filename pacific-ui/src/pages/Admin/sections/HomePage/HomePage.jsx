@@ -4,32 +4,28 @@ import { StatisticSection } from '~/pages/Admin/sections/HomePage/Sections/Stati
 import { StatisticTourSection } from '~/pages/Admin/sections/HomePage/Sections/StatisticTourSection';
 import { useEffect, useState } from 'react';
 import AdminServices from '~/services/AdminServices';
+import Orb from '~/component/Animation/Orb';
+import { Card } from 'antd';
 
 export const HomePage = () => {
-    const [data, setData] = useState([]);
-    const [chartData, setChartData] = useState([ {
-        name: '',
-        value: 0,
-    }]);
+    const [revenueData, setRevenueData] = useState({});
+    const [chartData, setChartData] = useState([]);
 
     useEffect(() => {
-        AdminServices.getBookingRevenue().then((res) => {
-            setData(res);
+        AdminServices.getBookingYearlyStats().then((res) => {
+            setRevenueData({
+                totalRevenue: res.data.totalRevenue,
+                revenueChange: res.data.revenueChange,
+                change: res.data.change,
+            });
+            setChartData(res.data.monthlyRevenues.map(item => ({
+                name: `Tháng ${item.month}`,
+                value: item.revenue,
+            })));
         }).catch((err) => {
             console.error(err);
-        })
+        });
     }, []);
-
-    useEffect(() => {
-        const temp = data.map(item => {
-            return {
-                name: item.bookingDate,
-                value: item.tourRevenue || 0,
-            }
-        })
-        setChartData(temp);
-    }, [data]);
-
 
     // const chartData = [
     //     { name: 'Mon', value: 1200 },
@@ -42,38 +38,35 @@ export const HomePage = () => {
     // ];
 
     return (
-        <div className={"space-y-4"}>
+        <div className={'space-y-4'}>
             <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'}>
-                {/*Tổng Lợi nhuận được so sánh theo chu kì*/}
-                <StatusCard title={'Total Sales'}
-                            totalAmount={123456}
-                            weekChange={{ value: 12, type: 'increase' }}
-                            dayChange={{ value: 2, type: 'decrease' }}
-                            dailyAmount={1234}
-                />
-                {/*Thống kê lượt truy cập*/}
                 <StatusCard
-                    title="支付笔数"
-                    totalAmount="6,560"
-                    dailyAmount="转化率 60%"
-                    weekChange={{ value: 0, type: 'neutral' }}
-                    dayChange={{ value: 0, type: 'neutral' }}
+                    title="Tổng doanh thu năm nay"
+                    totalAmount={revenueData.totalRevenue || 0}
+                    change={revenueData.change || { value: 0, type: 'neutral' }}
                 />
-                {/*sơ đồ thống kê theo null*/}
                 <ChartCard
-                    title="Doanh thu tuần"
-                    totalAmount={45124}
-                    weekChange={{ value: 12, type: 'increase' }}
-                    dayChange={{ value: 11, type: 'decrease' }}
-                    dailyAmount={15612}
+                    title="Doanh thu theo tháng"
+                    totalAmount={revenueData.totalRevenue || 0}
+                    change={revenueData.change || { value: 0, type: 'neutral' }}
                     chartData={chartData}
-                    chartType="line" // Hoặc "bar"
                 />
+                <Card
+                    className="w-full shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
+                    style={{ borderRadius: '8px', background: '#fff' }}
+                >
+                    <Orb
+                        hoverIntensity={0.5}
+                        rotateOnHover={true}
+                        hue={0}
+                        forceHoverState={false}
+                    />
+                </Card>
             </div>
             {/*Thống kê doanh thu theo tháng/năm*/}
             <StatisticSection />
             {/*Số lượng được đặt như thế nào trong các tour*/}
-            <StatisticTourSection/>
+            <StatisticTourSection />
         </div>
     );
 };
