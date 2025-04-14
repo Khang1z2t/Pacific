@@ -313,15 +313,14 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                                 onClick={() => setVisible(!visible)}
                                                 className="w-full sm:w-1/2 rounded-full text-white font-semibold py-1 sm:py-2 text-xs sm:text-sm mr-1"
                                             >
-                                                Hủy tour
+                                                Hủy thanh toán
                                             </Button>
-                                            <Button
-                                                type="primary"
+                                            <button
                                                 onClick={handleCheckout}
-                                                className="w-full sm:w-1/2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold py-1 sm:py-2 text-xs sm:text-sm"
+                                                className="w-full sm:w-1/2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold py-1 px-1 sm:py-2 text-xs sm:text-sm"
                                             >
                                                 Thanh toán ngay
-                                            </Button>
+                                            </button>
                                         </div>
                                     </div>
                                 )}
