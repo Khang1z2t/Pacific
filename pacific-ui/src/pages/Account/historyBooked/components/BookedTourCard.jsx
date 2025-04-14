@@ -3,7 +3,7 @@ import {
     Button,
     Card,
     Divider,
-    Form,
+    Form, Grid,
     Image,
     Input,
     message,
@@ -38,14 +38,32 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
     const [showReview, setShowReview] = useState(false);
     const [loading, setLoading] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [isRefund, setIsRefund] = useState(false);
 
     const showModal = () => setIsModalOpen(true);
     const handleCancel = () => setIsModalOpen(false);
-    const handleSubmit = () => {
-        setTimeout(() => {
+    const handelCancelBooking = async (values) => {
+        try {
+            const cancelData = {
+                reason: values.reason,
+                refundRequested: isRefund,
+                additionalNotes: values.additionalNotes
+            }
+            const response = await BookingServices.cancelBooking(data.id, cancelData);
             message.success('Yêu cầu hoàn tiền đã được gửi thành công!', 1);
             setVisible(false);
-        }, 300);
+            const updateData = {
+                ...data,
+                status: response.status || (isRefund ? 'ON_HOLD' : 'CANCELLED')
+            }
+            if (onUpdateBooking) {
+                onUpdateBooking(updateData);
+            }
+        } catch (error) {
+            console.error('Error cancelling booking:', error);
+            const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi hủy đặt tour. Vui lòng thử lại!';
+            message.error(errorMessage);
+        }
     };
 
     const columns = [
@@ -185,6 +203,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
         COMPLETED: 'text-purple-600',
         ON_GOING: 'text-orange-500',
         EXPIRED: 'text-gray-500',
+        ON_HOLD: 'text-yellow-500',
     };
 
     return (
@@ -216,6 +235,10 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                 <p className="text-xs sm:text-sm text-gray-600">
                                     Ngày đặt: <span
                                     className="font-semibold">{config.webConfig.convertDateNoTime(data.createdAt)}</span>
+                                </p>
+                                <p className="text-xs sm:text-sm text-gray-600">
+                                    Ngày khởi hành: <span
+                                    className="font-semibold">{config.webConfig.convertDateNoTime(data.startDate)}</span>
                                 </p>
                                 <p className="text-xs sm:text-sm text-gray-600">
                                     Mã đặt tour: <span className="font-semibold">{data.bookingNo}</span>
@@ -267,7 +290,8 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                                 data.status === 'COMPLETED' ? 'Hoàn thành' :
                                                     data.status === 'ON_GOING' ? 'Đang đi' :
                                                         data.status === 'EXPIRED' ? 'Đã hết hạn' :
-                                                            data.status || 'N/A'}
+                                                            data.status === 'ON_HOLD' ? 'Đang chờ duyệt hoàn tiền' :
+                                                                data.status || 'N/A'}
                                 </p>
                                 {data.status === 'PENDING' && (
                                     <div className="flex flex-col items-start sm:items-end gap-2 w-full">
@@ -283,19 +307,31 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                                 </span>
                                             </div>
                                         )}
-                                        <Button
-                                            type="primary"
-                                            onClick={handleCheckout}
-                                            className="w-full sm:w-1/2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold py-1 sm:py-2 text-xs sm:text-sm"
-                                        >
-                                            Thanh toán ngay
-                                        </Button>
+                                        <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 justify-center">
+                                            <Button
+                                                color="danger" variant="solid"
+                                                onClick={() => setVisible(!visible)}
+                                                className="w-full sm:w-1/2 rounded-full text-white font-semibold py-1 sm:py-2 text-xs sm:text-sm mr-1"
+                                            >
+                                                Hủy tour
+                                            </Button>
+                                            <Button
+                                                type="primary"
+                                                onClick={handleCheckout}
+                                                className="w-full sm:w-1/2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold py-1 sm:py-2 text-xs sm:text-sm"
+                                            >
+                                                Thanh toán ngay
+                                            </Button>
+                                        </div>
                                     </div>
                                 )}
                                 {data.status === 'PAID' && (
                                     <button
                                         type="primary"
-                                        onClick={() => setVisible(!visible)}
+                                        onClick={() => {
+                                            setIsRefund(true)
+                                            setVisible(!visible)
+                                        }}
                                         className="w-full sm:w-36 mt-2 p-1 sm:p-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold text-xs sm:text-sm border-none"
                                     >
                                         Yêu cầu hoàn tiền
@@ -615,46 +651,62 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                 closeIcon={<span className="text-gray-500 text-lg sm:text-xl hover:text-gray-700">×</span>}
                 centered
             >
-                <div className="p-4 sm:p-6 bg-white">
-                    <div className="flex items-center justify-center mb-4 sm:mb-6">
-                        <ExclamationCircleOutlined style={{fontSize: '24px sm:32px', color: '#faad14'}}/>
-                        <Title level={3} className="ml-2 sm:ml-3 mb-0 uppercase text-red-800 text-lg sm:text-xl">
-                            Xác nhận yêu cầu hoàn tiền
-                        </Title>
-                    </div>
-                    <Text className="block text-center text-gray-600 text-sm sm:text-lg mb-6 sm:mb-8">
-                        Bạn có chắc chắn muốn gửi yêu cầu hoàn tiền cho giao dịch này không?
-                        Hành động này không thể hoàn tác.
-                    </Text>
-                    <div className="flex flex-col w-full justify-center mb-4 sm:mb-6">
-                        <label className="text-gray-600 text-sm sm:text-lg mb-1 sm:mb-2">Lý do hoàn tiền:</label>
-                        <Input.TextArea className="max-h-80 text-sm sm:text-base" rows={4}
-                                        placeholder="Nhập lý do hoàn tiền..."/>
-                    </div>
-                    <span className="text-red-500 text-xs sm:text-sm mb-3 sm:mb-4 block">
-                        (* Quý khách sẽ được hoàn tiền 80% số tiền gốc)
-                    </span>
-                    <Space direction="horizontal" size="middle" className="flex justify-center">
-                        <Button
-                            type="primary"
-                            size="large"
-                            onClick={handleSubmit}
-                            className="rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm"
-                            style={{minWidth: '100px sm:120px'}}
+                <Form form={form}
+                      layout="vertical"
+                      onFinish={handelCancelBooking}
+                      initialValues={{
+                          reason: '',
+                          additionalNotes: null,
+                      }}>
+                    <div className="p-4 sm:p-6 bg-white">
+                        <div className="flex items-center justify-center mb-4 sm:mb-6">
+                            <ExclamationCircleOutlined style={{fontSize: '24px sm:32px', color: '#faad14'}}/>
+                            <Title level={3} className="ml-2 sm:ml-3 mb-0 uppercase text-red-800 text-lg sm:text-xl">
+                                Xác nhận yêu cầu hủy đơn hàng
+                            </Title>
+                        </div>
+                        <Text className="block text-center text-gray-600 text-sm sm:text-lg mb-6 sm:mb-8">
+                            Bạn có chắc chắn muốn gửi yêu cầu hủy giao dịch này không?
+                            Hành động này không thể hoàn tác.
+                        </Text>
+                        <Form.Item
+                            name="reason"
+                            label={<span className="text-gray-600 text-sm sm:text-lg">Lý do hủy:</span>}
+                            rules={[{required: true, message: 'Vui lòng nhập lý do hủy!'}]}
                         >
-                            Gửi yêu cầu
-                        </Button>
-                        <Button
-                            type="default"
-                            size="large"
-                            onClick={handleCancel}
-                            className="rounded-lg border-gray-300 hover:border-gray-400 transition-colors duration-300 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm"
-                            style={{minWidth: '100px sm:120px'}}
-                        >
-                            Hủy
-                        </Button>
-                    </Space>
-                </div>
+                            <Input.TextArea
+                                className="max-h-80 text-sm sm:text-base"
+                                rows={4}
+                                placeholder="Nhập lý do..."
+                            />
+                        </Form.Item>
+                        {isRefund && (
+                            <span className="text-red-500 text-xs sm:text-sm mb-3 sm:mb-4 block">
+                            (* Quý khách sẽ được hoàn tiền 80% số tiền gốc nếu đã thanh toán)
+                        </span>
+                        )}
+                        <Space direction="horizontal" size="middle" className="flex justify-center">
+                            <Button
+                                type="primary"
+                                size="large"
+                                htmlType='submit'
+                                className="rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm"
+                                style={{minWidth: '100px sm:120px'}}
+                            >
+                                Gửi yêu cầu
+                            </Button>
+                            <Button
+                                type="default"
+                                size="large"
+                                onClick={() => setVisible(!visible)}
+                                className="rounded-lg border-gray-300 hover:border-gray-400 transition-colors duration-300 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm"
+                                style={{minWidth: '100px sm:120px'}}
+                            >
+                                Hủy
+                            </Button>
+                        </Space>
+                    </div>
+                </Form>
             </Modal>
         </>
     );

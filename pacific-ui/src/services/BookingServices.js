@@ -92,6 +92,36 @@ const BookingServices = {
             return Promise.reject(error);
         }
     },
+
+    cancelBooking: async (id, body) => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await axiosConfig.post(config.api.booking + `/cancel/${id}`, body, {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    cancelBookingAd: async (id, body) => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await axiosConfig.post(config.api.booking + `/ad/cancel/${id}`, body, {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 };
 
 export default BookingServices;

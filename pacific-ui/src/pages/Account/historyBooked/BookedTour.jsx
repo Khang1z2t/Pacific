@@ -15,6 +15,7 @@ export const BookedTour = () => {
         EXPIRED: 1,
         ON_GOING: 1,
         COMPLETED: 1,
+        ON_HOLD: 1
     });
     const [tourInfo, setTourInfo] = useState([]);
     const [tours, setTours] = useState({});
@@ -64,7 +65,7 @@ export const BookedTour = () => {
 
     useEffect(() => {
 
-        fetchBookingsAndTours();
+        fetchBookingsAndTours().then(r => r);
     }, [token]);
 
     // CALL BACK REVIEW
@@ -76,14 +77,20 @@ export const BookedTour = () => {
         );
     };
 
-    const filterToursByStatus = (status) => {
-        return tourInfo.filter(item => item.status === status);
+    const filterToursByStatus = (statuses) => {
+        if (Array.isArray(statuses)) {
+            return tourInfo.filter((booking) => statuses.includes(booking.status));
+        }
+        return tourInfo.filter((booking) => booking.status === statuses);
     };
 
-    const getPageItems = (status) => {
-        const filteredItems = filterToursByStatus(status);
-        const startIndex = (currentPage[status] - 1) * ITEM_PER_PAGE;
+    const getPageItems = (statuses) => {
+        const tabKey = Array.isArray(statuses) ? statuses.join('_') : statuses;
+        const current = currentPage[tabKey] || 1; // Trang hiện tại của tab
+        const startIndex = (current - 1) * ITEM_PER_PAGE;
         const endIndex = startIndex + ITEM_PER_PAGE;
+
+        const filteredItems = filterToursByStatus(statuses);
         return filteredItems.slice(startIndex, endIndex);
     };
 
@@ -98,9 +105,14 @@ export const BookedTour = () => {
         }, 400);
     };
 
-    const renderTabContent = (status) => {
-        const pageItems = getPageItems(status);
-        const totalItems = filterToursByStatus(status).length;
+    const renderTabContent = (statuses) => {
+        // Tạo key duy nhất cho tab (dùng để lưu currentPage)
+        const tabKey = Array.isArray(statuses) ? statuses.join('_') : statuses;
+
+        // Lấy dữ liệu cho nhiều trạng thái
+        const pageItems = getPageItems(statuses);
+        const totalItems = filterToursByStatus(statuses).length;
+
         return (
             <div className="space-y-4">
                 <div className="flex flex-col gap-4">
@@ -132,9 +144,9 @@ export const BookedTour = () => {
                 {totalItems > 0 && (
                     <Pagination
                         align="center"
-                        onChange={(page) => onPageChange(status, page)}
+                        onChange={(page) => onPageChange(tabKey, page)}
                         pageSize={ITEM_PER_PAGE}
-                        current={currentPage[status]}
+                        current={currentPage[tabKey]}
                         total={totalItems}
                     />
                 )}
@@ -164,10 +176,16 @@ export const BookedTour = () => {
             children: renderTabContent('COMPLETED'),
         },
         {
+            key: 'ON_HOLD',
+            label: 'Chờ hoàn tiền',
+            children: renderTabContent('ON_HOLD'),
+        },
+        {
             key: 'CANCELLED',
             label: 'Đã hủy',
             children: renderTabContent('CANCELLED'),
-        }, {
+        },
+        {
             key: 'EXPIRED',
             label: 'Hết hạn',
             children: renderTabContent('EXPIRED'),
