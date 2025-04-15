@@ -1,8 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
 import WalletServices from '~/services/WalletServices';
 import { useAuth } from '~/config/AuthContext';
-import { Button, Modal, notification, Select, Spin, Tooltip, Typography, Space, Table, Tag } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+    Button,
+    Modal,
+    notification,
+    Select,
+    Spin,
+    Tooltip,
+    Typography,
+    Space,
+    Table,
+    Tag,
+    Card,
+    Statistic,
+} from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined, WalletOutlined } from '@ant-design/icons';
 import Title from 'antd/es/typography/Title';
 import BookingServices from '~/services/BookingServices';
 import UserServices from '~/services/UserServices';
@@ -15,17 +28,43 @@ export const WalletPage = () => {
     const { currentUser } = useAuth();
 
     const [refundRequests, setRefundRequests] = useState([]);
+    const [systemWallet, setSystemWallet] = useState({
+        balance: 0,
+        totalRefunded: 0,
+        totalTransactions: 0,
+    });
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [modalAction, setModalAction] = useState(null); // 'approve' or 'reject'
+
+    // Lấy thông tin ví hệ thống
+    const getSystemWallet = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await WalletServices.getSystemBalance();
+            setSystemWallet({
+                balance: response.data.balance || 0,
+                totalRefunded: response.data.totalRefunded || 0,
+                totalTransactions: response.data.totalTransactions || 0,
+            });
+        } catch (error) {
+            console.error('Error fetching system wallet:', error);
+            notification.error({
+                message: 'Lỗi',
+                description: 'Không thể tải thông tin ví hệ thống. Vui lòng thử lại.',
+            });
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     // Lấy danh sách yêu cầu hoàn tiền
     const getRefundRequests = useCallback(async () => {
         try {
             setLoading(true);
             const response = await WalletServices.getRequests();
-            setRefundRequests(response.data);
+            setRefundRequests(response.data || []);
         } catch (error) {
             console.error('Error fetching refund requests:', error);
             notification.error({
@@ -37,12 +76,15 @@ export const WalletPage = () => {
         }
     }, []);
 
+    // Lấy dữ liệu ban đầu
     useEffect(() => {
         const fetchData = async () => {
-            await getRefundRequests();
+            await Promise.all([getSystemWallet(), getRefundRequests()]);
         };
-        fetchData();
-    }, []);
+        if (currentUser?.id) {
+            fetchData();
+        }
+    }, [currentUser, getSystemWallet, getRefundRequests]);
 
     // Xử lý duyệt/từ chối yêu cầu hoàn tiền
     const handleRefundAction = async () => {
@@ -58,7 +100,7 @@ export const WalletPage = () => {
                 description: `Yêu cầu hoàn tiền đã được ${modalAction === 'approve' ? 'duyệt' : 'từ chối'}.`,
             });
             setModalVisible(false);
-            await getRefundRequests();
+            await Promise.all([getSystemWallet(), getRefundRequests()]); // Cập nhật cả ví và yêu cầu
         } catch (error) {
             console.error('Error processing refund:', error);
             notification.error({
@@ -173,6 +215,55 @@ export const WalletPage = () => {
                 </Title>
             </div>
 
+            {/* Ví hệ thống */}
+            <Card
+                className="mb-6 max-w-lg shadow-md border border-gray-200"
+                title={
+                    <div className="flex items-center space-x-2">
+                        <WalletOutlined className="text-blue-600" />
+                        <Text strong>Ví hệ thống</Text>
+                    </div>
+                }
+            >
+                <div className="p-4">
+                    {loading ? (
+                        <div className="flex justify-center">
+                            <Spin />
+                        </div>
+                    ) : (
+                        <Space direction="vertical" size="middle" className="w-full">
+                            <Statistic
+                                title="Số dư hiện tại"
+                                value={systemWallet.balance}
+                                formatter={(value) => (
+                                    <Text strong className="text-green-600">
+                                        {config.webConfig.getCurrency(value)}
+                                    </Text>
+                                )}
+                            />
+                            <Statistic
+                                title="Tổng tiền đã hoàn"
+                                value={systemWallet.totalRefunded}
+                                formatter={(value) => (
+                                    <Text strong className="text-orange-600">
+                                        {config.webConfig.getCurrency(value)}
+                                    </Text>
+                                )}
+                            />
+                            <Statistic
+                                title="Tổng giao dịch"
+                                value={systemWallet.totalTransactions}
+                                formatter={(value) => (
+                                    <Text strong className="text-blue-600">
+                                        {value.toLocaleString('vi-VN')} Giao dịch
+                                    </Text>
+                                )}
+                            />
+                        </Space>
+                    )}
+                </div>
+            </Card>
+
             {/* Section duyệt hoàn tiền */}
             <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md border border-gray-200 mb-8">
                 <Title level={4} className="text-gray-800 mb-4">
@@ -222,10 +313,7 @@ export const WalletPage = () => {
                         <Text className="text-gray-600 text-sm sm:text-base mb-3 block">
                             Số tiền hoàn lại:{' '}
                             <strong>
-                                {selectedRequest?.refundAmount.toLocaleString('vi-VN', {
-                                    style: 'currency',
-                                    currency: 'VND',
-                                })}
+                                {config.webConfig.getCurrency(selectedRequest?.refundAmount)}
                             </strong>
                         </Text>
                     )}

@@ -9,6 +9,7 @@ import {
     AccountInformation,
 } from '~/pages/Account/ProfileUI/sections/ProfileInformation/components/AccountInformation';
 import { Menu, X } from 'lucide-react';
+import { PersonalWallet } from '~/pages/Account/ProfileUI/sections/PersonalWallet/PersonalWallet';
 
 const { TabPane } = Tabs;
 
@@ -40,6 +41,7 @@ export const ProfileUI = () => {
         { key: '2', label: 'Xác thực thông tin' },
         { key: '3', label: 'Lịch sử đặt tour' },
         { key: '4', label: 'Danh sách yêu thích' },
+        { key: '5', label: 'Ví cá nhân' },
     ];
 
     const renderTabContent = () => {
@@ -59,6 +61,8 @@ export const ProfileUI = () => {
                 return <BookedTour />;
             case '4':
                 return <WishListIndex />;
+            case '5':
+                return <PersonalWallet/>;
             default:
                 return null;
         }
@@ -133,6 +137,9 @@ export const ProfileUI = () => {
                         </TabPane>
                         <TabPane tab="Danh sách yêu thích" key="4">
                             <WishListIndex />
+                        </TabPane>
+                        <TabPane tab="Ví cá nhân" key="5">
+                            <PersonalWallet />
                         </TabPane>
                     </Tabs>
                 </div>

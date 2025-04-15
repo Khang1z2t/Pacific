@@ -33,13 +33,10 @@ const WalletServices = {
     withdrawWallet: async (amount) => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await axiosConfig.post(config.api.wallet + '/withdraw', {
-                amount: amount,
-            }, {
+            const response = await axiosConfig.post(config.api.wallet + '/withdraw?amount=' + amount, {}, {
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + token,
-                },
+                }
             });
             return response.data;
         } catch (error) {
@@ -51,13 +48,10 @@ const WalletServices = {
     depositWallet: async (amount) => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await axiosConfig.post(config.api.wallet + '/deposit', {
-                amount: amount,
-            }, {
+            const response = await axiosConfig.post(config.api.wallet + `/deposit?amount=${amount}`, {}, {
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + token,
-                },
+                }
             });
             return response.data;
         } catch (error) {
@@ -109,6 +103,15 @@ const WalletServices = {
         }
     },
 
+    getSystemBalance: async () => {
+        try {
+            const response = await axiosConfig.get(config.api.wallet + '/system-balance');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching system balance:', error);
+            return Promise.reject(error);
+        }
+    },
 };
 
 export default WalletServices;
