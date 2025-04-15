@@ -1,5 +1,5 @@
 import { Navbar } from '~/component/Layout/Navbar';
-import { FloatButton } from 'antd';
+import { FloatButton, Tooltip } from 'antd';
 import Footer from '~/component/Layout/Footer';
 import { CommentOutlined } from '@ant-design/icons';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons';
@@ -26,11 +26,12 @@ const MainLayout = ({ children }) => {
                 }}
                 icon={<FontAwesomeIcon icon={faHeadset} />}
             >
-                <FloatButton />
-                <FloatButton
-                    icon={<CommentOutlined />}
-                    onClick={() => setChatOpen(true)}
-                />
+                <Tooltip placement={"left"} title={"Hỏi AI về tour"}>
+                    <FloatButton
+                        icon={<CommentOutlined />}
+                        onClick={() => setChatOpen(true)}
+                    />
+                </Tooltip>
             </FloatButton.Group>
             <Navbar />
             {/* Main Content */}

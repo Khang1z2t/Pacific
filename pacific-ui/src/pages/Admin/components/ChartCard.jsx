@@ -19,7 +19,7 @@ export const ChartCard = ({ title, totalAmount, change, chartData }) => {
 
     return (
         <Card
-            className="w-full shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
+            className="w-full max-h-fit shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
             bordered={false}
             style={{ borderRadius: '8px', background: '#fff' }}
         >
