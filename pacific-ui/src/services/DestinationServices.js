@@ -51,6 +51,21 @@ const DestinationServices = {
             return Promise.reject(error);
         }
     },
+
+    getTopDestinations: async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await axiosConfig.get(config.api.destinations + '/top-destinations', {
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
 }
 
 export default DestinationServices;
