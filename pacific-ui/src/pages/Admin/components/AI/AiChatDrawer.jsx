@@ -20,8 +20,8 @@ const AiChatDrawer = ({ open, onClose }) => {
     const [orbHue, setOrbHue] = useState(270); // Màu tím mặc định
 
     useEffect(() => {
-            DestinationServices.then((res) => {
-                const dynamicSuggestions = res.data.map((dest) => `Tour đi ${dest.city}?`);
+            DestinationServices.getTopDestinations().then((res) => {
+                const dynamicSuggestions = res.map((dest) => `Tour đi ${dest.city}?`);
                 setSuggestions([
                     'Tour nào giá rẻ?',
                     ...dynamicSuggestions.slice(0, 3),
