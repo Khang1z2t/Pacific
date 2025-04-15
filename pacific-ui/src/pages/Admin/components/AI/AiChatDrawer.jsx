@@ -20,17 +20,17 @@ const AiChatDrawer = ({ open, onClose }) => {
     const [orbHue, setOrbHue] = useState(270); // Màu tím mặc định
 
     useEffect(() => {
-            DestinationServices.getTopDestinations().then((res) => {
-                const dynamicSuggestions = res.map((dest) => `Tour đi ${dest.city}?`);
-                setSuggestions([
-                    'Tour nào giá rẻ?',
-                    ...dynamicSuggestions.slice(0, 3),
-                    'Tour cho cặp đôi?',
-                    'Tôi có booking nào?',
-                    'Tour nào được đặt nhiều?',
-                    'Chi tiết tour Đà Nẵng 3N2Đ?',
-                ]);
-            })
+        DestinationServices.getTopDestinations().then((res) => {
+            const dynamicSuggestions = res.map((dest) => `Tour đi ${dest.city}?`);
+            setSuggestions([
+                'Tour nào giá rẻ?',
+                ...dynamicSuggestions.slice(0, 3),
+                'Tour cho cặp đôi?',
+                'Tôi có booking nào?',
+                'Tour nào được đặt nhiều?',
+                'Chi tiết tour Đà Nẵng 3N2Đ?',
+            ]);
+        })
             .catch((err) => {
                 console.error('Lỗi khi lấy top destinations:', err);
                 setSuggestions([
@@ -104,12 +104,22 @@ const AiChatDrawer = ({ open, onClose }) => {
 
     return (
         <Drawer
-            title="Trò chuyện với AI Du lịch"
+            title={
+                <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold text-gray-800">Trợ lý du lịch AI</span>
+                    <Button
+                        danger
+                        className="text-red-500 hover:bg-red-50 rounded-full"
+                        onClick={clearChatHistory}
+                    >
+                        Xóa lịch sử
+                    </Button>
+                </div>
+            }
             placement="right"
             onClose={onClose}
             open={open}
             width={400}
-            closeIcon={<Button type="text" className="text-gray-500">Đóng</Button>}
             styles={{
                 body: { padding: '16px', background: '#fff' },
                 header: { borderBottom: '1px solid #f0f0f0', padding: '16px' },
@@ -125,14 +135,6 @@ const AiChatDrawer = ({ open, onClose }) => {
                 />
                 <div className="relative z-10 flex flex-col h-full">
                     <p className="text-sm text-gray-500 mb-4">Hỏi về tour du lịch, chúng tôi sẽ gợi ý ngay!</p>
-
-                    <Button
-                        type="text"
-                        className="text-red-500 mb-4 self-start"
-                        onClick={clearChatHistory}
-                    >
-                        Xóa lịch sử chat
-                    </Button>
 
                     <div className="flex flex-wrap gap-2 mb-4">
                         {suggestions.map((suggestion, index) => (
