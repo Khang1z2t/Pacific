@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Orb from '~/component/Animation/Orb';
 import { Input, Button, Spin, message, Drawer } from 'antd';
+import ReactMarkdown from 'react-markdown';
 import AiServices from '~/services/AiServices';
 import DestinationServices from '~/services/DestinationServices';
 
@@ -95,9 +96,19 @@ const AiChatDrawer = ({ open, onClose }) => {
     // Hàm render trả lời dạng chuỗi, giữ nguyên gạch đầu dòng
     const renderResponse = (response) => {
         const lines = response.split('\n');
+
         return lines.map((line, index) => (
-            <div key={index} className={line.startsWith('- ') ? 'ml-2' : ''}>
-                {line}
+            <div key={index} className={line.startsWith('- ') ? 'ml-4 mb-2' : 'mb-2'}>
+                <ReactMarkdown
+                    components={{
+                        a: ({node, ...props}) => (
+                            <a {...props} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer" />
+                        ),
+                        li: ({node, ...props}) => <li className="ml-4 list-disc" {...props} />,
+                    }}
+                >
+                    {line}
+                </ReactMarkdown>
             </div>
         ));
     };
