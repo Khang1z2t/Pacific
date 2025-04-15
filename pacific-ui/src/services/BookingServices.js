@@ -122,6 +122,32 @@ const BookingServices = {
             return Promise.reject(error);
         }
     },
+
+    getAll: async () => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await axiosConfig.get(config.api.booking + '/all', {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    getAllByStatus: async (status) => {
+        try {
+            const response = await axiosConfig.get(config.api.booking + `/status?status=${status}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
 };
 
 export default BookingServices;

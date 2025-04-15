@@ -27,6 +27,7 @@ import { TbMessage2Dollar } from 'react-icons/tb';
 import { GuidePage } from '~/pages/Admin/sections/GuidePage/GuidePage';
 import { UserPage } from '~/pages/Admin/sections/UsersPage/UserPage';
 import { ItineraryPage } from '~/pages/Admin/sections/ItineraryPage/ItineraryPage';
+import { WalletPage } from '~/pages/Admin/sections/WalletPage/WalletPage';
 
 const { Content } = Layout;
 
@@ -140,6 +141,7 @@ const AdminHome = () => {
             ],
         },
         { label: 'Hỗ trợ', key: '20', icon: <CommentOutlined />, content: <Support /> },
+        { label: 'Ví tiền', key: '21', icon: <FaMoneyCheckAlt/>, content: <WalletPage/> },
     ];
 
     const [selectedContent, setSelectedContent] = useState(menuItems[0].content);

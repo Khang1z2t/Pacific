@@ -15,20 +15,21 @@ import {
     Table,
     Typography,
 } from 'antd';
-import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import config from '~/config';
-import {ExclamationCircleOutlined, UserOutlined} from '@ant-design/icons';
-import {useAuth} from '~/config/AuthContext';
+import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { useAuth } from '~/config/AuthContext';
 import RatingServices from '~/services/RatingServices';
 import BookingServices from '~/services/BookingServices';
-import {FaTags} from 'react-icons/fa';
+import { FaTags } from 'react-icons/fa';
+import WalletServices from '~/services/WalletServices';
 
-const {Text, Title} = Typography;
-const {TextArea} = Input;
+const { Text, Title } = Typography;
+const { TextArea } = Input;
 
-export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
-    const {currentUser} = useAuth();
+export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
+    const { currentUser } = useAuth();
     const [timeLeft, setTimeLeft] = useState('');
     const [form] = Form.useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,24 +39,25 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
     const [showReview, setShowReview] = useState(false);
     const [loading, setLoading] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [showModalCancel, setShowModalCancel] = useState(false);
     const [isRefund, setIsRefund] = useState(false);
-
+    const [isCancel, setIsCancel] = useState(false);
     const showModal = () => setIsModalOpen(true);
     const handleCancel = () => setIsModalOpen(false);
     const handelCancelBooking = async (values) => {
         try {
             const cancelData = {
                 reason: values.reason,
-                refundRequested: isRefund,
-                additionalNotes: values.additionalNotes
-            }
+                refundRequested: isCancel,
+                additionalNotes: values.additionalNotes,
+            };
             const response = await BookingServices.cancelBooking(data.id, cancelData);
             message.success('Yêu cầu hoàn tiền đã được gửi thành công!', 1);
-            setVisible(false);
+            setShowModalCancel(false);
             const updateData = {
                 ...data,
-                status: response.status || (isRefund ? 'ON_HOLD' : 'CANCELLED')
-            }
+                status: response.status || (isCancel ? 'ON_HOLD' : 'CANCELLED'),
+            };
             if (onUpdateBooking) {
                 onUpdateBooking(updateData);
             }
@@ -67,16 +69,16 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
     };
 
     const columns = [
-        {title: 'Họ và tên', dataIndex: 'fullName', key: 'fullName'},
-        {title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber'},
-        {title: 'Email', dataIndex: 'email', key: 'email'},
+        { title: 'Họ và tên', dataIndex: 'fullName', key: 'fullName' },
+        { title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber' },
+        { title: 'Email', dataIndex: 'email', key: 'email' },
         {
             title: 'Ngày sinh',
             dataIndex: 'birthday',
             key: 'birthday',
             render: (text) => (text ? config.webConfig.convertDateNoTime(text) : 'N/A'),
         },
-        {title: 'Nhóm tuổi', dataIndex: 'ageGroup', key: 'ageGroup'},
+        { title: 'Nhóm tuổi', dataIndex: 'ageGroup', key: 'ageGroup' },
         {
             title: 'Giá/Người',
             dataIndex: 'price',
@@ -121,7 +123,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
         const values = form.getFieldsValue(['price', 'transportation', 'service', 'food', 'accommodation']);
         const ratings = Object.values(values).filter(val => val !== undefined && val !== 0);
         const average = ratings.length > 0 ? ratings.reduce((sum, val) => sum + val, 0) / ratings.length : 0;
-        form.setFieldsValue({overallRating: average});
+        form.setFieldsValue({ overallRating: average });
     };
 
     const handleReviewSubmit = async (values) => {
@@ -183,7 +185,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
             const amount = data.totalAmount || 0;
             const orderInfo = data.bookingNo || 'N/A';
 
-            await BookingServices.checkOut({amount: amount, orderInfo: orderInfo}).then((res) => {
+            await BookingServices.checkOut({ amount: amount, orderInfo: orderInfo }).then((res) => {
                 window.location.href = res;
             }).catch((err) => {
                 console.error('Error during checkout:', err);
@@ -196,6 +198,28 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
         }
     };
 
+    const handleRefund = async (values) => {
+        try{
+            const refundData = {
+                bookingId: data?.id,
+                reasons: values.reasons,
+            }
+            console.log(refundData);
+            await WalletServices.refund(refundData);
+            message.success('Yêu cầu hoàn tiền đã được gửi thành công!', 1);
+            setVisible(false);
+            setIsRefund(false);
+            if (onUpdateBooking) {
+                onUpdateBooking({ ...data, status: 'REFUND_REQUESTED' });
+            }
+        }catch (error) {
+            console.error('Error requesting refund:', error);
+            const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi yêu cầu hoàn tiền. Vui lòng thử lại!';
+            message.error(errorMessage);
+        }
+    }
+
+
     const statusColors = {
         PENDING: 'text-blue-500',
         PAID: 'text-green-600',
@@ -203,15 +227,15 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
         COMPLETED: 'text-purple-600',
         ON_GOING: 'text-orange-500',
         EXPIRED: 'text-gray-500',
-        ON_HOLD: 'text-yellow-500',
+        REFUND_REQUESTED: 'text-yellow-500',
     };
 
     return (
         <>
             <Card
                 className="w-full rounded-xl shadow-lg hover:shadow-xl border border-gray-200 transition-all duration-300 overflow-hidden"
-                style={{background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%)'}}
-                bodyStyle={{padding: '12px sm:p-4 md:p-5'}}
+                style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%)' }}
+                bodyStyle={{ padding: '12px sm:p-4 md:p-5' }}
             >
                 <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                     <div className="flex-1 w-full">
@@ -250,11 +274,11 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                             className="text-xs sm:text-sm text-green-500">(-{voucher.discountValue || 0}%)</sup>
                                     )}
                                 </p>
-                                <Divider className="my-2 sm:my-3"/>
+                                <Divider className="my-2 sm:my-3" />
                                 {reviewed ? (
                                     <div className="flex items-center gap-2">
                                         <Rate allowHalf defaultValue={data.review?.rating || 0} disabled
-                                              className="text-sm sm:text-base"/>
+                                              className="text-sm sm:text-base" />
                                         <Button
                                             type="link"
                                             className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm"
@@ -290,7 +314,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                                 data.status === 'COMPLETED' ? 'Hoàn thành' :
                                                     data.status === 'ON_GOING' ? 'Đang đi' :
                                                         data.status === 'EXPIRED' ? 'Đã hết hạn' :
-                                                            data.status === 'ON_HOLD' ? 'Đang chờ duyệt hoàn tiền' :
+                                                            data.status === 'REFUND_REQUESTED' ? 'Đang chờ duyệt hoàn tiền' :
                                                                 data.status || 'N/A'}
                                 </p>
                                 {data.status === 'PENDING' && (
@@ -301,7 +325,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                         {data.voucherId && (
                                             <div
                                                 className="flex items-center gap-2 bg-green-50 px-2 sm:px-3 py-1 rounded-full shadow-sm">
-                                                <FaTags className="text-green-500 text-sm"/>
+                                                <FaTags className="text-green-500 text-sm" />
                                                 <span className="text-xs sm:text-sm text-green-600 font-semibold">
                                                     Voucher: {voucher.codeVoucher || 'N/A'} (-{voucher.discountValue || 0}%)
                                                 </span>
@@ -310,7 +334,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                         <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 justify-center">
                                             <Button
                                                 color="danger" variant="solid"
-                                                onClick={() => setVisible(!visible)}
+                                                onClick={() => setShowModalCancel(!showModalCancel)}
                                                 className="w-full sm:w-1/2 rounded-full text-white font-semibold py-1 sm:py-2 text-xs sm:text-sm mr-1"
                                             >
                                                 Hủy thanh toán
@@ -328,8 +352,8 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                     <button
                                         type="primary"
                                         onClick={() => {
-                                            setIsRefund(true)
-                                            setVisible(!visible)
+                                            setIsRefund(true);
+                                            setVisible(!visible);
                                         }}
                                         className="w-full sm:w-36 mt-2 p-1 sm:p-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full text-white font-semibold text-xs sm:text-sm border-none"
                                     >
@@ -373,8 +397,8 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                 onCancel={handleCancel}
                 footer={null}
                 width="90%"
-                style={{maxWidth: 900}}
-                bodyStyle={{padding: '16px sm:p-6'}}
+                style={{ maxWidth: 900 }}
+                bodyStyle={{ padding: '16px sm:p-6' }}
                 className="rounded-lg"
             >
                 <div className="flex flex-col gap-4 sm:gap-6">
@@ -427,7 +451,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                             rowKey="id"
                             bordered
                             className="rounded-lg"
-                            scroll={{x: 600}}
+                            scroll={{ x: 600 }}
                         />
                     </div>
                 </div>
@@ -439,17 +463,17 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                 onCancel={() => setShowReview(false)}
                 footer={null}
                 width="90%"
-                style={{maxWidth: 700}}
-                bodyStyle={{padding: '16px sm:p-6', background: '#f9fafb'}}
+                style={{ maxWidth: 700 }}
+                bodyStyle={{ padding: '16px sm:p-6', background: '#f9fafb' }}
                 className="rounded-lg shadow-xl"
             >
                 <div className="flex flex-col gap-4 sm:gap-6">
                     <div
                         className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                         <Avatar
-                            size={{xs: 48, sm: 64}}
+                            size={{ xs: 48, sm: 64 }}
                             src={currentUser.avatar}
-                            icon={!currentUser.avatar && <UserOutlined/>}
+                            icon={!currentUser.avatar && <UserOutlined />}
                             className="border-2 border-blue-200"
                         />
                         <div className="text-center sm:text-left">
@@ -458,7 +482,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                             </Text>
                             <div className="flex items-center gap-2 mt-1 justify-center sm:justify-start">
                                 <Rate allowHalf value={data.review?.rating || 0} disabled
-                                      className="text-sm sm:text-base"/>
+                                      className="text-sm sm:text-base" />
                                 <Text className="text-gray-600 text-xs sm:text-sm">({data.review?.rating || 0}/5)</Text>
                             </div>
                             <Text className="text-xs sm:text-sm text-gray-500">
@@ -477,12 +501,12 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                             tiết đánh giá</Title>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             {[
-                                {key: 'priceRating', label: 'Giá cả'},
-                                {key: 'facilityRating', label: 'Phương tiện'},
-                                {key: 'serviceRating', label: 'Dịch vụ'},
-                                {key: 'foodRating', label: 'Ẩm thực'},
-                                {key: 'accommodationRating', label: 'Lưu trú'},
-                            ].map(({key, label}) => (
+                                { key: 'priceRating', label: 'Giá cả' },
+                                { key: 'facilityRating', label: 'Phương tiện' },
+                                { key: 'serviceRating', label: 'Dịch vụ' },
+                                { key: 'foodRating', label: 'Ẩm thực' },
+                                { key: 'accommodationRating', label: 'Lưu trú' },
+                            ].map(({ key, label }) => (
                                 <div key={key} className="flex items-center gap-2">
                                     <Text
                                         className="text-gray-600 w-24 sm:w-32 font-medium text-xs sm:text-sm">{label}</Text>
@@ -518,8 +542,8 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                 onCancel={handleReviewCancel}
                 footer={null}
                 width="90%"
-                style={{maxWidth: 900}}
-                bodyStyle={{padding: '16px sm:p-6', background: '#f9fafb'}}
+                style={{ maxWidth: 900 }}
+                bodyStyle={{ padding: '16px sm:p-6', background: '#f9fafb' }}
                 className="rounded-lg shadow-xl"
             >
                 <Form
@@ -540,9 +564,9 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                         <div
                             className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                             <Avatar
-                                size={{xs: 48, sm: 64}}
+                                size={{ xs: 48, sm: 64 }}
                                 src={config.imageConfig.getAvatar(currentUser.avatarUrl)}
-                                icon={!currentUser.avatarUrl && <UserOutlined/>}
+                                icon={!currentUser.avatarUrl && <UserOutlined />}
                                 className="border-2 border-blue-200"
                             />
                             <div className="text-center sm:text-left">
@@ -561,7 +585,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                     label={<span className="text-sm sm:text-base font-medium text-gray-700">Đánh giá tổng thể</span>}
                                     className="mb-0"
                                 >
-                                    <Rate allowHalf disabled className="text-sm sm:text-xl"/>
+                                    <Rate allowHalf disabled className="text-sm sm:text-xl" />
                                 </Form.Item>
                                 <Text className="text-gray-600 text-xs sm:text-sm">
                                     (Tự động tính từ các hạng mục bên dưới)
@@ -572,7 +596,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                 label={<span
                                     className="text-sm sm:text-base font-medium text-gray-700">Nhận xét của bạn</span>}
                                 rules={[
-                                    ({getFieldValue}) => ({
+                                    ({ getFieldValue }) => ({
                                         validator(_, value) {
                                             const overallRating = getFieldValue('overallRating');
                                             if (overallRating <= 3 && !value) {
@@ -596,11 +620,11 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                             </Title>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                                 {[
-                                    {name: 'price', label: 'Giá cả'},
-                                    {name: 'transportation', label: 'Phương tiện'},
-                                    {name: 'service', label: 'Dịch vụ'},
-                                    {name: 'food', label: 'Ẩm thực'},
-                                    {name: 'accommodation', label: 'Khách sạn'},
+                                    { name: 'price', label: 'Giá cả' },
+                                    { name: 'transportation', label: 'Phương tiện' },
+                                    { name: 'service', label: 'Dịch vụ' },
+                                    { name: 'food', label: 'Ẩm thực' },
+                                    { name: 'accommodation', label: 'Khách sạn' },
                                 ].map((item) => (
                                     <Form.Item
                                         key={item.name}
@@ -641,11 +665,11 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
             </Modal>
 
             <Modal
-                open={visible}
-                onCancel={() => setVisible(!visible)}
+                open={showModalCancel}
+                onCancel={() => setShowModalCancel(!showModalCancel)}
                 footer={null}
                 width="90%"
-                style={{maxWidth: 600}}
+                style={{ maxWidth: 600 }}
                 className="rounded-xl overflow-hidden shadow-2xl"
                 closeIcon={<span className="text-gray-500 text-lg sm:text-xl hover:text-gray-700">×</span>}
                 centered
@@ -659,7 +683,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                       }}>
                     <div className="p-4 sm:p-6 bg-white">
                         <div className="flex items-center justify-center mb-4 sm:mb-6">
-                            <ExclamationCircleOutlined style={{fontSize: '24px sm:32px', color: '#faad14'}}/>
+                            <ExclamationCircleOutlined style={{ fontSize: '24px sm:32px', color: '#faad14' }} />
                             <Title level={3} className="ml-2 sm:ml-3 mb-0 uppercase text-red-800 text-lg sm:text-xl">
                                 Xác nhận yêu cầu hủy đơn hàng
                             </Title>
@@ -671,7 +695,7 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                         <Form.Item
                             name="reason"
                             label={<span className="text-gray-600 text-sm sm:text-lg">Lý do hủy:</span>}
-                            rules={[{required: true, message: 'Vui lòng nhập lý do hủy!'}]}
+                            rules={[{ required: true, message: 'Vui lòng nhập lý do hủy!' }]}
                         >
                             <Input.TextArea
                                 className="max-h-80 text-sm sm:text-base"
@@ -679,29 +703,102 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                                 placeholder="Nhập lý do..."
                             />
                         </Form.Item>
-                        {isRefund && (
-                            <span className="text-red-500 text-xs sm:text-sm mb-3 sm:mb-4 block">
-                            (* Quý khách sẽ được hoàn tiền 80% số tiền gốc nếu đã thanh toán)
-                        </span>
-                        )}
                         <Space direction="horizontal" size="middle" className="flex justify-center">
                             <Button
                                 type="primary"
                                 size="large"
-                                htmlType='submit'
+                                htmlType="submit"
                                 className="rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm"
-                                style={{minWidth: '100px sm:120px'}}
+                                style={{ minWidth: '100px sm:120px' }}
                             >
                                 Gửi yêu cầu
                             </Button>
                             <Button
                                 type="default"
                                 size="large"
-                                onClick={() => setVisible(!visible)}
+                                onClick={() => setShowModalCancel(!showModalCancel)}
                                 className="rounded-lg border-gray-300 hover:border-gray-400 transition-colors duration-300 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm"
-                                style={{minWidth: '100px sm:120px'}}
+                                style={{ minWidth: '100px sm:120px' }}
                             >
                                 Hủy
+                            </Button>
+                        </Space>
+                    </div>
+                </Form>
+            </Modal>
+
+            <Modal
+                title={
+                    <div className="flex items-center space-x-2">
+                        <ExclamationCircleOutlined className="text-yellow-500 text-xl" />
+                        <span className="text-xl sm:text-2xl font-semibold text-gray-800">Yêu cầu hoàn tiền</span>
+                    </div>
+                }
+                open={visible}
+                onCancel={() => setVisible(false)}
+                footer={null}
+                width="90%"
+                style={{ maxWidth: 600 }}
+                bodyStyle={{ padding: '24px' }}
+                className="rounded-xl shadow-lg"
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleRefund}
+                    initialValues={{
+                        reasons: '',
+                    }}
+                >
+                    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                        <Title level={4} className="text-gray-800 mb-2">
+                            Xác nhận yêu cầu hoàn tiền
+                        </Title>
+                        <Text className="text-gray-600 text-sm sm:text-base mb-4 block">
+                            Bạn đang yêu cầu hoàn tiền cho booking: <strong>{data.bookingNo}</strong>
+                        </Text>
+                        <Text className="text-gray-500 text-sm sm:text-base mb-6 block">
+                            Vui lòng cung cấp lý do để chúng tôi xử lý yêu cầu nhanh chóng hơn.
+                        </Text>
+
+                        <Form.Item
+                            name="reasons"
+                            label={<span
+                                className="text-gray-700 font-medium text-sm sm:text-base">Lý do hoàn tiền</span>}
+                            rules={[{ required: true, message: 'Vui lòng nhập lý do hoàn tiền!' }]}
+                        >
+                            <Input.TextArea
+                                rows={4}
+                                placeholder="Ví dụ: Thay đổi kế hoạch, không thể tham gia tour..."
+                                className="text-sm sm:text-base border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200"
+                            />
+                        </Form.Item>
+
+                        <div
+                            className="flex items-start space-x-2 bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
+                            <ExclamationCircleOutlined className="text-yellow-500 text-lg mt-1" />
+                            <Text className="text-yellow-700 text-sm sm:text-base">
+                                <strong>Lưu ý:</strong> Bạn sẽ được hoàn lại <strong>80% số tiền gốc</strong> sau khi
+                                yêu cầu được duyệt. Hãy kiểm tra kỹ trước khi gửi!
+                            </Text>
+                        </div>
+
+                        <Space className="flex justify-end">
+                            <Button
+                                type="default"
+                                size="large"
+                                onClick={() => setVisible(false)}
+                                className="rounded-lg border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-700 font-medium transition-all duration-200 px-4 sm:px-6 py-1 sm:py-2 text-sm"
+                            >
+                                Hủy
+                            </Button>
+                            <Button
+                                type="primary"
+                                size="large"
+                                htmlType="submit"
+                                className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium transition-all duration-200 px-4 sm:px-6 py-1 sm:py-2 text-sm"
+                            >
+                                Gửi yêu cầu
                             </Button>
                         </Space>
                     </div>

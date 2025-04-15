@@ -24,6 +24,7 @@ const api = {
     rating: '/api/rating',
     imageAPI: '/api/image/',
     itinerary: '/api/itinerary',
+    wallet: '/api/wallet',
 };
 
 export default api;

@@ -123,6 +123,16 @@ const UserServices = {
         }
     },
 
+    getById: async (id) => {
+        try {
+            const response = await axiosConfig.get(config.api.user + `/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    },
+
     getTopBookedUsers: async (limit) => {
         try {
             const response = await axiosConfig.get(config.api.user + `/top-booked-users?limit=${limit}`);
