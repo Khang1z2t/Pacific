@@ -12,7 +12,6 @@ export const BookedTour = () => {
         PENDING: 1,
         PAID: 1,
         CANCELLED: 1,
-        REFUND_REQUESTED: 1,
         EXPIRED: 1,
         ON_GOING: 1,
         COMPLETED: 1,
@@ -191,11 +190,6 @@ export const BookedTour = () => {
             label: 'Hết hạn',
             children: renderTabContent('EXPIRED'),
         },
-        {
-            key: 'REFUND_REQUESTED',
-            label: 'Yêu cầu hoàn tiền',
-            children: renderTabContent('REFUND_REQUESTED'),
-        }
     ];
 
     return (

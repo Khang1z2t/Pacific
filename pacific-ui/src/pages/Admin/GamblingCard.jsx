@@ -33,7 +33,7 @@ export const GamblingCard = ({ onUpdateWallet }) => {
                 icons[Math.floor(Math.random() * icons.length)],
                 icons[Math.floor(Math.random() * icons.length)],
             ]);
-            await new Promise((resolve) => setTimeout(resolve, 200));
+            await new Promise((resolve) => setTimeout(resolve, 400));
         }
 
         // Kết quả cuối cùng

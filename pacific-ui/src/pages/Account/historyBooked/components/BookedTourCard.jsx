@@ -227,7 +227,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
         COMPLETED: 'text-purple-600',
         ON_GOING: 'text-orange-500',
         EXPIRED: 'text-gray-500',
-        REFUND_REQUESTED: 'text-yellow-500',
+        ON_HOLD: 'text-yellow-500',
     };
 
     return (
@@ -314,7 +314,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                                 data.status === 'COMPLETED' ? 'Hoàn thành' :
                                                     data.status === 'ON_GOING' ? 'Đang đi' :
                                                         data.status === 'EXPIRED' ? 'Đã hết hạn' :
-                                                            data.status === 'REFUND_REQUESTED' ? 'Đang chờ duyệt hoàn tiền' :
+                                                            data.status === 'ON_HOLD' ? 'Đang chờ duyệt hoàn tiền' :
                                                                 data.status || 'N/A'}
                                 </p>
                                 {data.status === 'PENDING' && (
