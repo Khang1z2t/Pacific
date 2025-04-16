@@ -112,6 +112,26 @@ const WalletServices = {
             return Promise.reject(error);
         }
     },
+
+    withDrawSystem: async (amount) => {
+        try {
+            const response = await axiosConfig.post(config.api.wallet + `/withdraw-system?amount=${amount}`);
+            return response.data;
+        }catch (error) {
+            console.error('Error withdrawing system money:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    depositSystem: async (amount) => {
+        try {
+            const response = await axiosConfig.post(config.api.wallet + `/deposit-system?amount=${amount}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error depositing system money:', error);
+            return Promise.reject(error);
+        }
+    },
 };
 
 export default WalletServices;

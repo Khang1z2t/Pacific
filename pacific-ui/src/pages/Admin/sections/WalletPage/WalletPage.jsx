@@ -20,6 +20,7 @@ import Title from 'antd/es/typography/Title';
 import BookingServices from '~/services/BookingServices';
 import UserServices from '~/services/UserServices';
 import config from '~/config';
+import { GamblingCard } from '~/pages/Admin/GamblingCard';
 
 const { Text } = Typography;
 
@@ -209,60 +210,63 @@ export const WalletPage = () => {
 
     return (
         <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-                <Title level={2} className="text-gray-800 mb-4 sm:mb-0">
-                    Quản lý ví và hoàn tiền
-                </Title>
+            <Title level={2} className="text-gray-800 mb-4 sm:mb-0">
+                Quản lý ví và hoàn tiền
+            </Title>
+            <div className={"flex flex-wrap gap-4 sm:gap-6 mb-8 w-full"}>
+                <Card
+                    className="mb-6 max-w-lg shadow-md border border-gray-200"
+                    title={
+                        <div className="flex items-center space-x-2">
+                            <WalletOutlined className="text-blue-600" />
+                            <Text strong>Ví hệ thống</Text>
+                        </div>
+                    }
+                >
+                    <div className="p-4">
+                        {loading ? (
+                            <div className="flex justify-center">
+                                <Spin />
+                            </div>
+                        ) : (
+                            <Space direction="vertical" size="middle" className="w-full justify-between gap-2">
+                                <Statistic
+                                    title="Số dư hiện tại"
+                                    value={systemWallet.balance}
+                                    formatter={(value) => (
+                                        <Text strong className="text-green-600">
+                                            {config.webConfig.getCurrency(value)}
+                                        </Text>
+                                    )}
+                                />
+                                <Statistic
+                                    title="Tổng tiền đã hoàn"
+                                    value={systemWallet.totalRefunded}
+                                    formatter={(value) => (
+                                        <Text strong className="text-orange-600">
+                                            {config.webConfig.getCurrency(value)}
+                                        </Text>
+                                    )}
+                                />
+                                <Statistic
+                                    title="Tổng giao dịch"
+                                    value={systemWallet.totalTransactions}
+                                    formatter={(value) => (
+                                        <Text strong className="text-blue-600">
+                                            {value.toLocaleString('vi-VN')} Giao dịch
+                                        </Text>
+                                    )}
+                                />
+                            </Space>
+                        )}
+                    </div>
+                </Card>
+                {currentUser.username === 'TuanNguyen' && (
+                    <GamblingCard onUpdateWallet={getSystemWallet} />
+                )}
             </div>
 
             {/* Ví hệ thống */}
-            <Card
-                className="mb-6 max-w-lg shadow-md border border-gray-200"
-                title={
-                    <div className="flex items-center space-x-2">
-                        <WalletOutlined className="text-blue-600" />
-                        <Text strong>Ví hệ thống</Text>
-                    </div>
-                }
-            >
-                <div className="p-4">
-                    {loading ? (
-                        <div className="flex justify-center">
-                            <Spin />
-                        </div>
-                    ) : (
-                        <Space direction="vertical" size="middle" className="w-full">
-                            <Statistic
-                                title="Số dư hiện tại"
-                                value={systemWallet.balance}
-                                formatter={(value) => (
-                                    <Text strong className="text-green-600">
-                                        {config.webConfig.getCurrency(value)}
-                                    </Text>
-                                )}
-                            />
-                            <Statistic
-                                title="Tổng tiền đã hoàn"
-                                value={systemWallet.totalRefunded}
-                                formatter={(value) => (
-                                    <Text strong className="text-orange-600">
-                                        {config.webConfig.getCurrency(value)}
-                                    </Text>
-                                )}
-                            />
-                            <Statistic
-                                title="Tổng giao dịch"
-                                value={systemWallet.totalTransactions}
-                                formatter={(value) => (
-                                    <Text strong className="text-blue-600">
-                                        {value.toLocaleString('vi-VN')} Giao dịch
-                                    </Text>
-                                )}
-                            />
-                        </Space>
-                    )}
-                </div>
-            </Card>
 
             {/* Section duyệt hoàn tiền */}
             <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md border border-gray-200 mb-8">
