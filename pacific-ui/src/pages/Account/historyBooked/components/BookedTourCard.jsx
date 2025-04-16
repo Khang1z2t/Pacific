@@ -210,7 +210,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             setVisible(false);
             setIsRefund(false);
             if (onUpdateBooking) {
-                onUpdateBooking({ ...data, status: 'REFUND_REQUESTED' });
+                onUpdateBooking({ ...data, status: 'ON_HOLD' });
             }
         }catch (error) {
             console.error('Error requesting refund:', error);

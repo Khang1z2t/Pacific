@@ -17,8 +17,6 @@ import {
 } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined, WalletOutlined } from '@ant-design/icons';
 import Title from 'antd/es/typography/Title';
-import BookingServices from '~/services/BookingServices';
-import UserServices from '~/services/UserServices';
 import config from '~/config';
 import { GamblingCard } from '~/pages/Admin/GamblingCard';
 

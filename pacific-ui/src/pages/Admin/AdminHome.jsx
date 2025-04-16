@@ -1,6 +1,18 @@
 import { useEffect, useState } from 'react';
 import { BlockOutlined, CommentOutlined, DesktopOutlined, PieChartOutlined, TeamOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, ConfigProvider, Layout, message, Modal, Select, Switch, theme, Tooltip } from 'antd';
+import {
+    Badge,
+    Breadcrumb,
+    Button,
+    ConfigProvider,
+    Layout,
+    message,
+    Modal, notification,
+    Select,
+    Switch,
+    theme,
+    Tooltip,
+} from 'antd';
 import { AdminSidebar } from '~/pages/Admin/components/AdminHome/AdminSidebar';
 import { AdminHeader } from '~/pages/Admin/components/AdminHome/AdminHeader';
 import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
@@ -28,6 +40,7 @@ import { GuidePage } from '~/pages/Admin/sections/GuidePage/GuidePage';
 import { UserPage } from '~/pages/Admin/sections/UsersPage/UserPage';
 import { ItineraryPage } from '~/pages/Admin/sections/ItineraryPage/ItineraryPage';
 import { WalletPage } from '~/pages/Admin/sections/WalletPage/WalletPage';
+import WalletServices from '~/services/WalletServices';
 
 const { Content } = Layout;
 
@@ -39,6 +52,30 @@ const AdminHome = () => {
     });
     const [buttonState, setButtonState] = useState('idle'); // idle, loading, success
     const [exportModalVisible, setExportModalVisible] = useState(false);
+    const [pendingRequests, setPendingRequests] = useState(0);
+    const [prevPendingRequests, setPrevPendingRequests] = useState(0);
+
+    useEffect(() => {
+        const fetchPendingRequests = async () => {
+            try {
+                const response = await WalletServices.getRequests();
+                const pendingCount = response.data.filter((req) => req.status === 'ON_HOLD').length;
+                if (pendingCount > prevPendingRequests && prevPendingRequests !== 0) {
+                    notification.info({
+                        message: 'Yêu cầu hoàn tiền mới',
+                        description: `Có ${pendingCount - prevPendingRequests} yêu cầu hoàn tiền mới đang chờ duyệt.`,
+                    });
+                }
+                setPendingRequests(pendingCount);
+                setPrevPendingRequests(pendingCount);
+                console.log('Pending requests:', pendingCount);
+            } catch (error) {
+                console.error('Error fetching refund requests:', error);
+            }
+        };
+        fetchPendingRequests();
+    }, [prevPendingRequests]);
+
     useEffect(() => {
         localStorage.setItem('theme', JSON.stringify(isDarkTheme));
     }, [isDarkTheme]);
@@ -141,7 +178,9 @@ const AdminHome = () => {
             ],
         },
         { label: 'Hỗ trợ', key: '20', icon: <CommentOutlined />, content: <Support /> },
-        { label: 'Ví tiền', key: '21', icon: <FaMoneyCheckAlt/>, content: <WalletPage/> },
+        {
+            label: 'Ví tiền', key: '21', icon: <FaMoneyCheckAlt />, content: <WalletPage />,
+        },
     ];
 
     const [selectedContent, setSelectedContent] = useState(menuItems[0].content);
@@ -243,7 +282,7 @@ const AdminHome = () => {
                             <h3 className={`text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-black'}`}>
                                 Xuất báo cáo
                             </h3>
-                            <div className={"mt-4"}>
+                            <div className={'mt-4'}>
                                 <p className={`text-sm ${isDarkTheme ? 'text-gray-300' : 'text-gray-700'}`}>
                                     Chọn loại báo cáo muốn xuất:
                                 </p>
@@ -255,7 +294,7 @@ const AdminHome = () => {
                                         { value: 'booking', label: 'Booking' },
                                         { value: 'tour', label: 'Tour' },
                                         { value: 'user', label: 'User' },
-                                    ]}/>
+                                    ]} />
                             </div>
                             <div className="flex justify-end mt-4">
                                 <Button
