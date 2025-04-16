@@ -52,29 +52,38 @@ const AdminHome = () => {
     });
     const [buttonState, setButtonState] = useState('idle'); // idle, loading, success
     const [exportModalVisible, setExportModalVisible] = useState(false);
-    const [pendingRequests, setPendingRequests] = useState(0);
     const [prevPendingRequests, setPrevPendingRequests] = useState(0);
 
-    useEffect(() => {
-        const fetchPendingRequests = async () => {
-            try {
-                const response = await WalletServices.getRequests();
-                const pendingCount = response.data.filter((req) => req.status === 'ON_HOLD').length;
-                if (pendingCount > prevPendingRequests && prevPendingRequests !== 0) {
-                    notification.info({
-                        message: 'Yêu cầu hoàn tiền mới',
-                        description: `Có ${pendingCount - prevPendingRequests} yêu cầu hoàn tiền mới đang chờ duyệt.`,
-                    });
-                }
-                setPendingRequests(pendingCount);
-                setPrevPendingRequests(pendingCount);
-                console.log('Pending requests:', pendingCount);
-            } catch (error) {
-                console.error('Error fetching refund requests:', error);
+    const fetchPendingRequests = async () => {
+        try {
+            const response = await WalletServices.getRequests();
+            const pendingCount = response.data.filter((req) => req.status === 'ON_HOLD').length;
+            if (pendingCount > prevPendingRequests) {
+                notification.destroy();
+                notification.info({
+                    message: 'Yêu cầu hoàn tiền mới',
+                    description: `Có ${pendingCount - prevPendingRequests} yêu cầu hoàn tiền mới đang chờ duyệt.`,
+                    btn: (
+                        <Button
+                            type="primary"
+                            size="small"
+                            onClick={() => handleMenuSelect('21')}
+                        >
+                            Xem ngay
+                        </Button>
+                    ),
+                    duration: 5, // Hiển thị 5 giây
+                });
             }
-        };
+            setPrevPendingRequests(pendingCount);
+        } catch (error) {
+            console.error('Error fetching refund requests:', error);
+        }
+    };
+
+    useEffect(() => {
         fetchPendingRequests();
-    }, [prevPendingRequests]);
+    }, []);
 
     useEffect(() => {
         localStorage.setItem('theme', JSON.stringify(isDarkTheme));
