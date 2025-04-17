@@ -259,7 +259,7 @@ export const WalletPage = () => {
                         )}
                     </div>
                 </Card>
-                {currentUser.username === 'TuanNguyen' && (
+                {currentUser.username === 'khang1z2t' && (
                     <GamblingCard onUpdateWallet={getSystemWallet} />
                 )}
             </div>
