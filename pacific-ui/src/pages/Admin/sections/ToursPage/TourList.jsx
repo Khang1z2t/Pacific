@@ -147,8 +147,13 @@ const TourList = () => {
         },
         {
             title: 'Điểm đến',
-            dataIndex: 'destination',
-            key: 'destination',
+            dataIndex: 'destinationId',
+            key: 'destinationId',
+            render: (destinationId) => (
+                <Text className="font-semibold">
+                    {destination.find((item) => item.id === destinationId)?.name || destinationId}
+                </Text>
+            ),
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
                 <div style={{ padding: 8 }}>
                     <Input
@@ -170,16 +175,21 @@ const TourList = () => {
                 </div>
             ),
             filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-            onFilter: (value, record) => record.destinationId.toLowerCase().includes(value.toLowerCase()),
+            onFilter: (value, record) => destination.find((item) => item.id === record.destinationId)?.name.toLowerCase().includes(value.toLowerCase()),
         },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
-            render: (e) => <Switch checked={e === 'PUBLISHED'} />,
+            render: (e) => (
+                <Text
+                    className={`text-${e === 'PUBLISHED' ? 'green' : 'red'}-500 bg-orange-100 p-1 rounded-lg border border-orange-200 font-semibold`}>
+                    {e === 'PUBLISHED' ? 'Đang bán' : 'Ngừng bán'}
+                </Text>
+            ),
             filters: [
                 { text: 'Đang bán', value: 'PUBLISHED' },
-                { text: 'Hết tour', value: 'DRAFT' },
+                { text: 'Ngừng bán', value: 'DRAFT' },
             ],
             onFilter: (value, record) => record.status === value,
         },
@@ -234,7 +244,22 @@ const TourList = () => {
     ];
 
     const detailColumns = [
-        { title: 'ID', dataIndex: 'id', key: 'id' },
+        {
+            title: 'Mã tour chi tiết',
+            dataIndex: 'id',
+            key: 'id',
+            render: (id) => (
+                <Tooltip title={"Bấm vào để sao chép"} placement={'bottom'}>
+                    <Text className="font-semibold text-blue-500 cursor-pointer"
+                          onClick={() => {
+                              navigator.clipboard.writeText(id);
+                              message.success('Đã sao chép mã tour chi tiết vào clipboard');
+                          }}>
+                        Mã tour chi tiết
+                    </Text>
+                </Tooltip>
+            ),
+        },
         {
             title: 'Giá tour người lớn',
             dataIndex: 'priceAdults',
@@ -247,8 +272,38 @@ const TourList = () => {
             key: 'priceChildren',
             render: (price) => `${config.webConfig.getCurrency(price)}`,
         },
-        { title: 'Mã Hotel', dataIndex: 'hotelId', key: 'hotelId' },
-        { title: 'Mã phương tiện', dataIndex: 'transportId', key: 'transportId' },
+        {
+            title: 'Mã Hotel',
+            dataIndex: 'hotelId',
+            key: 'hotelId',
+            render: (hotelId) => (
+                <Tooltip title={"Bấm vào để sao chép"} placement={'bottom'}>
+                    <Text className="font-semibold text-blue-500 cursor-pointer"
+                          onClick={() => {
+                              navigator.clipboard.writeText(hotelId);
+                              message.success('Đã sao chép mã hotel vào clipboard');
+                          }}>
+                        Mã hotel
+                    </Text>
+                </Tooltip>
+            ),
+        },
+        {
+            title: 'Mã phương tiện',
+            dataIndex: 'transportId',
+            key: 'transportId',
+            render: (transportId) => (
+                <Tooltip title={"Bấm vào để sao chép"} placement={'bottom'}>
+                    <Text className="font-semibold text-blue-500 cursor-pointer"
+                          onClick={() => {
+                              navigator.clipboard.writeText(transportId);
+                              message.success('Đã sao chép mã phương tiện vào clipboard');
+                          }}>
+                        Mã phương tiện
+                    </Text>
+                </Tooltip>
+            ),
+        },
         {
             title: 'Ngày khởi hành',
             dataIndex: 'startDate',
@@ -293,7 +348,8 @@ const TourList = () => {
                         Lưu ý:
                     </Text>
                     <Text className="text-gray-800 leading-relaxed">
-                        {' '}"Trạng thái" là <Text strong>DRAFT</Text> là tour đã hết, <Text strong>PUBLISHED</Text> là tour
+                        {' '}"Trạng thái" là <Text strong>DRAFT</Text> là tour đã hết, <Text strong>PUBLISHED</Text> là
+                        tour
                         đang được bán.
                         Khi tour có Tour chi tiết đầy đủ thì trạng thái tour sẽ chuyển sang <Text
                         strong>PUBLISHED</Text>.
@@ -338,7 +394,9 @@ const TourList = () => {
                     <h3 className="text-lg font-semibold">Thông tin cơ bản</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="gap-2 mb-4 items-center">
-                            <p><span className="font-semibold">Điểm đến:</span> {tourDetail.destination}</p>
+                            <p><span
+                                className="font-semibold">Điểm đến:</span> {destination.find((item) => item.id === tourDetail.destinationId)?.name || tourDetail.destinationId}
+                            </p>
                             <p><span
                                 className="font-semibold">Thời gian:</span> {tourDetail.duration} ngày {tourDetail.duration - 1} đêm
                             </p>
@@ -378,6 +436,7 @@ const TourList = () => {
                 tourData={selectedTour}
                 destination={destination}
                 category={category}
+                setLoading={setLoading}
                 setEditModalVisible={setEditModalVisible}
                 editModalVisible={editModalVisible}
             />

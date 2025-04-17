@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Image, Input, InputNumber, message, Modal, Select, Upload } from 'antd';
+import { Button, Divider, Form, Image, Input, InputNumber, message, Modal, Select, Space, Upload } from 'antd';
 import React, { useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import TourServices from '~/services/TourServices';
@@ -20,6 +20,7 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
     const [thumbnail, setThumbnail] = useState([]);
     const [images, setImages] = useState([]);
     const [submitting, setSubmitting] = useState(false);
+    const [selectedDestination, setSelectedDestination] = useState(null);
 
     // Xử lý preview ảnh
     const handlePreview = async (file) => {
@@ -53,8 +54,8 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
             formData.append('title', values.title);
             formData.append('description', values.description);
             formData.append('duration', values.duration);
-            formData.append('destinationId', values.destinationId);
-            formData.append('categoryId', values.categoryId);
+            formData.append('destination', values.destination);
+            formData.append('category', values.category);
 
             if (thumbnail.length > 0) {
                 formData.append('thumbnail', thumbnail[0].originFileObj);
@@ -74,6 +75,7 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
             form.resetFields();
             setThumbnail([]);
             setImages([]);
+            setSelectedDestination(null);
             setModalVisible(false);
         } catch (err) {
             message.error('Thêm tour thất bại: ' + (err.message || 'Có lỗi xảy ra'), 1);
@@ -88,7 +90,14 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
         form.resetFields();
         setThumbnail([]);
         setImages([]);
+        setSelectedDestination(null);
         setModalVisible(false);
+    };
+
+    // Xử lý khi chọn destination
+    const handleDestinationChange = (value) => {
+        const selected = destination.find((dest) => dest.id === value);
+        setSelectedDestination(selected || null);
     };
 
     return (
@@ -163,20 +172,7 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
                         </Form.Item>
 
                         <Form.Item
-                            name="destinationId"
-                            label="Điểm đến"
-                            rules={[{ required: true, message: 'Vui lòng chọn điểm đến!' }]}
-                        >
-                            <Select
-                                showSearch
-                                options={destination}
-                                fieldNames={{ value: 'id', label: 'country' }}
-                                placeholder="Chọn điểm đến"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            name="categoryId"
+                            name="category"
                             label="Loại tour"
                             rules={[{ required: true, message: 'Vui lòng chọn loại tour!' }]}
                         >
@@ -187,6 +183,66 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
                                 placeholder="Chọn loại tour"
                             />
                         </Form.Item>
+
+                        <div className="space-y-4 w-full">
+                            <Form.Item
+                                name="destination"
+                                label="Điểm đến"
+                                rules={[{ required: true, message: 'Vui lòng chọn điểm đến!' }]}
+                            >
+                                <Select
+                                    showSearch
+                                    options={destination.map((dest) => ({
+                                        value: dest.id,
+                                        label: `${dest.city} - ${dest.country} - ${dest.name}`,
+                                    }))}
+                                    placeholder="Chọn điểm đến"
+                                    onChange={handleDestinationChange}
+                                    filterOption={(input, option) =>
+                                        option.label.toLowerCase().includes(input.toLowerCase())
+                                    }
+                                    notFoundContent="Không có điểm đến nào"
+                                />
+                            </Form.Item>
+
+                            {selectedDestination && (
+                                <div className="bg-gray-50 p-4 rounded-lg space-y-4">
+                                    <h3 className="text-lg font-semibold text-gray-700">Thông tin điểm đến</h3>
+                                    <Form.Item label="Quốc gia">
+                                        <Input
+                                            disabled
+                                            value={selectedDestination.country || ''}
+                                            placeholder="Quốc gia"
+                                            className="bg-white"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Thành phố">
+                                        <Input
+                                            disabled
+                                            value={selectedDestination.city || ''}
+                                            placeholder="Thành phố"
+                                            className="bg-white"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Địa chỉ đầy đủ">
+                                        <Input
+                                            disabled
+                                            value={selectedDestination.fullAddress || ''}
+                                            placeholder="Địa chỉ đầy đủ"
+                                            className="bg-white"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Khu vực">
+                                        <Input
+                                            disabled
+                                            value={selectedDestination.region ? 'Ngoài nước' : 'Trong nước'}
+                                            placeholder="Khu vực"
+                                            className="bg-white"
+                                        />
+                                    </Form.Item>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Nút Add và Hủy */}
