@@ -428,7 +428,7 @@ const TourList = () => {
             <AddTour
                 destination={destination}
                 category={category}
-                setLoading={setLoading}
+                setLoading={(loading) => setLoading(!loading)}
                 setModalVisible={setModalVisible}
                 modalVisible={modalVisible}
             />
@@ -436,7 +436,7 @@ const TourList = () => {
                 tourData={selectedTour}
                 destination={destination}
                 category={category}
-                setLoading={setLoading}
+                setLoading={(setLoading) => setLoading(!setLoading)}
                 setEditModalVisible={setEditModalVisible}
                 editModalVisible={editModalVisible}
             />

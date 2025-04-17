@@ -71,7 +71,7 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
 
             await TourServices.AddTour(formData);
             message.success('Thêm tour thành công', 1);
-            setLoading(true);
+            setLoading();
             form.resetFields();
             setThumbnail([]);
             setImages([]);
