@@ -54,6 +54,7 @@ const TourList = () => {
                     endDate: null,
                 }),
             ]);
+            console.log(tourRes.data);
             setCategory(categoryRes || []);
             setDestination(destinationRes || []);
             setTours(tourRes.data || []);
@@ -428,7 +429,8 @@ const TourList = () => {
             <AddTour
                 destination={destination}
                 category={category}
-                setLoading={() => setLoading((prev) => !prev)}
+                fetchData={fetchData()}
+                setLoading={setLoading}
                 setModalVisible={setModalVisible}
                 modalVisible={modalVisible}
             />

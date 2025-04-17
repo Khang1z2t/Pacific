@@ -13,7 +13,7 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-export const AddTour = ({ modalVisible, setModalVisible, category, destination, setLoading }) => {
+export const AddTour = ({ modalVisible, setModalVisible, category, destination, setLoading, fetchData }) => {
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -54,8 +54,8 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
             formData.append('title', values.title);
             formData.append('description', values.description);
             formData.append('duration', values.duration);
-            formData.append('destination', values.destination);
-            formData.append('category', values.category);
+            formData.append('destinationId', values.destinationId);
+            formData.append('categoryId', values.categoryId);
 
             if (thumbnail.length > 0) {
                 formData.append('thumbnail', thumbnail[0].originFileObj);
@@ -71,7 +71,7 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
 
             await TourServices.AddTour(formData);
             message.success('Thêm tour thành công', 1);
-            setLoading(); // Trigger refresh danh sách tour
+            setLoading(true);
             form.resetFields();
             setThumbnail([]);
             setImages([]);
@@ -172,7 +172,7 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
                         </Form.Item>
 
                         <Form.Item
-                            name="category"
+                            name="categoryId"
                             label="Loại tour"
                             rules={[{ required: true, message: 'Vui lòng chọn loại tour!' }]}
                         >
@@ -186,7 +186,7 @@ export const AddTour = ({ modalVisible, setModalVisible, category, destination, 
 
                         <div className="space-y-4 w-full">
                             <Form.Item
-                                name="destination"
+                                name="destinationId"
                                 label="Điểm đến"
                                 rules={[{ required: true, message: 'Vui lòng chọn điểm đến!' }]}
                             >
