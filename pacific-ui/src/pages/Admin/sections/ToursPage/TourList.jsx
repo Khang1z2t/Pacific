@@ -436,7 +436,7 @@ const TourList = () => {
                 tourData={selectedTour}
                 destination={destination}
                 category={category}
-                setLoading={(setLoading) => setLoading(!setLoading)}
+                setLoading={(loading) => setLoading(!loading)}
                 setEditModalVisible={setEditModalVisible}
                 editModalVisible={editModalVisible}
             />
