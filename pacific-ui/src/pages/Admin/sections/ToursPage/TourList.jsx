@@ -54,7 +54,6 @@ const TourList = () => {
                     endDate: null,
                 }),
             ]);
-            console.log(tourRes.data);
             setCategory(categoryRes || []);
             setDestination(destinationRes || []);
             setTours(tourRes.data || []);
