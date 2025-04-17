@@ -428,7 +428,6 @@ const TourList = () => {
             <AddTour
                 destination={destination}
                 category={category}
-                fetchData={fetchData()}
                 setLoading={setLoading}
                 setModalVisible={setModalVisible}
                 modalVisible={modalVisible}

@@ -13,7 +13,7 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-export const AddTour = ({ modalVisible, setModalVisible, category, destination, setLoading, fetchData }) => {
+export const AddTour = ({ modalVisible, setModalVisible, category, destination, setLoading }) => {
     const [form] = Form.useForm();
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
