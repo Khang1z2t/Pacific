@@ -66,7 +66,7 @@ const TourServices = {
 
     updateTour: async (id, data) => {
         try {
-            const response = await axiosConfig.put(config.api.tours + `/${id}`, data, {
+            const response = await axiosConfig.post(config.api.tours + `/${id}`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import Orb from '~/component/Animation/Orb';
-import { Input, Button, Spin, message, Drawer } from 'antd';
+import { Input, Button, Spin, message, Drawer, Collapse, List } from 'antd';
 import ReactMarkdown from 'react-markdown';
 import AiServices from '~/services/AiServices';
 import DestinationServices from '~/services/DestinationServices';
+
+const { Panel } = Collapse;
 
 const AiChatDrawer = ({ open, onClose }) => {
     const [aiQuery, setAiQuery] = useState('');
@@ -21,17 +23,18 @@ const AiChatDrawer = ({ open, onClose }) => {
     const [orbHue, setOrbHue] = useState(270); // Màu tím mặc định
 
     useEffect(() => {
-        DestinationServices.getTopDestinations().then((res) => {
-            const dynamicSuggestions = res.map((dest) => `Tour đi ${dest.city}?`);
-            setSuggestions([
-                'Tour nào giá rẻ?',
-                ...dynamicSuggestions.slice(0, 3),
-                'Tour cho cặp đôi?',
-                'Tôi có booking nào?',
-                'Tour nào được đặt nhiều?',
-                'Chi tiết tour Đà Nẵng 3N2Đ?',
-            ]);
-        })
+        DestinationServices.getTopDestinations()
+            .then((res) => {
+                const dynamicSuggestions = res.map((dest) => `Tour đi ${dest.city}?`);
+                setSuggestions([
+                    'Tour nào giá rẻ?',
+                    ...dynamicSuggestions.slice(0, 3),
+                    'Tour cho cặp đôi?',
+                    'Tôi có booking nào?',
+                    'Tour nào được đặt nhiều?',
+                    'Chi tiết tour Đà Nẵng 3N2Đ?',
+                ]);
+            })
             .catch((err) => {
                 console.error('Lỗi khi lấy top destinations:', err);
                 setSuggestions([
@@ -49,6 +52,17 @@ const AiChatDrawer = ({ open, onClose }) => {
 
     useEffect(() => {
         localStorage.setItem('userChatHistory', JSON.stringify(chatHistory));
+    }, [chatHistory]);
+
+    // Cuộn tự động đến câu trả lời mới
+    useEffect(() => {
+        const chatContainer = document.querySelector('.chat-history');
+        if (chatContainer) {
+            chatContainer.scrollTo({
+                top: chatContainer.scrollHeight,
+                behavior: 'smooth',
+            });
+        }
     }, [chatHistory]);
 
     const handleAiQuery = async () => {
@@ -96,15 +110,19 @@ const AiChatDrawer = ({ open, onClose }) => {
     // Hàm render trả lời dạng chuỗi, giữ nguyên gạch đầu dòng
     const renderResponse = (response) => {
         const lines = response.split('\n');
-
         return lines.map((line, index) => (
             <div key={index} className={line.startsWith('- ') ? 'ml-4 mb-2' : 'mb-2'}>
                 <ReactMarkdown
                     components={{
-                        a: ({node, ...props}) => (
-                            <a {...props} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer" />
+                        a: ({ node, ...props }) => (
+                            <a
+                                {...props}
+                                className="text-blue-600 underline"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            />
                         ),
-                        li: ({node, ...props}) => <li className="ml-4 list-disc" {...props} />,
+                        li: ({ node, ...props }) => <li className="ml-4 list-disc" {...props} />,
                     }}
                 >
                     {line}
@@ -130,10 +148,10 @@ const AiChatDrawer = ({ open, onClose }) => {
             placement="right"
             onClose={onClose}
             open={open}
-            width={400}
+            width={450}
             styles={{
-                body: { padding: '16px', background: '#fff' },
-                header: { borderBottom: '1px solid #f0f0f0', padding: '16px' },
+                body: { padding: '20px', background: '#f9fafb' },
+                header: { borderBottom: '1px solid #e5e7eb', padding: '16px 20px', background: '#ffffff' },
             }}
         >
             <div className="relative flex flex-col h-full">
@@ -142,63 +160,85 @@ const AiChatDrawer = ({ open, onClose }) => {
                     rotateOnHover={true}
                     hue={isLoading ? 180 : orbHue}
                     forceHoverState={isLoading}
-                    className={`absolute top-0 left-0 w-full h-full opacity-20 ${isLoading ? 'animate-pulse scale-105' : ''}`}
+                    className={`absolute top-0 left-0 w-full h-full opacity-10 ${isLoading ? 'animate-pulse scale-105' : ''}`}
                 />
-                <div className="relative z-10 flex flex-col h-full">
-                    <p className="text-sm text-gray-500 mb-4">Hỏi về tour du lịch, chúng tôi sẽ gợi ý ngay!</p>
+                <div className="relative z-10 flex flex-col h-full gap-4">
+                    {/* Gợi ý trong Collapse */}
+                    <Collapse
+                        defaultActiveKey={['1']}
+                        bordered={false}
+                        expandIconPosition="right"
+                        className="bg-white rounded-lg shadow-sm"
+                    >
+                        <Panel
+                            header={<span className="text-sm font-medium text-gray-700">Gợi ý câu hỏi</span>}
+                            key="1"
+                            className="p-0"
+                        >
+                            <List
+                                dataSource={suggestions}
+                                renderItem={(suggestion, index) => (
+                                    <List.Item
+                                        className="border-none px-4 py-1 hover:bg-gray-50 cursor-pointer rounded-md"
+                                        onClick={() => handleSuggestionClick(suggestion)}
+                                    >
+                                        <span className="text-sm text-purple-600 hover:text-purple-800">
+                                            {suggestion}
+                                        </span>
+                                    </List.Item>
+                                )}
+                            />
+                        </Panel>
+                    </Collapse>
 
-                    <div className="flex flex-wrap gap-2 mb-4">
-                        {suggestions.map((suggestion, index) => (
-                            <Button
-                                key={index}
-                                type="text"
-                                className="text-purple-500 hover:bg-purple-50 rounded-full px-3 py-1 text-sm"
-                                onClick={() => handleSuggestionClick(suggestion)}
-                            >
-                                {suggestion}
-                            </Button>
-                        ))}
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    {/* Lịch sử chat */}
+                    <div
+                        className="flex-1 bg-white p-4 rounded-lg shadow-sm border border-gray-100 overflow-y-auto chat-history"
+                        style={{ maxHeight: '60vh', scrollBehavior: 'smooth' }}
+                    >
                         {chatHistory.length > 0 ? (
                             chatHistory.map((chat, index) => (
                                 <div key={index} className="mb-4">
                                     <p className="text-sm text-gray-600 font-medium mb-1">
                                         Bạn hỏi: {chat.query}
                                     </p>
-                                    <div className="text-sm text-gray-700 bg-white p-3 rounded-lg shadow-sm">
+                                    <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg shadow-inner">
                                         <p className="font-medium mb-1">Trả lời:</p>
                                         {renderResponse(chat.response)}
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-sm text-gray-500 italic">Hãy hỏi gì đó hoặc chọn một gợi ý!</p>
+                            <p className="text-sm text-gray-500 italic text-center">
+                                Hỏi gì đó hoặc chọn một gợi ý ở trên!
+                            </p>
                         )}
                         {isLoading && (
-                            <div className="flex justify-center">
+                            <div className="flex justify-center py-4">
                                 <Spin tip="Đang tìm câu trả lời..." />
                             </div>
                         )}
                     </div>
 
-                    <div className="flex gap-2">
-                        <Input
-                            value={aiQuery}
-                            onChange={(e) => setAiQuery(e.target.value)}
-                            placeholder="VD: Tour đi Đà Lạt giá bao nhiêu?"
-                            onPressEnter={handleAiQuery}
-                            className="border-gray-200 focus:ring-purple-500"
-                        />
-                        <Button
-                            type="primary"
-                            onClick={handleAiQuery}
-                            disabled={isLoading || !aiQuery.trim()}
-                            className="bg-purple-500 hover:bg-purple-600"
-                        >
-                            Hỏi
-                        </Button>
+                    {/* Input và nút Hỏi */}
+                    <div className="sticky bottom-0 bg-white p-3 rounded-lg shadow-md border border-gray-100">
+                        <div className="flex gap-2">
+                            <Input
+                                value={aiQuery}
+                                onChange={(e) => setAiQuery(e.target.value)}
+                                placeholder="VD: Tour đi Đà Lạt giá bao nhiêu?"
+                                onPressEnter={handleAiQuery}
+                                className="border-gray-200 focus:ring-purple-500 rounded-md"
+                            />
+                            <Button
+                                type="primary"
+                                onClick={handleAiQuery}
+                                disabled={isLoading || !aiQuery.trim()}
+                                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-md"
+                            >
+                                Hỏi
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
