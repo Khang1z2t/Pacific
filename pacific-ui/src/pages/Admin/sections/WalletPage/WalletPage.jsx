@@ -136,6 +136,7 @@ export const WalletPage = () => {
             key: 'userName',
             render: (text, record) => (
                 <Tooltip title={`Email: ${record.userEmail}`}>
+                    {console.log(record)}
                     <Text>{text}</Text>
                 </Tooltip>
             ),

@@ -4,6 +4,7 @@ import { Input, Button, Spin, message, Drawer, Collapse, List } from 'antd';
 import ReactMarkdown from 'react-markdown';
 import AiServices from '~/services/AiServices';
 import DestinationServices from '~/services/DestinationServices';
+import {Link} from "react-router-dom";
 
 const { Panel } = Collapse;
 
@@ -114,15 +115,15 @@ const AiChatDrawer = ({ open, onClose }) => {
             <div key={index} className={line.startsWith('- ') ? 'ml-4 mb-2' : 'mb-2'}>
                 <ReactMarkdown
                     components={{
-                        a: ({ node, ...props }) => (
-                            <a
-                                {...props}
-                                className="text-blue-600 underline"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            />
-                        ),
-                        li: ({ node, ...props }) => <li className="ml-4 list-disc" {...props} />,
+                        a: ({node, href, ...props}) => {
+                            const isInternal = href && href.startsWith('/');
+                            if (isInternal) {
+                                return <Link to={href} {...props} className="text-blue-600 underline"/>;
+                            }
+                            return <a {...props} className="text-blue-600 underline" target="_blank"
+                                      rel="noopener noreferrer"/>
+                        },
+                        li: ({node, ...props}) => <li className="ml-4 list-disc" {...props} />,
                     }}
                 >
                     {line}
