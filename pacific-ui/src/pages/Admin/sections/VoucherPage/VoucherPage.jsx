@@ -20,12 +20,13 @@ import {
     ReloadOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import VoucherServices from '~/services/VoucherServices';
 import CategoryServices from '~/services/CategoryServices';
 import config from '~/config';
 import moment from 'moment';
 import { FaCheckCircle } from 'react-icons/fa';
+import TourServices from '~/services/TourServices';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -34,78 +35,184 @@ export const VoucherPage = () => {
     const [form] = Form.useForm();
     const [vouchers, setVouchers] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [tours, setTours] = useState([]);
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isDeleteMode, setIsDeleteMode] = useState(false);
 
-    const fetchVouchers = async () => {
+    // Memoized function to fetch all data
+    const fetchAllData = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await VoucherServices.getAllVouchers();
-            setVouchers(response.data);
+            const [voucherResponse, categoryResponse, tourResponse] = await Promise.all([
+                VoucherServices.getAllVouchers(),
+                CategoryServices.getCategories(),
+                TourServices.getAllTour({}),
+            ]);
+            setVouchers(voucherResponse.data);
+            setCategories(categoryResponse);
+            setTours(tourResponse.data);
         } catch (err) {
-            console.error(err);
+            console.error('Error fetching data:', err);
+            message.error('Không thể tải dữ liệu!');
         } finally {
             setLoading(false);
         }
-    };
-
-    const fetchCategories = async () => {
-        try {
-            const response = await CategoryServices.getCategories();
-            setCategories(response);
-        } catch (err) {
-            console.error('Error fetching categories:', err);
-            message.error('Không thể tải danh sách danh mục!');
-        }
-    };
-
-    useEffect(() => {
-        fetchVouchers();
     }, []);
 
+    // Fetch data on mount
     useEffect(() => {
-        if (open || isEditMode) {
-            fetchCategories();
-        }
-    }, [open, isEditMode]);
+        fetchAllData();
+    }, [fetchAllData]);
 
-    const handleEdit = (record) => {
-        setSelectedVoucher(record);
-        setIsEditMode(true);
-        form.setFieldsValue({
-            title: record.title,
-            codeVoucher: record.codeVoucher,
-            discountValue: record.discountValue,
-            quantity: record.quantity,
-            userLimit: record.userLimit,
-            minOrderValue: record.minOrderValue,
-            maxDiscountAmount: record.maxDiscountAmount,
-            firstTimeUserOnly: record.firstTimeUserOnly,
-            status: record.status,
-            startDate: moment(record.startDate),
-            endDate: moment(record.endDate),
-            applyTo: record.applyTo,
-            tourId: record.tourId,
-            categoryId: record.categoryId,
-        });
-    };
+    // Memoized function to handle edit
+    const handleEdit = useCallback(
+        (record) => {
+            setSelectedVoucher(record);
+            setIsEditMode(true);
+            form.setFieldsValue({
+                title: record.title,
+                codeVoucher: record.codeVoucher,
+                discountValue: record.discountValue,
+                quantity: record.quantity,
+                userLimit: record.userLimit,
+                minOrderValue: record.minOrderValue,
+                maxDiscountAmount: record.maxDiscountAmount,
+                firstTimeUserOnly: record.firstTimeUserOnly,
+                status: record.status,
+                startDate: moment(record.startDate),
+                endDate: moment(record.endDate),
+                applyTo: record.applyTo,
+                tourId: record.tourId,
+                categoryId: record.categoryId,
+            });
+        },
+        [form],
+    );
 
-    const handleActiveVoucher = async (id) => {
-        try {
-            setLoading(true);
-            await VoucherServices.updateVoucherStatus(id, 'ACTIVE'); // Truyền status trực tiếp
-            message.success('Kích hoạt voucher thành công!');
-            fetchVouchers();
-        } catch (error) {
-            console.error(error);
-            message.error('Có lỗi xảy ra khi kích hoạt voucher!');
-        } finally {
-            setLoading(false);
-        }
-    };
+    // Memoized function to handle active voucher
+    const handleActiveVoucher = useCallback(
+        async (id) => {
+            try {
+                setLoading(true);
+                await VoucherServices.updateVoucherStatus(id, 'ACTIVE');
+                message.success('Kích hoạt voucher thành công!');
+                await fetchAllData();
+            } catch (error) {
+                console.error(error);
+                message.error('Có lỗi xảy ra khi kích hoạt voucher!');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchAllData],
+    );
+
+    // Memoized function to handle add voucher
+    const handleAddVoucher = useCallback(
+        async (values) => {
+            const {
+                title,
+                codeVoucher,
+                discountValue,
+                quantity,
+                userLimit,
+                minOrderValue,
+                maxDiscountAmount,
+                firstTimeUserOnly,
+                status,
+                startDate,
+                endDate,
+                applyTo,
+                tourId,
+                categoryId,
+            } = values;
+            try {
+                setLoading(true);
+                await VoucherServices.addVoucher({
+                    title: title || '',
+                    codeVoucher: codeVoucher || '',
+                    discountValue: discountValue || 0,
+                    quantity: quantity || 0,
+                    userLimit: userLimit || 0,
+                    minOrderValue: minOrderValue || 0,
+                    maxDiscountAmount: maxDiscountAmount || 0,
+                    firstTimeUserOnly: firstTimeUserOnly || true,
+                    status: status || 'ACTIVE',
+                    startDate: startDate ? startDate.format('YYYY-MM-DDTHH:mm:ss') : null,
+                    endDate: endDate ? endDate.format('YYYY-MM-DDTHH:mm:ss') : null,
+                    applyTo: applyTo || 'ALL',
+                    tourId: tourId || null,
+                    categoryId: categoryId || null,
+                });
+                message.success('Thêm voucher thành công!');
+                await fetchAllData();
+                setOpen(false);
+                form.resetFields();
+            } catch (error) {
+                console.error(error);
+                message.error('Có lỗi xảy ra khi thêm voucher!');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchAllData, form],
+    );
+
+    // Memoized function to handle edit voucher
+    const handleEditVoucher = useCallback(
+        async (values) => {
+            try {
+                setLoading(true);
+                await VoucherServices.updateVoucher(selectedVoucher.id, {
+                    title: values.title || '',
+                    codeVoucher: values.codeVoucher || '',
+                    discountValue: values.discountValue || 0,
+                    quantity: values.quantity || 0,
+                    userLimit: values.userLimit || 0,
+                    minOrderValue: values.minOrderValue || 0,
+                    maxDiscountAmount: values.maxDiscountAmount || 0,
+                    firstTimeUserOnly: values.firstTimeUserOnly || true,
+                    status: values.status || 'ACTIVE',
+                    startDate: values.startDate ? values.startDate.format('YYYY-MM-DDTHH:mm:ss') : null,
+                    endDate: values.endDate ? values.endDate.format('YYYY-MM-DDTHH:mm:ss') : null,
+                    applyTo: values.applyTo || 'ALL',
+                    tourId: values.tourId || null,
+                    categoryId: values.categoryId || null,
+                });
+                message.success('Cập nhật voucher thành công!');
+                await fetchAllData();
+                setIsEditMode(false);
+                form.resetFields();
+            } catch (error) {
+                console.error(error);
+                message.error('Có lỗi xảy ra khi cập nhật voucher!');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchAllData, form, selectedVoucher],
+    );
+
+    // Memoized function to handle delete voucher
+    const handleDeleteVoucher = useCallback(
+        async (id) => {
+            try {
+                setLoading(true);
+                await VoucherServices.deleteVoucher(id);
+                message.success('Xóa voucher thành công!');
+                await fetchAllData();
+            } catch (error) {
+                console.error(error);
+                message.error('Có lỗi xảy ra khi xóa voucher!');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchAllData],
+    );
 
     const columns = [
         {
@@ -224,107 +331,16 @@ export const VoucherPage = () => {
                         <Button onClick={() => handleEdit(record)} icon={<EditOutlined />} />
                     </Tooltip>
                     <Tooltip title={'Kích hoạt voucher'}>
-                        <Button icon={<FaCheckCircle color={'green'} />}
-                                disabled={record.status === 'ACTIVE'}
-                                onClick={() => handleActiveVoucher(record?.id)}
+                        <Button
+                            icon={<FaCheckCircle color={'green'} />}
+                            disabled={record.status === 'ACTIVE'}
+                            onClick={() => handleActiveVoucher(record?.id)}
                         />
                     </Tooltip>
                 </Space>
             ),
         },
     ];
-
-    const handleAddVoucher = async (values) => {
-        const {
-            title,
-            codeVoucher,
-            discountValue,
-            quantity,
-            userLimit,
-            minOrderValue,
-            maxDiscountAmount,
-            firstTimeUserOnly,
-            status,
-            startDate,
-            endDate,
-            applyTo,
-            tourId,
-            categoryId,
-        } = values;
-        try {
-            setLoading(true);
-            await VoucherServices.addVoucher({
-                title: title || '',
-                codeVoucher: codeVoucher || '',
-                discountValue: discountValue || 0,
-                quantity: quantity || 0,
-                userLimit: userLimit || 0,
-                minOrderValue: minOrderValue || 0,
-                maxDiscountAmount: maxDiscountAmount || 0,
-                firstTimeUserOnly: firstTimeUserOnly || true,
-                status: status || 'ACTIVE',
-                startDate: startDate ? startDate.format('YYYY-MM-DDTHH:mm:ss') : null,
-                endDate: endDate ? endDate.format('YYYY-MM-DDTHH:mm:ss') : null,
-                applyTo: applyTo || 'ALL',
-                tourId: tourId || null,
-                categoryId: categoryId || null,
-            });
-            message.success('Thêm voucher thành công!');
-            fetchVouchers();
-            setOpen(false);
-            form.resetFields();
-        } catch (error) {
-            console.error(error);
-            message.error('Có lỗi xảy ra khi thêm voucher!');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleEditVoucher = async (values) => {
-        try {
-            setLoading(true);
-            await VoucherServices.updateVoucher(selectedVoucher.id, {
-                title: values.title || '',
-                codeVoucher: values.codeVoucher || '',
-                discountValue: values.discountValue || 0,
-                quantity: values.quantity || 0,
-                userLimit: values.userLimit || 0,
-                minOrderValue: values.minOrderValue || 0,
-                maxDiscountAmount: values.maxDiscountAmount || 0,
-                firstTimeUserOnly: values.firstTimeUserOnly || true,
-                status: values.status || 'ACTIVE',
-                startDate: values.startDate ? values.startDate.format('YYYY-MM-DDTHH:mm:ss') : null,
-                endDate: values.endDate ? values.endDate.format('YYYY-MM-DDTHH:mm:ss') : null,
-                applyTo: values.applyTo || 'ALL',
-                tourId: values.tourId || null,
-                categoryId: values.categoryId || null,
-            });
-            message.success('Cập nhật voucher thành công!');
-            fetchVouchers();
-            setIsEditMode(false);
-            form.resetFields();
-        } catch (error) {
-            console.error(error);
-            message.error('Có lỗi xảy ra khi cập nhật voucher!');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteVoucher = async (id) => {
-        try {
-            setLoading(true);
-            await VoucherServices.deleteVoucher(id);
-            message.success('Xóa voucher thành công!');
-            fetchVouchers();
-        } catch (error) {
-            console.error(error);
-            message.error('Có lỗi xảy ra khi xóa voucher!');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <>
@@ -344,7 +360,7 @@ export const VoucherPage = () => {
                             <Button onClick={() => setOpen(true)} type="primary">
                                 Thêm voucher
                             </Button>
-                            <Button onClick={fetchVouchers} icon={<ReloadOutlined />} type="default">
+                            <Button onClick={fetchAllData} icon={<ReloadOutlined />} type="default">
                                 Làm mới
                             </Button>
                         </div>
@@ -492,10 +508,20 @@ export const VoucherPage = () => {
                                     <Form.Item
                                         label={<span className="text-gray-700 font-medium">ID Tour</span>}
                                         name="tourId"
-                                        rules={[{ required: true, message: 'Vui lòng nhập ID tour!' }]}
+                                        rules={[{ required: true, message: 'Vui lòng chọn ID tour!' }]}
                                         className="col-span-2"
                                     >
-                                        <Input placeholder="Nhập ID tour" className="rounded-md" />
+                                        <Select
+                                            placeholder="Chọn ID tour"
+                                            loading={tours.length === 0}
+                                            className="rounded-md"
+                                            options={tours.map((tour) => ({
+                                                value: tour.id,
+                                                label: tour.title,
+                                            }))}
+                                            showSearch
+                                            filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
+                                        />
                                     </Form.Item>
                                 ) : getFieldValue('applyTo') === 'CATEGORY' ? (
                                     <Form.Item
@@ -716,10 +742,20 @@ export const VoucherPage = () => {
                                     <Form.Item
                                         label={<span className="text-gray-700 font-medium">ID Tour</span>}
                                         name="tourId"
-                                        rules={[{ required: true, message: 'Vui lòng nhập ID tour!' }]}
+                                        rules={[{ required: true, message: 'Vui lòng chọn ID tour!' }]}
                                         className="col-span-2"
                                     >
-                                        <Input placeholder="Nhập ID tour" className="rounded-md" />
+                                        <Select
+                                            placeholder="Chọn ID tour"
+                                            loading={tours.length === 0}
+                                            className="rounded-md"
+                                            options={tours.map((tour) => ({
+                                                value: tour.id,
+                                                label: tour.title,
+                                            }))}
+                                            showSearch
+                                            filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
+                                        />
                                     </Form.Item>
                                 ) : getFieldValue('applyTo') === 'CATEGORY' ? (
                                     <Form.Item
@@ -763,5 +799,3 @@ export const VoucherPage = () => {
         </>
     );
 };
-
-export default VoucherPage;
