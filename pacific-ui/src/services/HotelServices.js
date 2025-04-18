@@ -80,7 +80,11 @@ const HotelServices = {
 
     updateHotel: async (id, body) => {
         try {
-            const response = await axiosConfig.put(config.api.hotel + `/update/${id}`, body);
+            const response = await axiosConfig.post(config.api.hotel + `/update/${id}`, body, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             return response.data;
         } catch (error) {
             handleError(error, 'Cập nhật thông tin khách sạn');
