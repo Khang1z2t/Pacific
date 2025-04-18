@@ -14,96 +14,14 @@ export const AddTourDetail = ({
                                   tour,
                                   visible,
                                   setVisible,
+                                  hotels,
+                                  transports,
+                                  guides,
                                   loading,
                                   setLoading,
                                   onSuccess,
                               }) => {
     const [form] = Form.useForm();
-    const [hotels, setHotels] = useState([]);
-    const [transports, setTransports] = useState([]);
-    const [guides, setGuides] = useState([]);
-
-    // Fetch dữ liệu hotels, transports và guides
-    const fetchData = useCallback(async () => {
-        try {
-            setLoading(true);
-            const [hotelRes, transportRes, guideRes] = await Promise.all([
-                HotelServices.getAllHotels(),
-                TransportServices.getTransports(),
-                GuideServices.getAllGuides(),
-            ]);
-            setHotels(hotelRes.data || []);
-            setTransports(transportRes || []);
-            const activeGuides = guideRes.data.filter((guide) => guide.active === true);
-            setGuides(activeGuides || []);
-        } catch (error) {
-            message.error('Không thể tải dữ liệu khách sạn, phương tiện hoặc hướng dẫn viên!');
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    }, [setLoading]);
-
-    useEffect(() => {
-        if (visible) {
-            fetchData();
-        }
-    }, [visible, fetchData]);
-
-    // Hàm kiểm tra ngày hợp lệ cho RangePicker
-    const disabledDate = (current, { from }) => {
-        // Không cho chọn ngày trước hôm nay
-        if (current && current < dayjs().startOf('day')) {
-            return true;
-        }
-
-        // Nếu đã có ngày bắt đầu và tour có duration
-        if (from && tour?.duration) {
-            const maxEndDate = dayjs(from).add(tour.duration - 1, 'day');
-            return !dayjs(current).isBetween(from, maxEndDate, 'day', '[]');
-        }
-
-        return false;
-    };
-
-
-    const handleDateRangeChange = (dates) => {
-        if (!dates || !dates[0]) {
-            form.setFieldsValue({ dateRange: [] });
-            return;
-        }
-
-        const startDate = dates[0];
-        if (tour?.duration) {
-            // Tự động set ngày kết thúc dựa vào duration
-            const endDate = dayjs(startDate).add(tour.duration - 1, 'day');
-            form.setFieldsValue({
-                dateRange: [
-                    dayjs(startDate).hour(8).minute(0).second(0),
-                    dayjs(endDate).hour(20).minute(0).second(0),
-                ],
-            });
-        }
-    };
-
-
-    // Xử lý khi nhấn OK trong RangePicker
-    const handleRangePickerOk = () => {
-        const [startDate, endDate] = form.getFieldValue('dateRange') || [];
-        if (startDate && tour?.duration) {
-            const expectedEndDate = dayjs(startDate)
-                .add(tour.duration - 1, 'day')
-                .hour(20)
-                .minute(0)
-                .second(0);
-
-            if (!endDate || !endDate.isSame(expectedEndDate, 'day')) {
-                form.setFieldsValue({
-                    dateRange: [startDate, expectedEndDate],
-                });
-            }
-        }
-    };
 
     // Xử lý submit form
     const handleAddTourDetail = async (values) => {
@@ -190,7 +108,7 @@ export const AddTourDetail = ({
                                 <span className={'text-red-500 block'}>
                                     Số ngày: {tour?.duration}
                                 </span>
-                                <div className={"flex flex-wrap gap-2"}>
+                                <div className={'flex flex-wrap gap-2'}>
                                     <Form.Item
                                         name={['dateRange', 0]}
                                         rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}
