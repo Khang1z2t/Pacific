@@ -1,51 +1,108 @@
-import { DatePicker, Divider, Input, InputNumber, message, Modal, Select, Form } from 'antd';
+import { DatePicker, Divider, Input, InputNumber, message, Modal, Select, Form, Button, Space } from 'antd';
 import { useEffect, useCallback, useState } from 'react';
 import HotelServices from '~/services/HotelServices';
 import TransportServices from '~/services/TransportServices';
-import moment from 'moment/moment';
-import { differenceInDays } from 'date-fns';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import TourDetailServices from '~/services/TourDetailServices';
 import GuideServices from '~/services/GuideServices';
 import config from '~/config';
 
 const { RangePicker } = DatePicker;
-
-export const AddTourDetail = ({ tour, setAddDetailModalVisible, addDetailModalVisible }) => {
+dayjs.extend(isBetween);
+export const AddTourDetail = ({
+                                  tour,
+                                  visible,
+                                  setVisible,
+                                  loading,
+                                  setLoading,
+                                  onSuccess,
+                              }) => {
     const [form] = Form.useForm();
     const [hotels, setHotels] = useState([]);
     const [transports, setTransports] = useState([]);
     const [guides, setGuides] = useState([]);
 
-    // Fetch dữ liệu hotels, transports và guides bằng Promise.all và useCallback
+    // Fetch dữ liệu hotels, transports và guides
     const fetchData = useCallback(async () => {
         try {
+            setLoading(true);
             const [hotelRes, transportRes, guideRes] = await Promise.all([
                 HotelServices.getAllHotels(),
                 TransportServices.getTransports(),
                 GuideServices.getAllGuides(),
             ]);
-            setHotels(hotelRes.data);
-            setTransports(transportRes);
-            // Lọc guides chỉ lấy những guide có active = true
-            const activeGuides = guideRes.data.filter(guide => guide.active === true);
-            setGuides(activeGuides);
+            setHotels(hotelRes.data || []);
+            setTransports(transportRes || []);
+            const activeGuides = guideRes.data.filter((guide) => guide.active === true);
+            setGuides(activeGuides || []);
         } catch (error) {
             message.error('Không thể tải dữ liệu khách sạn, phương tiện hoặc hướng dẫn viên!');
             console.error(error);
+        } finally {
+            setLoading(false);
         }
-    }, []);
+    }, [setLoading]);
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    // Hàm kiểm tra ngày hợp lệ dựa trên tour.duration
-    const disabledDate = (current, { from }) => {
-        if (!from || !tour?.duration) {
-            return false;
+        if (visible) {
+            fetchData();
         }
-        const diff = Math.abs(current.diff(from, 'days'));
-        return diff >= tour.duration;
+    }, [visible, fetchData]);
+
+    // Hàm kiểm tra ngày hợp lệ cho RangePicker
+    const disabledDate = (current, { from }) => {
+        // Không cho chọn ngày trước hôm nay
+        if (current && current < dayjs().startOf('day')) {
+            return true;
+        }
+
+        // Nếu đã có ngày bắt đầu và tour có duration
+        if (from && tour?.duration) {
+            const maxEndDate = dayjs(from).add(tour.duration - 1, 'day');
+            return !dayjs(current).isBetween(from, maxEndDate, 'day', '[]');
+        }
+
+        return false;
+    };
+
+
+    const handleDateRangeChange = (dates) => {
+        if (!dates || !dates[0]) {
+            form.setFieldsValue({ dateRange: [] });
+            return;
+        }
+
+        const startDate = dates[0];
+        if (tour?.duration) {
+            // Tự động set ngày kết thúc dựa vào duration
+            const endDate = dayjs(startDate).add(tour.duration - 1, 'day');
+            form.setFieldsValue({
+                dateRange: [
+                    dayjs(startDate).hour(8).minute(0).second(0),
+                    dayjs(endDate).hour(20).minute(0).second(0),
+                ],
+            });
+        }
+    };
+
+
+    // Xử lý khi nhấn OK trong RangePicker
+    const handleRangePickerOk = () => {
+        const [startDate, endDate] = form.getFieldValue('dateRange') || [];
+        if (startDate && tour?.duration) {
+            const expectedEndDate = dayjs(startDate)
+                .add(tour.duration - 1, 'day')
+                .hour(20)
+                .minute(0)
+                .second(0);
+
+            if (!endDate || !endDate.isSame(expectedEndDate, 'day')) {
+                form.setFieldsValue({
+                    dateRange: [startDate, expectedEndDate],
+                });
+            }
+        }
     };
 
     // Xử lý submit form
@@ -57,20 +114,16 @@ export const AddTourDetail = ({ tour, setAddDetailModalVisible, addDetailModalVi
             return;
         }
 
-        // Tính số ngày dựa trên ngày (bỏ qua giờ phút)
-        const days = differenceInDays(
-            moment(endDate).startOf('day').toDate(),
-            moment(startDate).startOf('day').toDate(),
-        );
-
-        if (days !== tour?.duration - 1) {
-            message.error(`Khoảng thời gian phải đúng ${tour?.duration} ngày!`);
+        // Kiểm tra duration hợp lệ
+        const daysDiff = dayjs(endDate).diff(dayjs(startDate), 'day') + 1;
+        if (daysDiff !== tour?.duration) {
+            message.error(`Khoảng cách ngày phải đúng ${tour?.duration} ngày!`);
             return;
         }
 
         const data = {
-            startDate: startDate, // Đã được định dạng ISO 8601 từ RangePicker
-            endDate: endDate,     // Đã được định dạng ISO 8601 từ RangePicker
+            startDate: startDate,
+            endDate: endDate,
             priceAdults: values.priceAdults,
             priceChildren: values.priceChildren,
             quantity: values.quantity,
@@ -81,13 +134,17 @@ export const AddTourDetail = ({ tour, setAddDetailModalVisible, addDetailModalVi
         };
 
         try {
+            setLoading(true);
             await TourDetailServices.addTourDetail(data);
             message.success('Thêm chi tiết tour thành công', 1);
-            setAddDetailModalVisible(false);
+            setVisible(false);
             form.resetFields();
+            onSuccess();
         } catch (error) {
             message.error('Thêm chi tiết tour thất bại: ' + (error.message || 'Có lỗi xảy ra'), 1);
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -100,10 +157,10 @@ export const AddTourDetail = ({ tour, setAddDetailModalVisible, addDetailModalVi
         <Modal
             width={800}
             title={'Thêm chi tiết tour'}
-            open={addDetailModalVisible}
+            open={visible}
             onCancel={() => {
                 form.resetFields();
-                setAddDetailModalVisible(false);
+                setVisible(false);
             }}
             footer={null}
         >
@@ -124,38 +181,66 @@ export const AddTourDetail = ({ tour, setAddDetailModalVisible, addDetailModalVi
                     </div>
                     <div className={'p-2 grid grid-cols-2 gap-4'}>
                         <Form.Item
-                            name="dateRange"
-                            label={<span
-                                className={'font-semibold text-black uppercase'}>Ngày bắt đầu - Ngày kết thúc</span>}
-                            rules={[
-                                { required: true, message: 'Vui lòng chọn ngày và giờ bắt đầu, kết thúc!' },
-                            ]}
-                        >
-                            <div>
-                                <span className={'text-red-500'}>Số ngày: {tour?.duration}</span>
-                                <RangePicker
-                                    showTime={{ format: 'HH:mm' }}
-                                    disabledDate={(current) => disabledDate(current, { from: form.getFieldValue(['dateRange', 0]) })}
-                                    format={'YYYY-MM-DD HH:mm:ss'}
-                                    className="w-full"
-                                    onChange={(dates) => {
-                                        if (dates) {
-                                            form.setFieldsValue({
-                                                dateRange: [
-                                                    dates[0].format('YYYY-MM-DDTHH:mm:ss'),
-                                                    dates[1].format('YYYY-MM-DDTHH:mm:ss'),
-                                                ],
-                                            });
-                                        } else {
-                                            form.setFieldsValue({ dateRange: [] });
-                                        }
-                                    }}
-                                />
+                            label={
+                                <span className={'font-semibold text-black uppercase'}>
+                                    Ngày bắt đầu - Ngày kết thúc
+                                </span>
+                            }>
+                            <div className="space-y-2">
+                                <span className={'text-red-500 block'}>
+                                    Số ngày: {tour?.duration}
+                                </span>
+                                <div className={"flex flex-wrap gap-2"}>
+                                    <Form.Item
+                                        name={['dateRange', 0]}
+                                        rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}
+                                        className="mb-0"
+                                    >
+                                        <DatePicker
+                                            showTime={{ format: 'HH:mm' }}
+                                            format="YYYY-MM-DD HH:mm:ss"
+                                            placeholder="Ngày bắt đầu"
+                                            className="w-[220px]"
+                                            disabledDate={(current) => current && current < dayjs().startOf('day')}
+                                            onChange={(date) => {
+                                                if (date && tour?.duration) {
+                                                    const endDate = dayjs(date)
+                                                        .add(tour.duration - 1, 'day')
+                                                        .hour(20)
+                                                        .minute(0)
+                                                        .second(0);
+                                                    form.setFieldsValue({
+                                                        dateRange: [
+                                                            date.hour(8).minute(0).second(0),
+                                                            endDate,
+                                                        ],
+                                                    });
+                                                }
+                                            }}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item
+                                        name={['dateRange', 1]}
+                                        rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc!' }]}
+                                        className="mb-0"
+                                    >
+                                        <DatePicker
+                                            showTime={{ format: 'HH:mm' }}
+                                            format="YYYY-MM-DD HH:mm:ss"
+                                            placeholder="Ngày kết thúc"
+                                            className="w-[220px]"
+                                            disabled={true} // Không cho phép chọn ngày kết thúc thủ công
+                                        />
+                                    </Form.Item>
+                                </div>
                             </div>
                         </Form.Item>
-
                         <Form.Item
-                            label={<span className={'font-semibold text-black uppercase'}>Giá người lớn - Giá trẻ em (30% giá người lớn)</span>}
+                            label={
+                                <span className={'font-semibold text-black uppercase'}>
+                                    Giá người lớn - Giá trẻ em (30% giá người lớn)
+                                </span>
+                            }
                         >
                             <div className={'grid grid-cols-2 gap-2 w-full'}>
                                 <Form.Item
@@ -252,19 +337,17 @@ export const AddTourDetail = ({ tour, setAddDetailModalVisible, addDetailModalVi
                     </div>
 
                     <div className="flex justify-end gap-2">
-                        <button
-                            type="button"
-                            className="px-4 py-2 border rounded-md"
-                            onClick={() => setAddDetailModalVisible(false)}
+                        <Button
+                            onClick={() => {
+                                form.resetFields();
+                                setVisible(false);
+                            }}
                         >
                             Hủy
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                        >
+                        </Button>
+                        <Button type="primary" htmlType="submit" loading={loading}>
                             Lưu
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </Form>

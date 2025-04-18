@@ -442,8 +442,11 @@ const TourList = () => {
             />
             <AddTourDetail
                 tour={selectedTour}
-                setAddDetailModalVisible={setAddDetailModalVisible}
-                addDetailModalVisible={addDetailModalVisible}
+                visible={addDetailModalVisible}
+                setVisible={setAddDetailModalVisible}
+                loading={loading}
+                setLoading={setLoading}
+                onSuccess={fetchData}
             />
         </div>
     );
