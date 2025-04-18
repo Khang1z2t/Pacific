@@ -12,24 +12,24 @@ import {
     QRCode,
     Rate,
     Space,
-    Table,
+    Table, Tag, Tooltip,
     Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import config from '~/config';
-import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
-import { useAuth } from '~/config/AuthContext';
+import {ExclamationCircleOutlined, UserOutlined} from '@ant-design/icons';
+import {useAuth} from '~/config/AuthContext';
 import RatingServices from '~/services/RatingServices';
 import BookingServices from '~/services/BookingServices';
-import { FaTags } from 'react-icons/fa';
+import {FaTags} from 'react-icons/fa';
 import WalletServices from '~/services/WalletServices';
 
-const { Text, Title } = Typography;
-const { TextArea } = Input;
+const {Text, Title} = Typography;
+const {TextArea} = Input;
 
-export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
-    const { currentUser } = useAuth();
+export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
+    const {currentUser} = useAuth();
     const [timeLeft, setTimeLeft] = useState('');
     const [form] = Form.useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,13 +42,14 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
     const [showModalCancel, setShowModalCancel] = useState(false);
     const [isRefund, setIsRefund] = useState(false);
     const [isCancel, setIsCancel] = useState(false);
+    const [bookingReason, setBookingReason] = useState(null);
     const showModal = () => setIsModalOpen(true);
     const handleCancel = () => setIsModalOpen(false);
     const handelCancelBooking = async (values) => {
         try {
             const cancelData = {
                 reason: values.reason,
-                refundRequested: isCancel,
+                refundRequested: isRefund,
                 additionalNotes: values.additionalNotes,
             };
             const response = await BookingServices.cancelBooking(data.id, cancelData);
@@ -56,7 +57,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             setShowModalCancel(false);
             const updateData = {
                 ...data,
-                status: response.status || (isCancel ? 'ON_HOLD' : 'CANCELLED'),
+                status: response.status || (isRefund ? 'ON_HOLD' : 'CANCELLED'),
             };
             if (onUpdateBooking) {
                 onUpdateBooking(updateData);
@@ -69,16 +70,16 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
     };
 
     const columns = [
-        { title: 'Họ và tên', dataIndex: 'fullName', key: 'fullName' },
-        { title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber' },
-        { title: 'Email', dataIndex: 'email', key: 'email' },
+        {title: 'Họ và tên', dataIndex: 'fullName', key: 'fullName'},
+        {title: 'Số điện thoại', dataIndex: 'phoneNumber', key: 'phoneNumber'},
+        {title: 'Email', dataIndex: 'email', key: 'email'},
         {
             title: 'Ngày sinh',
             dataIndex: 'birthday',
             key: 'birthday',
             render: (text) => (text ? config.webConfig.convertDateNoTime(text) : 'N/A'),
         },
-        { title: 'Nhóm tuổi', dataIndex: 'ageGroup', key: 'ageGroup' },
+        {title: 'Nhóm tuổi', dataIndex: 'ageGroup', key: 'ageGroup'},
         {
             title: 'Giá/Người',
             dataIndex: 'price',
@@ -123,7 +124,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
         const values = form.getFieldsValue(['price', 'transportation', 'service', 'food', 'accommodation']);
         const ratings = Object.values(values).filter(val => val !== undefined && val !== 0);
         const average = ratings.length > 0 ? ratings.reduce((sum, val) => sum + val, 0) / ratings.length : 0;
-        form.setFieldsValue({ overallRating: average });
+        form.setFieldsValue({overallRating: average});
     };
 
     const handleReviewSubmit = async (values) => {
@@ -185,7 +186,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             const amount = data.totalAmount || 0;
             const orderInfo = data.bookingNo || 'N/A';
 
-            await BookingServices.checkOut({ amount: amount, orderInfo: orderInfo }).then((res) => {
+            await BookingServices.checkOut({amount: amount, orderInfo: orderInfo}).then((res) => {
                 window.location.href = res;
             }).catch((err) => {
                 console.error('Error during checkout:', err);
@@ -199,7 +200,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
     };
 
     const handleRefund = async (values) => {
-        try{
+        try {
             const refundData = {
                 bookingId: data?.id,
                 reasons: values.reasons,
@@ -210,9 +211,9 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             setVisible(false);
             setIsRefund(false);
             if (onUpdateBooking) {
-                onUpdateBooking({ ...data, status: 'ON_HOLD' });
+                onUpdateBooking({...data, status: 'ON_HOLD'});
             }
-        }catch (error) {
+        } catch (error) {
             console.error('Error requesting refund:', error);
             const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi yêu cầu hoàn tiền. Vui lòng thử lại!';
             message.error(errorMessage);
@@ -230,12 +231,60 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
         ON_HOLD: 'text-yellow-500',
     };
 
+    const CancellationInfo = ({data}) => {
+        if (!['CANCELLED', 'ON_HOLD'].includes(data.status)) return null;
+
+        // Trích xuất thông tin
+        let reason = 'Không cung cấp';
+        let cancelledBy = 'Không xác định';
+        let role = 'Không xác định';
+        // Nếu reason và cancelledBy nằm trong notes (chuỗi reasonInfo)
+        if (data.notes) {
+            const reasonMatch = data.notes.match(/Reason: (.*?)\|/);
+            const cancelledByMatch = data.notes.match(/CancelledBy: (.*?)\|/);
+            reason = reasonMatch ? reasonMatch[1] : 'Không cung cấp';
+            cancelledBy = cancelledByMatch ? cancelledByMatch[1] : 'Không xác định';
+            role = cancelledBy.includes('User') ? 'Bạn' : cancelledBy.includes('Admin') ? 'Admin' : 'Không xác định';
+        }
+
+        // Log thông tin
+        console.log({
+            reason,
+            cancelledBy: `${role} (${cancelledBy})`,
+        });
+
+        return (
+            <div style={{marginTop: 8}}>
+                <Tooltip title={reason}>
+                    <Text
+                        className="italic text-gray-600"
+                        style={{
+                            display: 'block',
+                            maxWidth: 400,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}
+                    >
+                        <strong>Lý do:</strong> {reason}
+                    </Text>
+                </Tooltip>
+                <Text className="text-gray-600" style={{display: 'block'}}>
+                    <strong>Hủy bởi:</strong>{' '}
+                    <Tag color={role === 'Bạn' ? 'blue' : 'purple'}>
+                        {role} {cancelledBy !== 'Không xác định'}
+                    </Tag>
+                </Text>
+            </div>
+        );
+    };
+
     return (
         <>
             <Card
                 className="w-full rounded-xl shadow-lg hover:shadow-xl border border-gray-200 transition-all duration-300 overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%)' }}
-                bodyStyle={{ padding: '12px sm:p-4 md:p-5' }}
+                style={{background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%)'}}
+                bodyStyle={{padding: '12px sm:p-4 md:p-5'}}
             >
                 <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                     <div className="flex-1 w-full">
@@ -274,11 +323,11 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                             className="text-xs sm:text-sm text-green-500">(-{voucher.discountValue || 0}%)</sup>
                                     )}
                                 </p>
-                                <Divider className="my-2 sm:my-3" />
+                                <Divider className="my-2 sm:my-3"/>
                                 {reviewed ? (
                                     <div className="flex items-center gap-2">
                                         <Rate allowHalf defaultValue={data.review?.rating || 0} disabled
-                                              className="text-sm sm:text-base" />
+                                              className="text-sm sm:text-base"/>
                                         <Button
                                             type="link"
                                             className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm"
@@ -325,7 +374,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                         {data.voucherId && (
                                             <div
                                                 className="flex items-center gap-2 bg-green-50 px-2 sm:px-3 py-1 rounded-full shadow-sm">
-                                                <FaTags className="text-green-500 text-sm" />
+                                                <FaTags className="text-green-500 text-sm"/>
                                                 <span className="text-xs sm:text-sm text-green-600 font-semibold">
                                                     Voucher: {voucher.codeVoucher || 'N/A'} (-{voucher.discountValue || 0}%)
                                                 </span>
@@ -359,6 +408,16 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                     >
                                         Yêu cầu hoàn tiền
                                     </button>
+                                )}
+                                {data.status === 'ON_HOLD' && (
+                                    <div>
+                                        <CancellationInfo data={data}/>
+                                    </div>
+                                )}
+                                {data.status === 'CANCELLED' && (
+                                    <div>
+                                        <CancellationInfo data={data}/>
+                                    </div>
                                 )}
                                 <p className="text-xs sm:text-sm text-gray-600 mt-1">
                                     Thanh toán: <span className="font-semibold">{data.paymentMethod || 'N/A'}</span>
@@ -397,8 +456,8 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                 onCancel={handleCancel}
                 footer={null}
                 width="90%"
-                style={{ maxWidth: 900 }}
-                bodyStyle={{ padding: '16px sm:p-6' }}
+                style={{maxWidth: 900}}
+                bodyStyle={{padding: '16px sm:p-6'}}
                 className="rounded-lg"
             >
                 <div className="flex flex-col gap-4 sm:gap-6">
@@ -451,7 +510,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             rowKey="id"
                             bordered
                             className="rounded-lg"
-                            scroll={{ x: 600 }}
+                            scroll={{x: 600}}
                         />
                     </div>
                 </div>
@@ -463,17 +522,17 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                 onCancel={() => setShowReview(false)}
                 footer={null}
                 width="90%"
-                style={{ maxWidth: 700 }}
-                bodyStyle={{ padding: '16px sm:p-6', background: '#f9fafb' }}
+                style={{maxWidth: 700}}
+                bodyStyle={{padding: '16px sm:p-6', background: '#f9fafb'}}
                 className="rounded-lg shadow-xl"
             >
                 <div className="flex flex-col gap-4 sm:gap-6">
                     <div
                         className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                         <Avatar
-                            size={{ xs: 48, sm: 64 }}
+                            size={{xs: 48, sm: 64}}
                             src={currentUser.avatar}
-                            icon={!currentUser.avatar && <UserOutlined />}
+                            icon={!currentUser.avatar && <UserOutlined/>}
                             className="border-2 border-blue-200"
                         />
                         <div className="text-center sm:text-left">
@@ -482,7 +541,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             </Text>
                             <div className="flex items-center gap-2 mt-1 justify-center sm:justify-start">
                                 <Rate allowHalf value={data.review?.rating || 0} disabled
-                                      className="text-sm sm:text-base" />
+                                      className="text-sm sm:text-base"/>
                                 <Text className="text-gray-600 text-xs sm:text-sm">({data.review?.rating || 0}/5)</Text>
                             </div>
                             <Text className="text-xs sm:text-sm text-gray-500">
@@ -501,12 +560,12 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             tiết đánh giá</Title>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             {[
-                                { key: 'priceRating', label: 'Giá cả' },
-                                { key: 'facilityRating', label: 'Phương tiện' },
-                                { key: 'serviceRating', label: 'Dịch vụ' },
-                                { key: 'foodRating', label: 'Ẩm thực' },
-                                { key: 'accommodationRating', label: 'Lưu trú' },
-                            ].map(({ key, label }) => (
+                                {key: 'priceRating', label: 'Giá cả'},
+                                {key: 'facilityRating', label: 'Phương tiện'},
+                                {key: 'serviceRating', label: 'Dịch vụ'},
+                                {key: 'foodRating', label: 'Ẩm thực'},
+                                {key: 'accommodationRating', label: 'Lưu trú'},
+                            ].map(({key, label}) => (
                                 <div key={key} className="flex items-center gap-2">
                                     <Text
                                         className="text-gray-600 w-24 sm:w-32 font-medium text-xs sm:text-sm">{label}</Text>
@@ -542,8 +601,8 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                 onCancel={handleReviewCancel}
                 footer={null}
                 width="90%"
-                style={{ maxWidth: 900 }}
-                bodyStyle={{ padding: '16px sm:p-6', background: '#f9fafb' }}
+                style={{maxWidth: 900}}
+                bodyStyle={{padding: '16px sm:p-6', background: '#f9fafb'}}
                 className="rounded-lg shadow-xl"
             >
                 <Form
@@ -564,9 +623,9 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                         <div
                             className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                             <Avatar
-                                size={{ xs: 48, sm: 64 }}
+                                size={{xs: 48, sm: 64}}
                                 src={config.imageConfig.getAvatar(currentUser.avatarUrl)}
-                                icon={!currentUser.avatarUrl && <UserOutlined />}
+                                icon={!currentUser.avatarUrl && <UserOutlined/>}
                                 className="border-2 border-blue-200"
                             />
                             <div className="text-center sm:text-left">
@@ -585,7 +644,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                     label={<span className="text-sm sm:text-base font-medium text-gray-700">Đánh giá tổng thể</span>}
                                     className="mb-0"
                                 >
-                                    <Rate allowHalf disabled className="text-sm sm:text-xl" />
+                                    <Rate allowHalf disabled className="text-sm sm:text-xl"/>
                                 </Form.Item>
                                 <Text className="text-gray-600 text-xs sm:text-sm">
                                     (Tự động tính từ các hạng mục bên dưới)
@@ -596,7 +655,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 label={<span
                                     className="text-sm sm:text-base font-medium text-gray-700">Nhận xét của bạn</span>}
                                 rules={[
-                                    ({ getFieldValue }) => ({
+                                    ({getFieldValue}) => ({
                                         validator(_, value) {
                                             const overallRating = getFieldValue('overallRating');
                                             if (overallRating <= 3 && !value) {
@@ -620,11 +679,11 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             </Title>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                                 {[
-                                    { name: 'price', label: 'Giá cả' },
-                                    { name: 'transportation', label: 'Phương tiện' },
-                                    { name: 'service', label: 'Dịch vụ' },
-                                    { name: 'food', label: 'Ẩm thực' },
-                                    { name: 'accommodation', label: 'Khách sạn' },
+                                    {name: 'price', label: 'Giá cả'},
+                                    {name: 'transportation', label: 'Phương tiện'},
+                                    {name: 'service', label: 'Dịch vụ'},
+                                    {name: 'food', label: 'Ẩm thực'},
+                                    {name: 'accommodation', label: 'Khách sạn'},
                                 ].map((item) => (
                                     <Form.Item
                                         key={item.name}
@@ -669,7 +728,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                 onCancel={() => setShowModalCancel(!showModalCancel)}
                 footer={null}
                 width="90%"
-                style={{ maxWidth: 600 }}
+                style={{maxWidth: 600}}
                 className="rounded-xl overflow-hidden shadow-2xl"
                 closeIcon={<span className="text-gray-500 text-lg sm:text-xl hover:text-gray-700">×</span>}
                 centered
@@ -683,7 +742,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                       }}>
                     <div className="p-4 sm:p-6 bg-white">
                         <div className="flex items-center justify-center mb-4 sm:mb-6">
-                            <ExclamationCircleOutlined style={{ fontSize: '24px sm:32px', color: '#faad14' }} />
+                            <ExclamationCircleOutlined style={{fontSize: '24px sm:32px', color: '#faad14'}}/>
                             <Title level={3} className="ml-2 sm:ml-3 mb-0 uppercase text-red-800 text-lg sm:text-xl">
                                 Xác nhận yêu cầu hủy đơn hàng
                             </Title>
@@ -695,7 +754,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                         <Form.Item
                             name="reason"
                             label={<span className="text-gray-600 text-sm sm:text-lg">Lý do hủy:</span>}
-                            rules={[{ required: true, message: 'Vui lòng nhập lý do hủy!' }]}
+                            rules={[{required: true, message: 'Vui lòng nhập lý do hủy!'}]}
                         >
                             <Input.TextArea
                                 className="max-h-80 text-sm sm:text-base"
@@ -709,7 +768,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 size="large"
                                 htmlType="submit"
                                 className="rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm"
-                                style={{ minWidth: '100px sm:120px' }}
+                                style={{minWidth: '100px sm:120px'}}
                             >
                                 Gửi yêu cầu
                             </Button>
@@ -718,7 +777,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                                 size="large"
                                 onClick={() => setShowModalCancel(!showModalCancel)}
                                 className="rounded-lg border-gray-300 hover:border-gray-400 transition-colors duration-300 px-4 sm:px-6 py-1 sm:py-2 text-xs sm:text-sm"
-                                style={{ minWidth: '100px sm:120px' }}
+                                style={{minWidth: '100px sm:120px'}}
                             >
                                 Hủy
                             </Button>
@@ -730,7 +789,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
             <Modal
                 title={
                     <div className="flex items-center space-x-2">
-                        <ExclamationCircleOutlined className="text-yellow-500 text-xl" />
+                        <ExclamationCircleOutlined className="text-yellow-500 text-xl"/>
                         <span className="text-xl sm:text-2xl font-semibold text-gray-800">Yêu cầu hoàn tiền</span>
                     </div>
                 }
@@ -738,8 +797,8 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                 onCancel={() => setVisible(false)}
                 footer={null}
                 width="90%"
-                style={{ maxWidth: 600 }}
-                bodyStyle={{ padding: '24px' }}
+                style={{maxWidth: 600}}
+                bodyStyle={{padding: '24px'}}
                 className="rounded-xl shadow-lg"
             >
                 <Form
@@ -765,7 +824,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
                             name="reasons"
                             label={<span
                                 className="text-gray-700 font-medium text-sm sm:text-base">Lý do hoàn tiền</span>}
-                            rules={[{ required: true, message: 'Vui lòng nhập lý do hoàn tiền!' }]}
+                            rules={[{required: true, message: 'Vui lòng nhập lý do hoàn tiền!'}]}
                         >
                             <Input.TextArea
                                 rows={4}
@@ -776,7 +835,7 @@ export const BookedTourCard = ({ data, tour, onUpdateBooking, voucher }) => {
 
                         <div
                             className="flex items-start space-x-2 bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
-                            <ExclamationCircleOutlined className="text-yellow-500 text-lg mt-1" />
+                            <ExclamationCircleOutlined className="text-yellow-500 text-lg mt-1"/>
                             <Text className="text-yellow-700 text-sm sm:text-base">
                                 <strong>Lưu ý:</strong> Bạn sẽ được hoàn lại <strong>80% số tiền gốc</strong> sau khi
                                 yêu cầu được duyệt. Hãy kiểm tra kỹ trước khi gửi!
