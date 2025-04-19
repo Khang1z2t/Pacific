@@ -1,48 +1,32 @@
 import React, { useEffect } from 'react';
-import { Divider } from 'antd';
+import TravelSection from './components/TravelSection';
 
 const locations = [
     {
-        id: 1,
-        title: 'Du Lịch Thủ Đô Hà Nội',
-        img: '/img/Blog/ha-noi.jpg',
+        title: 'Hà Nội',
+        images: [
+            '/img/Blog/ha-noi.jpg',
+            '/img/Blog/ha-noi1.jpg',
+            '/img/Blog/ha-noi2.jpg',
+            '/img/Blog/ha-noi3.jpg',
+            '/img/Blog/ha-noi4.jpg',
+        ],
         description:
-            'Hà Nội, thủ đô của Việt Nam, là một trong những điểm đến không thể bỏ qua ở miền Bắc. Với lịch sử hơn 1.000 năm, Hà Nội có nhiều điểm đặc sắc như Hoàng thành Thăng Long, Văn Miếu - Quốc Tử Giám, Hồ Gươm, Phố cổ Hà Nội, Chùa Một Cột. Đây cũng là thiên đường ẩm thực với những món như phở, bún chả, bánh mì, nem rán.',
+            'Thời gian lý tưởng nhất để du lịch Hà Nội là vào mùa thu từ tháng 8 đến tháng 11 và mùa xuân từ tháng 3 đến tháng 4. Không ít người cho rằng mùa thu là lúc tiết trời đẹp nhất trong năm ở Hà Nội, với bầu trời xanh trong, gió heo may se se lạnh, lá vàng rơi, mùi hoa sữa thoảng... Mùa xuân về tiết trời ấm áp, đường phố như thay áo mới khi cây cối đâm chồi nảy lộc, muôn hoa đua nở',
     },
     {
-        id: 2,
-        title: 'Du Lịch Mộc Châu',
-        img: '/img/Blog/moc-chau.jpg',
+        title: 'Yên Bái',
+        images: ['/img/Blog/yen-bai.jpg', '/img/Blog/yen-bai1.jpg', '/img/Blog/yen-bai2.jpg'],
         description:
-            'Mộc Châu là điểm đến lý tưởng cho những ai muốn tránh xa ồn ào thành phố. Với khí hậu mát mẻ quanh năm, Mộc Châu thu hút du khách bằng những đồi chè xanh mướt, vườn hoa cải trắng muốt và những món ngon đặc sản như bê chao, cá suối, nậm pịa.',
+            'Tỉnh Yên Bái nằm ở phía Tây Bắc, cách Hà Nội khoảng 160 km, giáp các tỉnh Tuyên Quang, Phú Thọ, Lai Châu, Sơn La, Lào Cai và Hà Giang. Yên Bái gồm thành phố Yên Bái, thị xã Nghĩa Lộ và 7 huyện gồm Yên Bình, Lục Yên, Văn Chấn, Văn Yên, Trấn Yên, Trạm Tấu và Mù Cang Chải.\n' +
+            '\n' +
+            'Nhắc đến du lịch Yên Bái, nổi bật nhất là những thửa ruộng bậc thang, mùa vàng, mùa đổ nước. Ngoài ra Yên Bái còn nổi tiếng bởi những đỉnh núi, suối nước nóng, những ngôi làng cổ và nhiều món ăn đặc sắc',
     },
     {
-        id: 3,
-        title: 'Du Lịch Sapa',
-        img: '/img/Blog/sapa.png',
+        title: 'Sapa',
+        images: ['/img/Blog/sapa.png', '/img/Blog/sapa1.png', '/img/Blog/sapa2.png', '/img/Blog/sapa3.png', '/img/Blog/sapa4.png'],
         description:
-            "Sapa nổi tiếng với khung cảnh núi non tuyệt đẹp, khí hậu mát mẻ và bản sắc văn hóa độc đáo của các dân tộc thiểu số như H'Mông, Dao. Du khách có thể khám phá đỉnh Fansipan, thung lũng Mường Hoa, thưởng thức thắng cố, thịt trâu gác bếp.",
-    },
-    {
-        id: 4,
-        title: 'Du Lịch Ninh Bình',
-        img: '/img/Blog/ninh-binh.jpg',
-        description:
-            'Ninh Bình sở hữu danh thắng Tràng An, Tam Cốc - Bích Động và Hang Múa. Đây là nơi lý tưởng để du khách thưởng thức cảnh sắc thiên nhiên và tham gia các hoạt động như chèo thuyền, leo núi. Đặc sản nổi bật của Ninh Bình gồm dê núi, cơm cháy, miến lươn.',
-    },
-    {
-        id: 5,
-        title: 'Du Lịch Hà Giang',
-        img: '/img/Blog/ha-giang.jpg',
-        description:
-            'Hà Giang nổi tiếng với đèo Mã Pí Lèng, chợ phiên Đồng Văn, cao nguyên đá Đồng Văn. Đây là điểm đến tuyệt vời cho những ai yêu thích khám phá và muốn trải nghiệm văn hóa của các dân tộc vùng cao.',
-    },
-    {
-        id: 6,
-        title: 'Du Lịch Yên Bái',
-        img: '/img/Blog/yen-bai.jpg',
-        description:
-            'Mù Cang Chải, Yên Bái, nổi tiếng với ruộng bậc thang tuyệt đẹp, đặc biệt vào mùa lúa chín. Du khách có thể tham gia lễ hội dù lượn trên đèo Khau Phạ để ngắm nhìn toàn cảnh vùng núi hùng vĩ.',
+            'Sapa - một cái tên đã trở thành biểu tượng cho vẻ đẹp của núi rừng Tây Bắc, luôn là điểm đến khiến bao trái tim phải thổn thức. Từ đỉnh Fansipan hùng vĩ vươn mình giữa mây trời, đến những bản làng yên bình ẩn mình dưới thung lũng, mỗi góc nhỏ của Sapa đều mang trong mình một câu chuyện, một vẻ đẹp riêng khiến du khách phải say đắm.',
     },
 ];
 
@@ -52,43 +36,10 @@ export const MienBac = () => {
     }, []);
 
     return (
-        <div className="bg-gray-100 py-10">
-            {/* Container chính */}
-            <div className="max-w-5xl mx-auto bg-white p-8 shadow-lg rounded-lg">
-                {/* Tiêu đề chính */}
-                <h1 className="text-4xl font-bold text-orange-500 text-center">Top 6 Địa Điểm Không Thể Bỏ Lỡ</h1>
-                <h2 className="text-3xl font-semibold text-gray-700 text-center mt-4">
-                    Miền Bắc Việt Nam nổi tiếng với cảnh quan thiên nhiên tuyệt đẹp, văn hóa phong phú và nền ẩm thực
-                    đặc sắc. Hãy cùng khám phá ngay những điểm đến tuyệt vời này!
-                </h2>
-                <Divider/>
-                {/* Danh sách địa điểm */}
-                {locations.map((location) => (
-                    <div key={location.id} className="mt-12">
-                        {/* Tiêu đề địa điểm */}
-                        <h2 className="text-2xl font-semibold text-gray-800 text-center mb-4">
-                            {location.id}. {location.title}
-                        </h2>
-
-                        {/* Hình ảnh địa điểm */}
-                        <div className="flex justify-center">
-                            <img
-                                src={location.img}
-                                alt={location.title}
-                                className="w-full md:w-[70%] lg:w-[60%] h-auto object-cover rounded-lg shadow-md"
-                            />
-                        </div>
-
-                        {/* Chú thích ảnh */}
-                        <p className="text-gray-500 italic text-center mt-2">
-                            {location.title} – điểm đến hấp dẫn với vẻ đẹp tự nhiên và văn hóa đặc sắc.
-                        </p>
-
-                        {/* Mô tả địa điểm */}
-                        <p className="text-gray-700 mt-4 text-justify leading-relaxed">{location.description}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
+        <TravelSection
+            title="Top 6 Địa Điểm Không Thể Bỏ Lỡ Khi Du Lịch Miền Bắc"
+            subtitle="Miền Bắc Việt Nam nổi tiếng với cảnh quan thiên nhiên tuyệt đẹp, văn hóa phong phú và nền ẩm thực đặc sắc."
+            locations={locations}
+        />
     );
 };
