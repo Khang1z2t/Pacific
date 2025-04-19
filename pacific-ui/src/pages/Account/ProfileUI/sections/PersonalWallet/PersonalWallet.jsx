@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Button, InputNumber, notification, Spin, Typography, Table, Tag, Space } from 'antd';
-import { WalletOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import {useCallback, useEffect, useState} from 'react';
+import {Button, InputNumber, notification, Spin, Typography, Table, Tag, Space, Tooltip} from 'antd';
+import {WalletOutlined, PlusOutlined, MinusOutlined} from '@ant-design/icons';
 import WalletServices from '~/services/WalletServices';
-import { useAuth } from '~/config/AuthContext';
+import {useAuth} from '~/config/AuthContext';
 import config from '~/config';
 
-const { Title, Text } = Typography;
+const {Title, Text} = Typography;
 
 export const PersonalWallet = () => {
-    const { currentUser } = useAuth();
+    const {currentUser} = useAuth();
     const [balance, setBalance] = useState(0);
     const [transactions, setTransactions] = useState([]);
     const [amount, setAmount] = useState(null);
@@ -34,12 +34,14 @@ export const PersonalWallet = () => {
     }, [currentUser.id]);
 
     // Lấy lịch sử giao dịch
-    console.log(currentUser);
     const fetchTransactions = useCallback(async () => {
         try {
             setLoading(true);
             const response = await WalletServices.getTransactions(currentUser.id);
-            setTransactions(response || []);
+            const filteredTransactions = (response || [])
+                .filter(transaction => ['DEPOSIT', 'WITHDRAW', 'REFUNDED'].includes(transaction.type))
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            setTransactions(filteredTransactions);
         } catch (error) {
             notification.error({
                 message: 'Lỗi',
@@ -129,7 +131,7 @@ export const PersonalWallet = () => {
             title: 'Mã giao dịch',
             dataIndex: 'id',
             key: 'id',
-            render: (text) => <Text strong>{text.slice(0, 8)}...</Text>,
+            render: (text) => <Tooltip title={text}><Text strong>{text.slice(0, 8)}...</Text></Tooltip>,
         },
         {
             title: 'Số tiền',
@@ -163,7 +165,7 @@ export const PersonalWallet = () => {
             key: 'status',
             render: (status) => (
                 <Tag color={status === 'COMPLETED' ? 'green' : status === 'PENDING' ? 'orange' : 'red'}>
-                    {status === 'COMPLETED' ? 'Hoàn thành' : status === 'PENDING' ? 'Đang chờ' : 'Thất bại'}
+                    {status === 'COMPLETED' ? 'Thành công' : status === 'PENDING' ? 'Đang chờ' : 'Thất bại'}
                 </Tag>
             ),
         },
@@ -171,7 +173,18 @@ export const PersonalWallet = () => {
             title: 'Mô tả',
             dataIndex: 'description',
             key: 'description',
-            render: (description) => <Text className="italic">{description || 'Không có'}</Text>,
+            render: (description) => {
+                const desc = description || 'Không có';
+                return desc.length > 40 ? (
+                    <Tooltip title={desc}>
+                        <Text className="italic">
+                            {desc.slice(0, 40)}...
+                        </Text>
+                    </Tooltip>
+                ) : (
+                    <Text className="italic">{desc}</Text>
+                );
+            },
         },
         {
             title: 'Ngày giao dịch',
@@ -194,12 +207,12 @@ export const PersonalWallet = () => {
     return (
         <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">
             <Title level={2} className="text-gray-800 mb-6 flex items-center">
-                <WalletOutlined className="mr-2 text-blue-600" /> Ví cá nhân
+                <WalletOutlined className="mr-2 text-blue-600"/> Ví cá nhân
             </Title>
 
             {loading ? (
                 <div className="flex justify-center py-8">
-                    <Spin size="large" />
+                    <Spin size="large"/>
                 </div>
             ) : (
                 <>
@@ -209,7 +222,7 @@ export const PersonalWallet = () => {
                             Số dư hiện tại
                         </Title>
                         <Text className="text-2xl sm:text-3xl font-bold text-green-600">
-                            {balance.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                            {balance.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'})}
                         </Text>
                     </div>
 
@@ -232,7 +245,7 @@ export const PersonalWallet = () => {
                             <Space>
                                 <Button
                                     type="primary"
-                                    icon={<PlusOutlined />}
+                                    icon={<PlusOutlined/>}
                                     onClick={handleDeposit}
                                     loading={loading}
                                     className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
@@ -242,7 +255,7 @@ export const PersonalWallet = () => {
                                 </Button>
                                 <Button
                                     type="primary"
-                                    icon={<MinusOutlined />}
+                                    icon={<MinusOutlined/>}
                                     onClick={handleWithdraw}
                                     loading={loading}
                                     className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
@@ -263,10 +276,10 @@ export const PersonalWallet = () => {
                             columns={transactionColumns}
                             dataSource={transactions}
                             rowKey="id"
-                            pagination={{ pageSize: 10, showSizeChanger: true }}
+                            pagination={{pageSize: 5, showSizeChanger: false}}
                             className="rounded-lg overflow-hidden"
-                            locale={{ emptyText: 'Không có giao dịch nào.' }}
-                            scroll={{ x: 'max-content' }}
+                            locale={{emptyText: 'Không có giao dịch nào.'}}
+                            scroll={{x: 'max-content'}}
                         />
                     </div>
                 </>

@@ -205,13 +205,13 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
                 bookingId: data?.id,
                 reasons: values.reasons,
             }
-            console.log(refundData);
-            await WalletServices.refund(refundData);
+            const response = await WalletServices.refund(refundData);
             message.success('Yêu cầu hoàn tiền đã được gửi thành công!', 1);
+            console.log('Refund response:', response);
             setVisible(false);
             setIsRefund(false);
             if (onUpdateBooking) {
-                onUpdateBooking({...data, status: 'ON_HOLD'});
+                onUpdateBooking({...data, status: response?.data?.status, notes: response?.data?.notes});
             }
         } catch (error) {
             console.error('Error requesting refund:', error);
@@ -255,20 +255,22 @@ export const BookedTourCard = ({data, tour, onUpdateBooking, voucher}) => {
 
         return (
             <div style={{marginTop: 8}}>
-                <Tooltip title={reason}>
-                    <Text
-                        className="italic text-gray-600"
-                        style={{
-                            display: 'block',
-                            maxWidth: 400,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                        }}
-                    >
-                        <strong>Lý do:</strong> {reason}
-                    </Text>
-                </Tooltip>
+                <Text
+                    className="italic text-gray-600"
+                    style={{
+                        display: 'block',
+                    }}
+                >
+                    {reason.length > 10 ? (
+                        <Tooltip title={reason}>
+                            <strong>Lý do:</strong> {`${reason.slice(0, 10)} ...`}
+                        </Tooltip>
+                    ) : (
+                        <>
+                            <strong>Lý do:</strong> {reason}
+                        </>
+                    )}
+                </Text>
                 <Text className="text-gray-600" style={{display: 'block'}}>
                     <strong>Hủy bởi:</strong>{' '}
                     <Tag color={role === 'Bạn' ? 'blue' : 'purple'}>
