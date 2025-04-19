@@ -148,6 +148,16 @@ const BookingServices = {
         }
     },
 
+    getBookingByBookingId: async (id) => {
+        try {
+            const response = await axiosConfig.get(config.api.booking + `/book/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            return Promise.reject(error);
+        }
+    }
+
 };
 
 export default BookingServices;

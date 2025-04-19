@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import Orb from '~/component/Animation/Orb';
-import { Input, Button, Spin, message, Drawer, Collapse, List } from 'antd';
+import {Input, Button, Spin, message, Drawer, Collapse, List} from 'antd';
 import ReactMarkdown from 'react-markdown';
 import AiServices from '~/services/AiServices';
 import DestinationServices from '~/services/DestinationServices';
 import {Link} from "react-router-dom";
 
-const { Panel } = Collapse;
+const {Panel} = Collapse;
 
-const AiChatDrawer = ({ open, onClose }) => {
+const AiChatDrawer = ({open, onClose}) => {
     const [aiQuery, setAiQuery] = useState('');
     const [aiResponse, setAiResponse] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +74,7 @@ const AiChatDrawer = ({ open, onClose }) => {
         setIsLoading(true);
         try {
             const responseText = await AiServices.askAi(aiQuery);
-            const newChat = { query: aiQuery, response: responseText };
+            const newChat = {query: aiQuery, response: responseText};
             setChatHistory([...chatHistory, newChat]);
             setAiResponse(responseText);
             setOrbHue(Math.floor(Math.random() * 360));
@@ -87,7 +87,7 @@ const AiChatDrawer = ({ open, onClose }) => {
             }
         } catch (err) {
             const errorResponse = 'Lỗi khi xử lý câu hỏi. Vui lòng thử lại.';
-            setChatHistory([...chatHistory, { query: aiQuery, response: errorResponse }]);
+            setChatHistory([...chatHistory, {query: aiQuery, response: errorResponse}]);
             setAiResponse(errorResponse);
             setOrbHue(0);
             message.error('Có lỗi xảy ra!');
@@ -116,12 +116,7 @@ const AiChatDrawer = ({ open, onClose }) => {
                 <ReactMarkdown
                     components={{
                         a: ({node, href, ...props}) => {
-                            const isInternal = href && href.startsWith('/');
-                            if (isInternal) {
-                                return <Link to={href} {...props} className="text-blue-600 underline"/>;
-                            }
-                            return <a {...props} className="text-blue-600 underline" target="_blank"
-                                      rel="noopener noreferrer"/>
+                            return <Link onClick={() => onClose()} to={href} {...props} className="text-blue-600 underline"/>;
                         },
                         li: ({node, ...props}) => <li className="ml-4 list-disc" {...props} />,
                     }}
@@ -151,8 +146,8 @@ const AiChatDrawer = ({ open, onClose }) => {
             open={open}
             width={450}
             styles={{
-                body: { padding: '20px', background: '#f9fafb' },
-                header: { borderBottom: '1px solid #e5e7eb', padding: '16px 20px', background: '#ffffff' },
+                body: {padding: '20px', background: '#f9fafb'},
+                header: {borderBottom: '1px solid #e5e7eb', padding: '16px 20px', background: '#ffffff'},
             }}
         >
             <div className="relative flex flex-col h-full">
@@ -195,7 +190,7 @@ const AiChatDrawer = ({ open, onClose }) => {
                     {/* Lịch sử chat */}
                     <div
                         className="flex-1 bg-white p-4 rounded-lg shadow-sm border border-gray-100 overflow-y-auto chat-history"
-                        style={{ maxHeight: '60vh', scrollBehavior: 'smooth' }}
+                        style={{maxHeight: '60vh', scrollBehavior: 'smooth'}}
                     >
                         {chatHistory.length > 0 ? (
                             chatHistory.map((chat, index) => (
@@ -216,7 +211,7 @@ const AiChatDrawer = ({ open, onClose }) => {
                         )}
                         {isLoading && (
                             <div className="flex justify-center py-4">
-                                <Spin tip="Đang tìm câu trả lời..." />
+                                <Spin tip="Đang tìm câu trả lời..."/>
                             </div>
                         )}
                     </div>
