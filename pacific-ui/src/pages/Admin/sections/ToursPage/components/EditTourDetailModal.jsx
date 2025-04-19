@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Switch, message, Select } from 'antd';
-import TourServices from '~/services/TourServices';
+import TourDetailServices from '~/services/TourDetailServices';
 import dayjs from 'dayjs';
 import config from '~/config';
 
@@ -8,35 +8,60 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
-
     const handlePriceAdultsChange = (value) => {
         form.setFieldsValue({ priceChildren: value * 0.3 });
     };
 
+    console.log('tourDetail', tourDetail);
+
     useEffect(() => {
-        if (tourDetail) {
+        if (tourDetail && tourDetail.id) {
             form.setFieldsValue({
                 ...tourDetail,
-                startDate: dayjs(tourDetail.startDate),
+                startDate: tourDetail.startDate ? dayjs(tourDetail.startDate) : null,
+                endDate: tourDetail.endDate ? dayjs(tourDetail.endDate) : null,
                 hotelId: tourDetail.hotelId || '',
                 transportId: tourDetail.transportId || '',
                 quantity: tourDetail.quantity || 0,
                 priceAdults: tourDetail.priceAdults || 0,
                 priceChildren: tourDetail.priceChildren || 0,
+                guideId: tourDetail.guide?.id || 'Chưa có hướng dẫn viên',
                 active: tourDetail.active,
             });
+        } else {
+            form.resetFields(); // Đặt lại form nếu tourDetail không hợp lệ
         }
     }, [tourDetail, form]);
 
     const handleSubmit = async (values) => {
+        if (!tourDetail || !tourDetail.id) {
+            message.error('Không tìm thấy thông tin chi tiết tour!');
+            return;
+        }
+
         try {
+            const { startDate, endDate } = values;
+
+            if (!startDate || !endDate) {
+                message.error('Vui lòng chọn đầy đủ ngày và giờ bắt đầu, kết thúc!');
+                return;
+            }
+
+            // Kiểm tra duration hợp lệ
+            const daysDiff = dayjs(endDate).diff(dayjs(startDate), 'day') + 1;
+            if (daysDiff !== tourDetail.duration) {
+                message.error(`Khoảng cách ngày phải đúng ${tourDetail.duration} ngày!`);
+                return;
+            }
+
             setLoading(true);
-            const formData = {
+            const body = {
                 ...values,
-                startDate: values.startDate.format('YYYY-MM-DD'),
+                startDate: startDate,
+                endDate: endDate,
             };
 
-            await TourServices.updateTourDetail(tourDetail.id, formData);
+            await TourDetailServices.updateTourDetail(tourDetail.id, body);
             message.success('Cập nhật chi tiết tour thành công!');
             setVisible(false);
             if (onSuccess) onSuccess();
@@ -47,6 +72,27 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
             setLoading(false);
         }
     };
+    const handleStartDateChange = (date) => {
+        if (date && tourDetail?.tour?.duration) {
+            const endDate = dayjs(date)
+                .add(tourDetail.tour.duration - 1, 'day')
+                .hour(20)
+                .minute(0)
+                .second(0);
+
+            form.setFieldsValue({
+                dateRange: [
+                    date.hour(8).minute(0).second(0),
+                    endDate
+                ]
+            });
+        }
+    };
+
+    // Nếu tourDetail không hợp lệ, không hiển thị modal
+    if (!tourDetail || !tourDetail.id) {
+        return null;
+    }
 
     return (
         <Modal
@@ -65,8 +111,8 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
                 <Form.Item
                     label={
                         <span className={'font-semibold text-black uppercase'}>
-                                    Giá người lớn - Giá trẻ em (30% giá người lớn)
-                                </span>
+                            Giá người lớn - Giá trẻ em (30% giá người lớn)
+                        </span>
                     }
                 >
                     <div className={'grid grid-cols-2 gap-2 w-full'}>
@@ -135,16 +181,47 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
                     </Form.Item>
                 </div>
 
+                <p className={"font-semibold text-black uppercase"}>
+                    Thời gian tour ({tourDetail.duration} ngày)
+                </p>
                 <div className="grid grid-cols-2 gap-4">
                     <Form.Item
                         name="startDate"
-                        label="Ngày khởi hành"
-                        rules={[{ required: true, message: 'Vui lòng chọn ngày khởi hành!' }]}
+                        label="Ngày bắt đầu"
+                        rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}
                     >
                         <DatePicker
+                            showTime={{ format: 'HH:mm' }}
+                            format="YYYY-MM-DD HH:mm:ss"
+                            placeholder="Ngày bắt đầu"
                             className="w-full"
-                            format="DD/MM/YYYY"
                             disabledDate={(current) => current && current < dayjs().startOf('day')}
+                            onChange={(date) => {
+                                if (date && tourDetail.duration) {
+                                    const endDate = dayjs(date)
+                                        .add(tourDetail.duration - 1, 'day')
+                                        .hour(20)
+                                        .minute(0)
+                                        .second(0);
+                                    form.setFieldsValue({
+                                        startDate: date.hour(8).minute(0).second(0),
+                                        endDate,
+                                    });
+                                }
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        name="endDate"
+                        label="Ngày kết thúc"
+                        rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc!' }]}
+                    >
+                        <DatePicker
+                            showTime={{ format: 'HH:mm' }}
+                            format="YYYY-MM-DD HH:mm:ss"
+                            placeholder="Ngày kết thúc"
+                            className="w-full"
+                            disabled
                         />
                     </Form.Item>
 
@@ -172,9 +249,10 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
                 >
                     <Select
                         showSearch
+                        allowClear
                         options={guides.map((guide) => ({
                             id: guide.id,
-                            name: `${guide.firstName} ${guide.lastName}`,
+                            name: `${guide.firstName} ${guide.lastName} - ${guide.phone}`,
                         }))}
                         optionFilterProp={'name'}
                         fieldNames={{ value: 'id', label: 'name' }}
