@@ -115,7 +115,7 @@ export const EditTour = ({ editModalVisible, setEditModalVisible, category, dest
             // Gọi API updateTour
             await TourServices.updateTour(tourData.id, formData);
             message.success('Cập nhật tour thành công!');
-            setLoading(true); // Trigger reload danh sách tour
+            setLoading(); // Trigger reload danh sách tour
             setEditModalVisible(false); // Đóng modal
         } catch (error) {
             console.error('Error updating tour:', error);
