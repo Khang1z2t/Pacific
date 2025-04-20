@@ -5,6 +5,8 @@ import ReactMarkdown from 'react-markdown';
 import AiServices from '~/services/AiServices';
 import DestinationServices from '~/services/DestinationServices';
 import {Link} from "react-router-dom";
+import '~/pages/Admin/sections/HomePage/HomePage.css';
+import { MessageOutlined, CheckCircleOutlined, QuestionCircleOutlined, DoubleRightOutlined } from '@ant-design/icons';
 
 const {Panel} = Collapse;
 
@@ -195,42 +197,60 @@ const AiChatDrawer = ({open, onClose}) => {
                         {chatHistory.length > 0 ? (
                             chatHistory.map((chat, index) => (
                                 <div key={index} className="mb-4">
-                                    <p className="text-sm text-gray-600 font-medium mb-1">
-                                        Bạn hỏi: {chat.query}
+                                    <p className="text-sm text-purple-600 font-medium mb-1 flex items-center">
+                                        <span className="bg-purple-100 p-1 rounded-full mr-1">
+                                            <MessageOutlined className="h-3 w-3" />
+                                        </span>
+                                        {chat.query}
                                     </p>
-                                    <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg shadow-inner">
-                                        <p className="font-medium mb-1">Trả lời:</p>
-                                        {renderResponse(chat.response)}
+                                    <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg shadow-inner border-l-4 border-purple-400">
+                                        <p className="font-medium mb-2 text-purple-700 flex items-center">
+                                            <span className="bg-purple-100 p-1 rounded-full mr-1">
+                                                <CheckCircleOutlined className="h-3 w-3" />
+                                            </span>
+                                            Trả lời:
+                                        </p>
+                                        <div className="markdown-content">
+                                            {renderResponse(chat.response)}
+                                        </div>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-sm text-gray-500 italic text-center">
-                                Hỏi gì đó hoặc chọn một gợi ý ở trên!
-                            </p>
+                            <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                                <MessageOutlined className="h-12 w-12 text-purple-200 mb-2" style={{ fontSize: '48px' }} />
+                                <p className="text-sm text-gray-500">Chưa có câu hỏi nào. Hãy thử một gợi ý hoặc nhập câu hỏi của bạn!</p>
+                            </div>
                         )}
                         {isLoading && (
-                            <div className="flex justify-center py-4">
-                                <Spin tip="Đang tìm câu trả lời..."/>
+                            <div className="flex justify-center items-center absolute inset-0 bg-white bg-opacity-70 z-10">
+                                <div className="text-center">
+                                    <Spin tip="Đang tìm câu trả lời..." size="large" />
+                                    <p className="mt-2 text-purple-600 font-medium">Vui lòng đợi một chút...</p>
+                                </div>
                             </div>
                         )}
                     </div>
 
                     {/* Input và nút Hỏi */}
-                    <div className="sticky bottom-0 bg-white p-3 rounded-lg shadow-md border border-gray-100">
+                    <div className="sticky bottom-0 bg-white p-4 rounded-lg shadow-md border border-gray-100">
                         <div className="flex gap-2">
                             <Input
                                 value={aiQuery}
                                 onChange={(e) => setAiQuery(e.target.value)}
                                 placeholder="VD: Tour đi Đà Lạt giá bao nhiêu?"
                                 onPressEnter={handleAiQuery}
-                                className="border-gray-200 focus:ring-purple-500 rounded-md"
+                                className="border-gray-300 focus:ring-purple-500 rounded-lg shadow-sm"
+                                prefix={
+                                    <QuestionCircleOutlined className="h-5 w-5 text-purple-400" style={{ fontSize: '20px' }} />
+                                }
                             />
                             <Button
                                 type="primary"
                                 onClick={handleAiQuery}
                                 disabled={isLoading || !aiQuery.trim()}
-                                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-md"
+                                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg shadow-sm"
+                                icon={<DoubleRightOutlined className="h-5 w-5" style={{ fontSize: '16px' }} />}
                             >
                                 Hỏi
                             </Button>

@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Card, DatePicker, Table, Tabs } from 'antd';
+import { Card, DatePicker, Spin, Table, Tabs } from 'antd';
 import { BarChart, Bar, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import AdminServices from '~/services/AdminServices';
 import moment from 'moment';
 import config from '~/config';
+import { CalendarOutlined, BarChartOutlined, DollarOutlined, TeamOutlined, InboxOutlined } from '@ant-design/icons';
 
 const { RangePicker } = DatePicker;
 
@@ -17,6 +18,7 @@ export const StatisticSection = () => {
     const [years, setYears] = useState({ years: new Date().getFullYear() });
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Hàm gọi API với useCallback
     const fetchBookingRevenue = useCallback(async () => {
@@ -117,6 +119,7 @@ export const StatisticSection = () => {
     // Gộp các API vào một useEffect với Promise.all
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             try {
                 await Promise.all([
                     fetchBookingRevenue(),
@@ -126,6 +129,8 @@ export const StatisticSection = () => {
                 ]);
             } catch (error) {
                 console.error('Error fetching data:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchData();
@@ -152,128 +157,205 @@ export const StatisticSection = () => {
         if (value >= 1000000) {
             return `${(value / 1000000).toFixed(0)} triệu`;
         }
-        return `${value.toLocaleString('vi-VN')} VNĐ`;
+        return `${config.webConfig.getCurrency(value)}`;
     };
 
     return (
         <Card
-            className="shadow-lg hover:shadow-xl transition-shadow"
-            style={{ borderRadius: '8px', background: '#fff', padding: '16px' }}
+            className="shadow-lg hover:shadow-xl transition-shadow overflow-hidden dashboard-card"
+            style={{ background: '#fff' }}
+            bodyStyle={{ padding: '0' }}
         >
-            {/* Phần điều khiển */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                <Tabs
-                    defaultActiveKey="year"
-                    onChange={setActiveChartTab}
-                    tabBarStyle={{ color: '#1F2937', fontWeight: 600, marginBottom: 0 }}
-                >
-                    <Tabs.TabPane tab="Theo năm" key="year" />
-                    <Tabs.TabPane tab="Theo tháng" key="month" />
-                </Tabs>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
-                    {activeChartTab === 'month' && (
-                        <div className="flex gap-2">
-                            {[2023, 2024, 2025].map((year) => (
-                                <button
-                                    key={year}
-                                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                        years.years === year
-                                            ? 'bg-indigo-600 text-white'
-                                            : 'bg-gray-100 text-gray-600 hover:bg-indigo-100'
-                                    }`}
-                                    onClick={() => setYears({ years: year })}
-                                >
-                                    {year}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                    <RangePicker
-                        format="DD-MM-YYYY"
-                        onChange={(date, dateString) => {
-                            if (!dateString[0] || !dateString[1]) {
-                                setStartDate(null);
-                                setEndDate(null);
-                            } else {
-                                const formattedStartDate = moment(dateString[0], 'DD-MM-YYYY').format('YYYY-MM-DD');
-                                const formattedEndDate = moment(dateString[1], 'DD-MM-YYYY').format('YYYY-MM-DD');
-                                setStartDate(formattedStartDate);
-                                setEndDate(formattedEndDate);
-                            }
-                        }}
-                        className="border-gray-300 rounded-md w-full sm:w-auto"
-                        placeholder={['Từ ngày', 'Đến ngày']}
-                    />
+            {/* Header with controls */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 border-b border-gray-200">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <Tabs
+                            defaultActiveKey="year"
+                            onChange={setActiveChartTab}
+                            tabBarStyle={{ 
+                                color: '#1F2937', 
+                                fontWeight: 600, 
+                                marginBottom: 0,
+                                borderBottom: 'none'
+                            }}
+                            className="font-medium custom-tabs"
+                        >
+                            <Tabs.TabPane 
+                                tab={
+                                    <span className="flex items-center">
+                                        <CalendarOutlined className="h-4 w-4 mr-1" />
+                                        Theo năm
+                                    </span>
+                                } 
+                                key="year" 
+                            />
+                            <Tabs.TabPane 
+                                tab={
+                                    <span className="flex items-center">
+                                        <CalendarOutlined className="h-4 w-4 mr-1" />
+                                        Theo tháng
+                                    </span>
+                                } 
+                                key="month" 
+                            />
+                        </Tabs>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                        {activeChartTab === 'month' && (
+                            <div className="flex gap-2">
+                                {[2023, 2024, 2025].map((year) => (
+                                    <button
+                                        key={year}
+                                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                            years.years === year
+                                                ? 'bg-indigo-600 text-white shadow-md'
+                                                : 'bg-white text-gray-600 hover:bg-indigo-100 border border-gray-200'
+                                        }`}
+                                        onClick={() => setYears({ years: year })}
+                                    >
+                                        {year}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                        <RangePicker
+                            format="DD-MM-YYYY"
+                            onChange={(date, dateString) => {
+                                if (!dateString[0] || !dateString[1]) {
+                                    setStartDate(null);
+                                    setEndDate(null);
+                                } else {
+                                    const formattedStartDate = moment(dateString[0], 'DD-MM-YYYY').format('YYYY-MM-DD');
+                                    const formattedEndDate = moment(dateString[1], 'DD-MM-YYYY').format('YYYY-MM-DD');
+                                    setStartDate(formattedStartDate);
+                                    setEndDate(formattedEndDate);
+                                }
+                            }}
+                            className="border-gray-300 rounded-md w-full sm:w-auto shadow-sm"
+                            placeholder={['Từ ngày', 'Đến ngày']}
+                            style={{ background: 'white' }}
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* Biểu đồ cột */}
-            <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            {/* Chart Section */}
+            <div className="p-5 relative">
+                {isLoading && (
+                    <div className="absolute inset-0 bg-white bg-opacity-70 z-10 flex items-center justify-center">
+                        <Spin tip="Đang tải dữ liệu..." />
+                    </div>
+                )}
+
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <span className="bg-indigo-100 text-indigo-600 p-1 rounded-md mr-2">
+                        <BarChartOutlined className="h-5 w-5" style={{ fontSize: '20px' }} />
+                    </span>
                     {activeChartTab === 'year' ? 'Doanh thu theo năm' : `Doanh thu tháng - ${years.years}`}
                 </h3>
-                <ResponsiveContainer width="100%" height={320}>
-                    <BarChart data={activeChartTab === 'year' ? dataByYears : dataMonths}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                        <XAxis
-                            dataKey="bookingDate"
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={{ stroke: '#D1D5DB' }}
-                            tickFormatter={(value) =>
-                                activeChartTab === 'month' ? `Tháng ${value}` : value
-                            }
-                        />
-                        <YAxis
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={{ stroke: '#D1D5DB' }}
-                            domain={[0, 1000000]} // Max 1 tỷ VNĐ
-                            tickFormatter={formatCurrency}
-                            ticks={[0, 200000000, 400000000, 600000000, 800000000, 1000000000]} // Chia đều 0-1 tỷ
-                        />
-                        <Tooltip
-                            formatter={(value) => [config.webConfig.getCurrency(value), 'Doanh thu']}
-                            contentStyle={{
-                                background: '#fff',
-                                borderRadius: '4px',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                                border: 'none',
-                            }}
-                            labelFormatter={(label) =>
-                                activeChartTab === 'month' ? `Tháng ${label}` : `Năm ${label}`
-                            }
-                        />
-                        <Bar
-                            dataKey="totalRevenue"
-                            fill={activeChartTab === 'year' ? '#6366F1' : '#F97316'}
-                            radius={[4, 4, 0, 0]}
-                            barSize={30}
-                        />
-                    </BarChart>
-                </ResponsiveContainer>
+
+                <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                    <ResponsiveContainer width="100%" height={350}>
+                        <BarChart data={activeChartTab === 'year' ? dataByYears : dataMonths}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                            <XAxis
+                                dataKey="bookingDate"
+                                fontSize={12}
+                                tickLine={false}
+                                axisLine={{ stroke: '#D1D5DB' }}
+                                tickFormatter={(value) =>
+                                    activeChartTab === 'month' ? `Tháng ${value}` : value
+                                }
+                                padding={{ left: 10, right: 10 }}
+                            />
+                            <YAxis
+                                fontSize={12}
+                                tickLine={false}
+                                axisLine={{ stroke: '#D1D5DB' }}
+                                domain={[0, 'auto']}
+                                tickFormatter={formatCurrency}
+                            />
+                            <Tooltip
+                                formatter={(value) => [config.webConfig.getCurrency(value), 'Doanh thu']}
+                                contentStyle={{
+                                    background: '#fff',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                    border: 'none',
+                                    padding: '10px'
+                                }}
+                                labelFormatter={(label) =>
+                                    activeChartTab === 'month' ? `Tháng ${label}` : `Năm ${label}`
+                                }
+                                cursor={{ fill: 'rgba(236, 253, 245, 0.4)' }}
+                            />
+                            <Bar
+                                dataKey="totalRevenue"
+                                fill={activeChartTab === 'year' ? '#6366F1' : '#F97316'}
+                                radius={[6, 6, 0, 0]}
+                                barSize={activeChartTab === 'year' ? 40 : 30}
+                                animationDuration={1000}
+                            />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
 
-            {/* Phần bảng */}
-            <Tabs
-                defaultActiveKey="revenue"
-                onChange={setActiveTableTab}
-                tabBarStyle={{ color: '#1F2937', fontWeight: 600, marginBottom: '16px' }}
-            >
-                <Tabs.TabPane tab="Top doanh thu" key="revenue" />
-                <Tabs.TabPane tab="Top lượt đặt" key="booked" />
-            </Tabs>
-            <div className="grid grid-cols-1">
-                <Table
-                    columns={activeTableTab === 'revenue' ? salesColumns : bookedColumns}
-                    dataSource={activeTableTab === 'revenue' ? salesRanking : topBooked}
-                    pagination={false}
-                    bordered
-                    rowKey="key"
-                    scroll={{ y: 240 }}
-                    className="rounded-md shadow-sm"
-                    locale={{ emptyText: 'Không có dữ liệu' }}
-                />
+            {/* Table Section */}
+            <div className="p-5 pt-0">
+                <div className="mt-6 bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+                    <div className="border-b border-gray-200">
+                        <Tabs
+                            defaultActiveKey="revenue"
+                            onChange={setActiveTableTab}
+                            tabBarStyle={{ 
+                                color: '#1F2937', 
+                                fontWeight: 600, 
+                                marginBottom: 0,
+                                padding: '0 16px'
+                            }}
+                            className="custom-tabs"
+                        >
+                            <Tabs.TabPane 
+                                tab={
+                                    <span className="flex items-center py-3">
+                                        <DollarOutlined className="h-4 w-4 mr-1" />
+                                        Top doanh thu
+                                    </span>
+                                } 
+                                key="revenue" 
+                            />
+                            <Tabs.TabPane 
+                                tab={
+                                    <span className="flex items-center py-3">
+                                        <TeamOutlined className="h-4 w-4 mr-1" />
+                                        Top lượt đặt
+                                    </span>
+                                } 
+                                key="booked" 
+                            />
+                        </Tabs>
+                    </div>
+
+                    <Table
+                        columns={activeTableTab === 'revenue' ? salesColumns : bookedColumns}
+                        dataSource={activeTableTab === 'revenue' ? salesRanking : topBooked}
+                        pagination={{ pageSize: 5, hideOnSinglePage: true }}
+                        rowKey="key"
+                        scroll={{ x: 'max-content' }}
+                        loading={isLoading}
+                        className="custom-table"
+                        locale={{ 
+                            emptyText: (
+                                <div className="py-6 flex flex-col items-center">
+                                    <InboxOutlined className="h-12 w-12 text-gray-300 mb-2" style={{ fontSize: '48px' }} />
+                                    <p className="text-gray-500">Không có dữ liệu</p>
+                                </div>
+                            ) 
+                        }}
+                    />
+                </div>
             </div>
         </Card>
     );
