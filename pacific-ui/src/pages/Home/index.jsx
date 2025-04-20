@@ -37,15 +37,6 @@ function Home() {
                 <AboutSection />
                 <TourLists />
                 <ComboTour />
-                <Divider className={'font-bold uppercase'}
-                         style={{
-                             borderColor: '#7cb305',
-                         }}
-                         orientation="center">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
-                        {t("index.ind5")}</h2>
-                    <p className={"text-sm sm:text-lg text-gray-600 mt-2"}>{t("index.ind6")}</p>
-                </Divider>
                 <BlogSection />
                 {currentUser ? null : <AboutLogin />}
             </div>
