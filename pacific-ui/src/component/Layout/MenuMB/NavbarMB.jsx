@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Drawer, Menu, Dropdown, Button, message, Tooltip, Badge } from 'antd';
+import { Drawer, Menu, Dropdown, Button, message, Tooltip, Badge, Avatar } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faGlobe } from '@fortawesome/free-solid-svg-icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { faBell, faGlobe, faUser } from '@fortawesome/free-solid-svg-icons';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -15,6 +15,7 @@ const NavbarMB = () => {
     const [selectedLang, setSelectedLang] = useState(i18n.language);
     const { handleLogout, currentUser, vouchers } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Cập nhật ngôn ngữ khi thay đổi
     useEffect(() => {
@@ -26,9 +27,9 @@ const NavbarMB = () => {
         { title: t('menu.title1'), href: config.routes.home },
         { title: t('menu.title2'), href: config.routes.tourTrongNuoc },
         { title: t('menu.title3'), href: config.routes.tourNgoaiNuoc },
-        { title: t('menu.title4'), href: '/news' },
-        { title: t('menu.title5'), href: '/lien-he' },
-        { title: t('menu.title6'), href: '/gioi-thieu' },
+        { title: t('menu.title4'), href: config.routes.news },
+        { title: t('menu.title5'), href: config.routes.contacts },
+        { title: t('menu.title6'), href: config.routes.about },
     ];
 
     // Các mục trong menu người dùng
@@ -251,8 +252,9 @@ const NavbarMB = () => {
             <Button
                 type="text"
                 onClick={showDrawer}
-                className="md:hidden  text-gray-700 hover:text-yellow-600"
-                icon={<FaBars />}
+                className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 shadow-md hover:shadow-lg text-blue-700 hover:text-yellow-600 hover:bg-blue-50 transition-all duration-300"
+                icon={<FaBars className="text-lg" />}
+                aria-label="Open menu"
             />
             <Drawer
                 title={
@@ -267,47 +269,121 @@ const NavbarMB = () => {
                 placement="right"
                 onClose={onClose}
                 open={open}
-                width={180}
+                width={250}
+                className="mobile-drawer"
                 bodyStyle={{ padding: 0 }}
+                headerStyle={{ borderBottom: '1px solid #f0f0f0', padding: '16px' }}
+                closeIcon={
+                    <button className="p-1 rounded-full hover:bg-gray-100 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                }
             >
-                <Menu mode="vertical" className="border-none">
+                <Menu mode="vertical" className="border-none py-2">
                     {/* Các mục điều hướng */}
-                    {navItems.map((item, index) => (
-                        <Menu.Item key={index}>
-                            <Link
-                                to={item.href}
-                                onClick={onClose}
-                                className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"
+                    {navItems.map((item, index) => {
+                        const isActive = location.pathname === item.href || 
+                                        (item.href !== config.routes.home && location.pathname.startsWith(item.href));
+                        return (
+                            <Menu.Item 
+                                key={index}
+                                className={`relative ${isActive ? 'bg-blue-50' : ''}`}
                             >
-                                {item.title}
-                            </Link>
-                        </Menu.Item>
-                    ))}
+                                <Link
+                                    to={item.href}
+                                    onClick={onClose}
+                                    className={`flex items-center px-4 py-2 text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold whitespace-nowrap ${
+                                        isActive ? 'text-yellow-600' : ''
+                                    }`}
+                                >
+                                    {isActive && (
+                                        <span className="absolute left-0 top-0 bottom-0 w-1 bg-yellow-600 rounded-r-full"></span>
+                                    )}
+                                    {item.title}
+                                </Link>
+                            </Menu.Item>
+                        );
+                    })}
 
                     {/* Ngôn ngữ */}
                     <Menu.Item key="language" className="flex items-center">
-                        <Dropdown overlay={languageMenu} trigger={['click']} placement="bottomRight">
-                            <button className="flex items-center text-gray-700 hover:text-yellow-600">
-                                <FontAwesomeIcon icon={faGlobe} className="mr-2" />
-                                {languages.find((lang) => lang.code === selectedLang)?.label || 'Ngôn ngữ'}
+                        <Dropdown 
+                            overlay={
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="shadow-xl rounded-lg overflow-hidden"
+                                >
+                                    <Menu className="border border-gray-100">
+                                        {languages.map(lang => (
+                                            <Menu.Item
+                                                key={lang.code}
+                                                onClick={() => changeLanguage(lang.code)}
+                                                className={`hover:bg-gray-50 transition-colors duration-200 ${
+                                                    selectedLang === lang.code ? 'bg-blue-50 font-medium text-blue-600' : ''
+                                                }`}
+                                            >
+                                                <div className="flex items-center">
+                                                    {selectedLang === lang.code && (
+                                                        <span className="w-1 h-5 bg-blue-500 rounded-full mr-2"></span>
+                                                    )}
+                                                    {lang.label}
+                                                </div>
+                                            </Menu.Item>
+                                        ))}
+                                    </Menu>
+                                </motion.div>
+                            }
+                            trigger={['click']} 
+                            placement="bottomRight"
+                        >
+                            <button className="flex items-center px-4 py-2 text-gray-700 hover:text-yellow-600 w-full">
+                                <div className="flex items-center space-x-2">
+                                    <FontAwesomeIcon icon={faGlobe} className="text-blue-600" />
+                                    <span>{languages.find((lang) => lang.code === selectedLang)?.label || 'Ngôn ngữ'}</span>
+                                </div>
                             </button>
                         </Dropdown>
                     </Menu.Item>
 
                     {/* Voucher */}
                     <Menu.Item key="voucher" className="flex items-center">
-                        <Dropdown overlay={voucherMenu} trigger={['click']} placement="bottomRight">
-                            <button className="flex items-center text-gray-700 hover:text-yellow-600 relative">
-                                <FontAwesomeIcon icon={faBell} className="mr-2" />
-                                Voucher
-                                {visibleVouchers.length > 0 && (
-                                    <Badge
-                                        count={visibleVouchers.length}
-                                        overflowCount={99}
-                                        style={{ backgroundColor: '#f5222d', color: '#fff' }}
-                                        className="absolute -top-1 -right-2"
+                        <Dropdown 
+                            overlay={
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="shadow-xl rounded-lg overflow-hidden"
+                                >
+                                    {voucherMenu}
+                                </motion.div>
+                            } 
+                            trigger={['click']} 
+                            placement="bottomRight"
+                        >
+                            <button className="flex items-center px-4 py-2 text-gray-700 hover:text-yellow-600 w-full relative">
+                                <div className="flex items-center space-x-2">
+                                    <FontAwesomeIcon 
+                                        icon={faBell} 
+                                        className={`${visibleVouchers.length > 0 ? 'text-yellow-600 animate-pulse' : 'text-blue-600'}`} 
                                     />
-                                )}
+                                    <span>Voucher</span>
+                                    {visibleVouchers.length > 0 && (
+                                        <Badge
+                                            count={visibleVouchers.length}
+                                            overflowCount={99}
+                                            style={{ backgroundColor: '#f5222d', color: '#fff' }}
+                                            className="ml-1"
+                                        />
+                                    )}
+                                </div>
                             </button>
                         </Dropdown>
                     </Menu.Item>
@@ -315,66 +391,108 @@ const NavbarMB = () => {
                     {/* Người dùng hoặc đăng nhập/đăng ký */}
                     {currentUser ? (
                         <>
-                            <Menu.SubMenu
-                                key="user"
-                                title={
-                                    <span className="text-gray-700 hover:text-yellow-600 uppercase font-bold">
-                                        {currentUser?.username || currentUser?.email}
-                                    </span>
-                                }
-                            >
-                                {menuItems.map((item) => (
-                                    <Menu.Item key={item.key} icon={item.icon}>
-                                        <Link
-                                            to={item.href}
-                                            onClick={onClose}
-                                            className="block w-full text-left text-gray-700 hover:bg-gray-100"
-                                        >
-                                            {item.title}
-                                        </Link>
-                                    </Menu.Item>
-                                ))}
-                                {currentUser?.role === 'ADMIN' && (
-                                    <Menu.Item key="admin">
-                                        <Link
-                                            to={config.routes.adminHome}
-                                            onClick={onClose}
-                                            className="block w-full text-left text-gray-700 hover:bg-gray-100"
-                                        >
-                                            Admin
-                                        </Link>
-                                    </Menu.Item>
-                                )}
-                                <Menu.Item key="logout">
-                                    <button
-                                        onClick={() => {
-                                            handleLogout(navigate);
-                                            onClose();
-                                        }}
-                                        className="block w-full text-left text-gray-700 hover:bg-gray-100"
+                            <Menu.Divider className="my-2" />
+                            <div className="px-4 py-2">
+                                <div className="flex items-center space-x-3 mb-2">
+                                    <Avatar 
+                                        icon={<FontAwesomeIcon icon={faUser} />} 
+                                        className="bg-blue-500 flex items-center justify-center"
+                                    />
+                                    <div>
+                                        <div className="font-medium text-gray-800">
+                                            {currentUser?.username || currentUser?.email}
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {currentUser?.role === 'ADMIN' ? 'Administrator' : 'User'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <Menu.Divider className="my-1" />
+
+                            {menuItems.map((item) => (
+                                <Menu.Item 
+                                    key={item.key} 
+                                    className="hover:bg-blue-50 transition-colors duration-200"
+                                >
+                                    <Link
+                                        to={item.href}
+                                        onClick={onClose}
+                                        className="flex items-center px-4 py-2 text-gray-700 hover:text-blue-600"
                                     >
-                                        {t('menu.title13')}
-                                    </button>
+                                        <span className="mr-2 text-blue-500">{item.icon}</span>
+                                        {item.title}
+                                    </Link>
                                 </Menu.Item>
-                            </Menu.SubMenu>
+                            ))}
+
+                            {currentUser?.role === 'ADMIN' && (
+                                <Menu.Item 
+                                    key="admin"
+                                    className="hover:bg-blue-50 transition-colors duration-200"
+                                >
+                                    <Link
+                                        to={config.routes.adminHome}
+                                        onClick={onClose}
+                                        className="flex items-center px-4 py-2 text-gray-700 hover:text-blue-600"
+                                    >
+                                        <span className="mr-2 text-blue-500">
+                                            <FontAwesomeIcon icon="shield-alt" />
+                                        </span>
+                                        Admin
+                                    </Link>
+                                </Menu.Item>
+                            )}
+
+                            <Menu.Divider className="my-1" />
+                            <Menu.Item 
+                                key="logout"
+                                className="hover:bg-red-50 transition-colors duration-200"
+                            >
+                                <button
+                                    onClick={() => {
+                                        handleLogout(navigate);
+                                        onClose();
+                                    }}
+                                    className="flex items-center w-full px-4 py-2 text-gray-700 hover:text-red-600"
+                                >
+                                    <span className="mr-2 text-red-500">
+                                        <FontAwesomeIcon icon="sign-out-alt" />
+                                    </span>
+                                    {t('menu.title13')}
+                                </button>
+                            </Menu.Item>
                         </>
                     ) : (
                         <>
-                            <Menu.Item key="login">
+                            <Menu.Divider className="my-2" />
+                            <Menu.Item 
+                                key="login"
+                                className="hover:bg-blue-50 transition-colors duration-200"
+                            >
                                 <Link
                                     to={config.routes.login}
                                     onClick={onClose}
-                                    className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"
+                                    className="flex items-center px-4 py-2 text-gray-700 hover:text-blue-600"
                                 >
+                                    <span className="mr-2 text-blue-500">
+                                        <FontAwesomeIcon icon="sign-in-alt" />
+                                    </span>
                                     {t('menu.title14')}
                                 </Link>
                             </Menu.Item>
-                            <Menu.Item key="register">
+                            <Menu.Item 
+                                key="register"
+                                className="hover:bg-blue-50 transition-colors duration-200"
+                            >
                                 <Link
                                     to={config.routes.register}
                                     onClick={onClose}
-                                    className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"
+                                    className="flex items-center px-4 py-2 text-gray-700 hover:text-blue-600"
                                 >
+                                    <span className="mr-2 text-blue-500">
+                                        <FontAwesomeIcon icon="user-plus" />
+                                    </span>
                                     {t('menu.title15')}
                                 </Link>
                             </Menu.Item>
