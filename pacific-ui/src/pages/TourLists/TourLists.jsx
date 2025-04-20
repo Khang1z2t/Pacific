@@ -15,6 +15,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import config from '~/config';
+import { SearchFilterBar } from '~/pages/TourLists/components/SearchFilterBar';
 
 export const TourLists = ({ titleType }) => {
     const token = localStorage.getItem('accessToken');
@@ -130,65 +131,76 @@ export const TourLists = ({ titleType }) => {
     ];
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full min-h-screen">
             <Swiper
                 modules={[Autoplay, EffectFade]}
-                spaceBetween={0}
                 loop={true}
                 slidesPerView={1}
                 autoplay={{ delay: 4000, disableOnInteraction: false }}
                 effect="fade"
                 fadeEffect={{ crossFade: true }}
-                className="w-full h-96 relative"
+                className="w-full h-64 sm:h-80 md:h-96"
             >
                 {bannerImages.map((banner, index) => (
                     <SwiperSlide key={index}>
-                        <div className="relative w-full h-96">
+                        <div className="relative w-full h-full">
                             <img
                                 src={banner.src}
                                 alt={`banner-${index}`}
                                 className="w-full h-full object-cover brightness-[60%]"
                             />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                                <h1 className="text-4xl font-bold drop-shadow-lg">{banner.title}</h1>
-                                <p className="text-lg mt-2 drop-shadow-md">{banner.subtitle}</p>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4">
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold drop-shadow-lg text-center">
+                                    {banner.title}
+                                </h1>
+                                <p className="text-sm sm:text-base md:text-lg mt-2 drop-shadow-md text-center">
+                                    {banner.subtitle}
+                                </p>
                             </div>
                         </div>
                     </SwiperSlide>
                 ))}
             </Swiper>
-            <Divider orientation={'center'}>
-                <p className={'text-orange-400 text-2xl font-bold uppercase'}>{t('tourList.ti1')}</p>
+
+            <Divider orientation="center">
+                <p className="text-orange-400 text-xl sm:text-2xl font-bold uppercase">{t('tourList.ti1')}</p>
             </Divider>
+
             <SearchBar onSearch={handleSearch} />
-            <div className="mt-24 mx-24 space-y-8 justify-center min-h-[800px]">
-                <div className="flex">
+
+            <SearchFilterBar onSearch={setQuery} query={query} titleType={titleType} />
+
+            <div className="mt-8 mx-4 sm:mx-8 lg:mx-16 space-y-8 min-h-[600px]">
+                <div className="flex flex-col md:flex-row gap-4 min-h-[600px]">
                     <Aside query={query} setQuery={setQuery} titleType={titleType} />
                     <div className="flex-1">
                         {loading ? (
-                            <div className="w-full h-[400px] flex items-center justify-center">
-                                <Spin indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />
+                            <div className="w-full h-64 flex items-center justify-center">
+                                <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
                             </div>
                         ) : filteredTours.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full px-4">
+                            <div
+                                className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8 px-4 sm:px-6 md:px-8">
                                 {filteredTours.map((tour) => (
                                     <TourCards key={tour.id} data={tour} />
                                 ))}
                             </div>
                         ) : (
-                            <EmptyComponent description={'tour'} />
+                            <EmptyComponent description={"tour"} />
                         )}
                     </div>
                 </div>
             </div>
+
             <Pagination
-                rootClassName={'my-10'}
-                align={'center'}
+                className="my-8"
+                align="center"
                 current={currentPage}
-                defaultCurrent={1}
-                total={totalItems} // Tổng số item thực tế sau khi lọc
+                total={totalItems}
                 pageSize={ITEM_PER_PAGE}
-                onChange={onChange}
+                onChange={(page) => setCurrentPage(page)}
+                showSizeChanger={false}
+                responsive={true}
             />
         </div>
     );

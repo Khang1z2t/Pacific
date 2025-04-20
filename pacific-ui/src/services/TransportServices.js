@@ -49,9 +49,11 @@ const TransportServices = {
 
     updateTransport: async (id, transportData) => {
         try {
-            if (!id || typeof id !== 'string') throw new Error("ID phương tiện không hợp lệ");
-            validateTransportData(transportData);
-            const response = await axiosConfig.put(`${config.api.transport}/update/${id}`, transportData);
+            const response = await axiosConfig.put(`${config.api.transport}/update/${id}`, transportData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             return response.data;
         } catch (error) {
             handleError(error, "Cập nhật phương tiện");

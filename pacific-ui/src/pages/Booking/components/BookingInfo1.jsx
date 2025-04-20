@@ -1,16 +1,29 @@
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import config from '~/config';
-import { Button, Card, Checkbox, DatePicker, Divider, Form, Input, InputNumber, message, Modal, Radio } from 'antd';
+import {
+    Button,
+    Card,
+    Checkbox,
+    DatePicker,
+    Divider,
+    Drawer,
+    Form,
+    Input,
+    InputNumber,
+    message,
+    Modal,
+    Radio,
+} from 'antd';
 import BookingServices from '~/services/BookingServices';
 import { ModalTerms } from '~/pages/Terms/ModalTerms';
 import { FaTags } from 'react-icons/fa';
 import TourService from '~/services/TourServices';
-import { TourInfoCard } from '~/pages/Booking/components/bookingInfo1/components/TourInfoCard';
+import TourInfoCard from '~/pages/Booking/components/bookingInfo1/components/TourInfoCard';
 import { useAuth } from '~/config/AuthContext';
 import VoucherServices from '~/services/VoucherServices';
-import HotelServices from '~/services/HotelServices'; // Thêm HotelServices
-import TransportServices from '~/services/TransportServices'; // Thêm TransportServices
+import HotelServices from '~/services/HotelServices';
+import TransportServices from '~/services/TransportServices';
 
 const { TextArea } = Input;
 
@@ -20,11 +33,11 @@ export const BookingInfo1 = ({ data }) => {
 
     const [booking, setBooking] = useState({});
     const [fullName, setFullName] = useState(currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : '');
-    const [address, setAddress] = useState(currentUser === 'null' ? '' : `${currentUser.address}`);
+    const [address, setAddress] = useState(currentUser?.address || '');
     const [adults, setAdults] = useState(1);
     const [children, setChildren] = useState(0);
-    const [phone, setPhone] = useState(currentUser === 'null' ? '' : `${currentUser.phone}`);
-    const [email, setEmail] = useState(currentUser ? `${currentUser.email}` : '');
+    const [phone, setPhone] = useState(currentUser?.phone || '');
+    const [email, setEmail] = useState(currentUser?.email || '');
     const [note, setNote] = useState('');
     const [confirm, setConfirm] = useState(false);
     const [discount, setDiscount] = useState(0);
@@ -34,13 +47,14 @@ export const BookingInfo1 = ({ data }) => {
     const [voucherCode, setVoucherCode] = useState('');
     const [tour, setTour] = useState({});
     const [bookingDetails, setBookingDetails] = useState([]);
-    const [hotel, setHotel] = useState({}); // Thêm state cho hotel
-    const [transport, setTransport] = useState({}); // Thêm state cho transport
-    const [totalPrice, setTotalPrice] = useState(0); // Khởi tạo totalPrice
+    const [hotel, setHotel] = useState({});
+    const [transport, setTransport] = useState({});
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [drawerVisible, setDrawerVisible] = useState(false); // State for drawer
 
     const MAX_TOTAL_PASSENGERS = 10;
 
-    // Lấy thông tin hotel và transport
+    // Fetch hotel and transport
     useEffect(() => {
         if (data?.hotelId) {
             HotelServices.getHotelById(data.hotelId)
@@ -74,7 +88,7 @@ export const BookingInfo1 = ({ data }) => {
         }
     };
 
-    // Quản lý danh sách hành khách
+    // Manage booking details
     useEffect(() => {
         setBookingDetails((prev) => {
             const newDetails = [];
@@ -106,7 +120,7 @@ export const BookingInfo1 = ({ data }) => {
         });
     }, [adults, children, data.priceAdults, data.priceChildren]);
 
-    // Hàm kiểm tra và áp dụng voucher
+    // Apply voucher
     const applyVoucher = async (voucherCode) => {
         try {
             const checkResponse = await VoucherServices.checkVoucher({
@@ -130,12 +144,12 @@ export const BookingInfo1 = ({ data }) => {
         }
     };
 
-    // Cập nhật totalPrice (bao gồm hotel.cost và transport.cost)
+    // Update total price
     useEffect(() => {
         const basePrice = adults * data.priceAdults + children * data.priceChildren;
-        const hotelCost = hotel.cost || 0; // Giá khách sạn, mặc định 0 nếu chưa có
-        const transportCost = transport.cost || 0; // Giá phương tiện, mặc định 0 nếu chưa có
-        const totalBasePrice = basePrice + hotelCost + transportCost; // Tổng giá trước giảm giá
+        const hotelCost = hotel.cost || 0;
+        const transportCost = transport.cost || 0;
+        const totalBasePrice = basePrice + hotelCost + transportCost;
         const discountedPrice = voucherValid ? totalBasePrice * (1 - discount / 100) : totalBasePrice;
         setTotalPrice(discountedPrice);
     }, [adults, children, data.priceAdults, data.priceChildren, hotel.cost, transport.cost, discount, voucherValid]);
@@ -205,40 +219,43 @@ export const BookingInfo1 = ({ data }) => {
     const [form] = Form.useForm();
 
     return (
-        <div className={'container mx-auto my-12'}>
-            <h1 className="text-5xl font-light text-orange-600 mb-4 text-center">Đặt tour</h1>
-            <h2 className="text-2xl font-light text-orange-600 mb-4 text-center">THÔNG TIN CHI TIẾT TOUR</h2>
-            <div className={'flex flex-wrap justify-center gap-4'}>
-                <div>
-                    <div className="w-[85vh] mx-auto p-6 bg-white shadow-lg rounded-lg uppercase border">
+        <div className="container mx-auto px-4 sm:px-6 my-8 sm:my-12">
+            <h1 className="text-3xl sm:text-5xl font-light text-orange-600 mb-4 text-center">Đặt tour</h1>
+            <h2 className="text-xl sm:text-2xl font-light text-orange-600 mb-4 text-center">
+                THÔNG TIN CHI TIẾT TOUR
+            </h2>
+            <div className="flex flex-col md:flex-row flex-wrap justify-center gap-4">
+                {/* Form Section */}
+                <div className="w-full md:w-[600px] lg:w-[700px]">
+                    <div className="mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-lg uppercase border">
                         <Form form={form} layout="vertical" initialValues={{ people: 1 }}>
-                            <div className={'grid grid-cols-2 gap-4'}>
-                                <div className={'flex flex-col'}>
-                                    <label className={'font-bold'}>Họ và tên</label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="flex flex-col">
+                                    <label className="font-bold">Họ và tên</label>
                                     <Input
                                         placeholder="Nhập họ và tên"
-                                            onChange={(e) => setFullName(e.target.value)}
+                                        onChange={(e) => setFullName(e.target.value)}
                                         value={fullName}
                                     />
                                 </div>
-                                <div className={'flex flex-col'}>
-                                    <label className={'font-bold'}>Số điện thoại</label>
+                                <div className="flex flex-col">
+                                    <label className="font-bold">Số điện thoại</label>
                                     <Input
                                         placeholder="Nhập số điện thoại"
                                         onChange={(e) => setPhone(e.target.value)}
                                         value={phone}
                                     />
                                 </div>
-                                <div className={'flex flex-col'}>
-                                    <label className={'font-bold'}>Email</label>
+                                <div className="flex flex-col">
+                                    <label className="font-bold">Email</label>
                                     <Input
                                         placeholder="Nhập email"
                                         onChange={(e) => setEmail(e.target.value)}
                                         value={email}
                                     />
                                 </div>
-                                <div className={'flex flex-col'}>
-                                    <label className={'font-bold'}>Địa chỉ</label>
+                                <div className="flex flex-col">
+                                    <label className="font-bold">Địa chỉ</label>
                                     <Input
                                         placeholder="Nhập địa chỉ"
                                         onChange={(e) => setAddress(e.target.value)}
@@ -246,35 +263,36 @@ export const BookingInfo1 = ({ data }) => {
                                     />
                                 </div>
                             </div>
-                            <div className={'gap-4'}>
-                                <h2 className={'text-lg font-semibold text-orange-500'}>Hành khách</h2>
-                                <div className={'flex flex-wrap mx-auto justify-center gap-4 w-fit'}>
-                                    <Card className={'flex flex-col bg-gray-50 shadow-lg'}>
+                            <div className="mt-4">
+                                <h2 className="text-lg font-semibold text-orange-500">Hành khách</h2>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <Card className="flex-1 bg-gray-50 shadow-lg">
                                         <div className="text-lg font-semibold flex flex-col">
                                             Người lớn
-                                            <span className={'text-red-300 text-sm font-mono'}>
+                                            <span className="text-red-300 text-sm font-mono">
                                                 {config.webConfig.getCurrency(data.priceAdults)}/Người
                                             </span>
                                         </div>
                                         <InputNumber
-                                            className={'w-full mt-5'}
+                                            className="w-full mt-2"
                                             min={1}
                                             max={MAX_TOTAL_PASSENGERS - children}
                                             value={adults}
                                             onChange={handleAdultsChange}
                                         />
                                     </Card>
-                                    <Card className={'flex flex-col bg-gray-50 shadow-lg'}>
+                                    <Card className="flex-1 bg-gray-50 shadow-lg">
                                         <div className="text-lg font-semibold flex flex-col">
                                             Trẻ em
-                                            <span
-                                                className={'text-red-300 text-sm font-mono'}>(30% giá người lớn)</span>
-                                            <span className={'text-red-300 text-sm font-mono'}>
+                                            <span className="text-red-300 text-sm font-mono">
+                                                (30% giá người lớn)
+                                            </span>
+                                            <span className="text-red-300 text-sm font-mono">
                                                 {config.webConfig.getCurrency(data.priceChildren)}/Người
                                             </span>
                                         </div>
                                         <InputNumber
-                                            className={'w-full'}
+                                            className="w-full mt-2"
                                             min={0}
                                             max={MAX_TOTAL_PASSENGERS - adults}
                                             value={children}
@@ -285,67 +303,115 @@ export const BookingInfo1 = ({ data }) => {
                             </div>
                             <Divider />
                             <h2 className="text-lg font-semibold text-orange-500">Thông tin từng hành khách</h2>
-                            <div className="overflow-y-scroll space-y-4 p-5 max-h-96 ">
+                            <div className="space-y-4 p-4 max-h-96 overflow-y-auto">
                                 {bookingDetails.map((item, index) => {
                                     const isAdult = item.ageGroup === 'ADULT';
                                     const passengerNumber = isAdult
-                                        ? index + 1 - bookingDetails.filter((i, idx) => i.ageGroup === 'CHILD' && idx < index).length
-                                        : index + 1 - bookingDetails.filter((i, idx) => i.ageGroup === 'ADULT' && idx < index).length;
+                                        ? index +
+                                        1 -
+                                        bookingDetails.filter(
+                                            (i, idx) => i.ageGroup === 'CHILD' && idx < index,
+                                        ).length
+                                        : index +
+                                        1 -
+                                        bookingDetails.filter(
+                                            (i, idx) => i.ageGroup === 'ADULT' && idx < index,
+                                        ).length;
 
                                     return (
                                         <Card
                                             title={
                                                 isAdult
-                                                    ? `Người lớn ${passengerNumber} - ${config.webConfig.getCurrency(data.priceAdults)}`
-                                                    : `Trẻ em ${passengerNumber} - ${config.webConfig.getCurrency(data.priceChildren)}`
+                                                    ? `Người lớn ${passengerNumber} - ${config.webConfig.getCurrency(
+                                                        data.priceAdults,
+                                                    )}`
+                                                    : `Trẻ em ${passengerNumber} - ${config.webConfig.getCurrency(
+                                                        data.priceChildren,
+                                                    )}`
                                             }
                                             key={item.id}
                                         >
                                             <div
-                                                className="grid grid-cols-2 gap-2 mb-4 rounded-lg border bg-orange-50 border-gray-100 transition-all hover:border-orange-600 p-4 shadow-lg">
-                                                <div className={'gap-2 flex flex-col mb-2'}>
-                                                    <label className={'font-bold'}>Họ và tên</label>
+                                                className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 border bg-orange-50 rounded-lg shadow-lg">
+                                                <div className="flex flex-col mb-2">
+                                                    <label className="font-bold">Họ và tên</label>
                                                     <Input
-                                                        placeholder={'Nhập họ và tên'}
+                                                        placeholder="Nhập họ và tên"
                                                         value={item.fullName}
-                                                        onChange={(e) => updateBookingDetail(item.id, 'fullName', e.target.value)}
+                                                        onChange={(e) =>
+                                                            updateBookingDetail(
+                                                                item.id,
+                                                                'fullName',
+                                                                e.target.value,
+                                                            )
+                                                        }
                                                     />
                                                 </div>
-                                                {item.ageGroup === 'ADULT' && (
+                                                {isAdult && (
                                                     <>
-                                                        <div className={'gap-2 flex flex-col mb-2'}>
-                                                            <label className={'font-bold'}>Số điện thoại</label>
+                                                        <div className="flex flex-col mb-2">
+                                                            <label className="font-bold">
+                                                                Số điện thoại
+                                                            </label>
                                                             <Input
-                                                                placeholder={'Nhập Số điện thoại'}
+                                                                placeholder="Nhập số điện thoại"
                                                                 value={item.phoneNumber}
-                                                                onChange={(e) => updateBookingDetail(item.id, 'phoneNumber', e.target.value)}
+                                                                onChange={(e) =>
+                                                                    updateBookingDetail(
+                                                                        item.id,
+                                                                        'phoneNumber',
+                                                                        e.target.value,
+                                                                    )
+                                                                }
                                                             />
                                                         </div>
-                                                        <div className={'gap-2 flex flex-col mb-2'}>
-                                                            <label className={'font-bold'}>Email</label>
+                                                        <div className="flex flex-col mb-2">
+                                                            <label className="font-bold">Email</label>
                                                             <Input
-                                                                placeholder={'Nhập email'}
+                                                                placeholder="Nhập email"
                                                                 value={item.email}
-                                                                onChange={(e) => updateBookingDetail(item.id, 'email', e.target.value)}
+                                                                onChange={(e) =>
+                                                                    updateBookingDetail(
+                                                                        item.id,
+                                                                        'email',
+                                                                        e.target.value,
+                                                                    )
+                                                                }
                                                             />
                                                         </div>
                                                     </>
                                                 )}
-                                                <div className={'gap-2 flex flex-col mb-2'}>
-                                                    <label className={'font-bold'}>Ngày sinh</label>
+                                                <div className="flex flex-col mb-2">
+                                                    <label className="font-bold">Ngày sinh</label>
                                                     <DatePicker
-                                                        placeholder={'Nhập ngày sinh'}
-                                                        onChange={(date, dateString) => updateBookingDetail(item.id, 'birthday', dateString)}
+                                                        placeholder="Nhập ngày sinh"
+                                                        onChange={(date, dateString) =>
+                                                            updateBookingDetail(
+                                                                item.id,
+                                                                'birthday',
+                                                                dateString,
+                                                            )
+                                                        }
                                                     />
                                                 </div>
-                                                <div className={'gap-2 flex flex-col mb-2'}>
-                                                    <label className={'font-bold'}>Giới tính</label>
+                                                <div className="flex flex-col mb-2">
+                                                    <label className="font-bold">Giới tính</label>
                                                     <Radio.Group
                                                         value={item.gender}
-                                                        onChange={(e) => updateBookingDetail(item.id, 'gender', e.target.value)}
+                                                        onChange={(e) =>
+                                                            updateBookingDetail(
+                                                                item.id,
+                                                                'gender',
+                                                                e.target.value,
+                                                            )
+                                                        }
                                                     >
-                                                        <Radio className={'text-sm'} value={'MALE'}>Nam</Radio>
-                                                        <Radio className={'text-sm'} value={'FEMALE'}>Nữ</Radio>
+                                                        <Radio className="text-sm" value="MALE">
+                                                            Nam
+                                                        </Radio>
+                                                        <Radio className="text-sm" value="FEMALE">
+                                                            Nữ
+                                                        </Radio>
                                                     </Radio.Group>
                                                 </div>
                                             </div>
@@ -356,7 +422,7 @@ export const BookingInfo1 = ({ data }) => {
                             <Divider />
                             <Form.Item label="Ghi chú" name="note">
                                 <TextArea
-                                    rootClassName={'max-h-32'}
+                                    rootClassName="max-h-32"
                                     rows={3}
                                     placeholder="Ghi chú"
                                     onChange={(e) => setNote(e.target.value)}
@@ -364,7 +430,7 @@ export const BookingInfo1 = ({ data }) => {
                             </Form.Item>
                             <Divider />
                             <div className="flex flex-col gap-2">
-                                <div className={'flex flex-wrap gap-2 items-center'}>
+                                <div className="flex flex-wrap gap-2 items-center">
                                     <FaTags className="text-blue-500 text-lg" />
                                     <a className="font-semibold text-blue-500">Thêm mã giảm giá</a>
                                 </div>
@@ -382,21 +448,27 @@ export const BookingInfo1 = ({ data }) => {
                                     onBlur={() => applyVoucher(voucher)}
                                 />
                                 {voucherValid && (
-                                    <span className={'text-green-500 text-sm font-semibold'}>
+                                    <span className="text-green-500 text-sm font-semibold">
                                         Voucher hợp lệ! Giảm {discount}% cho tổng giá trị đơn hàng
                                     </span>
                                 )}
                                 {!voucherValid && voucher && (
-                                    <span className={'text-red-500 text-sm font-semibold'}>
+                                    <span className="text-red-500 text-sm font-semibold">
                                         Voucher không hợp lệ hoặc không đủ điều kiện!
                                     </span>
                                 )}
                             </div>
-                            <div className={'justify-start flex items-center mb-3 mt-4'}>
-                                <Checkbox rootClassName={'text-red-500'} onChange={() => setConfirm(!confirm)}>
+                            <div className="justify-start flex items-center mb-3 mt-4">
+                                <Checkbox
+                                    rootClassName="text-red-500"
+                                    onChange={() => setConfirm(!confirm)}
+                                >
                                     Tôi đã đọc và đồng ý với các
                                 </Checkbox>
-                                <a onClick={() => setOpen(!open)} className={'text-indigo-500 underline'}>
+                                <a
+                                    onClick={() => setOpen(!open)}
+                                    className="text-indigo-500 underline"
+                                >
                                     chính sách và điều khoản.
                                 </a>
                             </div>
@@ -406,14 +478,19 @@ export const BookingInfo1 = ({ data }) => {
                                 {voucherValid ? (
                                     <>
                                         {config.webConfig.getCurrency(totalPrice)}{' '}
-                                        <span className={'text-xs text-green-500'}>(Giảm {discount}%)</span>
+                                        <span className="text-xs text-green-500">
+                                            (Giảm {discount}%)
+                                        </span>
                                     </>
                                 ) : (
                                     config.webConfig.getCurrency(totalPrice)
                                 )}
                             </div>
-                            <span className="text-xs text-red-500">
-                                * Giá trên đã bao gồm các phụ thu: giá dịch vụ, giá vé máy bay, giá khách sạn, giá ăn uống, giá vận chuyển, giá phí tham quan, giá phí hướng dẫn viên, giá phí bảo hiểm, giá phí visa, giá phí phục vụ, giá phí khác.
+                            <span className="text-xs text-red-500 block mt-2">
+                                * Giá trên đã bao gồm các phụ thu: giá dịch vụ, giá vé máy bay, giá
+                                khách sạn, giá ăn uống, giá vận chuyển, giá phí tham quan, giá phí
+                                hướng dẫn viên, giá phí bảo hiểm, giá phí visa, giá phí phục vụ, giá
+                                phí khác.
                             </span>
                             <Form.Item>
                                 <Button
@@ -421,32 +498,73 @@ export const BookingInfo1 = ({ data }) => {
                                     onClick={() => BookTour()}
                                     type="primary"
                                     htmlType="submit"
-                                    className="bg-orange-500 w-full"
+                                    className="bg-orange-500 w-full mt-4"
                                 >
                                     Xác nhận đặt tour
                                 </Button>
                             </Form.Item>
                         </Form>
-                        <Modal open={open} footer={null} width={800} onCancel={() => setOpen(!open)}
-                               title={'Điều khoản và điều kiện'}>
-                            <Card className={'overflow-y-scroll max-h-screen'}>
+                        <Modal
+                            open={open}
+                            footer={null}
+                            width={800}
+                            onCancel={() => setOpen(!open)}
+                            title="Điều khoản và điều kiện"
+                        >
+                            <Card className="overflow-y-scroll max-h-screen">
                                 <ModalTerms />
                             </Card>
                         </Modal>
                     </div>
                 </div>
-                <TourInfoCard
-                    voucher={voucher}
-                    detailData={data}
-                    children={children}
-                    adults={adults}
-                    totalPrice={totalPrice}
-                    data={tour}
-                    voucherValid={voucherValid}
-                    discount={discount}
-                    hotel={hotel} // Truyền hotel xuống
-                    transport={transport} // Truyền transport xuống
-                />
+
+                {/* TourInfoCard for Desktop */}
+                <div className="hidden md:block w-full md:w-[500px]">
+                    <TourInfoCard
+                        detailData={data}
+                        children={children}
+                        adults={adults}
+                        totalPrice={totalPrice}
+                        data={tour}
+                        voucherValid={voucherValid}
+                        discount={discount}
+                        hotel={hotel}
+                        transport={transport}
+                    />
+                </div>
+
+                {/* Drawer Trigger Button for Mobile */}
+                <div className="md:hidden fixed top-20 right-4 z-50">
+                    <Button
+                        type="primary"
+                        className="bg-orange-500"
+                        onClick={() => setDrawerVisible(true)}
+                    >
+                        Xem tóm tắt chuyến đi
+                    </Button>
+                </div>
+
+                {/* Drawer for Mobile */}
+                <Drawer
+                    title="Tóm tắt chuyến đi"
+                    placement="right"
+                    onClose={() => setDrawerVisible(false)}
+                    open={drawerVisible}
+                    width="90%"
+                    className="md:hidden"
+                >
+                    <TourInfoCard
+                        detailData={data}
+                        children={children}
+                        adults={adults}
+                        totalPrice={totalPrice}
+                        data={tour}
+                        voucherValid={voucherValid}
+                        discount={discount}
+                        hotel={hotel}
+                        transport={transport}
+                    />
+                </Drawer>
             </div>
         </div>
     );

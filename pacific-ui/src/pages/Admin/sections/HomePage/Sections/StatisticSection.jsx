@@ -1,126 +1,195 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card, DatePicker, Table, Tabs } from 'antd';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { BarChart, Bar, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import AdminServices from '~/services/AdminServices';
 import moment from 'moment';
 import config from '~/config';
 
 const { RangePicker } = DatePicker;
 
-// Bảng doanh số
-
-
-// Bảng lượt truy cập
-const visitRanking = [
-    { key: '1', rank: 1, name: '工专路 0 号店', value: '45,678' },
-    { key: '2', rank: 2, name: '工专路 1 号店', value: '42,987' },
-    { key: '3', rank: 3, name: '工专路 2 号店', value: '39,654' },
-    { key: '4', rank: 4, name: '工专路 3 号店', value: '35,234' },
-    { key: '5', rank: 5, name: '工专路 4 号店', value: '30,876' },
-];
-
-// Cấu trúc cột cho bảng
 export const StatisticSection = () => {
-    const [activeTab, setActiveTab] = useState('1');
-    const [data, setData] = useState([]);
-    const [tourId, setTourId] = useState(null);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [salesRanking, setSalesRanking] = useState([{
-        key: '',
-        rank: null,
-        name: '',
-        value: '',
-    }]);
-
+    const [activeChartTab, setActiveChartTab] = useState('year');
+    const [activeTableTab, setActiveTableTab] = useState('revenue');
+    const [salesRanking, setSalesRanking] = useState([]);
+    const [topBooked, setTopBooked] = useState([]);
     const [dataByYears, setDataByYears] = useState([]);
     const [dataMonths, setDataMonths] = useState([]);
-
     const [years, setYears] = useState({ years: new Date().getFullYear() });
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
 
-    useEffect(() => {
-        AdminServices.getBookingRevenue({ tourId: tourId, startDate: startDate, endDate: endDate }).then((res) => {
-            setData(res);
-        }).catch((error) => {
-            console.error(error);
-        });
-    }, [startDate, endDate]);
-    // BAO CAO NAM
-    useEffect(() => {
-        AdminServices.getBookingRevenuesByYear().then((res) => {
-            setDataByYears(res);
-        }).catch((err) => {
-            console.error(err);
-        });
+    // Hàm gọi API với useCallback
+    const fetchBookingRevenue = useCallback(async () => {
+        try {
+            const res = await AdminServices.getBookingRevenue({
+                tourId: null,
+                startDate: startDate || `${years.years}-01-01`,
+                endDate: endDate || `${years.years}-12-31`,
+            });
+            const ranking = res
+                .reduce((acc, item) => {
+                    const existing = acc.find((x) => x.tourId === item.tourId);
+                    if (existing) {
+                        existing.tourRevenue = Number(existing.tourRevenue) + Number(item.tourRevenue);
+                    } else {
+                        acc.push({
+                            tourId: item.tourId,
+                            tourTitle: item.tourTitle,
+                            tourRevenue: Number(item.tourRevenue),
+                        });
+                    }
+                    return acc;
+                }, [])
+                .sort((a, b) => b.tourRevenue - a.tourRevenue)
+                .map((item, index) => ({
+                    key: item.tourId,
+                    rank: index + 1,
+                    name: item.tourTitle,
+                    value: config.webConfig.getCurrency(item.tourRevenue),
+                }));
+            setSalesRanking(ranking);
+        } catch (error) {
+            console.error('Error fetching booking revenue:', error);
+            setSalesRanking([]);
+        }
+    }, [startDate, endDate, years.years]);
+
+    const fetchTopBookedTours = useCallback(async () => {
+        try {
+            const res = await AdminServices.getTopBookedTours({
+                limit: 5,
+                startDate: startDate || `${years.years}-01-01`,
+                endDate: endDate || `${years.years}-12-31`,
+            });
+            const booked = res.data.map((item, index) => ({
+                key: item.tourId,
+                rank: index + 1,
+                name: item.tourTitle,
+                value: item.bookingCount,
+            }));
+            setTopBooked(booked);
+        } catch (error) {
+            console.error('Error fetching top booked tours:', error);
+            setTopBooked([]);
+        }
+    }, [startDate, endDate, years.years]);
+
+    const fetchYearlyRevenues = useCallback(async () => {
+        try {
+            const res = await AdminServices.getBookingRevenuesByYear();
+            setDataByYears(
+                res.map((item) => ({
+                    bookingDate: item.bookingYear || item.bookingDate,
+                    totalRevenue: Number(item.totalRevenue) || 0,
+                })),
+            );
+        } catch (error) {
+            console.error('Error fetching yearly revenues:', error);
+            setDataByYears([]);
+        }
     }, []);
 
-    // BAO CAO THANG THEO NAM
-    useEffect(() => {
-        AdminServices.getBookingRevenueMonthByYear(years).then((res) => {
+    const fetchMonthlyRevenues = useCallback(async () => {
+        try {
+            const res = await AdminServices.getBookingRevenueMonthByYear(years);
             const allMonths = Array.from({ length: 12 }, (_, index) => ({
                 bookingDate: `${index + 1}`,
                 totalRevenue: 0,
             }));
-
-            // Map dữ liệu API vào danh sách 12 tháng
-            res.forEach(item => {
+            res.forEach((item) => {
                 const monthIndex = parseInt(item.bookingDate, 10) - 1;
                 if (monthIndex >= 0 && monthIndex < 12) {
-                    allMonths[monthIndex].totalRevenue = item.totalRevenue;
+                    allMonths[monthIndex].totalRevenue = Number(item.totalRevenue) || 0;
                 }
             });
-
             setDataMonths(allMonths);
-        }).catch((err) => {
-            console.error(err);
-        });
+        } catch (error) {
+            console.error('Error fetching monthly revenues:', error);
+            setDataMonths(
+                Array.from({ length: 12 }, (_, index) => ({
+                    bookingDate: `${index + 1}`,
+                    totalRevenue: 0,
+                })),
+            );
+        }
     }, [years]);
 
+    // Gộp các API vào một useEffect với Promise.all
     useEffect(() => {
-        const datas = data.map((item, index) => {
-            return {
-                key: index,
-                rank: index,
-                name: item.tourTitle,
-                value: config.webConfig.getCurrency(item.tourRevenue) || 'KHÔNG CÓ DỮ LIỆU',
-            };
-        });
-        setSalesRanking(datas);
-    }, [data]);
-    const columns = [
-        { title: 'Số thứ tự', dataIndex: 'rank', key: 'rank' },
+        const fetchData = async () => {
+            try {
+                await Promise.all([
+                    fetchBookingRevenue(),
+                    fetchTopBookedTours(),
+                    fetchYearlyRevenues(),
+                    fetchMonthlyRevenues(),
+                ]);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, [fetchBookingRevenue, fetchTopBookedTours, fetchYearlyRevenues, fetchMonthlyRevenues]);
+
+    // Cột cho bảng
+    const salesColumns = [
+        { title: 'Số thứ tự', dataIndex: 'rank', key: 'rank', width: 100 },
         { title: 'Tên tour', dataIndex: 'name', key: 'name' },
-        { title: 'Doanh thu', dataIndex: 'value', key: 'value' },
+        { title: 'Doanh thu', dataIndex: 'value', key: 'value', width: 150 },
     ];
-    // const salesRanking = [
-    //     { key: "1", rank: 1, name: "工专路 0 号店", value: "323,234" },
-    //     { key: "2", rank: 2, name: "工专路 1 号店", value: "312,432" },
-    //     { key: "3", rank: 3, name: "工专路 2 号店", value: "290,876" },
-    //     { key: "4", rank: 4, name: "工专路 3 号店", value: "250,567" },
-    //     { key: "5", rank: 5, name: "工专路 4 号店", value: "200,321" },
-    // ];
+
+    const bookedColumns = [
+        { title: 'Số thứ tự', dataIndex: 'rank', key: 'rank', width: 100 },
+        { title: 'Tên tour', dataIndex: 'name', key: 'name' },
+        { title: 'Số lượng đặt', dataIndex: 'value', key: 'value', width: 150 },
+    ];
+
+    // Hàm định dạng tiền tệ ngắn gọn cho trục Y
+    const formatCurrency = (value) => {
+        if (value >= 1000000000) {
+            return `${(value / 1000000000).toFixed(0)} tỷ`;
+        }
+        if (value >= 1000000) {
+            return `${(value / 1000000).toFixed(0)} triệu`;
+        }
+        return `${value.toLocaleString('vi-VN')} VNĐ`;
+    };
 
     return (
-        <Card className="p-4">
-            <div className="flex justify-between items-center mb-4">
-                <Tabs defaultActiveKey="1" onChange={setActiveTab}>
-                    <Tabs.TabPane tab="Theo năm" key="1" />
-                    <Tabs.TabPane tab="Theo tháng" key="2" />
+        <Card
+            className="shadow-lg hover:shadow-xl transition-shadow"
+            style={{ borderRadius: '8px', background: '#fff', padding: '16px' }}
+        >
+            {/* Phần điều khiển */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <Tabs
+                    defaultActiveKey="year"
+                    onChange={setActiveChartTab}
+                    tabBarStyle={{ color: '#1F2937', fontWeight: 600, marginBottom: 0 }}
+                >
+                    <Tabs.TabPane tab="Theo năm" key="year" />
+                    <Tabs.TabPane tab="Theo tháng" key="month" />
                 </Tabs>
-                <div className="flex space-x-4">
-                    {activeTab === '2' && (
-                        [2023, 2024, 2025].map(year => (
-                            <button
-                                key={year}
-                                className={`px-4 py-2 rounded ${years.years === year ? 'bg-orange-500 text-white' : 'bg-gray-200 transition-all hover:bg-orange-100 text-gray-500'}`}
-                                onClick={() => setYears({ years: year })}
-                            >
-                                {year}
-                            </button>
-                        ))
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                    {activeChartTab === 'month' && (
+                        <div className="flex gap-2">
+                            {[2023, 2024, 2025].map((year) => (
+                                <button
+                                    key={year}
+                                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                        years.years === year
+                                            ? 'bg-indigo-600 text-white'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-indigo-100'
+                                    }`}
+                                    onClick={() => setYears({ years: year })}
+                                >
+                                    {year}
+                                </button>
+                            ))}
+                        </div>
                     )}
                     <RangePicker
-                        format={'DD-MM-YYYY'}
+                        format="DD-MM-YYYY"
                         onChange={(date, dateString) => {
                             if (!dateString[0] || !dateString[1]) {
                                 setStartDate(null);
@@ -132,43 +201,79 @@ export const StatisticSection = () => {
                                 setEndDate(formattedEndDate);
                             }
                         }}
+                        className="border-gray-300 rounded-md w-full sm:w-auto"
+                        placeholder={['Từ ngày', 'Đến ngày']}
                     />
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-                {/* Biểu đồ cột */}
-                <div className="col-span-2">
-                    <ResponsiveContainer width="100%" height={300}>
-                        {/*CHART*/}
-                        <BarChart data={activeTab === '1' ? dataByYears : dataMonths}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="bookingDate" />
-                            <YAxis />
-                            <Tooltip
-                                formatter={(value) => {
-                                    return [config.webConfig.getCurrency(value), 'Doanh thu'];
-                                }}
-                            />
-                            <Bar dataKey="totalRevenue" fill={activeTab === '1' ? '#1890ff' : '#ff4d4f'} />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
+            {/* Biểu đồ cột */}
+            <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    {activeChartTab === 'year' ? 'Doanh thu theo năm' : `Doanh thu tháng - ${years.years}`}
+                </h3>
+                <ResponsiveContainer width="100%" height={320}>
+                    <BarChart data={activeChartTab === 'year' ? dataByYears : dataMonths}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                        <XAxis
+                            dataKey="bookingDate"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={{ stroke: '#D1D5DB' }}
+                            tickFormatter={(value) =>
+                                activeChartTab === 'month' ? `Tháng ${value}` : value
+                            }
+                        />
+                        <YAxis
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={{ stroke: '#D1D5DB' }}
+                            domain={[0, 1000000]} // Max 1 tỷ VNĐ
+                            tickFormatter={formatCurrency}
+                            ticks={[0, 200000000, 400000000, 600000000, 800000000, 1000000000]} // Chia đều 0-1 tỷ
+                        />
+                        <Tooltip
+                            formatter={(value) => [config.webConfig.getCurrency(value), 'Doanh thu']}
+                            contentStyle={{
+                                background: '#fff',
+                                borderRadius: '4px',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                                border: 'none',
+                            }}
+                            labelFormatter={(label) =>
+                                activeChartTab === 'month' ? `Tháng ${label}` : `Năm ${label}`
+                            }
+                        />
+                        <Bar
+                            dataKey="totalRevenue"
+                            fill={activeChartTab === 'year' ? '#6366F1' : '#F97316'}
+                            radius={[4, 4, 0, 0]}
+                            barSize={30}
+                        />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
 
-                {/* Bảng dữ liệu */}
-                <div>
-                    <h3 className="mb-2 uppercase font-semibold">
-                        {activeTab === '1' ? <p className={"text-orange-400 font-bold"}>Danh sách doanh thu tour</p> : 'Danh sách tour được xem nhiều nhất'}
-                    </h3>
-                    <Table
-                        className={'overflow-y-scroll max-h-60'}
-                        columns={columns}
-                        dataSource={activeTab === '1' ? salesRanking : visitRanking}
-                        pagination={false}
-                        size="small"
-                    />
-                </div>
-
+            {/* Phần bảng */}
+            <Tabs
+                defaultActiveKey="revenue"
+                onChange={setActiveTableTab}
+                tabBarStyle={{ color: '#1F2937', fontWeight: 600, marginBottom: '16px' }}
+            >
+                <Tabs.TabPane tab="Top doanh thu" key="revenue" />
+                <Tabs.TabPane tab="Top lượt đặt" key="booked" />
+            </Tabs>
+            <div className="grid grid-cols-1">
+                <Table
+                    columns={activeTableTab === 'revenue' ? salesColumns : bookedColumns}
+                    dataSource={activeTableTab === 'revenue' ? salesRanking : topBooked}
+                    pagination={false}
+                    bordered
+                    rowKey="key"
+                    scroll={{ y: 240 }}
+                    className="rounded-md shadow-sm"
+                    locale={{ emptyText: 'Không có dữ liệu' }}
+                />
             </div>
         </Card>
     );

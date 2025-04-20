@@ -14,6 +14,7 @@ module.exports = {
                 'check': 'checkBounce 0.4s ease-in-out',
                 'x': 'xShake 0.3s ease-in-out',
                 'fade-in': 'fadeIn 0.3s ease-in-out',
+                'arrow-down': 'arrowDown 1s infinite',
             },
             keyframes: {
                 'gradient-wave': {
@@ -22,6 +23,11 @@ module.exports = {
                     '50%': { backgroundPosition: '100% 50%' },
                     '75%': { backgroundPosition: '50% 0%' },
                     '100%': { backgroundPosition: '0% 50%' },
+                },
+                arrowDown: {
+                    '0%': { transform: 'translateY(0)', opacity: '1' },
+                    '50%': { transform: 'translateY(8px)', opacity: '0.5' },
+                    '100%': { transform: 'translateY(16px)', opacity: '0' },
                 },
                 fadeIn: {
                     '0%': { opacity: '0', transform: 'translateY(5px)' },

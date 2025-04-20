@@ -33,7 +33,7 @@ const ItineraryServices = {
 
     deleteItinerary: async (id) => {
         try {
-            const response = await axiosConfig.delete(config.api.itinerary + `/delete?itineraryId=${id}`);
+            const response = await axiosConfig.delete(config.api.itinerary + `/delete?tourId=${id}`);
             return response.data;
         } catch (error) {
             console.error('Error:', error);

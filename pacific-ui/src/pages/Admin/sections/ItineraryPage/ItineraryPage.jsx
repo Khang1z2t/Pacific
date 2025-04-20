@@ -2,7 +2,43 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, InputNumber, message, Modal, Select, Space, Table, Tabs, Tooltip } from 'antd';
 import ItineraryServices from '~/services/ItineraryServices';
 import TourServices from '~/services/TourServices';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import ReactQuill from 'react-quill'; // Thêm React-Quill
+import 'react-quill/dist/quill.snow.css';
+import { RefreshCwIcon } from 'lucide-react'; // Nhập CSS cho giao diện
+import config from '~/config';
+
+
+
+// const processImageURLs = (htmlString) => {
+//     // Hàm để lấy URL thực tế từ ID ảnh
+//     const getImageURL = (imageId) => {
+//         // Ví dụ: Google Drive URL
+//         // return `https://drive.google.com/uc?export=view&id=${imageId}`;
+//         // Hoặc sử dụng hàm từ config nếu có, ví dụ:
+//         return config.imageConfig.getImage(imageId);
+//     };
+//
+//     // Tạo một DOMParser để phân tích HTML
+//     const parser = new DOMParser();
+//     const doc = parser.parseFromString(htmlString, 'text/html');
+//
+//     // Tìm tất cả thẻ <img>
+//     const images = doc.querySelectorAll('img');
+//     images.forEach((img) => {
+//         const src = img.getAttribute('src');
+//         // Kiểm tra nếu src chứa biểu thức config.imageConfig.getImage
+//         const regex = /config\.imageConfig\.getImage\(['"]?([^'"]+)['"]?\)/;
+//         const match = src.match(regex);
+//         if (match && match[1]) {
+//             const imageId = match[1]; // Lấy ID ảnh
+//             img.setAttribute('src', getImageURL(imageId)); // Thay bằng URL thực tế
+//         }
+//     });
+//
+//     // Chuyển lại thành chuỗi HTML
+//     return doc.body.innerHTML;
+// };
 
 const { TabPane } = Tabs;
 
@@ -16,6 +52,26 @@ export const ItineraryPage = () => {
     const [form] = Form.useForm();
     const [editForm] = Form.useForm();
 
+    // Cấu hình toolbar cho React-Quill
+    const quillModules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'image'],
+            [{ 'align': [] }],
+            ['clean']
+        ],
+    };
+
+    const quillFormats = [
+        'header',
+        'bold', 'italic', 'underline', 'strike',
+        'list', 'bullet',
+        'link', 'image',
+        'align',
+    ];
+
     useEffect(() => {
         const fetchTours = async () => {
             try {
@@ -28,11 +84,13 @@ export const ItineraryPage = () => {
         fetchTours();
     }, []);
 
-    // Hàm lấy danh sách lịch trình
     const fetchItineraries = async (tourId) => {
         try {
             const response = await ItineraryServices.getByTourId(tourId);
-            setItineraries(Array.isArray(response.data) ? response.data : []);
+            const sortedItineraries = Array.isArray(response.data)
+                ? response.data.sort((a, b) => a.dayNumber - b.dayNumber)
+                : [];
+            setItineraries(sortedItineraries);
         } catch (error) {
             console.error('Failed to fetch itineraries:', error);
             setItineraries([]);
@@ -67,7 +125,10 @@ export const ItineraryPage = () => {
     const handleAddItinerary = async (values) => {
         try {
             const response = await ItineraryServices.AddItinerary(selectedTour.id, values);
-            setItineraries(Array.isArray(response.data) ? response.data : []);
+            const sortedItineraries = Array.isArray(response.data)
+                ? response.data.sort((a, b) => a.dayNumber - b.dayNumber)
+                : [];
+            setItineraries(sortedItineraries);
             setIsModalOpen(false);
             form.resetFields();
             message.success('Thêm lịch trình thành công', 2);
@@ -89,13 +150,12 @@ export const ItineraryPage = () => {
 
     const handleEditItinerary = async (values) => {
         try {
-            const updatedItinerary = await ItineraryServices.updateItinerary(editItinerary.id, values); // Lấy ItineraryResponse từ response
-            // Cập nhật local trước để phản ánh ngay lập tức
-            setItineraries(itineraries.map(item =>
+            const updatedItinerary = await ItineraryServices.updateItinerary(editItinerary.id, values);
+            const updatedList = itineraries.map(item =>
                 item.id === editItinerary.id ? updatedItinerary : item
-            ));
-            // Làm mới dữ liệu từ backend
-            await fetchItineraries(selectedTour.id);
+            );
+            const sortedItineraries = updatedList.sort((a, b) => a.dayNumber - b.dayNumber);
+            setItineraries(sortedItineraries);
             setEditModalVisible(false);
             editForm.resetFields();
             message.success('Cập nhật lịch trình thành công', 2);
@@ -105,49 +165,56 @@ export const ItineraryPage = () => {
         }
     };
 
-    const handleDeleteItinerary = async (id) => {
+    const handleDeleteAllItineraries = async () => {
+        if (!selectedTour) {
+            message.warning('Vui lòng chọn một tour trước!');
+            return;
+        }
+        if(!itineraries.length) {
+            message.warning('Không có lịch trình nào để xóa');
+            return;
+        }
         try {
-            await ItineraryServices.deleteItinerary(id);
-            setItineraries(itineraries.filter(itinerary => itinerary.id !== id));
-            message.success('Xóa lịch trình thành công', 2);
+            await ItineraryServices.deleteItinerary(selectedTour.id);
+            setItineraries([]);
+            message.success('Xóa toàn bộ lịch trình thành công', 2);
         } catch (error) {
-            console.error('Failed to delete itinerary:', error);
+            console.error('Failed to delete itineraries:', error);
             message.error('Xóa lịch trình thất bại', 2);
         }
     };
 
     const columns = [
-        { title: 'Ngày', dataIndex: 'dayNumber', key: 'dayNumber' },
+        { title: 'Ngày', dataIndex: 'dayNumber', key: 'dayNumber', sorter: (a, b) => a.dayNumber - b.dayNumber },
         { title: 'Tiêu đề', dataIndex: 'title', key: 'title' },
         {
             title: 'Mô tả',
             dataIndex: 'notes',
             key: 'notes',
+            // render: text => <div dangerouslySetInnerHTML={{ __html: processImageURLs(text) }} />,
             render: text => <div dangerouslySetInnerHTML={{ __html: text }} />,
         },
         {
             title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Tooltip title="Chỉnh sửa lịch trình">
-                        <Button
-                            icon={<EditOutlined />}
-                            type="text"
-                            onClick={() => showEditModal(record)}
-                        />
-                    </Tooltip>
-                    <Tooltip title="Xóa lịch trình">
-                        <Button
-                            icon={<DeleteOutlined />}
-                            danger
-                            onClick={() => handleDeleteItinerary(record.id)}
-                        />
-                    </Tooltip>
-                </Space>
+                <Tooltip title="Chỉnh sửa lịch trình">
+                    <Button
+                        icon={<EditOutlined />}
+                        type="text"
+                        onClick={() => showEditModal(record)}
+                    />
+                </Tooltip>
             ),
         },
     ];
+
+    const handleRefresh = () => {
+        if (selectedTour) {
+            fetchItineraries(selectedTour.id);
+        }
+        message.success('Làm mới lịch trình thành công', 2);
+    }
 
     return (
         <div style={{ padding: '20px' }}>
@@ -164,8 +231,19 @@ export const ItineraryPage = () => {
                         onChange={handleTourChange}
                         value={selectedTour?.id}
                     />
-                    <Button type="primary" onClick={showModal}>
+                    <Button
+                        type={'text'}
+                        icon={<RefreshCwIcon/>}
+                        onClick={handleRefresh}
+                        className={"border border-gray-300 rounded-md hover:bg-gray-100"}
+                        >
+                        Làm mới
+                    </Button>
+                    <Button type="primary" icon={<PlusOutlined/>} onClick={showModal}>
                         Thêm lịch trình
+                    </Button>
+                    <Button danger icon={<DeleteOutlined/>} onClick={handleDeleteAllItineraries}>
+                        Xóa toàn bộ lịch trình
                     </Button>
                 </Space>
             </div>
@@ -206,7 +284,12 @@ export const ItineraryPage = () => {
                                             name={[field.name, 'notes']}
                                             rules={[{ required: true, message: 'Vui lòng nhập ghi chú' }]}
                                         >
-                                            <Input.TextArea rows={4} />
+                                            <ReactQuill
+                                                theme="snow"
+                                                modules={quillModules}
+                                                formats={quillFormats}
+                                                style={{ height: '200px', marginBottom: '40px' }}
+                                            />
                                         </Form.Item>
                                     </TabPane>
                                 ))}
@@ -243,7 +326,12 @@ export const ItineraryPage = () => {
                         name="notes"
                         rules={[{ required: true, message: 'Vui lòng nhập ghi chú' }]}
                     >
-                        <Input.TextArea rows={4} />
+                        <ReactQuill
+                            theme="snow"
+                            modules={quillModules}
+                            formats={quillFormats}
+                            style={{ height: '200px', marginBottom: '40px' }}
+                        />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">

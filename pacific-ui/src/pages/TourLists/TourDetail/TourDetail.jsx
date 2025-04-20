@@ -14,30 +14,39 @@ export const TourDetail = () => {
     const [tour, setTour] = useState({});
 
     useEffect(() => {
-        TourServices.getById(id).then((res) => {
-            setTour(res.data);
-            setTimeout(() => {
+        TourServices.getById(id)
+            .then((res) => {
+                setTour(res.data);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 1000);
+            })
+            .catch((err) => {
+                console.error(err);
                 setLoading(false);
-            }, 1000);
-        }).catch((err) => {
-            console.error(err);
-            setLoading(false);
-        })
+            });
     }, [id]);
 
     if (loading) {
-        return <Loading/>
+        return <Loading />;
     }
     if (!tour) return config.routes.home;
 
     return (
-        <div className="min-h-screen bg-gray-50 py-10 px-5">
-            <h1 className="text-3xl font-bold mb-4 container mx-auto">{tour.title}</h1>
-            {/*<DetailSection {...tour}/>*/}
-            <CalendarSection data={tour}/>
-            <ItinerarySection data={tour}/>
-            <Divider className={"my-8"}><p className={"font-bold uppercase text-orange-400 text-3xl"} align={"center"}>Tour khác liên quan</p></Divider>
-            <OtherToursList/>
+        <div className="bg-gray-50 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+                <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">{tour.title}</h1>
+                <div className="flex flex-col gap-6">
+                    <CalendarSection data={tour} />
+                    <ItinerarySection data={tour} />
+                    <Divider>
+                        <p className="font-bold uppercase text-orange-400 text-xl sm:text-2xl lg:text-3xl text-center">
+                            Tour khác liên quan
+                        </p>
+                    </Divider>
+                    <OtherToursList />
+                </div>
+            </div>
         </div>
     );
 };

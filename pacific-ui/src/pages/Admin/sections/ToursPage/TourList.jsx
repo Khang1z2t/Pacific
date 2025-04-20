@@ -1,5 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Divider, Image, Input, message, Modal, Rate, Space, Switch, Table, Tooltip, Typography } from 'antd';
+import {
+    Button,
+    Card,
+    Divider,
+    Image,
+    Input,
+    message,
+    Modal,
+    Rate,
+    Space,
+    Switch,
+    Table, Tabs,
+    Tooltip,
+    Typography,
+} from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import TourServices from '~/services/TourServices';
 import config from '~/config';
@@ -9,8 +23,13 @@ import { AddTourDetail } from '~/pages/Admin/sections/ToursPage/components/AddTo
 import CategoryServices from '~/services/CategoryServices';
 import { RefreshCwIcon } from 'lucide-react';
 import DestinationServices from '~/services/DestinationServices';
+import { EditTourDetail } from '~/pages/Admin/sections/ToursPage/components/EditTourDetailModal';
+import HotelServices from '~/services/HotelServices';
+import TransportServices from '~/services/TransportServices';
+import GuideServices from '~/services/GuideServices';
 
 const { Title } = Typography;
+const { Text } = Typography;
 
 const TourList = () => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -18,16 +37,29 @@ const TourList = () => {
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [tours, setTours] = useState([]);
     const [tourDetail, setTourDetail] = useState({});
+    const [selectedTourDetail, setSelectedTourDetail] = useState(null);
+    const [editTourDetailVisible, setEditTourDetailVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [addDetailModalVisible, setAddDetailModalVisible] = useState(false);
     const [category, setCategory] = useState([]);
     const [destination, setDestination] = useState([]);
     const [selectedTour, setSelectedTour] = useState(null);
+    const [hotels, setHotels] = useState([]);
+    const [transports, setTransports] = useState([]);
+    const [guides, setGuides] = useState([]);
+
+    const handleCloseEditTourDetailModal = () => {
+        setEditTourDetailVisible(false);
+        setSelectedTourDetail(null); // Đặt lại selectedTourDetail
+    };
 
     // Hàm fetch dữ liệu dùng Promise.all
     const fetchData = useCallback(async () => {
         try {
-            const [categoryRes, destinationRes, tourRes] = await Promise.all([
+            const [hotelRes, transportRes, guideRes, categoryRes, destinationRes, tourRes] = await Promise.all([
+                HotelServices.getAllHotels(),
+                TransportServices.getTransports(),
+                GuideServices.getAllGuides(),
                 CategoryServices.getCategories(),
                 DestinationServices.getAll(),
                 TourServices.getAllTour({
@@ -39,6 +71,10 @@ const TourList = () => {
                     endDate: null,
                 }),
             ]);
+            setHotels(hotelRes.data || []);
+            setTransports(transportRes || []);
+            const activeGuides = guideRes.data.filter((guide) => guide.active === true);
+            setGuides(activeGuides || []);
             setCategory(categoryRes || []);
             setDestination(destinationRes || []);
             setTours(tourRes.data || []);
@@ -67,6 +103,16 @@ const TourList = () => {
         }
     }, []);
 
+    const handleDeleteTourDetail = useCallback(async (id) => {
+        try {
+            await TourServices.deleteTourDetail(id);
+            message.success('Xóa tour chi tiết thành công!');
+            fetchData();
+        } catch (error) {
+            console.error('Error deleting tour detail:', error);
+            message.error('Không thể xóa tour chi tiết!');
+        }
+    }, []);
 
     // Memoize handler ẩn/hiện tour
     const handleHideTour = useCallback(async (id, active) => {
@@ -132,8 +178,13 @@ const TourList = () => {
         },
         {
             title: 'Điểm đến',
-            dataIndex: 'destination',
-            key: 'destination',
+            dataIndex: 'destinationId',
+            key: 'destinationId',
+            render: (destinationId) => (
+                <Text className="font-semibold">
+                    {destination.find((item) => item.id === destinationId)?.name || destinationId}
+                </Text>
+            ),
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
                 <div style={{ padding: 8 }}>
                     <Input
@@ -155,16 +206,21 @@ const TourList = () => {
                 </div>
             ),
             filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-            onFilter: (value, record) => record.destinationId.toLowerCase().includes(value.toLowerCase()),
+            onFilter: (value, record) => destination.find((item) => item.id === record.destinationId)?.name.toLowerCase().includes(value.toLowerCase()),
         },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
-            render: (e) => <Switch checked={e === 'PUBLISHED'} disabled />,
+            render: (e) => (
+                <Text
+                    className={`text-${e === 'PUBLISHED' ? 'green' : 'red'}-500 bg-orange-100 p-1 rounded-lg border border-orange-200 font-semibold`}>
+                    {e === 'PUBLISHED' ? 'Đang bán' : 'Ngừng bán'}
+                </Text>
+            ),
             filters: [
                 { text: 'Đang bán', value: 'PUBLISHED' },
-                { text: 'Hết tour', value: 'DRAFT' },
+                { text: 'Ngừng bán', value: 'DRAFT' },
             ],
             onFilter: (value, record) => record.status === value,
         },
@@ -218,8 +274,23 @@ const TourList = () => {
         },
     ];
 
-    const detailColumns = [
-        { title: 'ID', dataIndex: 'id', key: 'id' },
+    const tourDetailColumns = [
+        {
+            title: 'Mã tour chi tiết',
+            dataIndex: 'id',
+            key: 'id',
+            render: (id) => (
+                <Tooltip title={'Bấm vào để sao chép'} placement={'bottom'}>
+                    <Text className="font-semibold text-blue-500 cursor-pointer"
+                          onClick={() => {
+                              navigator.clipboard.writeText(id);
+                              message.success('Đã sao chép mã tour chi tiết vào clipboard');
+                          }}>
+                        Mã tour chi tiết
+                    </Text>
+                </Tooltip>
+            ),
+        },
         {
             title: 'Giá tour người lớn',
             dataIndex: 'priceAdults',
@@ -232,8 +303,38 @@ const TourList = () => {
             key: 'priceChildren',
             render: (price) => `${config.webConfig.getCurrency(price)}`,
         },
-        { title: 'Mã Hotel', dataIndex: 'hotelId', key: 'hotelId' },
-        { title: 'Mã phương tiện', dataIndex: 'transportId', key: 'transportId' },
+        {
+            title: 'Mã Hotel',
+            dataIndex: 'hotelId',
+            key: 'hotelId',
+            render: (hotelId) => (
+                <Tooltip title={'Bấm vào để sao chép'} placement={'bottom'}>
+                    <Text className="font-semibold text-blue-500 cursor-pointer"
+                          onClick={() => {
+                              navigator.clipboard.writeText(hotelId);
+                              message.success('Đã sao chép mã hotel vào clipboard');
+                          }}>
+                        Mã hotel
+                    </Text>
+                </Tooltip>
+            ),
+        },
+        {
+            title: 'Mã phương tiện',
+            dataIndex: 'transportId',
+            key: 'transportId',
+            render: (transportId) => (
+                <Tooltip title={'Bấm vào để sao chép'} placement={'bottom'}>
+                    <Text className="font-semibold text-blue-500 cursor-pointer"
+                          onClick={() => {
+                              navigator.clipboard.writeText(transportId);
+                              message.success('Đã sao chép mã phương tiện vào clipboard');
+                          }}>
+                        Mã phương tiện
+                    </Text>
+                </Tooltip>
+            ),
+        },
         {
             title: 'Ngày khởi hành',
             dataIndex: 'startDate',
@@ -247,24 +348,70 @@ const TourList = () => {
             key: 'active',
             render: (status) => <Switch checked={status} disabled />,
         },
+        {
+            title: 'Thao tác',
+            key: 'actions',
+            render: (record) => (
+                <Space>
+                    <Tooltip placement="top" title="Chỉnh sửa chi tiết tour">
+                        <Button
+                            icon={<EditOutlined />}
+                            onClick={() => {
+                                setSelectedTourDetail(record); // Cập nhật selectedTourDetail
+                                setEditTourDetailVisible(true); // Mở modal
+                            }}
+                        />
+                    </Tooltip>
+                    <Tooltip placement="top" title="Xóa chi tiết tour">
+                        <Button
+                            icon={<DeleteOutlined />}
+                            danger
+                            onClick={() => handleDeleteTourDetail(record.id)}
+                        />
+                    </Tooltip>
+                </Space>
+            ),
+        },
     ];
 
     return (
         <div className="bg-white p-4 rounded shadow-lg">
-            <Title level={2}>QUẢN LÝ TOUR</Title>
-            <div className="mb-2 w-full flex gap-4 items-center flex-wrap">
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
-                    Thêm
-                </Button>
-                <Button
-                    type={'text'}
-                    icon={<RefreshCwIcon />}
-                    onClick={() => {
-                        setLoading(true);
-                        fetchData();
-                    }}
-                    loading={loading}
-                />
+            <div className={'flex flex-col gap-4'}>
+                <Title level={2}>QUẢN LÝ TOUR</Title>
+                <Space>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
+                        Thêm
+                    </Button>
+                    <Button
+                        type={'text'}
+                        icon={<RefreshCwIcon />}
+                        onClick={() => {
+                            setLoading(true);
+                            fetchData();
+                        }}
+                        loading={loading}
+                        className={'border border-gray-300 rounded-md p-2'}
+                    >
+                        Làm mới
+                    </Button>
+                </Space>
+                <Card
+                    className="bg-indigo-50 border border-blue-700 shadow-md w-full md:w-1/2 rounded-lg p-1"
+                    bodyStyle={{ padding: '16px' }}
+                >
+                    <Text strong className="text-red-500 text-lg">
+                        Lưu ý:
+                    </Text>
+                    <Text className="text-gray-800 leading-relaxed">
+                        {' '}"Trạng thái" là <Text strong>DRAFT</Text> là tour đã hết, <Text strong>PUBLISHED</Text> là
+                        tour
+                        đang được bán.
+                        Khi tour có Tour chi tiết đầy đủ thì trạng thái tour sẽ chuyển sang <Text
+                        strong>PUBLISHED</Text>.
+                        <br />
+                        "Ẩn/Hiện" là trạng thái tour đang được sử dụng hay không.
+                    </Text>
+                </Card>
             </div>
             <Table
                 columns={columns}
@@ -282,59 +429,65 @@ const TourList = () => {
                 onOk={() => setDetailModalVisible(false)}
                 onCancel={() => setDetailModalVisible(false)}
             >
-                <div className="p-4 space-y-2 w-full">
-                    <div className="items-start flex gap-4">
-                        <div className="flex flex-wrap gap-4">
-                            <Image
-                                src={config.imageConfig.getImage(tourDetail.thumbnail)}
-                                width={200}
-                                height={200}
-                                title="Thumbnail"
-                            />
+                <Tabs
+                    defaultActiveKey="1">
+                    <Tabs.TabPane tab="Thông tin tour" key="1">
+                        <div className="p-4 space-y-2 w-full">
+                            <div className="items-start flex gap-4">
+                                <div className="flex flex-wrap gap-4">
+                                    <Image
+                                        src={config.imageConfig.getImage(tourDetail.thumbnail)}
+                                        width={200}
+                                        height={200}
+                                        title="Thumbnail"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-semibold">{tourDetail.title}</h2>
+                                <h3 className="text-md text-gray-500 line-clamp-3">{tourDetail.description}</h3>
+                                <Rate defaultValue={tourDetail.ratingAvg} disabled />
+                            </div>
+                            <Divider />
+                            <h3 className="text-lg font-semibold">Thông tin cơ bản</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="gap-2 mb-4 items-center">
+                                    <p><span
+                                        className="font-semibold">Điểm đến:</span> {destination.find((item) => item.id === tourDetail.destinationId)?.name || tourDetail.destinationId}
+                                    </p>
+                                    <p><span
+                                        className="font-semibold">Thời gian:</span> {tourDetail.duration} ngày {tourDetail.duration - 1} đêm
+                                    </p>
+                                    <p><span
+                                        className="font-semibold">Giá:</span> {config.webConfig.getCurrency(tourDetail.maxPrice)}
+                                    </p>
+                                </div>
+                                <div className="gap-2 mb-4 items-center">
+                                    <p><span
+                                        className="font-semibold">Trạng thái (Ẩn/Hiện):</span> {tourDetail.active ? 'Đang được sử dụng' : 'Đang được ẩn'}
+                                    </p>
+                                    <p><span
+                                        className="font-semibold">Trạng thái bán:</span> {tourDetail.status === 'PUBLISHED' ? 'Đang được bán' : 'Đã hết tour'}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-semibold">{tourDetail.title}</h2>
-                        <h3 className="text-md text-gray-500 line-clamp-3">{tourDetail.description}</h3>
-                        <Rate defaultValue={tourDetail.ratingAvg} disabled />
-                    </div>
-                    <Divider />
-                    <h3 className="text-lg font-semibold">Thông tin cơ bản</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="gap-2 mb-4 items-center">
-                            <p><span className="font-semibold">Điểm đến:</span> {tourDetail.destination}</p>
-                            <p><span
-                                className="font-semibold">Thời gian:</span> {tourDetail.duration} ngày {tourDetail.duration - 1} đêm
-                            </p>
-                            <p><span
-                                className="font-semibold">Giá:</span> {config.webConfig.getCurrency(tourDetail.maxPrice)}
-                            </p>
-                        </div>
-                        <div className="gap-2 mb-4 items-center">
-                            <p><span
-                                className="font-semibold">Trạng thái (Ẩn/Hiện):</span> {tourDetail.active ? 'Đang được sử dụng' : 'Đang được ẩn'}
-                            </p>
-                            <p><span
-                                className="font-semibold">Trạng thái bán:</span> {tourDetail.status === 'PUBLISHED' ? 'Đang được bán' : 'Đã hết tour'}
-                            </p>
-                        </div>
-                    </div>
-                    <Divider />
-                    <div>
-                        <h3 className="text-lg font-semibold">Thông tin nâng cao</h3>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Tour chi tiết" key="2">
                         <Table
-                            pagination={{ pageSize: 3 }}
-                            columns={detailColumns}
+                            columns={tourDetailColumns}
                             dataSource={tourDetail.detail || []}
+                            loading={loading}
+                            pagination={{ pageSize: 5 }}
                             rowKey="id"
                         />
-                    </div>
-                </div>
+                    </Tabs.TabPane>
+                </Tabs>
             </Modal>
             <AddTour
                 destination={destination}
                 category={category}
-                setLoading={() => setLoading((prev) => !prev)}
+                setLoading={(loading) => setLoading(!loading)}
                 setModalVisible={setModalVisible}
                 modalVisible={modalVisible}
             />
@@ -342,13 +495,30 @@ const TourList = () => {
                 tourData={selectedTour}
                 destination={destination}
                 category={category}
+                setLoading={(loading) => setLoading(!loading)}
                 setEditModalVisible={setEditModalVisible}
                 editModalVisible={editModalVisible}
             />
             <AddTourDetail
+                guides={guides}
+                hotels={hotels}
+                transports={transports}
                 tour={selectedTour}
-                setAddDetailModalVisible={setAddDetailModalVisible}
-                addDetailModalVisible={addDetailModalVisible}
+                visible={addDetailModalVisible}
+                setVisible={setAddDetailModalVisible}
+                loading={loading}
+                setLoading={setLoading}
+                onSuccess={fetchData}
+            />
+            <EditTourDetail
+                hotels={hotels}
+                guides={guides}
+                transports={transports}
+                tourData={selectedTour}
+                visible={editTourDetailVisible}
+                setVisible={handleCloseEditTourDetailModal} // Sử dụng hàm mới để đóng modal
+                tourDetail={selectedTourDetail}
+                onSuccess={fetchData}
             />
         </div>
     );
