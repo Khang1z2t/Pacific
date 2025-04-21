@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import NavbarMB from '~/component/Layout/MenuMB/NavbarMB';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '~/config/AuthContext';
-import { Badge, Dropdown, Menu, message, Tooltip } from 'antd';
+import { Badge, Dropdown, Menu, message, Tooltip, Avatar } from 'antd';
 import { motion } from 'framer-motion';
 import config from '~/config';
-import { faBell, faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faGlobe, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
 
 export const Navbar = () => {
@@ -14,14 +14,11 @@ export const Navbar = () => {
     const [selectedLang, setSelectedLang] = useState(i18n.language);
     const { handleLogout, currentUser, vouchers } = useAuth();
     const navigate = useNavigate();
-
+    const location = useLocation();
 
     useEffect(() => {
         setSelectedLang(i18n.language);
     }, [i18n.language]);
-
-    useEffect(() => {
-    }, [currentUser]);
 
     const navItems = [
         {
@@ -38,27 +35,37 @@ export const Navbar = () => {
         },
         {
             title: t('menu.title4'),
-            href: '/news',
+            href: config.routes.news,
         },
         {
             title: t('menu.title5'),
-            href: '/lien-he',
+            href: config.routes.contacts,
         },
         {
             title: t('menu.title6'),
-            href: '/gioi-thieu',
+            href: config.routes.about,
         },
     ];
 
     const NavItemsElm = ({ title, href }) => {
+        const isActive = location.pathname === href ||
+            (href !== config.routes.home && location.pathname.startsWith(href));
+
         return (
-            <div className={''}>
+            <div className="relative group">
                 <Link
                     to={href}
-                    className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}
+                    className={`px-2 py-2 rounded-md text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold whitespace-nowrap ${
+                        isActive ? 'text-yellow-600' : ''
+                    }`}
                 >
                     {title}
                 </Link>
+                {/* Active indicator line */}
+                <div
+                    className={`absolute bottom-0 left-0 w-full h-0.5 bg-yellow-600 transform origin-left transition-transform duration-300 ${
+                        isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                    }`}></div>
             </div>
         );
     };
@@ -182,7 +189,7 @@ export const Navbar = () => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
         >
-            <div className={'bg-white shadow-lg rounded-lg overflow-y-scroll'}>
+            <div className={'bg-white shadow-lg rounded-lg'}>
                 <Menu className="max-h-96">
                     {visibleVouchers.length > 0 ? (
                         <>
@@ -277,7 +284,7 @@ export const Navbar = () => {
                     </div>
 
                     {/* Menu Items */}
-                    <div className="hidden md:flex space-x-8 ">
+                    <div className="hidden md:flex space-x-4">
                         {navItems.map((item, index) => (
                             <NavItemsElm key={index} title={item.title} href={item.href} />
                         ))}
@@ -291,15 +298,23 @@ export const Navbar = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     transition={{ duration: 0.2 }}
+                                    className="shadow-xl rounded-lg overflow-hidden"
                                 >
-                                    <Menu>
+                                    <Menu className="border border-gray-100">
                                         {languages.map(lang => (
                                             <Menu.Item
                                                 key={lang.code}
                                                 onClick={() => changeLanguage(lang.code)}
-                                                className="hover:bg-gray-100 transition-colors duration-200"
+                                                className={`hover:bg-gray-50 transition-colors duration-200 ${
+                                                    selectedLang === lang.code ? 'bg-blue-50 font-medium text-blue-600' : ''
+                                                }`}
                                             >
-                                                {lang.label}
+                                                <div className="flex items-center">
+                                                    {selectedLang === lang.code && (
+                                                        <span className="w-1 h-5 bg-blue-500 rounded-full mr-2"></span>
+                                                    )}
+                                                    {lang.label}
+                                                </div>
                                             </Menu.Item>
                                         ))}
                                     </Menu>
@@ -309,28 +324,41 @@ export const Navbar = () => {
                             placement="bottomRight"
                         >
                             <button
-                                className="w-10 h-10 flex items-center justify-center text-blue-700 hover:text-yellow-600 hover:bg-gray-100 transition-all duration-300 rounded-full border-none shadow-lg"
+                                className="w-10 h-10 flex items-center justify-center text-blue-700 hover:text-yellow-600 hover:bg-blue-50 transition-all duration-300 rounded-full border border-gray-200 shadow-md hover:shadow-lg"
+                                aria-label="Change language"
                             >
                                 <FontAwesomeIcon
                                     icon={faGlobe}
                                     className="text-lg"
                                 />
+                                <span className="sr-only">Change language</span>
                             </button>
                         </Dropdown>
                         {currentUser ? (
                             // Giữ nguyên phần code cho currentUser
                             <>
                                 <Dropdown
-                                    overlay={voucherMenu}
+                                    overlay={
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="shadow-xl rounded-lg overflow-hidden"
+                                        >
+                                            {voucherMenu}
+                                        </motion.div>
+                                    }
                                     trigger={['click']}
                                     placement="bottomRight"
                                 >
                                     <button
-                                        className="w-10 h-10 flex items-center justify-center text-blue-700 hover:text-yellow-600 hover:bg-gray-100 transition-all duration-300 rounded-full border-none shadow-lg relative"
+                                        className="w-10 h-10 flex items-center justify-center text-blue-700 hover:text-yellow-600 hover:bg-blue-50 transition-all duration-300 rounded-full border border-gray-200 shadow-md hover:shadow-lg relative"
+                                        aria-label="Voucher notifications"
                                     >
                                         <FontAwesomeIcon
                                             icon={faBell}
-                                            className="text-lg"
+                                            className={`text-lg ${visibleVouchers.length > 0 ? 'animate-pulse text-yellow-600' : ''}`}
                                         />
                                         {visibleVouchers.length > 0 && (
                                             <Badge
@@ -340,30 +368,55 @@ export const Navbar = () => {
                                                 className="absolute -top-1 -right-2"
                                             />
                                         )}
+                                        <span className="sr-only">Voucher notifications</span>
                                     </button>
                                 </Dropdown>
-                                <Dropdown overlay={menuGroup}>
-                                    <a
+                                <Dropdown
+                                    overlay={
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="shadow-xl rounded-lg overflow-hidden"
+                                        >
+                                            {menuGroup}
+                                        </motion.div>
+                                    }
+                                    trigger={['click']}
+                                    placement="bottomRight"
+                                >
+                                    <div
                                         onClick={(e) => e.preventDefault()}
-                                        className="text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold"
+                                        className="flex items-center space-x-2 px-3 py-1.5 rounded-full border border-gray-200 shadow-md hover:shadow-lg cursor-pointer hover:bg-blue-50 transition-all duration-300"
                                     >
-                                        {currentUser?.username || currentUser?.email}
-                                    </a>
+                                        <Avatar
+                                            icon={<FontAwesomeIcon icon={faUser} />}
+                                            className="bg-blue-500 flex items-center justify-center"
+                                            size="small"
+                                        />
+                                        <span
+                                            className="text-gray-700 hover:text-yellow-600 transition duration-300 font-medium">
+                                            {currentUser?.username || currentUser?.email}
+                                        </span>
+                                    </div>
                                 </Dropdown>
                             </>
                         ) : (
-                            // Giữ nguyên phần code cho login/register
+                            // Enhanced login/register buttons
                             <>
                                 <Link
                                     to={config.routes.login}
-                                    className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}
+                                    className="flex items-center px-4 py-2 rounded-full border border-blue-500 text-blue-600 hover:bg-blue-50 hover:shadow-md transition-all duration-300"
                                 >
+                                    <FontAwesomeIcon icon="sign-in-alt" className="mr-2" />
                                     {t('menu.title14')}
                                 </Link>
                                 <Link
                                     to={config.routes.register}
-                                    className={'text-gray-700 hover:text-yellow-600 transition duration-300 uppercase font-bold'}
+                                    className="flex items-center px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md transition-all duration-300"
                                 >
+                                    <FontAwesomeIcon icon="user-plus" className="mr-2" />
                                     {t('menu.title15')}
                                 </Link>
                             </>

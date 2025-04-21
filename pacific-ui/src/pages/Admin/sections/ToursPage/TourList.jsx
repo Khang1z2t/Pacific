@@ -38,7 +38,7 @@ const TourList = () => {
     const [tours, setTours] = useState([]);
     const [tourDetail, setTourDetail] = useState({});
     const [selectedTourDetail, setSelectedTourDetail] = useState(null);
-    const [editTourDetailVisible, setEditTourDetailVisible ] = useState(false);
+    const [editTourDetailVisible, setEditTourDetailVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [addDetailModalVisible, setAddDetailModalVisible] = useState(false);
     const [category, setCategory] = useState([]);
@@ -48,6 +48,10 @@ const TourList = () => {
     const [transports, setTransports] = useState([]);
     const [guides, setGuides] = useState([]);
 
+    const handleCloseEditTourDetailModal = () => {
+        setEditTourDetailVisible(false);
+        setSelectedTourDetail(null); // Đặt lại selectedTourDetail
+    };
 
     // Hàm fetch dữ liệu dùng Promise.all
     const fetchData = useCallback(async () => {
@@ -353,8 +357,8 @@ const TourList = () => {
                         <Button
                             icon={<EditOutlined />}
                             onClick={() => {
-                                setSelectedTourDetail(record);
-                                setEditTourDetailVisible(true);
+                                setSelectedTourDetail(record); // Cập nhật selectedTourDetail
+                                setEditTourDetailVisible(true); // Mở modal
                             }}
                         />
                     </Tooltip>
@@ -510,8 +514,9 @@ const TourList = () => {
                 hotels={hotels}
                 guides={guides}
                 transports={transports}
+                tourData={selectedTour}
                 visible={editTourDetailVisible}
-                setVisible={setEditTourDetailVisible}
+                setVisible={handleCloseEditTourDetailModal} // Sử dụng hàm mới để đóng modal
                 tourDetail={selectedTourDetail}
                 onSuccess={fetchData}
             />

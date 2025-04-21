@@ -1,6 +1,6 @@
 import config from '~/config';
 import Home from '~/pages/Home';
-import Contacts from '~/pages/News/Contacts';
+import Contacts from '~/pages/Contacts/Contacts';
 import About from '~/pages/Introduce/About';
 import { TourLists } from '~/pages/TourLists/TourLists';
 import { Login } from '~/pages/Account/Login';

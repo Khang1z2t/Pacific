@@ -19,8 +19,6 @@ import { HomePage } from '~/pages/Admin/sections/HomePage/HomePage';
 import { AdminFooter } from '~/pages/Admin/components/AdminHome/AdminFooter';
 import TourList from '~/pages/Admin/sections/ToursPage/TourList';
 import { Link } from 'react-router-dom';
-import InfoBlog from '~/pages/Admin/InfoBlog';
-import Blog from '~/pages/Admin/Blog';
 import Support from '~/pages/Admin/Support';
 import { useAuth } from '~/config/AuthContext';
 import { BookingStatistic } from '~/pages/Admin/sections/StatisticGeneral/Sections/BookingStatistic';
@@ -41,6 +39,7 @@ import { UserPage } from '~/pages/Admin/sections/UsersPage/UserPage';
 import { ItineraryPage } from '~/pages/Admin/sections/ItineraryPage/ItineraryPage';
 import { WalletPage } from '~/pages/Admin/sections/WalletPage/WalletPage';
 import WalletServices from '~/services/WalletServices';
+import { BlogSection } from '~/pages/Admin/sections/BlogSection/BlogSection';
 
 const { Content } = Layout;
 
@@ -181,10 +180,7 @@ const AdminHome = () => {
             label: 'Blogs',
             key: 'sub8',
             icon: <BlockOutlined />,
-            children: [
-                { label: 'Danh sách Blogs', key: '18', content: <Blog /> },
-                { label: 'Tông tin chi tiết Blogs', key: '19', content: <InfoBlog /> },
-            ],
+            content: <BlogSection />,
         },
         { label: 'Hỗ trợ', key: '20', icon: <CommentOutlined />, content: <Support /> },
         {
