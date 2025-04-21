@@ -1,37 +1,51 @@
 import React, { useEffect } from 'react';
 import TravelSection from './components/TravelSection';
+import { useTranslation } from 'react-i18next';
 
 const locations = [
     {
-        title: 'Đồng Hới - Quảng Bình',
-        images: ['/img/Blog/quang-binh.jpg'],
-        description:
-            'Quảng Bình chắc chắn sẽ là điểm đến không thể bỏ qua cho những ai yêu thích khám phá...',
+        title: t("blog.trung1"),
+        images: ['/img/Blog/quang-binh.jpg', '/img/Blog/quang-binh1.jpg', '/img/Blog/quang-binh2.jpg', '/img/Blog/quang-binh3.jpg', '/img/Blog/quang-binh4.jpg'],
+        description: t("blog.trung2")
     },
     {
-        title: 'Cố đô Huế',
-        images: ['/img/Blog/co-do-hue.jpg'],
-        description:
-            'Huế nổi tiếng với Đại Nội, chùa Thiên Mụ, và những nét đẹp cổ kính mộng mơ...',
+        title: t("blog.trung3"),
+        images: ['/img/Blog/co-do-hue.jpg', '/img/Blog/co-do-hue1.jpg', '/img/Blog/co-do-hue2.jpg'],
+        description: t("blog.trung4")
     },
     {
-        title: 'Đà Nẵng',
-        images: ['/img/Blog/da-nang.jpg'],
-        description:
-            'Thành phố đáng sống nhất Việt Nam với cầu Rồng, bãi biển Mỹ Khê và ẩm thực tuyệt vời...',
-    },
+        title: t("blog.trung5"),
+        images: ['/img/Blog/da-nang.jpg', '/img/Blog/da-nang1.jpg', '/img/Blog/da-nang2.jpg', '/img/Blog/da-nang3.jpg'],
+        description: t("blog.trung6")
+    }
 ];
 
 export const MienTrung = () => {
+    const { t } = useTranslation();
     useEffect(() => {
         document.title = 'Địa Điểm Du Lịch Miền Trung - Blog';
     }, []);
 
     return (
-        <TravelSection
-            title="Địa Điểm Du Lịch Miền Trung Nổi Tiếng Tuyệt Vời"
-            subtitle="Miền Trung hiện ra với vẻ đẹp mơ màng, hoài cổ nhưng cũng đầy bất ngờ thú vị."
-            locations={locations}
-        />
+        <div>
+            {/* Banner */}
+            <div className="relative w-full h-[300px] md:h-[400px] overflow-hidden">
+                <img
+                    src="/img/Blog/banner.jpg"
+                    alt="Banner"
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                    <div className="text-center text-white px-4">
+
+                    </div>
+                </div>
+            </div>
+            <TravelSection
+                title= {t("blog.trung7")}
+                subtitle= {t("blog.trung8")}
+                locations={locations}
+            />
+        </div>
     );
 };
