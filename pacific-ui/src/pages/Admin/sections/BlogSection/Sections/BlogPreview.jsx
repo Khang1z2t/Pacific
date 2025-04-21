@@ -16,6 +16,9 @@ const processImageURLs = (htmlString) => {
         return config.imageConfig.getImage(imageId);
     };
 
+    // Nếu không có nội dung, trả về chuỗi rỗng
+    if (!htmlString) return '';
+
     // Tạo một DOMParser để phân tích HTML
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
@@ -26,14 +29,14 @@ const processImageURLs = (htmlString) => {
         const src = img.getAttribute('src');
         // Kiểm tra nếu src chứa biểu thức config.imageConfig.getImage
         const regex = /config\.imageConfig\.getImage\(['"]?([^'"]+)['"]?\)/;
-        const match = src.match(regex);
+        const match = src && src.match(regex);
         if (match && match[1]) {
             const imageId = match[1]; // Lấy ID ảnh
             img.setAttribute('src', getImageURL(imageId)); // Thay bằng URL thực tế
         }
     });
 
-    // Chuyển lại thành chuỗi HTML
+    // Chuyển lại thành chuỗi HTML, giữ nguyên cấu trúc HTML
     return doc.body.innerHTML;
 };
 
@@ -141,9 +144,9 @@ export const BlogPreview = ({ content, form }) => {
                             <Title level={2} className="mb-2 text-gray-900">
                                 {previewContent.title}
                             </Title>
-                            <Paragraph italic className="text-gray-600 mb-6">
-                                Tác giả: {previewContent.author}
-                            </Paragraph>
+                            {/*<Paragraph italic className="text-gray-600 mb-6">*/}
+                            {/*    Tác giả: {previewContent?.user.username}*/}
+                            {/*</Paragraph>*/}
                             <div
                                 className="prose prose-lg max-w-none mt-4"
                                 dangerouslySetInnerHTML={{ __html: processImageURLs(previewContent.html) }}

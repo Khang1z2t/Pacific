@@ -12,6 +12,9 @@ const processImageURLs = (htmlString) => {
         return config.imageConfig.getImage(imageId);
     };
 
+    // If no content, return empty string
+    if (!htmlString) return '';
+
     // Create a DOMParser to parse HTML
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
@@ -22,14 +25,14 @@ const processImageURLs = (htmlString) => {
         const src = img.getAttribute('src');
         // Check if src contains config.imageConfig.getImage expression
         const regex = /config\.imageConfig\.getImage\(['"]?([^'"]+)['"]?\)/;
-        const match = src.match(regex);
+        const match = src && src.match(regex);
         if (match && match[1]) {
             const imageId = match[1]; // Get image ID
             img.setAttribute('src', getImageURL(imageId)); // Replace with actual URL
         }
     });
 
-    // Convert back to HTML string
+    // Convert back to HTML string, preserving HTML structure
     return doc.body.innerHTML;
 };
 
@@ -148,11 +151,11 @@ export const BlogDetail = ({ blog, onBack, onEdit }) => {
                                 </Title>
                                 <Tag color="blue">{blog.date}</Tag>
                             </div>
-                            
+
                             <Paragraph italic className="text-gray-600 mb-2">
                                 Tác giả: {blog.author}
                             </Paragraph>
-                            
+
                             {blog.description && (
                                 <div className="bg-gray-50 p-4 rounded-lg mb-6">
                                     <Paragraph className="text-gray-700 mb-0">
@@ -160,9 +163,9 @@ export const BlogDetail = ({ blog, onBack, onEdit }) => {
                                     </Paragraph>
                                 </div>
                             )}
-                            
+
                             <Divider />
-                            
+
                             <div
                                 className="prose prose-lg max-w-none mt-4"
                                 dangerouslySetInnerHTML={{ __html: processImageURLs(blog.content) }}
