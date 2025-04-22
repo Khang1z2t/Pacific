@@ -1,7 +1,7 @@
-import { Form, Typography, Button, message, Spin, Tooltip, Switch, Space } from 'antd';
+import { Form, Typography, Button, message, Spin, Tooltip, Switch, Space, Select } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
     FileTextOutlined,
     SaveOutlined,
@@ -13,11 +13,81 @@ import {
 import '../BlogStyle.css';
 import { BlogPreview } from '~/pages/Admin/sections/BlogSection/Sections/BlogPreview';
 import { debounce } from 'lodash';
+import ImageResize from 'quill-image-resize-module-react';
+import TourServices from '~/services/TourServices';
+import BlogServices from '~/services/BlogServices';
 
+// Register Quill modules
+// Add this code in your component, after the Quill registry section
+if (typeof window !== 'undefined') {
+    const Quill = ReactQuill.Quill;
+
+    // Register image resize module
+    Quill.register('modules/imageResize', ImageResize);
+
+    // Register image size module
+    class ImageSize {
+        constructor(quill, options) {
+            this.quill = quill;
+            this.toolbar = quill.getModule('toolbar');
+            if (typeof this.toolbar !== 'undefined') {
+                this.toolbar.addHandler('image-size', this.imageSize.bind(this));
+            }
+        }
+
+        imageSize(value) {
+            const range = this.quill.getSelection();
+            if (range) {
+                const [leaf] = this.quill.getLeaf(range.index);
+                if (leaf && leaf.domNode && leaf.domNode.tagName === 'IMG') {
+                    // Remove existing size classes
+                    leaf.domNode.classList.remove('ql-image-size-small', 'ql-image-size-medium', 'ql-image-size-large');
+
+                    // Add new size class
+                    if (value) {
+                        leaf.domNode.classList.add(`ql-image-size-${value}`);
+                    }
+                }
+            }
+        }
+    }
+
+    // Register image align module
+    class ImageAlign {
+        constructor(quill, options) {
+            this.quill = quill;
+            this.toolbar = quill.getModule('toolbar');
+            if (typeof this.toolbar !== 'undefined') {
+                this.toolbar.addHandler('image-align', this.imageAlign.bind(this));
+            }
+        }
+
+        imageAlign(value) {
+            const range = this.quill.getSelection();
+            if (range) {
+                const [leaf] = this.quill.getLeaf(range.index);
+                if (leaf && leaf.domNode && leaf.domNode.tagName === 'IMG') {
+                    // Remove existing alignment classes
+                    leaf.domNode.classList.remove('ql-image-align-left', 'ql-image-align-center', 'ql-image-align-right');
+
+                    // Add new alignment class
+                    if (value) {
+                        leaf.domNode.classList.add(`ql-image-align-${value}`);
+                    }
+                }
+            }
+        }
+    }
+
+    Quill.register('modules/imageSize', ImageSize);
+    Quill.register('modules/imageAlign', ImageAlign);
+}
 const { Text } = Typography;
 
 export const BlogForm = ({ blog, isEditing = false, onBack }) => {
     const [form] = Form.useForm();
+    const [tours, setTours] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [content, setContent] = useState(blog?.content || localStorage.getItem('blogContent') || '');
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -25,12 +95,33 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
     const [lastSaved, setLastSaved] = useState(localStorage.getItem('lastSaved') || null);
     const quillRef = useRef(null);
 
+    const fetchData = useCallback(async () => {
+        try {
+            setLoading(true);
+            const [tourRes, categoryRes] = await Promise.all([
+                TourServices.getAllTour({}),
+                BlogServices.getBlogCategories(),
+            ]);
+
+            setTours(tourRes?.data || []);
+            setCategories(categoryRes?.data || []);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            message.error('Không thể tải dữ liệu. Vui lòng thử lại sau.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+
     // Initialize form with blog data when in editing mode
     useEffect(() => {
         if (isEditing && blog) {
             form.setFieldsValue({
                 title: blog.title,
-                author: blog.author,
+                // author: blog.author,
+                categoryId: blog.categoryId,
+                tourId: blog.tourId,
             });
             if (blog.content) {
                 setContent(blog.content);
@@ -57,20 +148,21 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
     }, 1000);
 
     useEffect(() => {
+        fetchData();
         saveToLocalStorage();
-    }, [content]);
+    }, [fetchData,content]);
 
     const handleSubmit = async (values) => {
         try {
             setSubmitting(true);
-            const { title, author } = values;
             const blogData = {
-                id: blog?.id,
-                title,
-                author,
+                title: values.title,
                 content,
-                date: blog?.date || new Date().toISOString().split('T')[0],
+                status: 'DRAFT',
+                categoryId: values.categoryId,
+                tourId: values.tourId
             };
+            await BlogServices.createBlog(blogData);
 
             await new Promise(resolve => setTimeout(resolve, 1000));
             message.success(isEditing ? 'Bài viết đã được cập nhật!' : 'Bài viết đã được tạo thành công!');
@@ -140,12 +232,19 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                 [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
                 ['link', 'image', 'video'],
                 [{ align: [] }],
+                [{ 'image-size': ['small', 'medium', 'large'] }],
+                [{ 'image-align': ['left', 'center', 'right'] }],
                 ['blockquote', 'code-block'],
                 ['clean'],
             ],
         },
+        imageResize: {
+            parchment: ReactQuill.Quill.import('parchment'),
+            modules: ['Resize', 'DisplaySize'],
+        },
+        imageSize: true,
+        imageAlign: true,
     };
-
     const formats = [
         'header', 'font',
         'bold', 'italic', 'underline', 'strike',
@@ -153,10 +252,9 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
         'script',
         'list', 'bullet', 'indent',
         'link', 'image', 'video',
-        'align',
+        'align', 'image-size', 'image-align',
         'blockquote', 'code-block',
     ];
-
     return (
         <div className="p-6 container mx-auto justify-center items-center">
             <div className="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg shadow-sm">
@@ -213,14 +311,43 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                                 placeholder="Nhập tiêu đề (VD: Những địa điểm cực kỳ bạn nên đi 1 lần ở Nhật Bản)"
                             />
                         </Form.Item>
+                        {/*<Form.Item*/}
+                        {/*    name="author"*/}
+                        {/*    label={<Text strong>Tác giả</Text>}*/}
+                        {/*    rules={[{ required: true, message: 'Hãy nhập tên tác giả!' }]}*/}
+                        {/*>*/}
+                        {/*    <input*/}
+                        {/*        className="border rounded p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"*/}
+                        {/*        placeholder="Nhập tên tác giả, nguồn"*/}
+                        {/*    />*/}
+                        {/*</Form.Item>*/}
                         <Form.Item
-                            name="author"
-                            label={<Text strong>Tác giả</Text>}
-                            rules={[{ required: true, message: 'Hãy nhập tên tác giả!' }]}
+                            name="categoryId"
+                            label={<Text strong>Danh mục</Text>}
+                            rules={[{ required: true, message: 'Hãy chọn danh mục!' }]}
                         >
-                            <input
-                                className="border rounded p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                                placeholder="Nhập tên tác giả, nguồn"
+                            <Select
+                                placeholder="Chọn danh mục"
+                                className="w-full"
+                                options={categories.map(category => ({
+                                    value: category.id,
+                                    label: category.name
+                                }))}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="tourId"
+                            label={<Text strong>Tour liên quan</Text>}
+                            rules={[{ required: true, message: 'Hãy chọn ít nhất một tour!' }]}
+                        >
+                            <Select
+                                mode="multiple"
+                                placeholder="Chọn tour liên quan"
+                                className="w-full"
+                                options={tours.map(tour => ({
+                                    value: tour.id,
+                                    label: tour.title
+                                }))}
                             />
                         </Form.Item>
                         <Form.Item label="Tự động lưu" className="mb-0 flex items-center">
@@ -244,7 +371,6 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                             placeholder="Viết nội dung blog của bạn tại đây..."
                             value={content}
                             onChange={(value) => {
-                                console.log('ReactQuill value:', value); // Gỡ lỗi
                                 setContent(value);
                             }}
                         />

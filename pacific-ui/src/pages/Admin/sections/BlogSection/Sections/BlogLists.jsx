@@ -1,51 +1,64 @@
 import { Button, Input, Empty, Spin, message, Modal } from 'antd';
 import { SearchOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BlogCard } from '~/pages/Admin/sections/BlogSection/Components/BlogCard';
+import BlogServices from '~/services/BlogServices';
 
 export const BlogLists = ({ onView, onEdit, onCreateNew }) => {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [blogs, setBlogs] = useState([]);
     const { confirm } = Modal;
 
+    useEffect(() => {
+        BlogServices.getAllBlogs().then(blogs => {
+            setBlogs(blogs.data);
+        }).catch(err => {
+            console.error("Error fetching blogs:", err);
+            message.error("Không thể tải danh sách bài viết.");
+        }).finally(() => {
+            setLoading(false);
+        });
+    }, []);
+
     // Sample blog data - in a real app, this would come from an API
-    const sampleBlogs = [
-        {
-            id: 1,
-            title: 'Khám phá Nhật Bản: 10 địa điểm không thể bỏ qua',
-            description: 'Hướng dẫn du lịch toàn diện cho chuyến đi Nhật Bản đầu tiên của bạn.',
-            image: 'https://via.placeholder.com/800x600?text=Japan+Travel',
-            author: 'Nguyễn Văn A',
-            date: '2023-10-15'
-        },
-        {
-            id: 2,
-            title: 'Ẩm thực Việt Nam: Hành trình khám phá hương vị',
-            description: 'Khám phá những món ăn đặc sắc và văn hóa ẩm thực phong phú của Việt Nam.',
-            image: 'https://via.placeholder.com/800x600?text=Vietnamese+Cuisine',
-            author: 'Trần Thị B',
-            date: '2023-09-28'
-        },
-        {
-            id: 3,
-            title: 'Du lịch bụi Châu Âu: Kinh nghiệm và lời khuyên',
-            description: 'Chia sẻ kinh nghiệm du lịch tiết kiệm và hiệu quả tại các quốc gia Châu Âu.',
-            image: 'https://via.placeholder.com/800x600?text=Europe+Backpacking',
-            author: 'Lê Văn C',
-            date: '2023-08-12'
-        },
-        {
-            id: 4,
-            title: 'Những bãi biển đẹp nhất Đông Nam Á',
-            description: 'Khám phá những bãi biển thiên đường tại các quốc gia Đông Nam Á.',
-            image: 'https://via.placeholder.com/800x600?text=Southeast+Asia+Beaches',
-            author: 'Phạm Thị D',
-            date: '2023-07-05'
-        }
-    ];
+    // const sampleBlogs = [
+    //     {
+    //         id: 1,
+    //         title: 'Khám phá Nhật Bản: 10 địa điểm không thể bỏ qua',
+    //         description: 'Hướng dẫn du lịch toàn diện cho chuyến đi Nhật Bản đầu tiên của bạn.',
+    //         image: 'https://via.placeholder.com/800x600?text=Japan+Travel',
+    //         author: 'Nguyễn Văn A',
+    //         date: '2023-10-15'
+    //     },
+    //     {
+    //         id: 2,
+    //         title: 'Ẩm thực Việt Nam: Hành trình khám phá hương vị',
+    //         description: 'Khám phá những món ăn đặc sắc và văn hóa ẩm thực phong phú của Việt Nam.',
+    //         image: 'https://via.placeholder.com/800x600?text=Vietnamese+Cuisine',
+    //         author: 'Trần Thị B',
+    //         date: '2023-09-28'
+    //     },
+    //     {
+    //         id: 3,
+    //         title: 'Du lịch bụi Châu Âu: Kinh nghiệm và lời khuyên',
+    //         description: 'Chia sẻ kinh nghiệm du lịch tiết kiệm và hiệu quả tại các quốc gia Châu Âu.',
+    //         image: 'https://via.placeholder.com/800x600?text=Europe+Backpacking',
+    //         author: 'Lê Văn C',
+    //         date: '2023-08-12'
+    //     },
+    //     {
+    //         id: 4,
+    //         title: 'Những bãi biển đẹp nhất Đông Nam Á',
+    //         description: 'Khám phá những bãi biển thiên đường tại các quốc gia Đông Nam Á.',
+    //         image: 'https://via.placeholder.com/800x600?text=Southeast+Asia+Beaches',
+    //         author: 'Phạm Thị D',
+    //         date: '2023-07-05'
+    //     }
+    // ];
 
     // Filter blogs based on search term
-    const filteredBlogs = sampleBlogs.filter(blog => 
+    const filteredBlogs = blogs.filter(blog =>
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         blog.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
