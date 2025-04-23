@@ -353,18 +353,16 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                                 mode="multiple"
                                 placeholder="Chọn tour liên quan"
                                 className="w-full"
-                                filterOption={{
-                                    filter: (input, option) => option.label.toLowerCase().includes(input.toLowerCase()),
-                                }}
+                                filterOption={(input, option) =>
+                                    option.label.toLowerCase().includes(input.toLowerCase())}
+                                showSearch
+                                optionFilterProp={'label'}
+                                allowClear
                                 options={tours.map(tour => ({
                                     value: tour.id,
                                     label: tour.title,
                                 }))}
                             />
-                        </Form.Item>
-                        <Form.Item label="Tự động lưu" className="mb-0 flex items-center">
-                            <Switch defaultChecked />
-                            <span className="ml-2 text-sm text-gray-500">Tự động lưu mỗi 30 giây</span>
                         </Form.Item>
                         <Form.Item
                             name="thumbnail"
@@ -432,7 +430,7 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
 
             {content && showPreview && (
                 <div className="mt-8 transition-all duration-300">
-                    <BlogPreview content={content} form={form} />
+                    <BlogPreview content={content} form={form} thumbnail={thumbnail} />
                 </div>
             )}
         </div>

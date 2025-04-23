@@ -95,7 +95,7 @@ export const BlogSection = () => {
                         <Pagination
                             className="mt-4"
                             align="center"
-                            defaultCurrent={1}
+                            defaultCurrent={currentPage}
                             total={ITEM_PER_PAGE * 10} // Example total items
                             pageSize={ITEM_PER_PAGE}
                             showSizeChanger={false}

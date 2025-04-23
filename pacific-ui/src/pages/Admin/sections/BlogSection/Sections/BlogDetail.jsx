@@ -82,7 +82,7 @@ export const BlogDetail = ({ blog, onBack, onEdit }) => {
                 </head>
                 <body>
                     <h1>${blog.title}</h1>
-                    <div class="author">Tác giả: ${blog.author}</div>
+                    <div class="author">Tác giả: ${blog.user.username}</div>
                     <div class="date">Ngày đăng: ${blog.date}</div>
                     ${processImageURLs(blog.content)}
                 </body>
@@ -153,7 +153,7 @@ export const BlogDetail = ({ blog, onBack, onEdit }) => {
                             </div>
 
                             <Paragraph italic className="text-gray-600 mb-2">
-                                Tác giả: {blog.author}
+                                Tác giả: {blog.user.username}
                             </Paragraph>
 
                             {blog.description && (

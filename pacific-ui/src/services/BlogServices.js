@@ -37,7 +37,7 @@ const BlogServices = {
 
     getBySlug: async (slug) => {
         try {
-            const response = await axiosConfig.get(config.api.blog + `/slug/` + slug);
+            const response = await axiosConfig.get(config.api.blog + `/slug?slug=` + slug);
             return response.data;
         } catch (error) {
             console.error('Error fetching blog by slug:', error);
