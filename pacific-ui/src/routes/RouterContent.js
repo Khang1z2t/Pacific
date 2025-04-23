@@ -22,6 +22,7 @@ import { News } from '~/pages/News/News';
 import { Error } from '~/pages/Booking/status/Error';
 import { GoogleRedirect } from '~/pages/Account/components/GoogleRedirect';
 import { Terms } from '~/pages/Terms/Terms';
+import { DetailNews } from '~/pages/News/DetailNews/DetailNews';
 
 export const RouterContent = [
     {
@@ -107,6 +108,10 @@ export const RouterContent = [
     {
         path: config.routes.checkoutFail,
         element: <Error/>,
+    },
+    {
+        path: config.routes.news + '*',
+        element: <DetailNews />,
     },
     {
         path: config.routes.adminHome,

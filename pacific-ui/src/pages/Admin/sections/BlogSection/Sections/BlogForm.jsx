@@ -1,4 +1,4 @@
-import { Form, Typography, Button, message, Spin, Tooltip, Switch, Space, Select } from 'antd';
+import { Form, Typography, Button, message, Spin, Tooltip, Switch, Space, Select, Upload } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -8,7 +8,7 @@ import {
     SendOutlined,
     EyeOutlined,
     EyeInvisibleOutlined,
-    ArrowLeftOutlined,
+    ArrowLeftOutlined, UploadOutlined,
 } from '@ant-design/icons';
 import '../BlogStyle.css';
 import { BlogPreview } from '~/pages/Admin/sections/BlogSection/Sections/BlogPreview';
@@ -87,6 +87,7 @@ const { Text } = Typography;
 export const BlogForm = ({ blog, isEditing = false, onBack }) => {
     const [form] = Form.useForm();
     const [tours, setTours] = useState([]);
+    const [thumbnail, setThumbnail] = useState(null);
     const [categories, setCategories] = useState([]);
     const [content, setContent] = useState(blog?.content || localStorage.getItem('blogContent') || '');
     const [loading, setLoading] = useState(false);
@@ -97,7 +98,6 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
 
     const fetchData = useCallback(async () => {
         try {
-            setLoading(true);
             const [tourRes, categoryRes] = await Promise.all([
                 TourServices.getAllTour({}),
                 BlogServices.getBlogCategories(),
@@ -147,10 +147,21 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
         }
     }, 1000);
 
+    const beforeUpload = file => {
+        setThumbnail(file);
+        return false;
+    };
+    const handleThumbnailChange = info => {
+        if (info.file.status === 'removed') {
+            setThumbnail(null);
+        } else {
+            setThumbnail(info.file.originFileObj);
+        }
+    };
     useEffect(() => {
         fetchData();
         saveToLocalStorage();
-    }, [fetchData,content]);
+    }, [fetchData, content]);
 
     const handleSubmit = async (values) => {
         try {
@@ -158,16 +169,15 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
             const blogData = {
                 title: values.title,
                 content,
+                thumbnail: values.thumbnail ? values.thumbnail[0].originFileObj : null,
                 status: 'DRAFT',
                 categoryId: values.categoryId,
-                tourId: values.tourId
+                tourId: values.tourId,
             };
             await BlogServices.createBlog(blogData);
 
             await new Promise(resolve => setTimeout(resolve, 1000));
             message.success(isEditing ? 'Bài viết đã được cập nhật!' : 'Bài viết đã được tạo thành công!');
-            console.log('Blog Data:', blogData);
-
             if (onBack) {
                 onBack();
             }
@@ -199,7 +209,6 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
     // Restore draft from localStorage
     const restoreDraft = () => {
         try {
-            setLoading(true);
             const savedContent = localStorage.getItem('blogContent');
             if (savedContent) {
                 setContent(savedContent);
@@ -331,7 +340,7 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                                 className="w-full"
                                 options={categories.map(category => ({
                                     value: category.id,
-                                    label: category.name
+                                    label: category.name,
                                 }))}
                             />
                         </Form.Item>
@@ -344,9 +353,12 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                                 mode="multiple"
                                 placeholder="Chọn tour liên quan"
                                 className="w-full"
+                                filterOption={{
+                                    filter: (input, option) => option.label.toLowerCase().includes(input.toLowerCase()),
+                                }}
                                 options={tours.map(tour => ({
                                     value: tour.id,
-                                    label: tour.title
+                                    label: tour.title,
                                 }))}
                             />
                         </Form.Item>
@@ -354,7 +366,26 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                             <Switch defaultChecked />
                             <span className="ml-2 text-sm text-gray-500">Tự động lưu mỗi 30 giây</span>
                         </Form.Item>
+                        <Form.Item
+                            name="thumbnail"
+                            label={<Text strong>Ảnh đại diện (thumbnail)</Text>}
+                            valuePropName="fileList"
+                            getValueFromEvent={e => (Array.isArray(e) ? e : e && e.fileList)}
+                            className="md:col-span-2"
+                        >
+                            <Upload
+                                listType="picture"
+                                beforeUpload={beforeUpload}
+                                onChange={handleThumbnailChange}
+                                maxCount={1}
+                                accept="image/*"
+                                showUploadList={{ showRemoveIcon: true }}
+                            >
+                                <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+                            </Upload>
+                        </Form.Item>
                     </div>
+
 
                     <Form.Item
                         name="content"
