@@ -40,7 +40,7 @@ const processImageURLs = (htmlString) => {
     return doc.body.innerHTML;
 };
 
-export const BlogPreview = ({ content, form }) => {
+export const BlogPreview = ({ content, form, thumbnail }) => {
     const [loading, setLoading] = useState(false);
     const [fullscreen, setFullscreen] = useState(false);
 
@@ -144,6 +144,11 @@ export const BlogPreview = ({ content, form }) => {
                             <Title level={2} className="mb-2 text-gray-900">
                                 {previewContent.title}
                             </Title>
+                            <img
+                                src={config.imageConfig.getImage(thumbnail) || 'https://via.placeholder.com/800x400'}
+                                alt="Thumbnail"
+                                className="w-full h-auto mb-4 rounded-lg shadow-md"
+                            />
                             {/*<Paragraph italic className="text-gray-600 mb-6">*/}
                             {/*    Tác giả: {previewContent?.user.username}*/}
                             {/*</Paragraph>*/}

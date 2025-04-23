@@ -16,7 +16,7 @@ const BlogServices = {
         try {
             const response = await axiosConfig.post(config.api.blog + '/create', body, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     'Authorization': 'Bearer ' + token,
                 },
             });
@@ -35,9 +35,9 @@ const BlogServices = {
         }
     },
 
-    getAllBySlug: async (slug) => {
+    getBySlug: async (slug) => {
         try {
-            const response = await axiosConfig.get(config.api.blog + `/slug/` + slug);
+            const response = await axiosConfig.get(config.api.blog + `/slug?slug=` + slug);
             return response.data;
         } catch (error) {
             console.error('Error fetching blog by slug:', error);

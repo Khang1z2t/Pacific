@@ -190,8 +190,8 @@
     "ti13": "Request a Quote"
   },
   "notFound": {
-    "ti1": "404 - Page Not Found",
-    "ti2": "Go Back"
+    "ti1": "Oops! The page you're looking for got wiped out.",
+    "ti2": "Go Home"
   },
   "login": {
     "ti1": "Please fill in all required information",

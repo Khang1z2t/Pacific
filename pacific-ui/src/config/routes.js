@@ -23,7 +23,7 @@ const routes = {
     blogMienTrung: '/MienTrung',
     blogMienNam: '/MienNam',
     adminHome: '/admin',
-    news: '/news',
+    news: '/news/',
     checkOutSuccess: '/checkout/success/',
     checkoutFail: '/checkout/fail/',
     infoBlog: '/info-blog',

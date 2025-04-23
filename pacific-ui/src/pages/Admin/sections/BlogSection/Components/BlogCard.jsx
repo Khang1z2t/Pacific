@@ -13,8 +13,7 @@ export const BlogCard = ({ blog, onView, onEdit, onDelete }) => {
             >
                 <div className="relative h-48 overflow-hidden">
                     <img
-                        src={config.webConfig.banner1}
-                        // config.imageConfig.getImage(blog.thumbnail) ||
+                        src={config.imageConfig.getImage(blog.thumbnail) || config.webConfig.banner1}
                         alt={blog.title}
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                     />
