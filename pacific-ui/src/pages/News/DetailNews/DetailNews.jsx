@@ -36,17 +36,17 @@ export const DetailNews = () => {
     const [loading, setLoading] = useState(false);
 
     const fetchData = useCallback(async () => {
-        try{
+        try {
             const [blogRes, blogsRes] = await Promise.all([
                 BlogServices.getBySlug(slug),
                 BlogServices.getAllBlogs(),
             ]);
             setBlog(blogRes.data);
             setBlogs(blogsRes.data);
-        }catch (error){
+        } catch (error) {
             console.error('Error fetching blog data:', error);
             message.error('Không thể tải bài viết.');
-        }finally {
+        } finally {
             setLoading(false);
         }
     }, [slug]);
@@ -54,7 +54,7 @@ export const DetailNews = () => {
 
     useEffect(() => {
         fetchData();
-    }, [slug,fetchData]);
+    }, [slug, fetchData]);
 
     const relatedBlogs = blogs
         .filter(
@@ -73,7 +73,7 @@ export const DetailNews = () => {
                         {blog.title}
                     </Title>
                     <Text type="secondary" className="text-sm sm:text-base">
-                        Đăng ngày: {config.webConfig.convertDateNoTime(blog.createdAt) || 'N/A'}
+                        Đăng ngày: {config.webConfig.convertLocalDateTime(blog.createdAt) || 'N/A'}
                     </Text>
                     <Text type="secondary" className="text-sm sm:text-base ml-4">
                         Tác giả: {blog.user?.username || 'N/A'}
@@ -121,6 +121,15 @@ export const DetailNews = () => {
                                         >
                                             <i className="fab fa-twitter" /> Twitter
                                         </a>
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(`${window.location.origin}${config.routes.news}${blog.slug}`);
+                                                message.success('Sao chép liên kết thành công!');
+                                            }}
+                                            className="text-green-600 hover:text-green-800 flex items-center gap-2"
+                                        >
+                                            <i className="fas fa-link" /> Sao chép liên kết
+                                        </button>
                                     </div>
                                 </div>
                             </>
@@ -140,8 +149,11 @@ export const DetailNews = () => {
                                 <span>Không có bài viết liên quan.</span>
                             ) : (
                                 relatedBlogs.map((item) => (
-                                    <div className={"flex items-center border rounded-lg p-2 border-gray-200 transition-all hover:cursor-pointer hover:border-orange-500 hover:bg-orange-50 gap-4"} key={item.id}>
-                                        <Link to={`${config.routes.news}${item.slug}`} className="flex items-center gap-4">
+                                    <div
+                                        className={'flex items-center border rounded-lg p-2 border-gray-200 transition-all hover:cursor-pointer hover:border-orange-500 hover:bg-orange-50 gap-4'}
+                                        key={item.id}>
+                                        <Link to={`${config.routes.news}${item.slug}`}
+                                              className="flex items-center gap-4">
                                             <img
                                                 src={config.imageConfig.getImage(item.thumbnail)}
                                                 alt={item.title}
@@ -151,7 +163,8 @@ export const DetailNews = () => {
                                                 <Text className="text-gray-800 font-semibold hover:text-blue-600">
                                                     {item.metaTitle}
                                                 </Text>
-                                                <Text className="block line-clamp-2 max-h-12 overflow-ellipsis overflow-hidden text-gray-500 text-sm">
+                                                <Text
+                                                    className="block line-clamp-2 max-h-12 overflow-ellipsis overflow-hidden text-gray-500 text-sm">
                                                     {item.metaDescription}
                                                 </Text>
                                             </div>

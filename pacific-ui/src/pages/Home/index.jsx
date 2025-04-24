@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { Divider } from 'antd';
 import { TravelCards } from '~/pages/Home/components/TravelCards';
 import { TravelCardLists } from '~/pages/Home/sections/TravelCardLists';
 import Vacations from '~/pages/Home/sections/Vacations';
@@ -7,12 +6,12 @@ import { AboutSection } from '~/pages/Home/sections/AboutSection';
 import { TourLists } from '~/pages/Home/sections/TourLists';
 import { AnimatedHomeBanner } from '~/pages/Home/components/AnimatedHomeBanner/AnimatedHomeBanner';
 import FadeContent from '~/component/Animation/AnimatedUI/FadeContent';
-import { BlogSection } from '~/pages/Home/sections/BlogSection';
 import { ComboTour } from '~/pages/Home/sections/ComboTour';
 import { useTranslation } from 'react-i18next';
 import { AboutLogin } from '~/pages/Home/sections/AboutLogin';
 import { useAuth } from '~/config/AuthContext';
 import { VouchersPage } from '~/pages/Home/sections/VouchersPage';
+import { BlogSection } from '~/pages/Home/sections/BlogSection';
 
 function Home() {
     const { currentUser } = useAuth();

@@ -44,6 +44,22 @@ const BlogServices = {
             return Promise.reject(error);
         }
     },
+
+    updateBlog: async (id, body) => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await axiosConfig.put(config.api.blog + `/update/${id}`, body, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': 'Bearer ' + token,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error updating blog:', error);
+            return Promise.reject(error);
+        }
+    }
 };
 
 export default BlogServices;

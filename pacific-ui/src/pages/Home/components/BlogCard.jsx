@@ -1,64 +1,72 @@
-import React from 'react';
+import config from '~/config';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import React from 'react';
 
-const BlogCards = ({ title, img, date, link }) => {
-    const { t } = useTranslation();
+const BlogCard = ({ blog }) => {
 
     return (
-        <motion.div 
-            whileHover={{ y: -8 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            className="max-w-sm mx-auto h-full rounded-xl overflow-hidden shadow-lg relative group"
+        <motion.div
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: 'spring', stiffness: 300 }}
+            className="bg-white rounded-xl overflow-hidden shadow-lg relative group h-full flex flex-col"
         >
-            <div className="overflow-hidden">
-                <motion.img 
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    src={img} 
-                    alt={title} 
-                    className="w-full h-52 object-cover transition-all duration-500 ease-in-out" 
-                />
-            </div>
-
-            <motion.div 
-                initial={{ opacity: 0.8 }}
-                whileHover={{ opacity: 1 }}
-                className="absolute top-4 left-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg px-3 py-1.5 text-center shadow-md"
-            >
-                {date}
-            </motion.div>
-
-            <div className="bg-white p-6 border-t-4 border-orange-500">
-                <h3 className="text-xl font-bold mb-3 text-gray-800 line-clamp-2 h-14">{title}</h3>
-
-                <div className="mt-4 flex justify-between items-center">
-                    <Link
-                        to={link}
-                        className="group-hover:bg-gradient-to-r group-hover:from-orange-600 group-hover:to-orange-400 bg-orange-500 text-white px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 inline-block text-center font-medium"
-                    >
-                        <motion.span 
-                            initial={{ x: 0 }}
-                            whileHover={{ x: 5 }}
-                            className="inline-block"
-                        >
-                            {t("blog.blog6")} →
-                        </motion.span>
-                    </Link>
-
-                    <motion.div 
-                        whileHover={{ rotate: 15 }}
-                        className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-500"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
-                    </motion.div>
+            <Link to={`${config.routes.news}${blog.slug}`} className="block flex-grow">
+                {/* Image Section */}
+                <div className="overflow-hidden">
+                    <motion.img
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.6 }}
+                        src={config.imageConfig.getImage(blog.thumbnail) || config.webConfig.banner1}
+                        alt={blog.title}
+                        className="w-full h-48 sm:h-52 object-cover transition-all duration-500 ease-in-out"
+                    />
                 </div>
-            </div>
+
+                {/* Date and Category Overlay */}
+                <motion.div
+                    initial={{ opacity: 0.8 }}
+                    whileHover={{ opacity: 1 }}
+                    className="absolute top-4 left-4 bg-gradient-to-r from-orange-600 to-orange-400 text-white rounded-lg px-3 py-1.5 text-xs shadow-md"
+                >
+                    {config.webConfig.convertDateNoTime(blog.createdAt)}
+                </motion.div>
+                {blog.category && (
+                    <div
+                        className="absolute top-4 right-4 bg-green-500 text-white rounded-lg px-3 py-1.5 text-xs shadow-md">
+                        {blog.category.name}
+                    </div>
+                )}
+
+                {/* Content Section */}
+                <div className="p-5 flex flex-col flex-grow">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 line-clamp-2 mb-3 h-14">
+                        {blog.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow">
+                        {blog.metaDescription}
+                    </p>
+                    <div className="flex items-center space-x-2 mt-auto">
+                        <div
+                            className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                            {blog.user?.avatar ? (
+                                <img
+                                    src={blog.user.avatar}
+                                    alt={blog.user?.firstName || blog.user?.username}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <span className="text-gray-500 text-xs font-bold">
+                                    {(blog.user?.firstName?.[0] || blog.user?.username?.[0] || 'U').toUpperCase()}
+                                </span>
+                            )}
+                        </div>
+                        <span className="text-gray-700 text-sm font-medium">
+                            {blog.user?.firstName} {blog.user?.lastName || blog.user?.username}
+                        </span>
+                    </div>
+                </div>
+            </Link>
         </motion.div>
     );
 };
-
-export default BlogCards;

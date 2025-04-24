@@ -1,4 +1,4 @@
-import { Form, Typography, Button, message, Spin, Tooltip, Switch, Space, Select, Upload } from 'antd';
+import { Form, Typography, Button, message, Spin, Tooltip, Switch, Space, Select, Upload, Image } from 'antd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -8,7 +8,8 @@ import {
     SendOutlined,
     EyeOutlined,
     EyeInvisibleOutlined,
-    ArrowLeftOutlined, UploadOutlined,
+    ArrowLeftOutlined,
+    UploadOutlined,
 } from '@ant-design/icons';
 import '../BlogStyle.css';
 import { BlogPreview } from '~/pages/Admin/sections/BlogSection/Sections/BlogPreview';
@@ -16,16 +17,13 @@ import { debounce } from 'lodash';
 import ImageResize from 'quill-image-resize-module-react';
 import TourServices from '~/services/TourServices';
 import BlogServices from '~/services/BlogServices';
+import config from '~/config';
 
 // Register Quill modules
-// Add this code in your component, after the Quill registry section
 if (typeof window !== 'undefined') {
     const Quill = ReactQuill.Quill;
-
-    // Register image resize module
     Quill.register('modules/imageResize', ImageResize);
 
-    // Register image size module
     class ImageSize {
         constructor(quill, options) {
             this.quill = quill;
@@ -40,10 +38,7 @@ if (typeof window !== 'undefined') {
             if (range) {
                 const [leaf] = this.quill.getLeaf(range.index);
                 if (leaf && leaf.domNode && leaf.domNode.tagName === 'IMG') {
-                    // Remove existing size classes
                     leaf.domNode.classList.remove('ql-image-size-small', 'ql-image-size-medium', 'ql-image-size-large');
-
-                    // Add new size class
                     if (value) {
                         leaf.domNode.classList.add(`ql-image-size-${value}`);
                     }
@@ -52,7 +47,6 @@ if (typeof window !== 'undefined') {
         }
     }
 
-    // Register image align module
     class ImageAlign {
         constructor(quill, options) {
             this.quill = quill;
@@ -67,10 +61,7 @@ if (typeof window !== 'undefined') {
             if (range) {
                 const [leaf] = this.quill.getLeaf(range.index);
                 if (leaf && leaf.domNode && leaf.domNode.tagName === 'IMG') {
-                    // Remove existing alignment classes
                     leaf.domNode.classList.remove('ql-image-align-left', 'ql-image-align-center', 'ql-image-align-right');
-
-                    // Add new alignment class
                     if (value) {
                         leaf.domNode.classList.add(`ql-image-align-${value}`);
                     }
@@ -82,6 +73,7 @@ if (typeof window !== 'undefined') {
     Quill.register('modules/imageSize', ImageSize);
     Quill.register('modules/imageAlign', ImageAlign);
 }
+
 const { Text } = Typography;
 
 export const BlogForm = ({ blog, isEditing = false, onBack }) => {
@@ -102,7 +94,6 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                 TourServices.getAllTour({}),
                 BlogServices.getBlogCategories(),
             ]);
-
             setTours(tourRes?.data || []);
             setCategories(categoryRes?.data || []);
         } catch (error) {
@@ -113,16 +104,17 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
         }
     }, []);
 
-
     // Initialize form with blog data when in editing mode
     useEffect(() => {
         if (isEditing && blog) {
             form.setFieldsValue({
                 title: blog.title,
-                // author: blog.author,
-                categoryId: blog.categoryId,
-                tourId: blog.tourId,
+                status: blog.status, // Ensure status is set correctly
+                thumbnail: blog.thumbnail,
+                categoryId: blog.category?.id,
+                tourId: Array.isArray(blog.tours) ? blog.tours.map((tour) => tour.id) : [],
             });
+            setThumbnail(blog.thumbnail); // Set thumbnail state
             if (blog.content) {
                 setContent(blog.content);
                 const setEditorContent = () => {
@@ -134,6 +126,9 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                 };
                 setTimeout(setEditorContent, 0);
             }
+        } else {
+            // Default status for create mode
+            form.setFieldsValue({ status: 'DRAFT' });
         }
     }, [isEditing, blog, form]);
 
@@ -147,17 +142,20 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
         }
     }, 1000);
 
-    const beforeUpload = file => {
+    const beforeUpload = (file) => {
         setThumbnail(file);
-        return false;
+        return false; // Prevent automatic upload
     };
-    const handleThumbnailChange = info => {
-        if (info.file.status === 'removed') {
-            setThumbnail(null);
+
+    const handleThumbnailChange = ({ fileList }) => {
+        if (fileList.length > 0) {
+            setThumbnail(fileList[0].originFileObj || fileList[0]);
         } else {
-            setThumbnail(info.file.originFileObj);
+            setThumbnail(null);
         }
+        form.setFieldsValue({ thumbnail: fileList });
     };
+
     useEffect(() => {
         fetchData();
         saveToLocalStorage();
@@ -169,15 +167,26 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
             const blogData = {
                 title: values.title,
                 content,
+                status: values.status,
                 thumbnail: values.thumbnail ? values.thumbnail[0].originFileObj : null,
-                status: 'DRAFT',
                 categoryId: values.categoryId,
                 tourId: values.tourId,
             };
-            await BlogServices.createBlog(blogData);
 
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            message.success(isEditing ? 'Bài viết đã được cập nhật!' : 'Bài viết đã được tạo thành công!');
+            if (isEditing) {
+                await BlogServices.updateBlog(blog.id, blogData);
+                message.success('Bài viết đã được cập nhật!');
+            } else {
+                blogData.status = 'DRAFT';
+                await BlogServices.createBlog(blogData);
+                message.success('Bài viết đã được tạo thành công!');
+            }
+
+            // Clear localStorage after successful save
+            localStorage.removeItem('blogContent');
+            localStorage.removeItem('lastSaved');
+            setLastSaved(null);
+
             if (onBack) {
                 onBack();
             }
@@ -189,7 +198,6 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
         }
     };
 
-    // Manual save function
     const saveContentToLocalStorage = () => {
         try {
             setLoading(true);
@@ -206,7 +214,6 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
         }
     };
 
-    // Restore draft from localStorage
     const restoreDraft = () => {
         try {
             const savedContent = localStorage.getItem('blogContent');
@@ -229,7 +236,6 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
         }
     };
 
-    // Quill modules and formats (simplified for testing)
     const modules = {
         toolbar: {
             container: [
@@ -254,16 +260,30 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
         imageSize: true,
         imageAlign: true,
     };
+
     const formats = [
-        'header', 'font',
-        'bold', 'italic', 'underline', 'strike',
-        'color', 'background',
+        'header',
+        'font',
+        'bold',
+        'italic',
+        'underline',
+        'strike',
+        'color',
+        'background',
         'script',
-        'list', 'bullet', 'indent',
-        'link', 'image', 'video',
-        'align', 'image-size', 'image-align',
-        'blockquote', 'code-block',
+        'list',
+        'bullet',
+        'indent',
+        'link',
+        'image',
+        'video',
+        'align',
+        'image-size',
+        'image-align',
+        'blockquote',
+        'code-block',
     ];
+
     return (
         <div className="p-6 container mx-auto justify-center items-center">
             <div className="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg shadow-sm">
@@ -320,16 +340,6 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                                 placeholder="Nhập tiêu đề (VD: Những địa điểm cực kỳ bạn nên đi 1 lần ở Nhật Bản)"
                             />
                         </Form.Item>
-                        {/*<Form.Item*/}
-                        {/*    name="author"*/}
-                        {/*    label={<Text strong>Tác giả</Text>}*/}
-                        {/*    rules={[{ required: true, message: 'Hãy nhập tên tác giả!' }]}*/}
-                        {/*>*/}
-                        {/*    <input*/}
-                        {/*        className="border rounded p-3 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"*/}
-                        {/*        placeholder="Nhập tên tác giả, nguồn"*/}
-                        {/*    />*/}
-                        {/*</Form.Item>*/}
                         <Form.Item
                             name="categoryId"
                             label={<Text strong>Danh mục</Text>}
@@ -338,7 +348,7 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                             <Select
                                 placeholder="Chọn danh mục"
                                 className="w-full"
-                                options={categories.map(category => ({
+                                options={categories.map((category) => ({
                                     value: category.id,
                                     label: category.name,
                                 }))}
@@ -354,36 +364,78 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                                 placeholder="Chọn tour liên quan"
                                 className="w-full"
                                 filterOption={(input, option) =>
-                                    option.label.toLowerCase().includes(input.toLowerCase())}
+                                    option.label.toLowerCase().includes(input.toLowerCase())
+                                }
                                 showSearch
                                 optionFilterProp={'label'}
                                 allowClear
-                                options={tours.map(tour => ({
+                                options={tours.map((tour) => ({
                                     value: tour.id,
                                     label: tour.title,
                                 }))}
                             />
                         </Form.Item>
                         <Form.Item
+                            name="status"
+                            label={<Text strong>Trạng thái</Text>}
+                            className="md:col-span-2"
+                        >
+                            <Space>
+                                <Text>Trạng thái bài viết</Text>
+                                <Switch
+                                    checkedChildren={<EyeOutlined />}
+                                    unCheckedChildren={<EyeInvisibleOutlined />}
+                                    defaultValue={form.getFieldValue('status') === 'PUBLISHED'}
+                                    onChange={(checked) => {
+                                        form.setFieldsValue({ status: checked ? 'PUBLISHED' : 'DRAFT' });
+                                    }}
+                                />
+                                <Text type="secondary">
+                                    {form.getFieldValue('status') === 'PUBLISHED'
+                                        ? 'Bài viết sẽ được công khai cho tất cả mọi người.'
+                                        : 'Bài viết sẽ chỉ được hiển thị cho bạn.'}
+                                </Text>
+                            </Space>
+                        </Form.Item>
+                        <Form.Item
                             name="thumbnail"
                             label={<Text strong>Ảnh đại diện (thumbnail)</Text>}
                             valuePropName="fileList"
-                            getValueFromEvent={e => (Array.isArray(e) ? e : e && e.fileList)}
+                            getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
                             className="md:col-span-2"
                         >
                             <Upload
-                                listType="picture"
+                                name="thumbnail"
+                                listType="picture-card"
+                                className="w-full"
+                                maxCount={1}
                                 beforeUpload={beforeUpload}
                                 onChange={handleThumbnailChange}
-                                maxCount={1}
                                 accept="image/*"
-                                showUploadList={{ showRemoveIcon: true }}
                             >
-                                <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+                                {thumbnail ? (
+                                    <img
+                                        src={config.imageConfig.getImage(thumbnail)}
+                                        alt="thumbnail"
+                                        className="w-full h-full object-cover rounded-lg"
+                                    />
+                                ) : (
+                                    <div>
+                                        <UploadOutlined />
+                                        <div style={{ marginTop: 8 }}>Tải lên</div>
+                                    </div>
+                                )}
                             </Upload>
+                            {blog?.thumbnail && (
+                                <Image
+                                    src={config.imageConfig.getImage(blog.thumbnail)}
+                                    alt="thumbnail"
+                                    className="w-full h-full object-cover rounded-lg mt-2"
+                                    style={{ maxHeight: '200px' }}
+                                />
+                            )}
                         </Form.Item>
                     </div>
-
 
                     <Form.Item
                         name="content"
@@ -422,7 +474,7 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                             icon={<SendOutlined />}
                             loading={submitting}
                         >
-                            Đăng bài
+                            {isEditing ? 'Cập nhật' : 'Đăng bài'}
                         </Button>
                     </div>
                 </Form>

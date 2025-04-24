@@ -20,15 +20,21 @@ const webConfig = {
         return new Intl.DateTimeFormat('vi-VN').format(date);
     },
     convertLocalDateTime: (date) => {
-        return new Intl.DateTimeFormat('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-        }).format(new Date(date));
+        if (!date || typeof date !== 'string') return 'N/A';
+        try {
+            const parsedDate = new Date(date);
+            if (isNaN(parsedDate.getTime())) return 'N/A';
+            return new Intl.DateTimeFormat('vi-VN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            }).format(parsedDate); // Bỏ giờ, phút, giây
+        } catch (error) {
+            console.error('Error converting date:', error);
+            return 'N/A';
+        }
     },
-    convertNormalDate: (date) => {
-        return new Intl.DateTimeFormat('vi-VN').format(new Date(date));
-    },
+
 
     convertDateNoTime: (date) => {
         return new Intl.DateTimeFormat('vi-VN', {

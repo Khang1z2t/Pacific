@@ -5,6 +5,7 @@ import { Divider, Pagination, Spin, Input, Button, Tag, Empty, notification } fr
 import { SearchOutlined, MailOutlined, ArrowRightOutlined, FireOutlined } from '@ant-design/icons';
 import { FaFacebook, FaTwitter, FaInstagram, FaYoutube, FaEye } from 'react-icons/fa';
 import BlogServices from '~/services/BlogServices';
+import config from '~/config';
 
 export const News = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +49,8 @@ export const News = () => {
                 BlogServices.getAllBlogs({ category: selectedCategory }),
                 BlogServices.getBlogCategories(),
             ]);
-            setBlogs(blogsResponse.data);
+            const published = blogsResponse.data.filter((blog) => blog.status === 'PUBLISHED');
+            setBlogs(published);
             setCategories(categoriesResponse.data);
         } catch (error) {
             console.error('Failed to fetch data:', error);
@@ -74,7 +76,7 @@ export const News = () => {
         }
         setIsSearching(true);
         const results = blogs.filter((blog) => {
-            const createdAt = new Date(blog.createdAt).toLocaleDateString('vi-VN');
+            const createdAt = config.webConfig.convertDateNoTime(blog.createdAt);
             return (
                 blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (blog.metaDescription && blog.metaDescription.toLowerCase().includes(searchTerm.toLowerCase())) ||
