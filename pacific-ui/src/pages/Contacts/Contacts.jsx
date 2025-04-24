@@ -149,7 +149,11 @@ const Contacts = () => {
                         </div>
                     </div>
                     <div className="bg-white p-8 shadow-xl rounded-lg">
-                        <div id="map" className="h-64 bg-gray-300 rounded-lg"></div>
+                        <img
+                            src="/img/Blog/du-lich.jpg"
+                            alt="Static Map"
+                            className="w-full h-full object-cover rounded-lg"
+                        />
                     </div>
                 </div>
             </section>
