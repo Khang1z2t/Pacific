@@ -1,8 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import TravelSection from './components/TravelSection';
 import { useTranslation } from 'react-i18next';
 
-const locations = [
+export const MienNam = () => {
+    const { t } = useTranslation();
+    const [viewCount, setViewCount] = useState(0);
+    const blogId = 'mien-nam';
+
+    useEffect(() => {
+        document.title = 'Địa Điểm Du Lịch Miền Bắc - Blog';
+
+        // Tăng lượt xem tạm bằng localStorage
+        const key = `blog-views-${blogId}`;
+        let count = parseInt(localStorage.getItem(key)) || 0;
+        count += 1;
+        localStorage.setItem(key, count);
+        setViewCount(count);
+    }, []);
+
+    const locations = [
     {
         title: t("blog.nam1"),
         images: [
@@ -34,12 +50,6 @@ const locations = [
     }
 ];
 
-export const MienNam = () => {
-    const { t } = useTranslation();
-    useEffect(() => {
-        document.title = 'Địa Điểm Du Lịch Miền Nam - Blog';
-    }, []);
-
     return (
         <div>
             {/* Banner */}
@@ -62,6 +72,8 @@ export const MienNam = () => {
         <TravelSection
             title= {t("blog.nam12")}
             subtitle= {t("blog.nam13")}
+            viewCount={viewCount}
+            date="24-04-2025"
             locations={locations}
         />
         </div>
