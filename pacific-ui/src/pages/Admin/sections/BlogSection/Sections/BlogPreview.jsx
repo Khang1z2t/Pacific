@@ -144,14 +144,6 @@ export const BlogPreview = ({ content, form, thumbnail }) => {
                             <Title level={2} className="mb-2 text-gray-900">
                                 {previewContent.title}
                             </Title>
-                            <img
-                                src={config.imageConfig.getImage(thumbnail) || 'https://via.placeholder.com/800x400'}
-                                alt="Thumbnail"
-                                className="w-full h-auto mb-4 rounded-lg shadow-md"
-                            />
-                            {/*<Paragraph italic className="text-gray-600 mb-6">*/}
-                            {/*    Tác giả: {previewContent?.user.username}*/}
-                            {/*</Paragraph>*/}
                             <div
                                 className="prose prose-lg max-w-none mt-4"
                                 dangerouslySetInnerHTML={{ __html: processImageURLs(previewContent.html) }}
