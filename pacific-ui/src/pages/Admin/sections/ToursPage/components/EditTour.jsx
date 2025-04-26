@@ -23,11 +23,11 @@ export const EditTour = ({ editModalVisible, setEditModalVisible, category, dest
                 status: tourData.status,
                 active: tourData.active,
                 categoryId: tourData.categoryId,
-                destinationId: tourData.destinationId,
+                destinationId: tourData.destination?.id,
             });
 
             // Cập nhật selectedDestination
-            const initialDestination = destination.find((dest) => dest.id === tourData.destinationId);
+            const initialDestination = destination.find((dest) => dest.id === tourData.destination?.id);
             setSelectedDestination(initialDestination || null);
 
             // Cập nhật thumbnail

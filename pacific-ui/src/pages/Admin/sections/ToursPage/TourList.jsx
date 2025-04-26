@@ -178,11 +178,11 @@ const TourList = () => {
         },
         {
             title: 'Điểm đến',
-            dataIndex: 'destinationId',
-            key: 'destinationId',
-            render: (destinationId) => (
+            dataIndex: 'destination',
+            key: 'destination',
+            render: (destination) => (
                 <Text className="font-semibold">
-                    {destination.find((item) => item.id === destinationId)?.name || destinationId}
+                    {destination?.name}
                 </Text>
             ),
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -206,7 +206,7 @@ const TourList = () => {
                 </div>
             ),
             filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-            onFilter: (value, record) => destination.find((item) => item.id === record.destinationId)?.name.toLowerCase().includes(value.toLowerCase()),
+            onFilter: (value, record) => record.destination?.name?.toLowerCase().includes(value.toLowerCase()),
         },
         {
             title: 'Trạng thái',
@@ -446,14 +446,15 @@ const TourList = () => {
                             <div>
                                 <h2 className="text-xl font-semibold">{tourDetail.title}</h2>
                                 <h3 className="text-md text-gray-500 line-clamp-3">{tourDetail.description}</h3>
-                                <Rate defaultValue={tourDetail.ratingAvg} disabled />
+                                <Rate value={tourDetail.ratingAvg} disabled />
                             </div>
                             <Divider />
                             <h3 className="text-lg font-semibold">Thông tin cơ bản</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="gap-2 mb-4 items-center">
                                     <p><span
-                                        className="font-semibold">Điểm đến:</span> {destination.find((item) => item.id === tourDetail.destinationId)?.name || tourDetail.destinationId}
+                                        className="font-semibold">Điểm đến:</span> {' '}
+                                        {tourDetail.destination?.country} - {tourDetail.destination?.city} - {tourDetail.destination?.name}
                                     </p>
                                     <p><span
                                         className="font-semibold">Thời gian:</span> {tourDetail.duration} ngày {tourDetail.duration - 1} đêm
