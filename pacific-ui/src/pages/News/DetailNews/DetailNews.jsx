@@ -41,8 +41,9 @@ export const DetailNews = () => {
                 BlogServices.getBySlug(slug),
                 BlogServices.getAllBlogs(),
             ]);
+            const published = blogsRes.data.filter((item) => item.status === 'PUBLISHED');
             setBlog(blogRes.data);
-            setBlogs(blogsRes.data);
+            setBlogs(published);
         } catch (error) {
             console.error('Error fetching blog data:', error);
             message.error('Không thể tải bài viết.');

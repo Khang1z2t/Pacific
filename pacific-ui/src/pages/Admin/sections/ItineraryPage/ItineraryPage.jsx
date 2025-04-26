@@ -8,38 +8,6 @@ import 'react-quill/dist/quill.snow.css';
 import { RefreshCwIcon } from 'lucide-react'; // Nhập CSS cho giao diện
 import config from '~/config';
 
-
-
-// const processImageURLs = (htmlString) => {
-//     // Hàm để lấy URL thực tế từ ID ảnh
-//     const getImageURL = (imageId) => {
-//         // Ví dụ: Google Drive URL
-//         // return `https://drive.google.com/uc?export=view&id=${imageId}`;
-//         // Hoặc sử dụng hàm từ config nếu có, ví dụ:
-//         return config.imageConfig.getImage(imageId);
-//     };
-//
-//     // Tạo một DOMParser để phân tích HTML
-//     const parser = new DOMParser();
-//     const doc = parser.parseFromString(htmlString, 'text/html');
-//
-//     // Tìm tất cả thẻ <img>
-//     const images = doc.querySelectorAll('img');
-//     images.forEach((img) => {
-//         const src = img.getAttribute('src');
-//         // Kiểm tra nếu src chứa biểu thức config.imageConfig.getImage
-//         const regex = /config\.imageConfig\.getImage\(['"]?([^'"]+)['"]?\)/;
-//         const match = src.match(regex);
-//         if (match && match[1]) {
-//             const imageId = match[1]; // Lấy ID ảnh
-//             img.setAttribute('src', getImageURL(imageId)); // Thay bằng URL thực tế
-//         }
-//     });
-//
-//     // Chuyển lại thành chuỗi HTML
-//     return doc.body.innerHTML;
-// };
-
 const { TabPane } = Tabs;
 
 export const ItineraryPage = () => {
@@ -285,10 +253,10 @@ export const ItineraryPage = () => {
                                             rules={[{ required: true, message: 'Vui lòng nhập ghi chú' }]}
                                         >
                                             <ReactQuill
+                                                className={"overflow-y-scroll overflow-hidden max-h-[200px]"}
                                                 theme="snow"
                                                 modules={quillModules}
                                                 formats={quillFormats}
-                                                style={{ height: '200px', marginBottom: '40px' }}
                                             />
                                         </Form.Item>
                                     </TabPane>
@@ -327,10 +295,10 @@ export const ItineraryPage = () => {
                         rules={[{ required: true, message: 'Vui lòng nhập ghi chú' }]}
                     >
                         <ReactQuill
+                            className={"overflow-y-scroll overflow-hidden max-h-[200px]"}
                             theme="snow"
                             modules={quillModules}
                             formats={quillFormats}
-                            style={{ height: '200px', marginBottom: '40px' }}
                         />
                     </Form.Item>
                     <Form.Item>

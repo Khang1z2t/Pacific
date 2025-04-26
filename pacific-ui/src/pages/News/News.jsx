@@ -6,6 +6,8 @@ import { SearchOutlined, MailOutlined, ArrowRightOutlined, FireOutlined } from '
 import { FaFacebook, FaTwitter, FaInstagram, FaYoutube, FaEye } from 'react-icons/fa';
 import BlogServices from '~/services/BlogServices';
 import config from '~/config';
+import { TopNews } from '~/pages/News/components/TopNews';
+import { TopNewsSection } from '~/pages/News/components/TopNewsSection';
 
 export const News = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +18,7 @@ export const News = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [email, setEmail] = useState('');
+    const [sortType, setSortType] = useState('newest'); // 'newest' or 'popular'
     const [selectedCategory, setSelectedCategory] = useState(null);
     const ITEMS_PER_PAGE = 6;
 
@@ -111,25 +114,35 @@ export const News = () => {
 
     // Filter blogs
     const getCurrentItems = useCallback(() => {
+        const sortBlogs = (arr) => {
+            if (sortType === 'popular') {
+                return [...arr].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+            }
+            // Default: newest
+            return [...arr].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        };
+
         if (isSearching) {
+            const sorted = sortBlogs(searchResults);
             const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
             const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-            return searchResults.slice(indexOfFirstItem, indexOfLastItem);
+            return sorted.slice(indexOfFirstItem, indexOfLastItem);
         }
 
         const filteredBlogs = selectedCategory
             ? blogs.filter((blog) => blog.category?.name === selectedCategory)
             : blogs;
 
+        const sorted = sortBlogs(filteredBlogs);
         const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
         const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-        return filteredBlogs.slice(indexOfFirstItem, indexOfLastItem);
-    }, [isSearching, searchResults, blogs, currentPage, selectedCategory]);
+        return sorted.slice(indexOfFirstItem, indexOfLastItem);
+    }, [isSearching, searchResults, blogs, currentPage, selectedCategory, sortType]);
 
     // Get top news
     const getTopNews = useCallback(() => {
         return blogs
-            .filter((blog) => blog.viewCount > 1000)
+            .filter((blog) => blog.viewCount >= 50 || blog.likeCount >= 50)
             .slice(0, 4);
     }, [blogs]);
 
@@ -266,43 +279,7 @@ export const News = () => {
             {/* Top News Section */}
             {!isSearching && (
                 <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="mb-4"
-                    >
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <FireOutlined className="text-red-500 text-lg mr-2" />
-                                <h2 className="text-xl font-semibold text-gray-800">Tin nổi bật</h2>
-                            </div>
-                            <Button type="link" className="text-orange-600 hover:text-orange-800">
-                                Xem tất cả <ArrowRightOutlined />
-                            </Button>
-                        </div>
-                        <Divider className="my-3 border-orange-200" />
-                    </motion.div>
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                    >
-                        {loading ? (
-                            <div className="col-span-2 flex justify-center items-center py-8">
-                                <Spin size="large" tip="Đang tải..." />
-                            </div>
-                        ) : getTopNews().length === 0 ? (
-                            <Empty description="Chưa có tin nổi bật" className="col-span-2 py-8" />
-                        ) : (
-                            getTopNews().map((article) => (
-                                <motion.div key={article.id} variants={itemVariants}>
-                                    <NewsCard blog={article} />
-                                </motion.div>
-                            ))
-                        )}
-                    </motion.div>
+                    <TopNewsSection blogs={blogs} loading={loading} isSearching={isSearching} />
                 </section>
             )}
 
@@ -369,8 +346,22 @@ export const News = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                             <span className="text-xs text-gray-500">Sắp xếp:</span>
-                            <Button size="small" type="default" className="rounded-full">Mới nhất</Button>
-                            <Button size="small" type="text" className="rounded-full">Phổ biến</Button>
+                            <Button
+                                size="small"
+                                type={sortType === 'newest' ? 'primary' : 'default'}
+                                className="rounded-full"
+                                onClick={() => setSortType('newest')}
+                            >
+                                Mới nhất
+                            </Button>
+                            <Button
+                                size="small"
+                                type={sortType === 'popular' ? 'primary' : 'default'}
+                                className="rounded-full"
+                                onClick={() => setSortType('popular')}
+                            >
+                                Phổ biến
+                            </Button>
                         </div>
                     </motion.div>
                     <Divider className="my-2 border-gray-200" />
@@ -434,35 +425,10 @@ export const News = () => {
                             <Divider className="my-2 border-gray-200" />
                             <div className="space-y-3">
                                 {getTopNews().slice(0, 3).map((article) => (
-                                    <a
+                                    <TopNews
                                         key={article.id}
-                                        href={`/news/${article.slug}`}
-                                        className="flex gap-3 items-start group cursor-pointer"
-                                    >
-                                        <div className="relative w-16 h-16 overflow-hidden rounded-md flex-shrink-0">
-                                            <img
-                                                src={article.featuredImage || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300&q=80'}
-                                                alt={article.title}
-                                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                loading="lazy"
-                                            />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-orange-600 transition-colors duration-200">
-                                                {article.title}
-                                            </h4>
-                                            <div className="flex items-center space-x-2 mt-1">
-                                                <span className="text-xs text-gray-500">
-                                                    {new Date(article.createdAt).toLocaleDateString()}
-                                                </span>
-                                                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                                <span className="text-xs text-gray-500 flex items-center">
-                                                    <FaEye className="mr-1 text-orange-500"
-                                                           size={10} /> {article.viewCount || 0}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </a>
+                                        news={article}
+                                    />
                                 ))}
                             </div>
                         </div>
