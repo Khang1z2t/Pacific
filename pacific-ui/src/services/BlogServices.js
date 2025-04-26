@@ -59,6 +59,10 @@ const BlogServices = {
             console.error('Error updating blog:', error);
             return Promise.reject(error);
         }
+    },
+
+    deleteBlog: async (id) => {
+
     }
 };
 

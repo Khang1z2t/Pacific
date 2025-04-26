@@ -169,6 +169,7 @@ export const BookingInfo1 = ({ data }) => {
         TourService.getTourByTourDetailId(id)
             .then((res) => {
                 setTour(res.data);
+                console.log('TOUR:', res.data);
             })
             .catch((err) => {
                 console.error(err);

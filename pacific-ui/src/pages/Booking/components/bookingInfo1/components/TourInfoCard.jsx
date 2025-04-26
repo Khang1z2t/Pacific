@@ -38,7 +38,7 @@ const TourInfoCard = memo(
                 <div className="mt-3 text-xs sm:text-sm text-gray-700">
                     <p>
                         <strong>Khởi hành:</strong>{' '}
-                        <span className="text-blue-500 font-semibold">{data.destination}</span>
+                        <span className="text-blue-500 font-semibold">{data.destination?.city}</span>
                     </p>
                     <p>
                         <strong>Thời gian:</strong>{' '}
