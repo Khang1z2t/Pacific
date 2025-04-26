@@ -5,7 +5,7 @@ const AdminServices = {
 // ADMIN HOMEPAGE REVENUE
     getBookingRevenue: async (params) => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/revenue', { params });
+            const resp = await AxiosConfig.get(config.api.report + '/revenue', { params });
             return resp.data;
         } catch (error) {
             console.error(error);
@@ -15,7 +15,7 @@ const AdminServices = {
 
     getBookingRevenueMonthByYear: async (params) => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/revenue/month', { params });
+            const resp = await AxiosConfig.get(config.api.report + '/revenue/month', { params });
             return resp.data;
         } catch (err) {
             console.error(err);
@@ -25,7 +25,7 @@ const AdminServices = {
 
     getBookingRevenuesByYear: async (params) => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/revenue/year', { params });
+            const resp = await AxiosConfig.get(config.api.report + '/revenue/year', { params });
             return resp.data;
         } catch (err) {
             console.error(err);
@@ -55,7 +55,7 @@ const AdminServices = {
 
     getBookingCount: async (params) => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/bookingCount', { params });
+            const resp = await AxiosConfig.get(config.api.report + '/bookingCount', { params });
             return resp.data;
         } catch (error) {
             console.error(error);
@@ -65,7 +65,7 @@ const AdminServices = {
 
     getBookingStatusStats: async () => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/booking-status-stats');
+            const resp = await AxiosConfig.get(config.api.report + '/booking-status-stats');
             return resp.data;
         } catch (error) {
             console.error(error);
@@ -75,7 +75,7 @@ const AdminServices = {
 
     getRevenueStats: async (params) => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/stats', {params});
+            const resp = await AxiosConfig.get(config.api.report + '/stats', {params});
             return resp.data;
         } catch (err) {
             console.error(err);
@@ -85,7 +85,7 @@ const AdminServices = {
 
     getReviewStats: async (params) => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/review-stats', { params });
+            const resp = await AxiosConfig.get(config.api.report + '/review-stats', { params });
             return resp.data;
         } catch (error) {
             console.error(error);
@@ -95,7 +95,7 @@ const AdminServices = {
 
     getDetailReviewStats: async (params) => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/review-detail-stats', { params });
+            const resp = await AxiosConfig.get(config.api.report + '/review-detail-stats', { params });
             return resp.data;
         } catch (error) {
             console.error(error);
@@ -105,7 +105,7 @@ const AdminServices = {
 
     getTopBookedTours: async (params) => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/top-booked', { params });
+            const resp = await AxiosConfig.get(config.api.report + '/top-booked', { params });
             return resp.data;
         } catch (error) {
             console.error(error);
@@ -115,13 +115,33 @@ const AdminServices = {
 
     getBookingYearlyStats: async () => {
         try {
-            const resp = await AxiosConfig.get(config.api.bookingRevenue + '/revenue-booking/yearly');
+            const resp = await AxiosConfig.get(config.api.report + '/revenue-booking/yearly');
             return resp.data;
         } catch (error) {
             console.error(error);
             return Promise.reject(error);
         }
-    }
+    },
+
+
+//     EXPORT
+    getExport: async (params, onProgress) => {
+        try {
+            const resp = await AxiosConfig.get(config.api.report + '/export-excel', {
+                params, // Đảm bảo params được gửi đúng
+                responseType: 'blob',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                },
+                onDownloadProgress: onProgress, // Truyền callback để cập nhật tiến trình
+            });
+            return resp; // Trả về toàn bộ response (bao gồm data và headers)
+        } catch (err) {
+            console.error('Lỗi khi gọi API export:', err);
+            return Promise.reject(err);
+        }
+    },
 };
 
 export default AdminServices;

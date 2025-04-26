@@ -4,11 +4,11 @@ import {
     Badge,
     Breadcrumb,
     Button,
-    ConfigProvider,
+    ConfigProvider, DatePicker,
     Layout,
     message,
     Modal, notification,
-    Select,
+    Select, Space,
     Switch,
     theme,
     Tooltip,
@@ -40,6 +40,8 @@ import { ItineraryPage } from '~/pages/Admin/sections/ItineraryPage/ItineraryPag
 import { WalletPage } from '~/pages/Admin/sections/WalletPage/WalletPage';
 import WalletServices from '~/services/WalletServices';
 import { BlogSection } from '~/pages/Admin/sections/BlogSection/BlogSection';
+import dayjs from 'dayjs';
+import AdminServices from '~/services/AdminServices';
 
 const { Content } = Layout;
 
@@ -52,6 +54,10 @@ const AdminHome = () => {
     const [buttonState, setButtonState] = useState('idle'); // idle, loading, success
     const [exportModalVisible, setExportModalVisible] = useState(false);
     const [prevPendingRequests, setPrevPendingRequests] = useState(0);
+    const [exportType, setExportType] = useState('booking'); // Giá trị mặc định
+    const [startDate, setStartDate] = useState(dayjs().subtract(1, 'year')); // Mặc định: 1 năm trước
+    const [endDate, setEndDate] = useState(dayjs()); // Mặc định: Hôm nay
+    const [progress, setProgress] = useState(0); // State để theo dõi tiến trình tải
 
     const fetchPendingRequests = async () => {
         try {
@@ -93,17 +99,71 @@ const AdminHome = () => {
     };
 
     // hàm xuất báo cáo
-    const handleExportClick = () => {
+    const handleExportClick = async () => {
+        if (startDate && endDate && dayjs(endDate).isBefore(dayjs(startDate))) {
+            message.error('Ngày kết thúc phải sau ngày bắt đầu.');
+            return;
+        }
+
         setButtonState('loading');
-        // Simulate export process
-        setTimeout(() => {
+        setProgress(0); // Reset tiến trình
+        try {
+            const params = {
+                exportType,
+                limit: 99,
+                startDate: startDate ? dayjs(startDate).format('YYYY-MM-DD') : undefined,
+                endDate: endDate ? dayjs(endDate).format('YYYY-MM-DD') : undefined,
+            };
+
+            // Gọi API với callback tiến trình
+            const response = await AdminServices.getExport(params, (progressEvent) => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setProgress(percentCompleted);
+            });
+
+            // Lấy tên file từ header Content-Disposition
+            const contentDisposition = response.headers['content-disposition'];
+            let fileName = `${exportType}_report.xlsx`;
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (fileNameMatch && fileNameMatch[1]) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+
+            // Tạo Blob và kích hoạt tải file
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
             setButtonState('success');
             message.success('Xuất báo cáo thành công!', 1);
             setTimeout(() => {
                 setButtonState('idle');
                 setExportModalVisible(false);
-            }, 1000); // Show success for 1 second
-        }, 3000); // Simulate 3 seconds of loading
+                setProgress(0); // Reset tiến trình sau khi hoàn tất
+            }, 1000);
+        } catch (error) {
+            console.error('Lỗi khi xuất báo cáo:', error);
+            setButtonState('idle');
+            setProgress(0);
+            if (error.response) {
+                if (error.response.status === 400) {
+                    const errorMessage = await error.response.data.text();
+                    message.error(errorMessage || 'Loại xuất không được hỗ trợ hoặc dữ liệu không hợp lệ.');
+                } else {
+                    message.error('Xuất báo cáo thất bại. Vui lòng thử lại.');
+                }
+            } else {
+                message.error('Không thể kết nối đến server. Vui lòng thử lại.');
+            }
+        }
     };
 
     const menuItems = [
@@ -287,6 +347,22 @@ const AdminHome = () => {
                             <h3 className={`text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-black'}`}>
                                 Xuất báo cáo
                             </h3>
+                            <Space>
+                                <DatePicker
+                                    className="w-full mt-2"
+                                    placeholder="Chọn ngày bắt đầu"
+                                    onChange={(date) => setStartDate(date)}
+                                    format="YYYY-MM-DD"
+                                    style={{ width: '100%' }}
+                                />
+                                <DatePicker
+                                    className="w-full mt-2"
+                                    placeholder="Chọn ngày kết thúc"
+                                    onChange={(date) => setEndDate(date)}
+                                    format="YYYY-MM-DD"
+                                    style={{ width: '100%' }}
+                                />
+                            </Space>
                             <div className={'mt-4'}>
                                 <p className={`text-sm ${isDarkTheme ? 'text-gray-300' : 'text-gray-700'}`}>
                                     Chọn loại báo cáo muốn xuất:
@@ -294,12 +370,14 @@ const AdminHome = () => {
                                 {/*Giá trị xuất báo cáo ở BE (switch - case )*/}
                                 <Select
                                     className="w-full mt-2"
-                                    defaultValue="booking"
+                                    value={exportType}
+                                    onChange={(value) => setExportType(value)}
                                     options={[
                                         { value: 'booking', label: 'Booking' },
                                         { value: 'tour', label: 'Tour' },
                                         { value: 'user', label: 'User' },
-                                    ]} />
+                                    ]}
+                                />
                             </div>
                             <div className="flex justify-end mt-4">
                                 <Button

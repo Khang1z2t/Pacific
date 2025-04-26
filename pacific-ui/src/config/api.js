@@ -6,7 +6,7 @@ const api = {
     user: '/api/users',
     tourDetail: '/api/tour-details',
     category: '/api/categories',
-    bookingRevenue: '/api/report',
+    report: '/api/report',
     guide: '/api/guide',
     destinations: '/api/destinations',
     hotel: '/api/hotels',
