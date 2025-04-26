@@ -14,7 +14,14 @@ import {
     Tooltip,
     Typography,
 } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+    DeleteOutlined,
+    EditOutlined,
+    EyeInvisibleOutlined,
+    EyeOutlined,
+    PlusOutlined,
+    SearchOutlined,
+} from '@ant-design/icons';
 import TourServices from '~/services/TourServices';
 import config from '~/config';
 import { AddTour } from '~/pages/Admin/sections/ToursPage/components/AddTour';
@@ -45,6 +52,7 @@ const TourList = () => {
     const [destination, setDestination] = useState([]);
     const [selectedTour, setSelectedTour] = useState(null);
     const [hotels, setHotels] = useState([]);
+    const [hidden, setHidden] = useState(true);
     const [transports, setTransports] = useState([]);
     const [guides, setGuides] = useState([]);
 
@@ -62,14 +70,7 @@ const TourList = () => {
                 GuideServices.getAllGuides(),
                 CategoryServices.getCategories(),
                 DestinationServices.getAll(),
-                TourServices.getAllTour({
-                    title: null,
-                    minPrice: null,
-                    maxPrice: null,
-                    categoryId: null,
-                    startDate: null,
-                    endDate: null,
-                }),
+                TourServices.getAllTour({}),
             ]);
             setHotels(hotelRes.data || []);
             setTransports(transportRes || []);
@@ -341,12 +342,23 @@ const TourList = () => {
             key: 'startDate',
             render: (e) => `${config.webConfig.convertDate(e?.startDate)}`,
         },
-        { title: 'Số lượng tour', dataIndex: 'quantity', key: 'quantity' },
+        { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity' },
         {
             title: 'Trạng thái',
-            dataIndex: 'active',
-            key: 'active',
-            render: (status) => <Switch checked={status} disabled />,
+            dataIndex: 'status',
+            key: 'status',
+            render: (status) => (
+                <Text
+                    className={`text-${status === 'OPEN' || status === 'IN_PROGRESS' ? 'green' : 'red'}-500 bg-orange-100 p-1 rounded-lg border border-orange-200 font-semibold`}>
+                    {status === 'OPEN'
+                        ? 'Đang mở'
+                        : status === 'IN_PROGRESS'
+                            ? 'Đang xử lý'
+                            : status === 'CLOSED'
+                                ? 'Đã đóng'
+                                : 'Đã hủy'}
+                </Text>
+            ),
         },
         {
             title: 'Thao tác',
@@ -394,24 +406,50 @@ const TourList = () => {
                     >
                         Làm mới
                     </Button>
+                    <Tooltip title={hidden ? 'Ẩn thông báo' : 'Hiện thông báo'}>
+                        <Button
+                            type="default"
+                            icon={hidden ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                            onClick={() => setHidden(!hidden)}
+                        />
+                    </Tooltip>
                 </Space>
-                <Card
-                    className="bg-indigo-50 border border-blue-700 shadow-md w-full md:w-1/2 rounded-lg p-1"
-                    bodyStyle={{ padding: '16px' }}
-                >
-                    <Text strong className="text-red-500 text-lg">
-                        Lưu ý:
-                    </Text>
-                    <Text className="text-gray-800 leading-relaxed">
-                        {' '}"Trạng thái" là <Text strong>DRAFT</Text> là tour đã hết, <Text strong>PUBLISHED</Text> là
-                        tour
-                        đang được bán.
-                        Khi tour có Tour chi tiết đầy đủ thì trạng thái tour sẽ chuyển sang <Text
-                        strong>PUBLISHED</Text>.
-                        <br />
-                        "Ẩn/Hiện" là trạng thái tour đang được sử dụng hay không.
-                    </Text>
-                </Card>
+                {hidden && (
+                    <div className={'flex flex-wrap gap-2 w-full items-center'}>
+                        <Card
+                            className="bg-indigo-50 border border-blue-700 shadow-md w-full md:w-1/2 rounded-lg p-1"
+                            bodyStyle={{ padding: '16px' }}
+                        >
+                            <Text strong className="text-red-500 text-lg">
+                                Lưu ý:
+                            </Text>
+                            <Text className="text-gray-800 leading-relaxed">
+                                {' '}"Trạng thái" là <Text strong>DRAFT</Text> là tour đã hết, <Text
+                                strong>PUBLISHED</Text> là
+                                tour
+                                đang được bán.
+                                Khi tour có Tour chi tiết đầy đủ thì trạng thái tour sẽ chuyển sang <Text
+                                strong>PUBLISHED</Text>.
+                                <br />
+                                "Ẩn/Hiện" là trạng thái tour đang được sử dụng hay không.
+                            </Text>
+                        </Card>
+                        <Card
+                            className="bg-indigo-50 border border-blue-700 shadow-md w-full md:w-1/2 rounded-lg p-1"
+                            bodyStyle={{ padding: '16px' }}
+                        >
+                            <Text strong className="text-red-500 text-lg">
+                                Lưu ý:
+                            </Text>
+                            <Text className="text-gray-800 leading-relaxed">
+                                {' '}Tour có thể có nhiều tour chi tiết, mỗi tour chi tiết sẽ có giá khác nhau.
+                                <br />
+                                Và <strong>DRAFT</strong> hay <strong>PUBLISHED</strong> sẽ được tự động set dựa vào
+                                trạng thái tour chi tiết.
+                            </Text>
+                        </Card>
+                    </div>
+                )}
             </div>
             <Table
                 columns={columns}

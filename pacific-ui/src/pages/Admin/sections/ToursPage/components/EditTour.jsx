@@ -20,8 +20,6 @@ export const EditTour = ({ editModalVisible, setEditModalVisible, category, dest
                 title: tourData.title,
                 description: tourData.description,
                 duration: tourData.duration,
-                status: tourData.status,
-                active: tourData.active,
                 categoryId: tourData.categoryId,
                 destinationId: tourData.destination?.id,
             });
@@ -95,8 +93,6 @@ export const EditTour = ({ editModalVisible, setEditModalVisible, category, dest
             formData.append('title', values.title);
             formData.append('description', values.description);
             formData.append('duration', values.duration);
-            formData.append('status', values.status);
-            formData.append('active', values.active);
             formData.append('categoryId', values.categoryId);
             formData.append('destinationId', values.destinationId);
 
@@ -172,15 +168,6 @@ export const EditTour = ({ editModalVisible, setEditModalVisible, category, dest
             <Form
                 form={form}
                 layout="vertical"
-                initialValues={{
-                    title: '',
-                    description: '',
-                    duration: 1,
-                    status: 'PUBLISHED',
-                    active: true,
-                    categoryId: '',
-                    destinationId: '',
-                }}
             >
                 <Tabs>
                     <Tabs.TabPane tab="Thông tin tour" key="1">
@@ -217,35 +204,6 @@ export const EditTour = ({ editModalVisible, setEditModalVisible, category, dest
                                         className="rounded-md"
                                     />
                                 </Form.Item>
-                            </div>
-
-                            {/* Nhóm trạng thái */}
-                            <div className="bg-white p-4 rounded-lg shadow-sm">
-                                <h3 className="text-lg font-semibold text-gray-700 mb-4">Trạng thái</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Form.Item
-                                        name="status"
-                                        label={<span className="font-medium text-gray-700">Trạng thái bán</span>}
-                                        rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
-                                    >
-                                        <Select
-                                            placeholder="Chọn trạng thái"
-                                            className="rounded-md"
-                                            options={[
-                                                { value: 'PUBLISHED', label: 'Đang bán' },
-                                                { value: 'DRAFT', label: 'Ngừng bán' },
-                                            ]}
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        name="active"
-                                        label={<span className="font-medium text-gray-700">Ẩn/Hiện tour</span>}
-                                        valuePropName="checked"
-                                    >
-                                        <Switch checkedChildren="Hiện" unCheckedChildren="Ẩn" />
-                                    </Form.Item>
-                                </div>
                             </div>
 
                             {/* Nhóm danh mục và điểm đến */}
