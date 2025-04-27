@@ -31,14 +31,7 @@ export const WishListIndex = () => {
     }, [accessToken, wishlistUpdate]);
 
     useEffect(() => {
-        TourServices.getAllTour({
-            title: null,
-            minPrice: null,
-            maxPrice: null,
-            categoryId: null,
-            startDate: null,
-            endDate: null,
-        })
+        TourServices.getAllTour({})
             .then((res) => {
                 setTours(res.data);
                 setLoading(false);

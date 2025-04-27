@@ -3,40 +3,35 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CloseCircleOutlined } from '@ant-design/icons';
 
-export const Aside = ({ query, setQuery, titleType }) => {
+export const Aside = ({ query, setQuery }) => {
     const { t } = useTranslation();
     const ratingAvg = [1, 2, 3, 4, 5];
     const [rate, setRate] = useState(query.rate || null);
     const [searchPrices, setSearchPrices] = useState(query.searchPrices || 'All');
-    const [checkedTour, setCheckedTour] = useState(titleType === t('search.ti4') ? 1 : 2);
     const [maxPrice, setMaxPrice] = useState(query.maxPrice || null);
     const [minPrice, setMinPrice] = useState(query.minPrice || null);
 
     useEffect(() => {
-        setCheckedTour(titleType === t('search.ti4') ? 1 : 2);
         setQuery((prevQuery) => ({
             ...prevQuery,
             rate,
             minPrice,
             maxPrice,
             searchPrices,
-            checkedTour,
         }));
-    }, [titleType, rate, searchPrices, minPrice, maxPrice, checkedTour, setQuery]);
+    }, [rate, searchPrices, minPrice, maxPrice, setQuery]);
 
     const handleClear = () => {
         setRate(null);
         setSearchPrices('All');
         setMinPrice(null);
         setMaxPrice(null);
-        setCheckedTour(titleType === t('search.ti4') ? 1 : 2);
         setQuery((prevQuery) => ({
             ...prevQuery,
             rate: null,
             minPrice: null,
             maxPrice: null,
             searchPrices: 'All',
-            checkedTour: titleType === t('search.ti4') ? 1 : 2,
         }));
     };
 
@@ -93,14 +88,6 @@ export const Aside = ({ query, setQuery, titleType }) => {
                         <Rate value={item} disabled />
                     </Radio>
                 ))}
-            </Radio.Group>
-            <Divider>{t('search.ti10')}</Divider>
-            <Radio.Group
-                value={checkedTour}
-                onChange={(e) => setCheckedTour(e.target.value)}
-            >
-                <Radio value={1}>{t('search.ti11')}</Radio>
-                <Radio value={2}>{t('search.ti12')}</Radio>
             </Radio.Group>
             <Divider />
             <button

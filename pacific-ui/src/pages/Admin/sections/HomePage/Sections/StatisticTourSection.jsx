@@ -19,14 +19,7 @@ export const StatisticTourSection = () => {
         const fetchTours = async () => {
             setIsLoading(true);
             try {
-                const response = await TourServices.getAllTour({
-                    title: null,
-                    minPrice: null,
-                    maxPrice: null,
-                    categoryId: null,
-                    startDate: null,
-                    endDate: null,
-                });
+                const response = await TourServices.getAllTour({});
                 setTours(response.data);
                 const tourOptions = response.data.map((tour) => ({
                     value: tour.id,

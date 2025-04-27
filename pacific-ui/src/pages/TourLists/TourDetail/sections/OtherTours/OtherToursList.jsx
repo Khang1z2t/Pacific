@@ -26,15 +26,7 @@ export const OtherToursList = () => {
     useEffect(() => {
         const fetchTours = async () => {
             try {
-                const params = {
-                    title: null,
-                    minPrice: null,
-                    maxPrice: null,
-                    categoryId: null,
-                    startDate: null,
-                    endDate: null,
-                };
-                const res = await TourServices.getAllTour(params);
+                const res = await TourServices.getAllTour({});
                 const published = res.data.filter((tour) => tour.status === 'PUBLISHED' && tour.id !== id);
                 setTours(published || []);
                 setCurrentPage(1);

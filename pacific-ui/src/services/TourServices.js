@@ -13,6 +13,7 @@ const TourServices = {
 					categoryId: params.categoryId || null,
 					startDate: params.startDate || null,
 					endDate: params.endDate || null,
+					region: params.region || null,
 				},
 				timeout: 60000,
 			});

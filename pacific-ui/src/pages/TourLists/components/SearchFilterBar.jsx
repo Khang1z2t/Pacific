@@ -4,7 +4,7 @@ import { FaBars, FilterOutlined } from 'react-icons/fa';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import CategoryServices from '~/services/CategoryServices';
 
-export const SearchFilterBar = ({ onSearch, query: initialQuery = {}, titleType }) => {
+export const SearchFilterBar = ({ onSearch, query: initialQuery = {} }) => {
     const { RangePicker } = DatePicker;
     const ratingAvg = [1, 2, 3, 4, 5];
 
@@ -20,9 +20,6 @@ export const SearchFilterBar = ({ onSearch, query: initialQuery = {}, titleType 
     const [searchPrices, setSearchPrices] = useState(initialQuery.searchPrices || 'All');
     const [minPrice, setMinPrice] = useState(initialQuery.minPrice || 0);
     const [maxPrice, setMaxPrice] = useState(initialQuery.maxPrice || 0);
-    const [checkedTour, setCheckedTour] = useState(
-        initialQuery.checkedTour || (titleType === 'Domestic' ? 1 : 2),
-    );
 
     // Drawer state
     const [visible, setVisible] = useState(false);
@@ -41,15 +38,9 @@ export const SearchFilterBar = ({ onSearch, query: initialQuery = {}, titleType 
                 setSides(formattedSides);
             })
             .catch((err) => {
-                console.log('Error fetching categories:', err);
                 setSides([{ id: null, title: 'Tất cả vùng/miền' }]);
             });
     }, []);
-
-    // Update checkedTour when titleType changes
-    useEffect(() => {
-        setCheckedTour(titleType === 'Domestic' ? 1 : 2);
-    }, [titleType]);
 
     // Handle search and filter submission
     const handleSearch = () => {
@@ -62,7 +53,6 @@ export const SearchFilterBar = ({ onSearch, query: initialQuery = {}, titleType 
             searchPrices: searchPrices || 'All',
             minPrice: minPrice || null,
             maxPrice: maxPrice || null,
-            checkedTour,
         };
         onSearch(query);
         setVisible(false);
@@ -78,7 +68,6 @@ export const SearchFilterBar = ({ onSearch, query: initialQuery = {}, titleType 
         setSearchPrices('All');
         setMinPrice(0);
         setMaxPrice(0);
-        setCheckedTour(titleType === 'Domestic' ? 1 : 2);
         onSearch({
             title: null,
             categoryId: null,
@@ -88,7 +77,6 @@ export const SearchFilterBar = ({ onSearch, query: initialQuery = {}, titleType 
             searchPrices: 'All',
             minPrice: null,
             maxPrice: null,
-            checkedTour: titleType === 'Domestic' ? 1 : 2,
         });
         message.success('Đã làm mới tìm kiếm');
         setVisible(false);
@@ -142,17 +130,6 @@ export const SearchFilterBar = ({ onSearch, query: initialQuery = {}, titleType 
                     </Radio>
                 ))}
             </Radio.Group>
-
-            <Divider>Loại tour</Divider>
-            <Radio.Group
-                value={checkedTour}
-                onChange={(e) => setCheckedTour(e.target.value)}
-                className="flex flex-col gap-2"
-            >
-                <Radio value={1}>Trong nước</Radio>
-                <Radio value={2}>Ngoài nước</Radio>
-            </Radio.Group>
-
             <Divider />
             <button
                 onClick={handleClear}

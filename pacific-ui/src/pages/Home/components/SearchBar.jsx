@@ -1,4 +1,4 @@
-import { Button, DatePicker, Drawer, Input, InputNumber, message, Select } from 'antd';
+import { Button, DatePicker, Drawer, Input, InputNumber, message, Radio, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ export const SearchBar = ({ onSearch }) => {
     const [endDate, setEndDate] = useState(null);
     const [maxPrice, setMaxPrice] = useState(null);
     const [minPrice, setMinPrice] = useState(null);
+    const [region, setRegion] = useState(null);
 
     const [sides, setSides] = useState([]);
     const { t } = useTranslation();
@@ -31,9 +32,7 @@ export const SearchBar = ({ onSearch }) => {
             ));
         });
     }, [t]);
-    const handleSearch = () => {
-        onSearch({ searchText, searchSides, maxPrice, minPrice, startDate, endDate });
-    };
+
 
     const handleRefresh = () => {
         setSearchText('');
@@ -42,15 +41,22 @@ export const SearchBar = ({ onSearch }) => {
         setEndDate(null);
         setMaxPrice(null);
         setMinPrice(null);
+        setRegion(null);
         setVisible(false);
-        onSearch({ searchText: '', searchSides: null, maxPrice: null, minPrice: null, startDate: null, endDate: null });
+        onSearch({ searchText: '', searchSides: null, maxPrice: null, minPrice: null, startDate: null, endDate: null, region: null });
         message.success('Tìm kiếm đã được làm mới', 1);
     };
+
+    const handleSearch = () => {
+        onSearch({ searchText, searchSides, maxPrice, minPrice, startDate, endDate, region });
+    };
+
     return (
         <>
             <div style={{ backgroundSize: '200% 200%', animation: 'gradient-wave 6s ease infinite' }}
                  className="md:flex lg:flex md:flex-wrap lg:flex-wrap items-center justify-center bg-gradient-to-b from-orange-200 to-orange-700 shadow-md rounded-lg p-4 gap-4 max-w-screen-lg mx-auto hidden">
                 <Input
+                    value={searchText}
                     placeholder={t('searchBar.ti2')}
                     allowClear
                     onChange={(e) => setSearchText(e.target.value)}
@@ -67,6 +73,7 @@ export const SearchBar = ({ onSearch }) => {
                     className="flex-grow min-w-[150px] max-w-[200px] font-bold"
                 />
                 <InputNumber
+                    value={minPrice}
                     allowClear
                     min={0}
                     step={100000}
@@ -78,6 +85,7 @@ export const SearchBar = ({ onSearch }) => {
                     size="large"
                 />
                 <InputNumber
+                    value={maxPrice}
                     min={0}
                     step={100000}
                     allowClear
@@ -103,8 +111,18 @@ export const SearchBar = ({ onSearch }) => {
                     }}
                     className="flex-grow min-w-[200px] max-w-[300px] font-bold"
                 />
+                <Radio.Group
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                    className="flex flex-wrap gap-2 font-bold p-2.5 bg-white rounded-lg shadow-md"
+                >
+                    <Radio value={null} className="text-sm">Tất cả</Radio>
+                    <Radio value={'INSIDE'} className="text-sm">Trong nước</Radio>
+                    <Radio value={'OUTSIDE'} className="text-sm">Ngoài nước</Radio>
+                </Radio.Group>
                 <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'}
                         onClick={handleSearch}>{t('searchBar.ti5')}</button>
+                <button className={'bg-red-300 transition-all hover:bg-red-700 hover:text-white text-red-700 px-6 py-2 rounded-md'} onClick={handleRefresh}>Xóa</button>
             </div>
             <div className="flex items-center mx-auto justify-end md:hidden lg:hidden">
                 <Button
@@ -187,6 +205,17 @@ export const SearchBar = ({ onSearch }) => {
                             }}
                             className="w-full font-bold"
                         />
+                        <div className={"flex gap-2 justify-between items-center w-full"}>
+                            <Radio.Group
+                                value={region}
+                                onChange={(e) => setRegion(e.target.value)}
+                                className="flex flex-col gap-2"
+                            >
+                                <Radio value={null} className="text-sm">Tất cả</Radio>
+                                <Radio value={'INSIDE'} className="text-sm">Trong nước</Radio>
+                                <Radio value={'OUTSIDE'} className="text-sm">Ngoài nước</Radio>
+                            </Radio.Group>
+                        </div>
                         <button className={'bg-orange-500 text-white px-6 py-2 rounded-md'}
                                 onClick={handleSearch}>{t('searchBar.ti5')}</button>
                         <button className={'bg-gray-300 text-gray-700 px-6 py-2 rounded-md'} onClick={handleRefresh}>Xóa

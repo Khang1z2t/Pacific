@@ -48,6 +48,7 @@ export const ComboTour = () => {
         if (query.minPrice) filterSearch.minPrice = query.minPrice;
         if (query.startDate) filterSearch.startDate = query.startDate;
         if (query.endDate) filterSearch.endDate = query.endDate;
+        if (query.region) filterSearch.region = query.region;
 
         setQuery(filterSearch);
         setCurrentPage(1);

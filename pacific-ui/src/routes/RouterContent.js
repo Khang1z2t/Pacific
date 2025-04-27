@@ -31,7 +31,7 @@ export const RouterContent = [
     },
     {
         path: config.routes.tourTrongNuoc,
-        element: <TourLists titleType={"trong nước"}/>,
+        element: <TourLists titleType={"INSIDE"}/>,
     },
     {
         path: config.routes.login,
@@ -51,7 +51,7 @@ export const RouterContent = [
     },
     {
         path: config.routes.tourNgoaiNuoc,
-        element: <TourLists titleType={"ngoài nước"}/>,
+        element: <TourLists titleType={"OUTSIDE"}/>,
     },
     {
         path: config.routes.contacts,

@@ -1,7 +1,7 @@
 import { SearchBar } from '~/pages/TourLists/components/SearchBar';
 import { TourCards } from '~/pages/TourLists/components/TourCards';
 import { useEffect, useMemo, useState } from 'react';
-import { Divider, Pagination, Spin } from 'antd';
+import { Divider, Pagination, Skeleton, Spin } from 'antd';
 import { Aside } from '~/pages/TourLists/components/Aside';
 import TourServices from '~/services/TourServices';
 import { EmptyComponent } from '~/component/ui/EmptyComponent';
@@ -50,6 +50,7 @@ export const TourLists = ({ titleType }) => {
                     endDate: query.endDate || null,
                     minPrice: query.minPrice || null,
                     maxPrice: query.maxPrice || null,
+                    region: titleType,
                 };
 
                 const res = await TourServices.getAllTour(params);
@@ -64,7 +65,7 @@ export const TourLists = ({ titleType }) => {
         };
 
         fetchTours();
-    }, [query]); // Chỉ fetch lại khi query thay đổi
+    }, [query, titleType]); // Chỉ fetch lại khi query thay đổi
 
     // Tính toán danh sách tour đã lọc (trước khi phân trang)
     const allFilteredTours = useMemo(() => {
@@ -73,7 +74,18 @@ export const TourLists = ({ titleType }) => {
         let result = [...tours];
 
         if (query.rate !== null && query.rate !== undefined) {
-            result = result.filter((tour) => tour.ratingAvg >= query.rate);
+            if (query.rate === 5) {
+                // Trường hợp đặc biệt: chỉ lấy các tour có rating chính xác là 5 sao
+                result = result.filter((tour) => tour.ratingAvg === 5);
+            } else {
+                // Lọc các tour có rating từ query.rate trở lên (cho 1-4 sao)
+                result = result.filter((tour) => tour.ratingAvg >= query.rate);
+            }
+        }
+
+        // Sắp xếp theo rating (từ nhỏ đến lớn) nếu có dữ liệu
+        if (result.length > 0 && query.rate !== 5) {
+            result.sort((a, b) => (a.ratingAvg || 0) - (b.ratingAvg || 0));
         }
 
         if (result.length > 0) {
@@ -163,30 +175,32 @@ export const TourLists = ({ titleType }) => {
             </Swiper>
 
             <Divider orientation="center">
-                <p className="text-orange-400 text-xl sm:text-2xl font-bold uppercase">{t('tourList.ti1')}</p>
+                <p className="text-orange-400 text-xl sm:text-2xl font-bold uppercase">Danh sách tour du
+                    lịch {titleType === 'INSIDE' ? 'Trong nước' : 'Ngoài nước'}</p>
             </Divider>
 
             <SearchBar onSearch={handleSearch} />
 
-            <SearchFilterBar onSearch={setQuery} query={query} titleType={titleType} />
+            <SearchFilterBar onSearch={setQuery} query={query} />
 
             <div className="mt-8 mx-4 sm:mx-8 lg:mx-16 space-y-8 min-h-[600px]">
                 <div className="flex flex-col md:flex-row gap-4 min-h-[600px]">
-                    <Aside query={query} setQuery={setQuery} titleType={titleType} />
+                    <Aside query={query} setQuery={setQuery} />
                     <div className="flex-1">
                         {loading ? (
-                            <div className="w-full h-64 flex items-center justify-center">
-                                <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+                            <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+                                {Array(ITEM_PER_PAGE).fill().map((_, index) => (
+                                    <Skeleton key={index} round loading active avatar paragraph={{ rows: 4 }} />
+                                ))}
                             </div>
                         ) : filteredTours.length > 0 ? (
-                            <div
-                                className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8 px-4 sm:px-6 md:px-8">
+                            <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                                 {filteredTours.map((tour) => (
                                     <TourCards key={tour.id} data={tour} />
                                 ))}
                             </div>
                         ) : (
-                            <EmptyComponent description={"tour"} />
+                            <EmptyComponent description={'tour'} />
                         )}
                     </div>
                 </div>
