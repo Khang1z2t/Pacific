@@ -1,3 +1,4 @@
+import sha256 from 'crypto-js/sha256';
 import config from '~/config';
 import axiosConfig from '~/config/axiosConfig';
 
@@ -52,15 +53,19 @@ const BookingServices = {
 		}
 	},
 
-	getBookingByTourId: async (id, body) => {
+	bookTourByTourDetailId: async (id, body) => {
 		try {
 			const token = localStorage.getItem('accessToken');
+			const timestamp = new Date().getTime();
+			const dataToHash = JSON.stringify({ ...body, timestamp });
+			const idempotencyKey = sha256(dataToHash).toString();
 			const resp = await axiosConfig.post(config.api.booking + `/tour/${id}`,
 				body,
 				{
 					headers: {
 						'Authorization': 'Bearer ' + token,
 						'Content-Type': 'application/json',
+						'X-Idempotency-Key': idempotencyKey,
 					},
 				},
 			);
