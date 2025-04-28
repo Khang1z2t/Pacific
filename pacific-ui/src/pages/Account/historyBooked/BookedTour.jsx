@@ -2,22 +2,24 @@ import {
 	Avatar,
 	Button,
 	Card,
-	Divider, Form,
-	Image, Input,
+	Divider,
+	Form,
+	Image,
+	Input,
 	message,
 	Modal,
-	Pagination, Progress,
+	Pagination,
+	Progress,
 	QRCode,
 	Rate,
-	Skeleton, Space,
+	Skeleton,
+	Space,
 	Table,
 	Tabs,
 } from 'antd';
 import { BookedTourCard } from '~/pages/Account/historyBooked/components/BookedTourCard';
 import React, { useEffect, useState } from 'react';
 import BookingServices from '~/services/BookingServices';
-import TourServices from '~/services/TourServices';
-import VoucherServices from '~/services/VoucherServices';
 import config from '~/config';
 import { FaTags } from 'react-icons/fa';
 import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
@@ -35,57 +37,25 @@ export const BookedTour = () => {
 		ON_HOLD: 1,
 	});
 	const [tourInfo, setTourInfo] = useState([]);
-	const [tours, setTours] = useState({});
 	const [loading, setLoading] = useState(true);
-	const [vouchers, setVouchers] = useState({});
 
-	const fetchBookingsAndTours = async () => {
+	const fetchBookings = async () => {
 		try {
 			setLoading(true);
 			const bookingRes = await BookingServices.getBookingList(token);
 			setTourInfo(bookingRes.data);
-
-			const tourPromises = bookingRes.data.map(booking =>
-				TourServices.getTourByTourDetailId(booking.tourDetailId)
-					.then(res => ({ [booking.tourDetailId]: res.data }))
-					.catch(err => {
-						console.error(err);
-						return { [booking.tourDetailId]: null };
-					}),
-			);
-
-			const tourResults = await Promise.all(tourPromises);
-			const toursData = tourResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-			setTours(toursData);
-			const voucherPromises = bookingRes.data
-				.filter((booking) => booking.voucherId) // Chỉ lấy những booking có voucherId
-				.map((booking) =>
-					VoucherServices.getById(booking.voucherId)
-						.then((res) => ({ [booking.voucherId]: res.data }))
-						.catch((err) => {
-							console.error('Error fetching voucher:', err);
-							return { [booking.voucherId]: null }; // Fallback khi lỗi
-						}),
-				);
-
-			const voucherResults = await Promise.all(voucherPromises);
-			const vouchersData = voucherResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-			setVouchers(vouchersData);
-
 			setLoading(false);
 		} catch (err) {
-			console.error(err);
+			console.error('Error fetching bookings:', err);
 			setLoading(false);
 			message.error('Có lỗi xảy ra! Vui lòng báo cáo với quản trị viên.', 1);
 		}
 	};
 
 	useEffect(() => {
-
-		fetchBookingsAndTours().then(r => r);
+		fetchBookings();
 	}, [token]);
 
-	// CALL BACK REVIEW
 	const handleUpdateBooking = (updatedBooking) => {
 		setTourInfo((prev) =>
 			prev.map((booking) =>
@@ -103,7 +73,7 @@ export const BookedTour = () => {
 
 	const getPageItems = (statuses) => {
 		const tabKey = Array.isArray(statuses) ? statuses.join('_') : statuses;
-		const current = currentPage[tabKey] || 1; // Trang hiện tại của tab
+		const current = currentPage[tabKey] || 1;
 		const startIndex = (current - 1) * ITEM_PER_PAGE;
 		const endIndex = startIndex + ITEM_PER_PAGE;
 
@@ -113,7 +83,7 @@ export const BookedTour = () => {
 
 	const onPageChange = (status, page) => {
 		setLoading(true);
-		setCurrentPage(prev => ({
+		setCurrentPage((prev) => ({
 			...prev,
 			[status]: page,
 		}));
@@ -123,10 +93,7 @@ export const BookedTour = () => {
 	};
 
 	const renderTabContent = (statuses) => {
-		// Tạo key duy nhất cho tab (dùng để lưu currentPage)
 		const tabKey = Array.isArray(statuses) ? statuses.join('_') : statuses;
-
-		// Lấy dữ liệu cho nhiều trạng thái
 		const pageItems = getPageItems(statuses);
 		const totalItems = filterToursByStatus(statuses).length;
 
@@ -149,8 +116,8 @@ export const BookedTour = () => {
 							<BookedTourCard
 								key={item.id || index}
 								data={item}
-								tour={tours[item.tourDetailId]}
-								voucher={vouchers[item.voucherId] || null}
+								tour={item.tourDetail?.tour}
+								voucher={item.voucher}
 								onUpdateBooking={handleUpdateBooking}
 							/>
 						))
