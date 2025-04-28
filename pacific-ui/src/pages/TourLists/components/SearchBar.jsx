@@ -11,7 +11,6 @@ export const SearchBar = ({ onSearch }) => {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [searchSides, setSearchSides] = useState(null); // Khởi tạo searchSides là null
-    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         CategoryServices.getCategories()
@@ -41,7 +40,6 @@ export const SearchBar = ({ onSearch }) => {
     }, [t]); // Thêm t vào dependency để cập nhật khi ngôn ngữ thay đổi
 
     const handleSearch = () => {
-        console.log({ searchText, searchSides, startDate, endDate });
         onSearch({ searchText, searchSides, startDate, endDate });
     };
 

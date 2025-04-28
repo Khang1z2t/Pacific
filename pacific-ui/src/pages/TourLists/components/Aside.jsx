@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CloseCircleOutlined } from '@ant-design/icons';
 
-export const Aside = ({ query, setQuery }) => {
+export const Aside = ({ query, setQuery, titleType }) => {
     const { t } = useTranslation();
     const ratingAvg = [1, 2, 3, 4, 5];
     const [rate, setRate] = useState(query.rate || null);
@@ -18,8 +18,9 @@ export const Aside = ({ query, setQuery }) => {
             minPrice,
             maxPrice,
             searchPrices,
+            region: titleType,
         }));
-    }, [rate, searchPrices, minPrice, maxPrice, setQuery]);
+    }, [rate, searchPrices, minPrice, maxPrice, setQuery, titleType]);
 
     const handleClear = () => {
         setRate(null);
@@ -32,6 +33,7 @@ export const Aside = ({ query, setQuery }) => {
             minPrice: null,
             maxPrice: null,
             searchPrices: 'All',
+            region: titleType,
         }));
     };
 

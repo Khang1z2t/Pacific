@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Divider, message, Spin, Typography, Card } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import { Divider, message, Spin, Typography, Card, Tag, Button } from 'antd';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ShareAltOutlined, EyeOutlined } from '@ant-design/icons';
 import BlogServices from '~/services/BlogServices';
 import config from '~/config';
 
@@ -34,6 +35,7 @@ export const DetailNews = () => {
     const [blog, setBlog] = useState({});
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const fetchData = useCallback(async () => {
         try {
@@ -52,18 +54,27 @@ export const DetailNews = () => {
         }
     }, [slug]);
 
-
     useEffect(() => {
         fetchData();
     }, [slug, fetchData]);
 
+    // Bài viết liên quan
     const relatedBlogs = blogs
         .filter(
             (item) =>
                 item.category?.id === blog.category?.id &&
                 item.id !== blog.id,
         )
-        .slice(0, 5); // Limit to 5 related posts
+        .slice(0, 4); // Giảm xuống 4 để sidebar không quá dài
+
+    // Bài viết nổi bật
+    const topBlogs = blogs
+        .filter((item) => item.viewCount > 50 || item.likeCount > 50)
+        .slice(0, 3);
+
+    // Tag phổ biến (dựa trên category)
+    const popularTags = [...new Set(blogs.map((item) => item.category?.name).filter(Boolean))]
+        .slice(0, 6);
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -111,13 +122,17 @@ export const DetailNews = () => {
                                     </Title>
                                     <div className="flex gap-4 mt-2">
                                         <a
-                                            href="#"
+                                            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}${config.routes.news}${blog.slug}`)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                             className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
                                         >
                                             <i className="fab fa-facebook-f" /> Facebook
                                         </a>
                                         <a
-                                            href="#"
+                                            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${window.location.origin}${config.routes.news}${blog.slug}`)}&text=${encodeURIComponent(blog.title)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                             className="text-blue-400 hover:text-blue-600 flex items-center gap-2"
                                         >
                                             <i className="fab fa-twitter" /> Twitter
@@ -139,40 +154,133 @@ export const DetailNews = () => {
                 </div>
 
                 {/* Sidebar */}
-                <div className="lg:w-1/3 sticky top-16 lg:top-0 lg:ml-8">
-                    <Card className="shadow-md p-6">
-                        <Title level={4} className="text-2xl uppercase font-semibold text-gray-800 mb-4">
+                <div className="lg:w-1/3 sticky top-4 self-start">
+                    {/* Bài viết liên quan */}
+                    <Card className="shadow-md p-6 mb-6">
+                        <Title level={4} className="text-xl font-semibold text-gray-800 mb-4">
                             Bài viết liên quan
                         </Title>
-                        <Divider />
-                        <div className="space-y-4">
+                        <Divider className="mb-4" />
+                        <div className="grid gap-4">
                             {relatedBlogs.length === 0 ? (
-                                <span>Không có bài viết liên quan.</span>
+                                <Text type="secondary">Không có bài viết liên quan.</Text>
                             ) : (
                                 relatedBlogs.map((item) => (
-                                    <div
-                                        className={'flex items-center border rounded-lg p-2 border-gray-200 transition-all hover:cursor-pointer hover:border-orange-500 hover:bg-orange-50 gap-4'}
-                                        key={item.id}>
-                                        <Link to={`${config.routes.news}${item.slug}`}
-                                              className="flex items-center gap-4">
-                                            <img
-                                                src={config.imageConfig.getImage(item.thumbnail)}
-                                                alt={item.title}
-                                                className="w-16 h-16 rounded-md object-cover"
-                                            />
-                                            <div>
-                                                <Text className="text-gray-800 font-semibold hover:text-blue-600">
-                                                    {item.metaTitle}
-                                                </Text>
+                                    <Link
+                                        key={item.id}
+                                        to={`${config.routes.news}${item.slug}`}
+                                        className="group block rounded-lg overflow-hidden border border-gray-200 hover:border-orange-500 hover:shadow-lg transition-all duration-300"
+                                    >
+                                        <div className="flex gap-4 p-3">
+                                            <div className="relative w-24 h-24 flex-shrink-0">
+                                                <img
+                                                    src={config.imageConfig.getImage(item.thumbnail) || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300&q=80'}
+                                                    alt={item.title}
+                                                    className="w-full h-full object-cover rounded-md transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                            </div>
+                                            <div className="flex-1">
                                                 <Text
-                                                    className="block line-clamp-2 max-h-12 overflow-ellipsis overflow-hidden text-gray-500 text-sm">
+                                                    className="text-gray-800 font-semibold text-base line-clamp-2 group-hover:text-orange-600 transition-colors">
+                                                    {item.metaTitle || item.title}
+                                                </Text>
+                                                <Text className="text-gray-500 text-sm line-clamp-2 mt-1">
                                                     {item.metaDescription}
                                                 </Text>
+                                                <Text type="secondary" className="text-xs mt-1 block">
+                                                    {config.webConfig.convertDateNoTime(item.createdAt)}
+                                                </Text>
                                             </div>
-                                        </Link>
-                                    </div>
+                                        </div>
+                                    </Link>
                                 ))
                             )}
+                        </div>
+                    </Card>
+
+                    {/* Bài viết nổi bật */}
+                    <Card className="shadow-md p-6 mb-6">
+                        <Title level={4} className="text-xl font-semibold text-gray-800 mb-4">
+                            Bài viết nổi bật
+                        </Title>
+                        <Divider className="mb-4" />
+                        <div className="space-y-4">
+                            {topBlogs.length === 0 ? (
+                                <Text type="secondary">Không có bài viết nổi bật.</Text>
+                            ) : (
+                                topBlogs.map((item) => (
+                                    <Link
+                                        key={item.id}
+                                        to={`${config.routes.news}${item.slug}`}
+                                        className="group flex gap-3 items-center border rounded-lg p-2 hover:border-orange-500 hover:bg-orange-50 transition-all"
+                                    >
+                                        <img
+                                            src={config.imageConfig.getImage(item.thumbnail) || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300&q=80'}
+                                            alt={item.title}
+                                            className="w-16 h-16 rounded-md object-cover transition-transform duration-300 group-hover:scale-105"
+                                        />
+                                        <div>
+                                            <Text
+                                                className="text-gray-800 font-semibold text-sm line-clamp-2 group-hover:text-orange-600">
+                                                {item.metaTitle || item.title}
+                                            </Text>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <Text type="secondary" className="text-xs">
+                                                    {config.webConfig.convertDateNoTime(item.createdAt)}
+                                                </Text>
+                                                <span className="text-xs text-gray-500 flex items-center">
+                                                    <EyeOutlined className="mr-1 text-orange-500" />
+                                                    {item.viewCount || 0}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))
+                            )}
+                        </div>
+                    </Card>
+
+                    {/* Tag phổ biến */}
+                    <Card className="shadow-md p-6 mb-6">
+                        <Title level={4} className="text-xl font-semibold text-gray-800 mb-4">
+                            Tag phổ biến
+                        </Title>
+                        <Divider className="mb-4" />
+                        <div className="flex flex-wrap gap-2">
+                            {popularTags.length === 0 ? (
+                                <Text type="secondary">Không có tag nào.</Text>
+                            ) : (
+                                popularTags.map((tag, index) => (
+                                    <Tag
+                                        key={index}
+                                        color="orange"
+                                        className="cursor-pointer hover:bg-orange-600 hover:text-white transition-colors"
+                                        onClick={() => message.info(`Tìm bài viết theo tag: ${tag}`)} // Có thể thêm logic tìm kiếm
+                                    >
+                                        {tag}
+                                    </Tag>
+                                ))
+                            )}
+                        </div>
+                    </Card>
+
+                    {/* Quảng cáo placeholder */}
+                    <Card className="shadow-md p-6">
+                        <Title level={4} className="text-xl font-semibold text-gray-800 mb-4">
+                            Khám phá thêm
+                        </Title>
+                        <Divider className="mb-4" />
+                        <div className="text-center flex flex-col items-center">
+                            <Text className="text-gray-600">
+                                Đặt tour du lịch hôm nay để nhận ưu đãi đặc biệt!
+                            </Text>
+                            <Button
+                                type="primary"
+                                className="mt-4 bg-orange-600 hover:bg-orange-700"
+                                onClick={() => navigate(config.routes.tourTrongNuoc)}
+                            >
+                                Tìm hiểu thêm
+                            </Button>
                         </div>
                     </Card>
                 </div>

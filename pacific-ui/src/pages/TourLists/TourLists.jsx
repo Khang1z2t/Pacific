@@ -185,7 +185,7 @@ export const TourLists = ({ titleType }) => {
 
             <div className="mt-8 mx-4 sm:mx-8 lg:mx-16 space-y-8 min-h-[600px]">
                 <div className="flex flex-col md:flex-row gap-4 min-h-[600px]">
-                    <Aside query={query} setQuery={setQuery} />
+                    <Aside query={query} setQuery={setQuery} titleType={titleType} />
                     <div className="flex-1">
                         {loading ? (
                             <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
