@@ -42,6 +42,7 @@ import WalletServices from '~/services/WalletServices';
 import { BlogSection } from '~/pages/Admin/sections/BlogSection/BlogSection';
 import dayjs from 'dayjs';
 import AdminServices from '~/services/AdminServices';
+import { BookingPage } from '~/pages/Admin/sections/BookingSection/BookingPage';
 
 const { Content } = Layout;
 
@@ -210,7 +211,7 @@ const AdminHome = () => {
             label: 'Booking',
             key: 'sub4',
             icon: <FaMoneyCheckAlt color={'green'} />,
-            content: 'HI',
+            content: <BookingPage/>,
         },
         {
             label: 'Khuyến mãi',
