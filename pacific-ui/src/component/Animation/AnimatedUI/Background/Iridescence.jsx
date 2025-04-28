@@ -55,6 +55,7 @@ export default function Iridescence({
                                     }) {
     const ctnDom = useRef(null);
     const mousePos = useRef({ x: 0.5, y: 0.5 });
+    const uniformsRef = useRef({});
 
     useEffect(() => {
         if (!ctnDom.current) return;
@@ -72,11 +73,12 @@ export default function Iridescence({
                 program.uniforms.uResolution.value = new Color(
                     gl.canvas.width,
                     gl.canvas.height,
-                    gl.canvas.width / gl.canvas.height
+                    gl.canvas.width / gl.canvas.height,
                 );
             }
         }
-        window.addEventListener("resize", resize, false);
+
+        window.addEventListener('resize', resize, false);
         resize();
 
         const geometry = new Triangle(gl);
@@ -90,7 +92,7 @@ export default function Iridescence({
                     value: new Color(
                         gl.canvas.width,
                         gl.canvas.height,
-                        gl.canvas.width / gl.canvas.height
+                        gl.canvas.width / gl.canvas.height,
                     ),
                 },
                 uMouse: { value: new Float32Array([mousePos.current.x, mousePos.current.y]) },
@@ -98,6 +100,9 @@ export default function Iridescence({
                 uSpeed: { value: speed },
             },
         });
+
+        // Lưu uniforms để update sau này
+        uniformsRef.current = program.uniforms;
 
         const mesh = new Mesh(gl, { geometry, program });
         let animateId;
@@ -107,6 +112,7 @@ export default function Iridescence({
             program.uniforms.uTime.value = t * 0.001;
             renderer.render({ scene: mesh });
         }
+
         animateId = requestAnimationFrame(update);
         ctn.appendChild(gl.canvas);
 
@@ -118,21 +124,36 @@ export default function Iridescence({
             program.uniforms.uMouse.value[0] = x;
             program.uniforms.uMouse.value[1] = y;
         }
+
         if (mouseReact) {
-            ctn.addEventListener("mousemove", handleMouseMove);
+            ctn.addEventListener('mousemove', handleMouseMove);
         }
 
         return () => {
             cancelAnimationFrame(animateId);
-            window.removeEventListener("resize", resize);
+            window.removeEventListener('resize', resize);
             if (mouseReact) {
-                ctn.removeEventListener("mousemove", handleMouseMove);
+                ctn.removeEventListener('mousemove', handleMouseMove);
             }
             ctn.removeChild(gl.canvas);
-            gl.getExtension("WEBGL_lose_context")?.loseContext();
+            gl.getExtension('WEBGL_lose_context')?.loseContext();
         };
+        // Chỉ chạy 1 lần khi mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [color, speed, amplitude, mouseReact]);
+    }, []);
+
+    // Update uniforms khi props thay đổi mà không re-init canvas
+    useEffect(() => {
+        if (uniformsRef.current.uColor) {
+            uniformsRef.current.uColor.value = new Color(...color);
+        }
+        if (uniformsRef.current.uAmplitude) {
+            uniformsRef.current.uAmplitude.value = amplitude;
+        }
+        if (uniformsRef.current.uSpeed) {
+            uniformsRef.current.uSpeed.value = speed;
+        }
+    }, [color, amplitude, speed]);
 
     return (
         <div
