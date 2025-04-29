@@ -5,13 +5,14 @@ import AuthServices from '~/services/AuthServices';
 
 export const VerifyInformation = ({ data, onUserUpdate }) => {
     const [form] = Form.useForm();
-    const [otpState, setOtpState] = useState({
-        email: { isSent: false, otp: '', cooldown: 0, loading: false },
-        phone: { isSent: false, otp: '', cooldown: 0, loading: false },
-    });
-    const [userData, setUserData] = useState(data);
+    const [isEmailOtpSent, setIsEmailOtpSent] = useState(false);
+    const [isPhoneOtpSent, setIsPhoneOtpSent] = useState(false);
+    const [emailOtp, setEmailOtp] = useState('');
+    const [emailOtpCooldown, setEmailOtpCooldown] = useState(0);
+    const [phoneOtp, setPhoneOtp] = useState('');
+    const [userData, setUserData] = useState(data); // State để lưu userData và cập nhật sau khi xác minh
 
-    // Update userData and form when data prop changes
+    // Cập nhật userData khi data thay đổi
     useEffect(() => {
         setUserData(data);
         form.setFieldsValue({
@@ -20,87 +21,86 @@ export const VerifyInformation = ({ data, onUserUpdate }) => {
         });
     }, [data, form]);
 
-    // Handle cooldown timers for both email and phone
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setOtpState((prev) => ({
-                email: {
-                    ...prev.email,
-                    cooldown: prev.email.cooldown > 0 ? prev.email.cooldown - 1 : 0,
-                },
-                phone: {
-                    ...prev.phone,
-                    cooldown: prev.phone.cooldown > 0 ? prev.phone.cooldown - 1 : 0,
-                },
-            }));
-        }, 1000);
-        return () => clearInterval(timer);
-    }, []);
-
-    // Unified function to send OTP
+    // Giả lập API gửi mã OTP
     const sendOtp = async (type) => {
         try {
-            setOtpState((prev) => ({ ...prev, [type]: { ...prev[type], loading: true } }));
+            console.log(data.email);
+
             if (type === 'email') {
                 await AuthServices.sendMailVerify(data.email);
+                message.success(`Mã OTP đã được gửi đến ${type === 'email' ? 'email' : 'số điện thoại'} của bạn!`, 1.5);
+                setIsEmailOtpSent(true);
+                setEmailOtpCooldown(60);
             } else {
-                // Implement phone OTP sending logic here
-                message.info('Chức năng này chưa được triển khai.');
+                setIsPhoneOtpSent(true);
             }
-            message.success(`Mã OTP đã được gửi đến ${type === 'email' ? 'email' : 'số điện thoại'} của bạn!`, 1.5);
-            setOtpState((prev) => ({
-                ...prev,
-                [type]: { ...prev[type], isSent: true, cooldown: 60, loading: false },
-            }));
         } catch (error) {
-            message.error('Gửi mã OTP thất bại! Vui lòng thử lại.', 1.5);
-            setOtpState((prev) => ({ ...prev, [type]: { ...prev[type], loading: false } }));
+            message.error('Gửi mã OTP thất bại!', 1.5);
         }
     };
 
-    // Unified function to verify OTP
+    useEffect(() => {
+        if (emailOtpCooldown > 0) {
+            const timer = setTimeout(() => setEmailOtpCooldown(emailOtpCooldown - 1), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [emailOtpCooldown]);
+    // Giả lập API xác minh OTP
     const verifyOtp = async (type, otp) => {
+
+        try {
+            // Reset trạng thái OTP
+            if (type === 'email') {
+                await AuthServices.verifyEmail({
+                    email: data.email,
+                    otp: otp,
+                });
+                message.success(`${type === 'email' ? 'Email' : 'Số điện thoại'} đã được xác minh thành công!`, 1.5);
+                setIsEmailOtpSent(false);
+                setEmailOtp('');
+            } else {
+                setIsPhoneOtpSent(false);
+                setPhoneOtp('');
+            }
+        } catch (error) {
+            message.error('Xác minh OTP thất bại!', 1.5);
+        }
+    };
+
+    // Xử lý gửi mã OTP
+    const handleSendOtp = (type) => {
+        sendOtp(type);
+    };
+
+    // Xử lý xác minh OTP
+    const handleVerifyOtp = (type) => {
+        const otp = type === 'email' ? emailOtp : phoneOtp;
         if (!otp) {
             message.error('Vui lòng nhập mã OTP!', 1.5);
             return;
         }
+        verifyOtp(type, otp);
+    };
+
+    // Xử lý lưu thay đổi (nếu cần)
+    const handleSave = async () => {
         try {
-            setOtpState((prev) => ({ ...prev, [type]: { ...prev[type], loading: true } }));
-            let updatedUser;
-            if (type === 'email') {
-                await AuthServices.verifyEmail({ email: data.email, otp });
-                updatedUser = { ...userData, emailVerified: true };
-            } else {
-                await AuthServices.verifyPhone({ phone: data.phone, otp });
-                updatedUser = { ...userData, phoneVerified: true };
-            }
-            setUserData(updatedUser);
-            onUserUpdate(updatedUser); // Notify parent component
-            message.success(`${type === 'email' ? 'Email' : 'Số điện thoại'} đã được xác minh thành công!`, 1.5);
-            setOtpState((prev) => ({
-                ...prev,
-                [type]: { ...prev[type], isSent: false, otp: '', loading: false },
-            }));
+            const values = await form.validateFields();
+            // Gọi API thực tế để lưu thay đổi (nếu cần)
+            message.success('Lưu thay đổi thành công!', 1.5);
         } catch (error) {
-            const errorMsg = error.response?.data?.message || 'Xác minh OTP thất bại! Vui lòng kiểm tra mã OTP.';
-            message.error(errorMsg, 1.5);
-            setOtpState((prev) => ({ ...prev, [type]: { ...prev[type], loading: false } }));
+            message.error('Lưu thay đổi thất bại!', 1.5);
         }
     };
 
-    // Handle OTP input change
-    const handleOtpChange = (type, value) => {
-        setOtpState((prev) => ({ ...prev, [type]: { ...prev[type], otp: value } }));
-    };
-
     return (
-        <div className="p-4 sm:p-6">
-            <div className="bg-white max-w-3xl">
+        <div className="p-4">
+            <div className="bg-white max-w-3xl p-6">
                 <h2 className="text-2xl font-bold text-blue-600 mb-6">Xác thực thông tin</h2>
 
-                <Form form={form} layout="vertical" className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                        {/* Email Field */}
+                <Form form={form} onFinish={handleSave} layout="vertical">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        {/* Trường Email */}
                         <div>
                             <Form.Item
                                 name="email"
@@ -113,56 +113,42 @@ export const VerifyInformation = ({ data, onUserUpdate }) => {
                                 />
                             </Form.Item>
                             {userData?.emailVerified ? (
-                                <div className="flex items-center gap-2 text-green-500 text-sm mt-1">
-                                    <FaCheckCircle className="text-lg" />
+                                <div className="flex items-center gap-1 text-green-500 text-sm mt-1">
+                                    <FaCheckCircle className="text-xl" />
                                     <span>Đã xác minh</span>
                                 </div>
                             ) : (
-                                <div className="mt-2 space-y-2">
-                                    {otpState.email.isSent ? (
-                                        <div className="flex flex-col sm:flex-row items-center gap-2">
+                                <div className="mt-2">
+                                    {isEmailOtpSent ? (
+                                        <div className="flex items-center gap-2">
                                             <Input
                                                 prefix={<FaLock className="text-gray-400" />}
                                                 placeholder="Nhập mã OTP"
-                                                value={otpState.email.otp}
-                                                onChange={(e) => handleOtpChange('email', e.target.value)}
+                                                value={emailOtp}
+                                                onChange={(e) => setEmailOtp(e.target.value)}
                                                 className="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all"
-                                                aria-label="Nhập mã OTP cho email"
                                             />
                                             <button
-                                                onClick={() => verifyOtp('email', otpState.email.otp)}
-                                                disabled={otpState.email.loading}
-                                                className={`w-full sm:w-auto bg-orange-500 text-white hover:bg-orange-600 border-none rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg ${
-                                                    otpState.email.loading ? 'opacity-50 cursor-not-allowed' : ''
-                                                }`}
-                                                aria-label="Xác nhận mã OTP cho email"
+                                                onClick={() => handleVerifyOtp('email')}
+                                                className="bg-orange-500 text-white hover:bg-orange-600 border-none rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg"
                                             >
-                                                {otpState.email.loading ? 'Đang xử lý...' : 'Xác nhận OTP'}
+                                                Xác nhận OTP
                                             </button>
                                         </div>
                                     ) : (
                                         <button
-                                            onClick={() => sendOtp('email')}
-                                            disabled={otpState.email.cooldown > 0 || otpState.email.loading}
-                                            className={`w-full sm:w-auto bg-orange-500 text-white hover:bg-orange-600 border-none rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg ${
-                                                otpState.email.cooldown > 0 || otpState.email.loading
-                                                    ? 'opacity-50 cursor-not-allowed'
-                                                    : ''
-                                            }`}
-                                            aria-label="Gửi mã OTP cho email"
+                                            onClick={() => handleSendOtp('email')}
+                                            disabled={emailOtpCooldown > 0}
+                                            className="bg-orange-500 text-white hover:bg-orange-600 border-none rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg"
                                         >
-                                            {otpState.email.loading
-                                                ? 'Đang gửi...'
-                                                : otpState.email.cooldown > 0
-                                                    ? `Gửi lại sau ${otpState.email.cooldown}s`
-                                                    : 'Xác minh'}
+                                            {emailOtpCooldown > 0 ? `Gửi lại sau ${emailOtpCooldown}s` : 'Xác minh'}
                                         </button>
                                     )}
                                 </div>
                             )}
                         </div>
 
-                        {/* Phone Field */}
+                        {/* Trường Số điện thoại */}
                         <div>
                             <Form.Item
                                 name="phone"
@@ -175,49 +161,33 @@ export const VerifyInformation = ({ data, onUserUpdate }) => {
                                 />
                             </Form.Item>
                             {userData?.phoneVerified ? (
-                                <div className="flex items-center gap-2 text-green-500 text-sm mt-1">
-                                    <FaCheckCircle className="text-lg" />
+                                <div className="flex items-center gap-1 text-green-500 text-sm mt-1">
+                                    <FaCheckCircle className="text-xl" />
                                     <span>Đã xác minh</span>
                                 </div>
                             ) : (
-                                <div className="mt-2 space-y-2">
-                                    {otpState.phone.isSent ? (
-                                        <div className="flex flex-col sm:flex-row items-center gap-2">
+                                <div className="mt-2">
+                                    {isPhoneOtpSent ? (
+                                        <div className="flex items-center gap-2">
                                             <Input
-                                                prefix={<FaLock className="text-gray-400" />}
                                                 placeholder="Nhập mã OTP"
-                                                value={otpState.phone.otp}
-                                                onChange={(e) => handleOtpChange('phone', e.target.value)}
+                                                value={phoneOtp}
+                                                onChange={(e) => setPhoneOtp(e.target.value)}
                                                 className="w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-all"
-                                                aria-label="Nhập mã OTP cho số điện thoại"
                                             />
                                             <button
-                                                onClick={() => verifyOtp('phone', otpState.phone.otp)}
-                                                disabled={otpState.phone.loading}
-                                                className={`w-full sm:w190-auto bg-orange-500 text-white hover:bg-orange-600 border-none rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg ${
-                                                    otpState.phone.loading ? 'opacity-50 cursor-not-allowed' : ''
-                                                }`}
-                                                aria-label="Xác nhận mã OTP cho số điện thoại"
+                                                onClick={() => handleVerifyOtp('phone')}
+                                                className="bg-orange-500 text-white hover:bg-orange-600 border-none rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg"
                                             >
-                                                {otpState.phone.loading ? 'Đang xử lý...' : 'Xác nhận OTP'}
+                                                Xác nhận OTP
                                             </button>
                                         </div>
                                     ) : (
                                         <button
-                                            onClick={() => sendOtp('phone')}
-                                            disabled={otpState.phone.cooldown > 0 || otpState.phone.loading}
-                                            className={`w-full sm:w-auto bg-orange-500 text-white hover:bg-orange-600 border-none rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg ${
-                                                otpState.phone.cooldown > 0 || otpState.phone.loading
-                                                    ? 'opacity-50 cursor-not-allowed'
-                                                    : ''
-                                            }`}
-                                            aria-label="Gửi mã OTP cho số điện thoại"
+                                            onClick={() => handleSendOtp('phone')}
+                                            className="bg-orange-500 text-white hover:bg-orange-600 border-none rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg"
                                         >
-                                            {otpState.phone.loading
-                                                ? 'Đang gửi...'
-                                                : otpState.phone.cooldown > 0
-                                                    ? `Gửi lại sau ${otpState.phone.cooldown}s`
-                                                    : 'Xác minh'}
+                                            Xác minh
                                         </button>
                                     )}
                                 </div>

@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SupportService from '~/services/SupportService';
+import config from '~/config';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icon in Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 const Contacts = () => {
     const { t } = useTranslation();
@@ -12,12 +24,10 @@ const Contacts = () => {
     });
     const [submitStatus, setSubmitStatus] = useState(null);
 
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -39,9 +49,13 @@ const Contacts = () => {
         }
     };
 
+    // Coordinates for the map (example: Ho Chi Minh City, Vietnam)
+    const mapCenter = [10.7769, 106.7009]; // Replace with your actual coordinates
+    const markerPosition = [10.7769, 106.7009]; // Replace with your actual coordinates
+
     return (
         <div className="font-sans">
-            {/* Thông tin liên hệ */}
+            {/* Contact Information */}
             <section className="bg-gray-100 py-16">
                 <div className="container mx-auto px-6 text-center">
                     <h2 className="text-4xl font-bold text-gray-800 mb-8">{t('contact.ti1')}</h2>
@@ -75,14 +89,19 @@ const Contacts = () => {
                                 link: '#',
                             },
                         ].map((item, index) => (
-                            <div key={index}
-                                 className="p-6 bg-white shadow-xl rounded-lg transform hover:scale-105 transition duration-300">
+                            <div
+                                key={index}
+                                className="p-6 bg-white shadow-xl rounded-lg transform hover:scale-105 transition duration-300"
+                            >
                                 <div className={`text-5xl ${item.color} mb-3`}>
                                     <i className={`fa ${item.icon}`}></i>
                                 </div>
                                 <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
                                 {item.link ? (
-                                    <p><a href={item.link} className="text-blue-600 hover:underline">{item.content}</a>
+                                    <p>
+                                        <a href={item.link} className="text-blue-600 hover:underline">
+                                            {item.content}
+                                        </a>
                                     </p>
                                 ) : (
                                     <p>{item.content}</p>
@@ -93,7 +112,7 @@ const Contacts = () => {
                 </div>
             </section>
 
-            {/* Form liên hệ */}
+            {/* Contact Form and Map */}
             <section className="py-16">
                 <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="bg-white p-8 shadow-xl rounded-lg">
@@ -149,11 +168,21 @@ const Contacts = () => {
                         </div>
                     </div>
                     <div className="bg-white p-8 shadow-xl rounded-lg">
-                        <img
-                            src="/img/Blog/du-lich.jpg"
-                            alt="Static Map"
-                            className="w-full h-full object-cover rounded-lg"
-                        />
+                        {/* Interactive Map */}
+                        <MapContainer
+                            center={mapCenter}
+                            zoom={15}
+                            style={{ height: '100%', width: '100%', borderRadius: '0.5rem' }}
+                            className="rounded-lg"
+                        >
+                            <TileLayer
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            />
+                            <Marker position={markerPosition}>
+                                <Popup>{t('contact.ti3')}</Popup>
+                            </Marker>
+                        </MapContainer>
                     </div>
                 </div>
             </section>
