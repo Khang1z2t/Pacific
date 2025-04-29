@@ -21,7 +21,6 @@ export const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-
         if (password !== confirmPassword) {
             message.error(t("register.ti1"), 1);
             return;
@@ -30,13 +29,25 @@ export const Register = () => {
             message.error(t("register.ti2"), 1);
             return;
         }
+       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+           message.error('Email không hợp lệ')
+       }
         setLoading(true);
+
+        const body = {
+            username : username,
+            password : password,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+        }
+
         try {
-            await AuthService.register(username, password, firstName, lastName, email);
+            await AuthService.register(body);
             message.success(t("register.ti3"), 1);
             navigate(config.routes.login);
         } catch (error) {
-            message.error(`${t("register.ti4")} ${error.message}`, 1);
+            message.error(error.message);
         } finally {
             setLoading(false);
         }

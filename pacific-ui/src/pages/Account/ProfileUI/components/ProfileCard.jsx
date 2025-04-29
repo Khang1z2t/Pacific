@@ -44,7 +44,7 @@ export const ProfileCard = ({ data, switchTab, isLoading }) => {
                 {/*    className="border-4 border-orange-100 shadow-md"*/}
                 {/*/>*/}
                 <img
-                    src={config.imageConfig.getImage(data.avatar) || config.imageConfig.getImage(data.avatar)}
+                    src={config.imageConfig.getImage(data.avatar)}
                     alt="Avatar"
                     className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full border-4 border-orange-100 shadow-md"
                 />
@@ -82,7 +82,7 @@ export const ProfileCard = ({ data, switchTab, isLoading }) => {
                     <label className="font-semibold text-gray-700 w-24">Ngày sinh:</label>
                     <p className="text-gray-600">
                         {renderValue(
-                            data.birthDay ? config.webConfig.convertDateNoTime(data.birthDay) : null,
+                            data.birthday ? config.webConfig.convertDateNoTime(data.birthday) : null,
                             'Chưa cập nhật',
                         )}
                     </p>

@@ -15,10 +15,11 @@ const { TabPane } = Tabs;
 
 export const ProfileUI = () => {
     const { currentUser, setCurrentUser } = useAuth();
-    const token = localStorage.getItem('accessToken');
     const [activeTab, setActiveTab] = useState('1');
     const [isLoading, setIsLoading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    console.log(currentUser);
 
     const switchTab = (tabKey) => {
         setActiveTab(tabKey);

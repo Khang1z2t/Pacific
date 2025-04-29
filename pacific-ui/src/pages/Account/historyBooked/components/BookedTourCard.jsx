@@ -83,10 +83,11 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
             key: 'birthday',
             render: (text) => (text ? config.webConfig.convertDateNoTime(text) : 'N/A'),
         },
-        { title: 'Nhóm tuổi', dataIndex: 'ageGroup', key: 'ageGroup',
-            render: (text) => (
-                text === 'ADULT' ? 'Người lớn' : 'Trẻ em'
-            ),
+        {
+            title: 'Nhóm tuổi',
+            dataIndex: 'ageGroup',
+            key: 'ageGroup',
+            render: (text) => (text === 'ADULT' ? 'Người lớn' : 'Trẻ em'),
         },
         {
             title: 'Giá/Người',
@@ -122,7 +123,7 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
 
     if (!tour) {
         return (
-            <Card className="w-full rounded-lg shadow-lg border-2 p-3 sm:p-4">
+            <Card className="w-private full rounded-lg shadow-lg border-2 p-3 sm:p-4">
                 <p className="text-base sm:text-lg font-bold text-gray-500">Không tìm thấy thông tin tour</p>
             </Card>
         );
@@ -235,7 +236,7 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
         COMPLETED: 'text-purple-600',
         ON_GOING: 'text-orange-500',
         EXPIRED: 'text-gray-500',
-        ON_HOLD: 'text-yellow-500',
+        ON_HOLD: 'śli text-yellow-500',
     };
 
     const CancellationInfo = ({ data }) => {
@@ -298,6 +299,7 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
                             <div className="w-full sm:w-auto">
                                 <h3
                                     className="text-lg sm:text-xl font-bold text-orange-500 hover:underline hover:text-orange-600 cursor-pointer transition-colors duration-200"
+                                    className="text-lg sm:text-xl font-bold text-orange-500 hover:underline hover:text-orange-600 cursor-pointer transition-colors duration-200"
                                     onClick={() => navigate(config.routes.tourDetail + tour.id)}
                                 >
                                     {tour.title || 'N/A'}
@@ -306,7 +308,13 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
                                     Ngày đi:{' '}
                                     <span className="font-semibold">
                                         {data.tourDetail?.startDate && data.tourDetail?.endDate
-                                            ? `${Math.ceil((new Date(data.tourDetail.endDate) - new Date(data.tourDetail.startDate)) / (1000 * 60 * 60 * 24))}N${Math.ceil((new Date(data.tourDetail.endDate) - new Date(data.tourDetail.startDate)) / (1000 * 60 * 60 * 24)) - 1}Đ`
+                                            ? `${Math.ceil(
+                                                (new Date(data.tourDetail.endDate) - new Date(data.tourDetail.startDate)) /
+                                                (1000 * 60 * 60 * 24),
+                                            )}N${Math.ceil(
+                                                (new Date(data.tourDetail.endDate) - new Date(data.tourDetail.startDate)) /
+                                                (1000 * 60 * 60 * 24),
+                                            ) - 1}Đ`
                                             : 'N/A'}
                                     </span>
                                 </p>
@@ -324,6 +332,15 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
                                 <p className="text-xs sm:text-sm text-gray-600">
                                     Mã đặt tour: <span className="font-semibold">{data.bookingNo}</span>
                                 </p>
+                                {data.voucher && (
+                                    <div
+                                        className="flex items-center gap-2 bg-green-50 px-2 sm:px-3 py-1 rounded-full w-fit shadow-sm mt-2">
+                                        <FaTags className="text-green-500 text-sm" />
+                                        <span className="text-xs sm:text-sm text-green-600 font-semibold">
+                                            Voucher: {voucher.codeVoucher || 'N/A'} (-{voucher.discountValue || 0}%)
+                                        </span>
+                                    </div>
+                                )}
                                 <p className="text-base sm:text-lg font-semibold text-orange-600">
                                     {config.webConfig.getCurrency(data.totalAmount || 0)}{' '}
                                     {voucher && (
@@ -379,15 +396,6 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
                                         <p className="text-xs sm:text-sm text-red-500 font-medium">
                                             {timeLeft ? `Hạn thanh toán: ${timeLeft}` : 'Đang tính toán...'}
                                         </p>
-                                        {data.voucher && (
-                                            <div
-                                                className="flex items-center gap-2 bg-green-50 px-2 sm:px-3 py-1 rounded-full shadow-sm">
-                                                <FaTags className="text-green-500 text-sm" />
-                                                <span className="text-xs sm:text-sm text-green-600 font-semibold">
-                                                    Voucher: {voucher.codeVoucher || 'N/A'} (-{voucher.discountValue || 0}%)
-                                                </span>
-                                            </div>
-                                        )}
                                         <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 justify-center">
                                             <Button
                                                 color="danger"
@@ -521,6 +529,7 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
                             className="rounded-lg"
                             scroll={{ x: 600 }}
                         />
+                        Johnston
                     </div>
                 </div>
             </Modal>
@@ -561,9 +570,7 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
                     </div>
                     <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-100">
                         <Text className="text-sm sm:text-base text-gray-700">
-                            {data.review
-
-                                ?.comment || 'Chưa có nhận xét'}
+                            {data.review?.comment || 'Chưa có nhận xét'}
                         </Text>
                     </div>
                     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">

@@ -163,7 +163,7 @@ export const AccountInformation = ({ data, onUserUpdate, switchTab, setParentLoa
                 phone: values.phone || '',
                 address: fullAddress,
                 gender: values.gender,
-                birthDay: values.birthday ? values.birthday.format('YYYY-MM-DD') : '',
+                birthday: values.birthday ? values.birthday.format('YYYY-MM-DD') : '',
                 avatar: response.avatar || avatar,
             };
 
@@ -314,7 +314,10 @@ export const AccountInformation = ({ data, onUserUpdate, switchTab, setParentLoa
                             )}
                             {!data?.emailVerified && (
                                 <button
-                                    onClick={() => switchTab('2')}
+                                    onClick={() => {
+                                        switchTab('2')
+                                        setParentLoading(false)
+                                    }}
                                     className={'w-fit p-2 -mt-4 bg-red-200 transition-all text-red-600 hover:text-white hover:bg-red-600 rounded-lg text-sm'}
                                 >
                                     <p className={'font-medium'}>Xác thực ngay!</p>

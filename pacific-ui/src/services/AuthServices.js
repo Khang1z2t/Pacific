@@ -3,15 +3,9 @@ import axiosConfig from '~/config/axiosConfig';
 
 const AuthService = {
 
-	register: async (username, password, firstName, lastName, email) => {
+	register: async (body) => {
 		try {
-			const response = await axiosConfig.post(config.api.auth + '/register', {
-				username,
-				password,
-				firstName,
-				lastName,
-				email,
-			});
+			const response = await axiosConfig.post(config.api.auth + '/register', body);
 			return response.data;
 		} catch (error) {
 			console.error('Error:', error);
@@ -19,13 +13,9 @@ const AuthService = {
 		}
 	},
 
-	login: async (identifier, password) => {
+	login: async (body) => {
 		try {
-			const response = await axiosConfig.post(config.api.auth + '/login', {
-				identifier,
-				password,
-			});
-			localStorage.setItem('accessToken', response.data.data.accessToken);
+			const response = await axiosConfig.post(config.api.auth + '/login', body);
 			return response.data;
 		} catch (error) {
 			console.error('Error:', error);
