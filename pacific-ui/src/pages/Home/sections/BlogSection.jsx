@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import BlogServices from '~/services/BlogServices';
 import Particles from '~/component/Animation/AnimatedUI/Background/Particles';
 import { Divider, Spin } from 'antd';
-import { BlogCard } from '~/pages/Admin/sections/BlogSection/Components/BlogCard';
 import { Link } from 'react-router-dom';
 import config from '~/config';
+import { BlogCard } from '~/pages/Home/components/BlogCard';
 
 const containerVariants = {
     hidden: { opacity: 0 },
