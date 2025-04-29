@@ -19,8 +19,6 @@ export const ProfileUI = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    console.log(currentUser);
-
     const switchTab = (tabKey) => {
         setActiveTab(tabKey);
         setIsMenuOpen(false);
