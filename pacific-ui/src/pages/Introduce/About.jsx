@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import config from '~/config';
 
 const About = () => {
   const { t } = useTranslation();
@@ -19,49 +20,49 @@ const About = () => {
       icon: <FaHiking className="text-white text-3xl" />,
       title: t("about.ti1"),
       description: t("about.ti2"),
-      image: "/img/cards/card1.jpg"
+      image: config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       icon: <FaUmbrellaBeach className="text-white text-3xl" />,
       title: t("about.ti3"),
       description: t("about.ti4"),
-      image: "/img/cards/card1.jpg"
+      image: config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       icon: <FaCity className="text-white text-3xl" />,
       title: t("about.ti5"),
       description: t("about.ti6"),
-      image: "/img/cards/card1.jpg"
+      image: config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       icon: <FaMapMarkedAlt className="text-white text-3xl" />,
       title: t("about.ti7"),
       description: t("about.ti8"),
-      image: "/img/cards/card1.jpg"
+      image: config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       icon: <FaMountain className="text-white text-3xl" />,
       title: t("about.ti9"),
       description: t("about.ti10"),
-      image: "/img/cards/card1.jpg"
+      image: config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       icon: <FaShip className="text-white text-3xl" />,
       title: t("about.ti11"),
       description: t("about.ti12"),
-      image: "/img/cards/card1.jpg"
+      image: config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       icon: <FaCampground className="text-white text-3xl" />,
       title: t("about.ti13"),
       description: t("about.ti14"),
-      image: "/img/cards/card1.jpg"
+      image: config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       icon: <FaCampground className="text-white text-3xl" />,
       title: t("about.ti15"),
       description: t("about.ti16"),
-      image: "/img/cards/card1.jpg"
+      image: config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     }
   ];
 
@@ -70,37 +71,37 @@ const About = () => {
       name: "Nguyễn Dương Thiên Lý",
       review: t("about.ti17"),
       rating: 5,
-      avatar:"/img/cards/card1.jpg"
+      avatar:config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       name: "Trần Thanh Tâm",
       review: t("about.ti18"),
       rating: 4.5,
-      avatar:"/img/cards/card1.jpg"
+      avatar:config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       name: "Lê Văn Chung",
       review: t("about.ti19"),
       rating: 5,
-      avatar:"/img/cards/card1.jpg"
+      avatar:config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       name: "Phạm Thu Hường",
       review: t("about.ti20"),
       rating: 4.8,
-      avatar:"/img/cards/card1.jpg"
+      avatar:config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       name: "Bùi Quốc Huy",
       review: t("about.ti21"),
       rating: 5,
-      avatar:"/img/cards/card1.jpg"
+      avatar:config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     },
     {
       name: "Nguyễn Đình Tuấn",
       review: t("about.ti22"),
       rating: 5,
-      avatar:"/img/cards/card1.jpg"
+      avatar:config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')
     }
   ];
 
@@ -114,7 +115,7 @@ const About = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:w-1/2">
       {/* Hoạt động */}
       <div className="relative bg-blue-700 text-white p-6 rounded-lg overflow-hidden shadow-lg">
-        <img src="/img/cards/card1.jpg" alt="Hoạt động" className="absolute top-0 left-0 w-full h-full object-cover opacity-50" />
+        <img src={config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')} alt="Hoạt động" className="absolute top-0 left-0 w-full h-full object-cover opacity-50" />
         <div className="relative">
           <div className="bg-orange-500 p-3 rounded-lg inline-block mb-4">
             <i className="fas fa-water text-white text-2xl"></i>
@@ -126,7 +127,7 @@ const About = () => {
 
       {/* Sắp xếp chuyến đi */}
       <div className="relative bg-green-700 text-white p-6 rounded-lg overflow-hidden shadow-lg">
-        <img src="/img/cards/card1.jpg" alt="Sắp xếp chuyến đi" className="absolute top-0 left-0 w-full h-full object-cover opacity-50" />
+        <img src={config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')} alt="Sắp xếp chuyến đi" className="absolute top-0 left-0 w-full h-full object-cover opacity-50" />
         <div className="relative">
           <div className="bg-orange-500 p-3 rounded-lg inline-block mb-4">
             <i className="fas fa-plane text-white text-2xl"></i>
@@ -138,7 +139,7 @@ const About = () => {
 
       {/* Hướng dẫn viên riêng */}
       <div className="relative bg-teal-700 text-white p-6 rounded-lg overflow-hidden shadow-lg">
-        <img src="/img/cards/card1.jpg" alt="Hướng dẫn viên riêng" className="absolute top-0 left-0 w-full h-full object-cover opacity-50" />
+        <img src={config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')} alt="Hướng dẫn viên riêng" className="absolute top-0 left-0 w-full h-full object-cover opacity-50" />
         <div className="relative">
           <div className="bg-orange-500 p-3 rounded-lg inline-block mb-4">
             <i className="fas fa-user text-white text-2xl"></i>
@@ -150,7 +151,7 @@ const About = () => {
 
       {/* Quản lý địa điểm */}
       <div className="relative bg-red-700 text-white p-6 rounded-lg overflow-hidden shadow-lg">
-        <img src="/img/cards/card1.jpg" alt="Quản lý địa điểm" className="absolute top-0 left-0 w-full h-full object-cover opacity-50" />
+        <img src={config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')} alt="Quản lý địa điểm" className="absolute top-0 left-0 w-full h-full object-cover opacity-50" />
         <div className="relative">
           <div className="bg-orange-500 p-3 rounded-lg inline-block mb-4">
             <i className="fas fa-map text-white text-2xl"></i>
@@ -202,7 +203,7 @@ const About = () => {
       {/* Hình ảnh lớn full màn hình */}
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/img/cards/card3.jpg')" }}
+        style={{ backgroundImage: `url('${config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')}')` }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
       </div>
@@ -219,13 +220,13 @@ const About = () => {
         <div className="relative lg:w-1/2 flex justify-center mt-16 lg:mt-0">
           <div className="relative w-96 h-96">
             <img
-              src="/img/cards/card1.jpg"
+              src={config.imageConfig.getImage('11GF_uq0FoYzMvy-KBBItsjfigikNOzoH')}
               alt="Large Image"
               className="w-full h-full object-cover rounded-lg border-4 border-white shadow-lg"
             />
             <div className="absolute bottom-[-20px] left-[-30px] border-4 border-white rounded-lg shadow-xl transform rotate-3">
               <img
-                src="/img/cards/card2.jpg"
+                src={config.imageConfig.getImage('1iD_Pa2qZnOyEn6VN6EHXd_9nGw9B_3PL')}
                 alt="Small Floating"
                 className="w-48 h-56 object-cover rounded-lg"
               />
@@ -283,7 +284,7 @@ const About = () => {
       </div>
       
       {/* Nhận xét khách hàng */}
-      <div className="mt-10 relative bg-cover bg-center py-16" style={{ backgroundImage: "url('/img/cards/card4.jpg')" }}>
+      <div className="mt-10 relative bg-cover bg-center py-16" style={{ backgroundImage: `url('${config.imageConfig.getImage('1JjaqjdwMsg22toEBdQBMgAlDTcfIxMDa')})` }}>
       {/* Lớp phủ màu xanh */}
       <div className="absolute inset-0 bg-green-900 opacity-40"></div>
 
@@ -320,7 +321,7 @@ const About = () => {
       
     </div>
     {/* Phần giới thiệu công ty */}
-    <section className="relative bg-cover bg-center py-24 text-white text-center" style={{ backgroundImage: "url('/img/vacation/des5.jpg')" }}>
+    <section className="relative bg-cover bg-center py-24 text-white text-center" style={{ backgroundImage: `url('${config.imageConfig.getImage('1JjaqjdwMsg22toEBdQBMgAlDTcfIxMDa')}')` }}>
       <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative z-10 px-6">
           <h2 className="text-5xl font-bold mb-4">{t("about.ti39")}</h2>
