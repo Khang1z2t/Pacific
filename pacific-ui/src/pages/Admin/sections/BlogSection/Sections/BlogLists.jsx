@@ -38,12 +38,18 @@ export const BlogLists = ({ onView, onEdit, onCreateNew, blogs }) => {
             okType: 'danger',
             cancelText: 'Hủy',
             async onOk() {
-                await BlogServices.deleteBlog(blog.id);
-                setLoading(true);
-                setTimeout(() => {
-                    message.success(`Đã xóa bài viết "${blog.title}"`);
+                try{
+                    await BlogServices.deleteBlog(blog.id);
+                    setLoading(true);
+                    setTimeout(() => {
+                        message.success(`Đã xóa bài viết "${blog.title}"`);
+                        setLoading(false);
+                    }, 1000);
+                }catch (error) {
+                    message.error('Không thể xóa bài viết này.');
+                }finally {
                     setLoading(false);
-                }, 1000);
+                }
             },
         });
     };

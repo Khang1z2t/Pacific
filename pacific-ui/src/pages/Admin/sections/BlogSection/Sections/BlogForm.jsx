@@ -382,14 +382,16 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                         >
                             <Space>
                                 <Text>Trạng thái bài viết</Text>
-                                <Switch
-                                    checkedChildren={<EyeOutlined />}
-                                    unCheckedChildren={<EyeInvisibleOutlined />}
-                                    defaultValue={form.getFieldValue('status') === 'PUBLISHED'}
-                                    onChange={(checked) => {
-                                        form.setFieldsValue({ status: checked ? 'PUBLISHED' : 'DRAFT' });
-                                    }}
-                                />
+                                <Select
+                                    defaultValue={blog?.status}
+                                    className="w-1/2"
+                                    options={[
+                                        { value: 'DRAFT', label: 'Nháp' },
+                                        { value: 'PUBLISHED', label: 'Công khai' },
+                                    ]}
+                                    onChange={(value) => {
+                                        form.setFieldsValue({ status: value });
+                                    }}/>
                                 <Text type="secondary">
                                     {form.getFieldValue('status') === 'PUBLISHED'
                                         ? 'Bài viết sẽ được công khai cho tất cả mọi người.'

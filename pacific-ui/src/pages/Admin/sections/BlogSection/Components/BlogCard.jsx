@@ -1,14 +1,13 @@
 import { Button, Tooltip } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import PropTypes from 'prop-types';
 import config from '~/config';
 
 export const BlogCard = ({ blog, onView, onEdit, onDelete }) => {
     return (
         <div
-            className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:transform hover:-translate-y-1">
+            className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:transform hover:-translate-y-1 flex flex-col h-full">
             <div
-                className="cursor-pointer"
+                className="cursor-pointer flex-1 flex flex-col"
                 onClick={() => onView && onView(blog)}
             >
                 <div className="relative h-48 overflow-hidden">
@@ -21,10 +20,10 @@ export const BlogCard = ({ blog, onView, onEdit, onDelete }) => {
                         <p className="text-orange-700 p-1 rounded-lg w-fit bg-orange-200 text-sm">{config.webConfig.convertDateNoTime(blog.createdAt)}</p>
                     </div>
                 </div>
-                <div className="p-4">
+                <div className="p-4 flex-1 flex flex-col">
                     <h2 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-2">{blog.title}</h2>
                     <p className="text-gray-600 text-sm line-clamp-3 mb-3">{blog.metaDescription}</p>
-                    <p className="text-gray-500 text-xs">Tác giả: {blog.user.username}</p>
+                    <p className="text-gray-500 text-xs mt-auto">Tác giả: {blog.user.username}</p>
                 </div>
             </div>
             <div className="flex justify-between p-3 border-t border-gray-100">
@@ -60,20 +59,5 @@ export const BlogCard = ({ blog, onView, onEdit, onDelete }) => {
                     </Tooltip>
                 </div>
             </div>
-        </div>
-    );
-};
-
-BlogCard.propTypes = {
-    blog: PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-        title: PropTypes.string.isRequired,
-        description: PropTypes.string.isRequired,
-        image: PropTypes.string.isRequired,
-        author: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired,
-    }).isRequired,
-    onView: PropTypes.func,
-    onEdit: PropTypes.func,
-    onDelete: PropTypes.func,
+        </div>);
 };
