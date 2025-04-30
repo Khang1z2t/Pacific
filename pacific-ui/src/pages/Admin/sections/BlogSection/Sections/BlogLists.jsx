@@ -37,11 +37,10 @@ export const BlogLists = ({ onView, onEdit, onCreateNew, blogs }) => {
             okText: 'Xóa',
             okType: 'danger',
             cancelText: 'Hủy',
-            onOk() {
-                // Simulate API call
+            async onOk() {
+                await BlogServices.deleteBlog(blog.id);
                 setLoading(true);
                 setTimeout(() => {
-                    // In a real app, you would call an API to delete the blog
                     message.success(`Đã xóa bài viết "${blog.title}"`);
                     setLoading(false);
                 }, 1000);

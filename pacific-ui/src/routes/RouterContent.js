@@ -12,9 +12,6 @@ import HistoryPayment from '~/pages/Account/HistoryPayment/HistoryPayment';
 import { Success } from '~/pages/Booking/status/Success';
 import { ForgetPassword } from '~/pages/Account/ForgetPassword';
 import { ChangePassword } from '~/pages/Account/ChangePassword';
-import { MienBac } from '~/pages/Blog/MienBac';
-import { MienTrung } from '~/pages/Blog/MienTrung';
-import { MienNam } from '~/pages/Blog/MienNam';
 import { BookedTour } from '~/pages/Account/historyBooked/BookedTour';
 import { AdminLayout } from '~/component/Layout/Admin/AdminLayout';
 import AdminHome from '~/pages/Admin/AdminHome';
@@ -88,18 +85,6 @@ export const RouterContent = [
     {
         path: config.routes.changePassword,
         element: <ChangePassword/>,
-    },
-    {
-        path: config.routes.blogMienBac,
-        element: <MienBac/>,
-    },
-    {
-        path: config.routes.blogMienTrung,
-        element: <MienTrung/>,
-    },
-    {
-        path: config.routes.blogMienNam,
-        element: <MienNam/>,
     },
     {
         path: config.routes.checkOutSuccess,

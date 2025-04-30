@@ -62,8 +62,55 @@ const BlogServices = {
     },
 
     deleteBlog: async (id) => {
+        try {
+            const response = await axiosConfig.delete(config.api.blog + `/delete/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting blog:', error);
+            return Promise.reject(error);
+        }
+    },
 
-    }
+    subscribeBlog: async (email, name) => {
+        try {
+            const response = await axiosConfig.post(config.api.blog + `/subscribe?email=${email}&name=${name}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error subscribing to blog:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    createCategory: async (body) => {
+        try {
+            const response = await axiosConfig.post(config.api.blog + '/category/add', body);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating blog category:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    deleteCategory: async (id) => {
+        try {
+            const response = await axiosConfig.delete(config.api.blog + `/category/delete/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting blog category:', error);
+            return Promise.reject(error);
+        }
+    },
+
+    updateCategory: async (id, body) => {
+        try {
+            const response = await axiosConfig.post(config.api.blog + `/category/update/${id}`, body);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating blog category:', error);
+            return Promise.reject(error);
+        }
+    },
+
 };
 
 export default BlogServices;

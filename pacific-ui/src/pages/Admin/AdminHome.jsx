@@ -43,6 +43,7 @@ import { BlogSection } from '~/pages/Admin/sections/BlogSection/BlogSection';
 import dayjs from 'dayjs';
 import AdminServices from '~/services/AdminServices';
 import { BookingPage } from '~/pages/Admin/sections/BookingSection/BookingPage';
+import { BlogCategoryPage } from '~/pages/Admin/sections/BlogCategoryPage/BlogCategoryPage';
 
 const { Content } = Layout;
 
@@ -241,7 +242,10 @@ const AdminHome = () => {
             label: 'Blogs',
             key: 'sub8',
             icon: <BlockOutlined />,
-            content: <BlogSection />,
+            children: [
+                { label: 'Danh sách bài viết', key: '17', content: <BlogSection /> },
+                { label: 'Danh mục bài viết', key: '18', content: <BlogCategoryPage /> },
+            ],
         },
         { label: 'Hỗ trợ', key: '20', icon: <CommentOutlined />, content: <Support /> },
         {

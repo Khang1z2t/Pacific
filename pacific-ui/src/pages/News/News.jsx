@@ -8,8 +8,10 @@ import BlogServices from '~/services/BlogServices';
 import config from '~/config';
 import { TopNews } from '~/pages/News/components/TopNews';
 import { TopNewsSection } from '~/pages/News/components/TopNewsSection';
+import { useAuth } from '~/config/AuthContext';
 
 export const News = () => {
+    const { currentUser } = useAuth();
     const [currentPage, setCurrentPage] = useState(1);
     const [categories, setCategories] = useState([]);
     const [blogs, setBlogs] = useState([]);
@@ -94,7 +96,7 @@ export const News = () => {
     }, [searchTerm, blogs]);
 
     // Handle newsletter subscription
-    const handleSubscribe = useCallback(() => {
+    const handleSubscribe = useCallback(async () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email || !emailRegex.test(email)) {
             notification.error({
@@ -104,13 +106,14 @@ export const News = () => {
             });
             return;
         }
+        await BlogServices.subscribeBlog(email, currentUser?.username);
         notification.success({
             message: 'Đăng ký thành công',
             description: 'Cảm ơn bạn đã đăng ký nhận bản tin!',
             placement: 'bottomRight',
         });
         setEmail('');
-    }, [email]);
+    }, [email, currentUser?.username]);
 
     // Filter blogs
     const getCurrentItems = useCallback(() => {
