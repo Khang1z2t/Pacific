@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, message, Modal, Table, Tag } from 'antd';
+import { Button, Form, Input, message, Modal, Table, Tag, Select } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import SupportService from '~/services/SupportService';
 import dayjs from 'dayjs';
@@ -9,13 +9,15 @@ const ITEM_PER_PAGE = 7;
 const Support = () => {
     const [form] = Form.useForm();
     const [supports, setSupports] = useState([]);
+    const [filteredSupports, setFilteredSupports] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [supportId, setSupportId] = useState(null);
+    const [searchText, setSearchText] = useState('');
+    const [filterStatus, setFilterStatus] = useState('all');
 
     useEffect(() => {
         fetchSupports();
     }, []);
-
 
     const fetchSupports = async () => {
         try {
@@ -32,12 +34,12 @@ const Support = () => {
             });
 
             setSupports(sortedSupports);
+            setFilteredSupports(sortedSupports);
         } catch (err) {
             console.error(err);
             message.error("Có lỗi khi lấy danh sách yêu cầu hỗ trợ.");
         }
     };
-
 
     const handleOpenModal = (record) => {
         setSupportId(record.id);
@@ -67,9 +69,7 @@ const Support = () => {
             });
 
             if (response?.code === 200) {
-
                 const updateStatusResponse = await SupportService.updateSupportStatus(supportId, 'resolved');
-                console.log("Cập nhật trạng thái trả về:", updateStatusResponse);
 
                 if (updateStatusResponse?.code === 200) {
                     message.success("Phản hồi thành công, email đã được gửi và trạng thái đã được cập nhật!");
@@ -96,6 +96,28 @@ const Support = () => {
         }
     };
 
+    const applySearchFilter = (text, status = filterStatus, list = supports) => {
+        const value = text.toLowerCase();
+        const filtered = list.filter((support) => {
+            const name = (support.username || support.name || "").toLowerCase();
+            const email = (support.email || "").toLowerCase();
+            const matchesText = name.includes(value) || email.includes(value);
+            const matchesStatus = status === "all" || (support.status || '').toLowerCase() === status;
+            return matchesText && matchesStatus;
+        });
+        setFilteredSupports(filtered);
+    };
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchText(value);
+        applySearchFilter(value, filterStatus);
+    };
+
+    const handleStatusChange = (value) => {
+        setFilterStatus(value);
+        applySearchFilter(searchText, value);
+    };
 
     const columns = [
         {
@@ -142,8 +164,28 @@ const Support = () => {
     return (
         <div className="container mx-auto p-2">
             <h2 className="text-2xl font-bold mb-4">KHÁCH HÀNG CẦN HỖ TRỢ & TƯ VẤN</h2>
+
+            <div className="flex flex-wrap gap-2 mb-4">
+                <Input
+                    placeholder="Tìm theo tên hoặc email"
+                    value={searchText}
+                    onChange={handleSearchChange}
+                    className="w-full sm:w-80"
+                />
+                <Select
+                    value={filterStatus}
+                    onChange={handleStatusChange}
+                    className="w-full sm:w-40"
+                    options={[
+                        { value: "all", label: "Tất cả trạng thái" },
+                        { value: "pending", label: "Đang chờ" },
+                        { value: "resolved", label: "Đã xử lý" }
+                    ]}
+                />
+            </div>
+
             <Table
-                dataSource={supports}
+                dataSource={filteredSupports}
                 columns={columns}
                 pagination={{ pageSize: ITEM_PER_PAGE }}
                 rowKey="id"
