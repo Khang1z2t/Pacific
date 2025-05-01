@@ -6,26 +6,36 @@ import { Link } from 'react-router-dom';
 import { FaBookmark, FaFacebookF, FaLink, FaShareAlt, FaTwitter } from 'react-icons/fa';
 
 export const BlogCard = ({ blog }) => {
+    const shareUrl = `${window.location.origin}${config.routes.news}${blog.slug}`;
+
+    // Hàm xử lý chia sẻ bài viết
     const handleShare = () => {
-        // Tạm thời dùng navigator.share nếu hỗ trợ, nếu không thì copy URL
         if (navigator.share) {
-            let url = `${window.location.origin}/news/${blog.slug}`;
             navigator.share({
                 title: blog.title,
                 text: blog.metaDescription,
-                url,
-            }).catch(console.error);
+                url: shareUrl,
+            }).catch((error) => console.error('Error sharing:', error));
         } else {
-            navigator.clipboard.writeText(`${window.location.origin}/news/${blog.slug}`);
-            alert('Đã sao chép link bài viết!');
+            navigator.clipboard.writeText(shareUrl);
+            message.success('Đã sao chép link bài viết!');
         }
     };
-    const shareUrl = `${window.location.origin}${config.routes.news}${blog.slug}`;
 
+    // Hàm xử lý sao chép link
     const handleCopy = () => {
         navigator.clipboard.writeText(shareUrl);
-        message.success('Sao chép thành công!');
+        message.success('Sao chép link thành công!');
     };
+
+    // Hàm xử lý lưu bài viết (giả lập)
+    const handleSave = (e) => {
+        e.stopPropagation(); // Ngăn điều hướng khi nhấn nút lưu
+        message.success('Đã lưu bài viết!'); // Giả lập hành động lưu
+        // TODO: Gọi API để lưu bài viết vào danh sách yêu thích
+    };
+
+    // Nội dung Popover cho chia sẻ
     const shareContent = (
         <div className="flex flex-col space-y-2 min-w-[120px]">
             <button
@@ -48,9 +58,10 @@ export const BlogCard = ({ blog }) => {
             </button>
         </div>
     );
+
     return (
-        <div
-            className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:transform hover:-translate-y-1">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:transform hover:-translate-y-1">
+            {/* Phần hình ảnh với Link */}
             <Link to={`${config.routes.news}${blog.slug}`} className="block">
                 <div className="relative h-48 overflow-hidden">
                     <img
@@ -64,29 +75,46 @@ export const BlogCard = ({ blog }) => {
                         </p>
                     </div>
                 </div>
-                <div className="p-4">
-                    <h2 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-2">{blog.title}</h2>
+            </Link>
+
+            {/* Phần nội dung */}
+            <div className="p-4">
+                {/* Tiêu đề và mô tả với Link */}
+                <Link to={`${config.routes.news}${blog.slug}`} className="block">
+                    <h2 className="text-lg font-semibold text-gray-800 line-clamp-2 mb-2 hover:text-orange-600 transition-colors">
+                        {blog.title}
+                    </h2>
                     <p className="text-gray-600 text-sm line-clamp-3 mb-3">{blog.metaDescription}</p>
-                    <div className="flex justify-between items-center">
-                        <p className="text-gray-500 text-xs">Tác giả: {blog.user.username}</p>
-                        <div className="flex justify-end px-4 py-2 bg-gray-50 border-t border-gray-100">
-                            <button className="text-gray-500 hover:text-orange-600 p-1 transition-colors duration-200"
-                                    title="Lưu bài viết">
+                </Link>
+
+                {/* Phần tác giả và nút hành động */}
+                <div className="flex justify-between items-center">
+                    <p className="text-gray-500 text-xs">Tác giả: {blog.user.username}</p>
+                    <div className="flex justify-end space-x-3">
+                        {/* Nút lưu bài viết */}
+                        <Tooltip title="Lưu bài viết">
+                            <button
+                                className="text-gray-500 hover:text-orange-600 p-1 transition-colors duration-200"
+                                onClick={handleSave}
+                            >
                                 <FaBookmark />
                             </button>
-                            <Popover content={shareContent} trigger="click" placement="topRight">
+                        </Tooltip>
+
+                        {/* Nút chia sẻ */}
+                        <Popover content={shareContent} trigger="click" placement="topRight">
+                            <Tooltip title="Chia sẻ">
                                 <button
-                                    className="text-gray-500 hover:text-orange-600 p-1 ml-3 transition-colors duration-200"
-                                    title="Chia sẻ"
-                                    type="button"
+                                    className="text-gray-500 hover:text-orange-600 p-1 transition-colors duration-200"
+                                    onClick={(e) => e.stopPropagation()} // Ngăn điều hướng
                                 >
                                     <FaShareAlt />
                                 </button>
-                            </Popover>
-                        </div>
+                            </Tooltip>
+                        </Popover>
                     </div>
                 </div>
-            </Link>
+            </div>
         </div>
     );
 };

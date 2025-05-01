@@ -172,7 +172,7 @@ const Contacts = () => {
                         <MapContainer
                             center={mapCenter}
                             zoom={15}
-                            style={{ height: '100%', width: '100%', borderRadius: '0.5rem' }}
+                            style={{ height: '100%', width: '100%', borderRadius: '0.5rem', zIndex:0 }}
                             className="rounded-lg"
                         >
                             <TileLayer
