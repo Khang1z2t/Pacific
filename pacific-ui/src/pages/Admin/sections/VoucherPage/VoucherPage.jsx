@@ -193,7 +193,7 @@ export const VoucherPage = () => {
                 setLoading(false);
             }
         },
-        [fetchAllData, form, selectedVoucher],
+        [fetchAllData, form, selectedVoucher.id],
     );
 
     // Memoized function to handle delete voucher
@@ -306,9 +306,9 @@ export const VoucherPage = () => {
             key: 'status',
             width: 150,
             render: (text) => (
-                <span style={{ color: text === 'ACTIVE' ? 'green' : 'red' }}>
-          {text === 'ACTIVE' ? 'Hoạt động' : 'Không hoạt động'}
-        </span>
+                <span style={{ color: text === 'ACTIVE' ? 'green' : text === 'OUT_OF_STOCK' ? 'orange' : 'red' }}>
+                  {text === 'ACTIVE' ? 'Hoạt động' : text === 'OUT_OF_STOCK' ? 'Hết hàng' : 'Không hoạt động'}
+                </span>
             ),
         },
         {
