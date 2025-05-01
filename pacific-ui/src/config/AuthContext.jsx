@@ -71,7 +71,7 @@ export function AuthProvider({ children }) {
 			setLoading(false);
 			throw err;
 		}
-	}, []);
+	}, [setCurrentUser, setRole]);
 
 	const getVouchers = useCallback(async () => {
 		try {
@@ -235,17 +235,7 @@ export function AuthProvider({ children }) {
 
 	const handlePasswordSubmit = async (values) => {
 		try {
-			const { username, password, confirmPassword } = values;
-
-			// Cập nhật username nếu có thay đổi
-			if (username !== currentUser.username) {
-				await AuthService.updateUsername({ username: username }).then((res) => {
-					setCurrentUser((prevUser) => ({
-						...prevUser,
-						username: username,
-					}));
-				});
-			}
+			const { password, confirmPassword } = values;
 
 			// Cập nhật mật khẩu
 			await AuthServices.resetPassword({
@@ -381,6 +371,7 @@ export function AuthProvider({ children }) {
 							rules={[{ required: true, message: 'Vui lòng nhập tên người dùng!' }]}
 						>
 							<Input
+								disabled
 								placeholder="Tên người dùng"
 								className="rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200" />
 						</Form.Item>
