@@ -43,15 +43,14 @@ export const TourLists = ({ titleType }) => {
         const fetchTours = async () => {
             setLoading(true);
             try {
-                const params = Object.keys(query).length === 0 ? { status: 'PUBLISHED' } : {
-                    title: query.title || null,
-                    categoryId: query.categoryId || null,
-                    startDate: query.startDate || null,
-                    endDate: query.endDate || null,
-                    minPrice: query.minPrice || null,
-                    maxPrice: query.maxPrice || null,
-                    region: titleType,
-                };
+                const params = { status: 'PUBLISHED' };
+                if (query.title) params.title = query.title;
+                if (query.categoryId !== null) params.categoryId = query.categoryId;
+                if (query.startDate) params.startDate = query.startDate;
+                if (query.endDate) params.endDate = query.endDate;
+                if (query.minPrice) params.minPrice = query.minPrice;
+                if (query.maxPrice) params.maxPrice = query.maxPrice;
+                if (titleType) params.region = titleType;
 
                 const res = await TourServices.getAllTour(params);
                 const published = res.data.filter((tour) => tour.status === 'PUBLISHED');
@@ -75,21 +74,10 @@ export const TourLists = ({ titleType }) => {
 
         if (query.rate !== null && query.rate !== undefined) {
             if (query.rate === 5) {
-                // Trường hợp đặc biệt: chỉ lấy các tour có rating chính xác là 5 sao
                 result = result.filter((tour) => tour.ratingAvg === 5);
             } else {
-                // Lọc các tour có rating từ query.rate trở lên (cho 1-4 sao)
-                result = result.filter((tour) => tour.ratingAvg >= query.rate);
+                result = result.filter((tour) => (tour.ratingAvg || 0) >= query.rate);
             }
-        }
-
-        // Sắp xếp theo rating (từ nhỏ đến lớn) nếu có dữ liệu
-        if (result.length > 0 && query.rate !== 5) {
-            result.sort((a, b) => (a.ratingAvg || 0) - (b.ratingAvg || 0));
-        }
-
-        if (result.length > 0) {
-            result.sort((a, b) => (a.ratingAvg || 0) - (b.ratingAvg || 0));
         }
 
         if (query.searchPrices && query.searchPrices !== 'All') {
@@ -100,15 +88,8 @@ export const TourLists = ({ titleType }) => {
             }
         }
 
-        if (query.minPrice && query.minPrice > 0) {
-            result = result.filter((tour) => tour.maxPrice >= query.minPrice);
-        }
-        if (query.maxPrice && query.maxPrice > 0) {
-            result = result.filter((tour) => tour.maxPrice <= query.maxPrice);
-        }
-
         return result;
-    }, [tours, query.rate, query.searchPrices, query.minPrice, query.maxPrice]);
+    }, [tours, query.rate, query.searchPrices]);
 
     // Tính danh sách tour hiển thị trên trang hiện tại
     const filteredTours = useMemo(() => {
@@ -179,7 +160,7 @@ export const TourLists = ({ titleType }) => {
                     lịch {titleType === 'INSIDE' ? 'Trong nước' : 'Ngoài nước'}</p>
             </Divider>
 
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar onSearch={handleSearch} query={query} />
 
             <SearchFilterBar onSearch={setQuery} query={query} />
 

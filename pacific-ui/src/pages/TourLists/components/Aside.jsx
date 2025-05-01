@@ -1,4 +1,4 @@
-import { Divider, InputNumber, Radio, Rate, Select } from 'antd';
+import { Divider, InputNumber, Radio, message, Rate, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CloseCircleOutlined } from '@ant-design/icons';
@@ -63,6 +63,10 @@ export const Aside = ({ query, setQuery, titleType }) => {
                     suffix="VND"
                     value={minPrice}
                     onChange={(value) => {
+                        if (maxPrice && value > maxPrice) {
+                            message.error('Giá thấp nhất không thể lớn hơn giá cao nhất');
+                            return;
+                        }
                         setMinPrice(value);
                     }}
                 />
@@ -75,6 +79,10 @@ export const Aside = ({ query, setQuery, titleType }) => {
                     suffix="VND"
                     value={maxPrice}
                     onChange={(value) => {
+                        if (minPrice && value < minPrice) {
+                            message.error('Giá cao nhất không thể nhỏ hơn giá thấp nhất');
+                            return;
+                        }
                         setMaxPrice(value);
                     }}
                 />

@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 import CategoryServices from '~/services/CategoryServices';
 import { useTranslation } from 'react-i18next';
 
-export const SearchBar = ({ onSearch }) => {
+export const SearchBar = ({ onSearch, query }) => {
     const { RangePicker } = DatePicker;
     const { t } = useTranslation();
-    const [searchText, setSearchText] = useState('');
+    const [searchText, setSearchText] = useState(query.searchText || '');
     const [sides, setSides] = useState([]);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [searchSides, setSearchSides] = useState(null); // Khởi tạo searchSides là null
+    const [startDate, setStartDate] = useState(query.startDate || null);
+    const [endDate, setEndDate] = useState(query.endDate || null);
+    const [searchSides, setSearchSides] = useState(query.searchPrices || null);
 
     useEffect(() => {
         CategoryServices.getCategories()
@@ -40,6 +40,10 @@ export const SearchBar = ({ onSearch }) => {
     }, [t]); // Thêm t vào dependency để cập nhật khi ngôn ngữ thay đổi
 
     const handleSearch = () => {
+        if (startDate && endDate && startDate > endDate) {
+            message.error('Ngày bắt đầu không thể lớn hơn ngày kết thúc');
+            return;
+        }
         onSearch({ searchText, searchSides, startDate, endDate });
     };
 
