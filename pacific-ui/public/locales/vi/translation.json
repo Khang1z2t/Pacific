@@ -212,7 +212,7 @@
     "ti14": "Đăng ký",
     "ti15": "Hoặc đăng nhập với",
     "ti16": "Đăng nhập với Google",
-    "ti17": "Đăng nhập với Facebook"
+    "ti17": "Đăng nhập với Discord"
   },
   "register": {
     "ti1": "Mật khẩu không trùng khớp",
@@ -234,7 +234,7 @@
     "ti17": "Đăng nhập",
     "ti18": "Hoặc đăng nhập với",
     "ti19": "Đăng nhập với Google",
-    "ti20": "Đăng nhập với Facebook"
+    "ti20": "Đăng nhập với Discord"
   },
   "news": {
     "pageTitle": "Tin Tức Du Lịch - Blog",

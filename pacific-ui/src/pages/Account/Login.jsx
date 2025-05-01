@@ -90,7 +90,7 @@ export const Login = () => {
 						{t('login.ti16')}
 					</button>
 					<button
-						onClick={() => handleOAuthLogin('facebook', navigate)}
+						onClick={() => handleOAuthLogin('discord', navigate)}
 						className="p-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600"
 					>
 						{t('login.ti17')}

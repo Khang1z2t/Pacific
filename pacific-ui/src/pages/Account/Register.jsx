@@ -1,5 +1,5 @@
 import { Button, Divider, Form, Input, message } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone, FacebookFilled, GoogleOutlined } from '@ant-design/icons';
+import { DiscordFilled, EyeInvisibleOutlined, EyeTwoTone, FacebookFilled, GoogleOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import config from '~/config';
@@ -157,11 +157,11 @@ export const Register = () => {
 						{t('register.ti19')}
 					</Button>
 					<Button
-						onClick={() => handleFacebookLogin('facebook', navigate)}
+						onClick={() => handleOAuthLogin('discord', navigate)}
 						color={'primary'}
 						variant={'solid'}
 						size={'large'}
-						icon={<FacebookFilled />}
+						icon={<DiscordFilled />}
 					>
 						{t('register.ti20')}
 					</Button>

@@ -212,7 +212,7 @@
     "ti14": "Sign up",
     "ti15": "Or login with",
     "ti16": "Login with Google",
-    "ti17": "Login with Facebook"
+    "ti17": "Login with Discord"
   },
   "register": {
     "ti1": "Passwords do not match",
@@ -234,7 +234,7 @@
     "ti17": "Login",
     "ti18": "Or login with",
     "ti19": "Login with Google",
-    "ti20": "Login with Facebook"
+    "ti20": "Login with Discord"
   },
   "news": {
     "ti1": "Inner Mongolia Travel",
