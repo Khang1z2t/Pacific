@@ -23,13 +23,9 @@ const Support = () => {
         try {
             const res = await SupportService.getAllSupports();
 
-            // Support mới lên đầu
             const sortedSupports = res.data.sort((a, b) => {
-                // Ưu tiên pending lên đầu
                 if (a.status === 'pending' && b.status !== 'pending') return -1;
                 if (a.status !== 'pending' && b.status === 'pending') return 1;
-
-                // Nếu cùng trạng thái, sắp theo ngày mới nhất
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
 
@@ -60,7 +56,6 @@ const Support = () => {
         try {
             const values = await form.validateFields();
 
-            // Gửi phản hồi và cập nhật trạng thái hỗ trợ
             const response = await SupportService.respondToSupport({
                 id: supportId,
                 email: values.email,
@@ -74,14 +69,13 @@ const Support = () => {
                 if (updateStatusResponse?.code === 200) {
                     message.success("Phản hồi thành công, email đã được gửi và trạng thái đã được cập nhật!");
 
-                    // Cập nhật lại state `support` để tránh phải reload trang
-                    setSupports((prevSupports) =>
-                        prevSupports.map((support) =>
-                            support.id === supportId
-                                ? { ...support, status: 'resolved' } // Cập nhật trạng thái của yêu cầu hỗ trợ cụ thể
-                                : support
-                        )
-                    );
+                    const updated = (prev) =>
+                        prev.map((support) =>
+                            support.id === supportId ? { ...support, status: 'resolved' } : support
+                        );
+
+                    setSupports(updated);
+                    setFilteredSupports(updated);
 
                     handleCloseModal();
                 } else {
@@ -191,7 +185,6 @@ const Support = () => {
                 rowKey="id"
             />
 
-            {/* Modal gửi thư */}
             <Modal
                 title="GỬI THƯ PHẢN HỒI KHÁCH HÀNG"
                 open={modalVisible}
