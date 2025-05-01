@@ -17,97 +17,97 @@ import { AdminLayout } from '~/component/Layout/Admin/AdminLayout';
 import AdminHome from '~/pages/Admin/AdminHome';
 import { News } from '~/pages/News/News';
 import { Error } from '~/pages/Booking/status/Error';
-import { GoogleRedirect } from '~/pages/Account/components/GoogleRedirect';
+import { OAuth2Redirect } from '~/pages/Account/components/OAuth2Redirect';
 import { Terms } from '~/pages/Terms/Terms';
 import { DetailNews } from '~/pages/News/DetailNews/DetailNews';
 
 export const RouterContent = [
-    {
-        path: config.routes.home,
-        element: <Home/>,
-    },
-    {
-        path: config.routes.tourTrongNuoc,
-        element: <TourLists titleType={"INSIDE"}/>,
-    },
-    {
-        path: config.routes.login,
-        element: <Login/>,
-    },
-    {
-        path: config.routes.googleRedirect,
-        element: <GoogleRedirect/>,
-    },
-    {
-        path: config.routes.register,
-        element: <Register/>,
-    },
-    {
-        path: config.routes.tourDetail + ':id',
-        element: <TourDetail/>,
-    },
-    {
-        path: config.routes.tourNgoaiNuoc,
-        element: <TourLists titleType={"OUTSIDE"}/>,
-    },
-    {
-        path: config.routes.contacts,
-        element: <Contacts/>,
-    },
-    {
-        path: config.routes.about,
-        element: <About/>,
-    },
-    {
-        path: config.routes.profile,
-        element: <ProfileUI/>,
-    },
-    {
-        path: config.routes.booking + ':id',
-        element: <Booking/>,
-    },
-    {
-        path: config.routes.terms,
-        element: <Terms/>,
-    },
-    {
-        path: config.routes.historyBooked,
-        element: <BookedTour/>,
-    },
-    {
-        path: config.routes.historyPayment,
-        element: <HistoryPayment/>,
-    },
-    {
-        path: config.routes.forgotPassword,
-        element: <ForgetPassword/>,
-    },
-    {
-        path: config.routes.changePassword,
-        element: <ChangePassword/>,
-    },
-    {
-        path: config.routes.checkOutSuccess,
-        element: <Success/>,
-    },
-    {
-        path: config.routes.checkoutFail,
-        element: <Error/>,
-    },
-    {
-        path: config.routes.news + '*',
-        element: <DetailNews />,
-    },
-    {
-        path: config.routes.adminHome,
-        element: (
-            <AdminLayout>
-                <AdminHome/>
-            </AdminLayout>
-        ),
-    },
-    {
-        path: config.routes.news,
-        element: <News/>,
-    },
+	{
+		path: config.routes.home,
+		element: <Home />,
+	},
+	{
+		path: config.routes.tourTrongNuoc,
+		element: <TourLists titleType={'INSIDE'} />,
+	},
+	{
+		path: config.routes.login,
+		element: <Login />,
+	},
+	{
+		path: config.routes.oauth2Redirect,
+		element: <OAuth2Redirect />,
+	},
+	{
+		path: config.routes.register,
+		element: <Register />,
+	},
+	{
+		path: config.routes.tourDetail + ':id',
+		element: <TourDetail />,
+	},
+	{
+		path: config.routes.tourNgoaiNuoc,
+		element: <TourLists titleType={'OUTSIDE'} />,
+	},
+	{
+		path: config.routes.contacts,
+		element: <Contacts />,
+	},
+	{
+		path: config.routes.about,
+		element: <About />,
+	},
+	{
+		path: config.routes.profile,
+		element: <ProfileUI />,
+	},
+	{
+		path: config.routes.booking + ':id',
+		element: <Booking />,
+	},
+	{
+		path: config.routes.terms,
+		element: <Terms />,
+	},
+	{
+		path: config.routes.historyBooked,
+		element: <BookedTour />,
+	},
+	{
+		path: config.routes.historyPayment,
+		element: <HistoryPayment />,
+	},
+	{
+		path: config.routes.forgotPassword,
+		element: <ForgetPassword />,
+	},
+	{
+		path: config.routes.changePassword,
+		element: <ChangePassword />,
+	},
+	{
+		path: config.routes.checkOutSuccess,
+		element: <Success />,
+	},
+	{
+		path: config.routes.checkoutFail,
+		element: <Error />,
+	},
+	{
+		path: config.routes.news + '*',
+		element: <DetailNews />,
+	},
+	{
+		path: config.routes.adminHome,
+		element: (
+			<AdminLayout>
+				<AdminHome />
+			</AdminLayout>
+		),
+	},
+	{
+		path: config.routes.news,
+		element: <News />,
+	},
 ];
