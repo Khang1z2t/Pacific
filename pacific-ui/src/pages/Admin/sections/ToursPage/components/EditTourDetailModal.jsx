@@ -62,7 +62,7 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
             await TourDetailServices.updateTourDetail(tourDetail.id, body);
             message.success('Cập nhật chi tiết tour thành công!');
             setVisible(false);
-            if (onSuccess) onSuccess();
+            onSuccess();
         } catch (error) {
             console.error('Error updating tour detail:', error);
             message.error('Cập nhật chi tiết tour thất bại!');
