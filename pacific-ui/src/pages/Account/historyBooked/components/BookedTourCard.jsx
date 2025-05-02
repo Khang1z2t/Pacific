@@ -529,7 +529,6 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
                             className="rounded-lg"
                             scroll={{ x: 600 }}
                         />
-                        Johnston
                     </div>
                 </div>
             </Modal>

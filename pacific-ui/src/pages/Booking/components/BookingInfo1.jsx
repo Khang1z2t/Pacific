@@ -19,11 +19,11 @@ import BookingServices from '~/services/BookingServices';
 import { ModalTerms } from '~/pages/Terms/ModalTerms';
 import { FaTags } from 'react-icons/fa';
 import TourService from '~/services/TourServices';
-import TourInfoCard from '~/pages/Booking/components/bookingInfo1/components/TourInfoCard';
 import { useAuth } from '~/config/AuthContext';
 import VoucherServices from '~/services/VoucherServices';
 import HotelServices from '~/services/HotelServices';
 import TransportServices from '~/services/TransportServices';
+import { TourInfoCard } from '~/pages/Booking/components/bookingInfo1/components/TourInfoCard';
 
 const { TextArea } = Input;
 
@@ -53,9 +53,10 @@ export const BookingInfo1 = ({ data }) => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [loadingBook, setLoadingBook] = useState(false);
-    const [maxTotalPassengers, setMaxTotalPassengers] = useState(data?.quantity || 10); // Khởi tạo từ data.quantity
+    const [maxTotalPassengers, setMaxTotalPassengers] = useState(data?.quantity || 10);
+    const [actualDiscountAmount, setActualDiscountAmount] = useState(0); // Thêm state để lưu số tiền giảm thực tế
 
-    // Memoized function to fetch hotel, transport, and tour
+    // Fetch hotel, transport, and tour (giữ nguyên từ mã trước)
     const fetchHotelAndTransport = useCallback(async () => {
         try {
             const requests = [];
@@ -68,7 +69,7 @@ export const BookingInfo1 = ({ data }) => {
             requests.push(TourService.getTourByTourDetailId(id));
 
             const [hotelRes, transportRes, tourRes] = await Promise.all(
-                requests.map((req) => req.catch((err) => ({ error: err }))),
+                requests.map((req) => req.catch((err) => ({ error: err })))
             );
 
             if (hotelRes && !hotelRes.error) setHotel(hotelRes);
@@ -83,12 +84,11 @@ export const BookingInfo1 = ({ data }) => {
         }
     }, [data?.hotelId, data?.transportId, id]);
 
-    // Fetch hotel, transport, and tour on mount
     useEffect(() => {
         fetchHotelAndTransport();
     }, [fetchHotelAndTransport]);
 
-    // Cập nhật maxTotalPassengers từ data.quantity
+    // Cập nhật maxTotalPassengers
     useEffect(() => {
         if (data?.quantity) {
             setMaxTotalPassengers(data.quantity);
@@ -105,7 +105,7 @@ export const BookingInfo1 = ({ data }) => {
                 setAdults(value);
             }
         },
-        [children, maxTotalPassengers],
+        [children, maxTotalPassengers]
     );
 
     const handleChildrenChange = useCallback(
@@ -118,10 +118,10 @@ export const BookingInfo1 = ({ data }) => {
                 setChildren(value);
             }
         },
-        [adults, maxTotalPassengers],
+        [adults, maxTotalPassengers]
     );
 
-    // Manage booking details
+    // Manage booking details (giữ nguyên)
     useEffect(() => {
         setBookingDetails((prev) => {
             const newDetails = [];
@@ -153,7 +153,7 @@ export const BookingInfo1 = ({ data }) => {
         });
     }, [adults, children, data.priceAdults, data.priceChildren]);
 
-    // Memoized function to apply voucher
+    // Apply voucher
     const applyVoucher = useCallback(
         async (voucherCode) => {
             if (!voucherCode) {
@@ -161,6 +161,7 @@ export const BookingInfo1 = ({ data }) => {
                 setVoucherValid(false);
                 setMaxDiscountAmount(0);
                 setVoucherCode('');
+                setActualDiscountAmount(0);
                 return;
             }
             try {
@@ -180,6 +181,7 @@ export const BookingInfo1 = ({ data }) => {
                     setVoucherValid(false);
                     setMaxDiscountAmount(0);
                     setVoucherCode('');
+                    setActualDiscountAmount(0);
                     message.error('Mã voucher không hợp lệ hoặc không đủ điều kiện!');
                 }
             } catch (err) {
@@ -187,11 +189,12 @@ export const BookingInfo1 = ({ data }) => {
                 setVoucherValid(false);
                 setMaxDiscountAmount(0);
                 setVoucherCode('');
+                setActualDiscountAmount(0);
                 message.error(err.response?.data?.message || 'Có lỗi xảy ra khi kiểm tra voucher!');
                 console.error(err);
             }
         },
-        [id, totalPrice],
+        [id, totalPrice]
     );
 
     // Update total price
@@ -200,10 +203,18 @@ export const BookingInfo1 = ({ data }) => {
         const hotelCost = hotel.cost || 0;
         const transportCost = transport.cost || 0;
         const totalBasePrice = basePrice + hotelCost + transportCost;
-        const discountedPrice = voucherValid
-            ? Math.min(totalBasePrice * (1 - discount / 100), totalBasePrice - maxDiscountAmount)
-            : totalBasePrice;
+
+        let discountedPrice = totalBasePrice;
+        let actualDiscount = 0;
+
+        if (voucherValid) {
+            const discountAmount = totalBasePrice * (discount / 100); // Số tiền giảm theo phần trăm
+            actualDiscount = Math.min(discountAmount, maxDiscountAmount || Infinity); // Giới hạn bởi maxDiscountAmount
+            discountedPrice = totalBasePrice - actualDiscount;
+        }
+
         setTotalPrice(discountedPrice);
+        setActualDiscountAmount(actualDiscount);
     }, [adults, children, data.priceAdults, data.priceChildren, hotel.cost, transport.cost, discount, voucherValid, maxDiscountAmount]);
 
     const updateBookingDetail = useCallback((id, field, value) => {
@@ -217,13 +228,18 @@ export const BookingInfo1 = ({ data }) => {
         });
     }, []);
 
-    // Memoized function to book tour
+    // Book tour
     const BookTour = useCallback(async () => {
         setLoadingBook(true);
         const basePrice = adults * data.priceAdults + children * data.priceChildren + (hotel.cost || 0) + (transport.cost || 0);
-        const finalPrice = voucherValid
-            ? Math.min(basePrice * (1 - discount / 100), basePrice - maxDiscountAmount)
-            : basePrice;
+        let finalPrice = basePrice;
+
+        if (voucherValid) {
+            const discountAmount = basePrice * (discount / 100);
+            const actualDiscount = Math.min(discountAmount, maxDiscountAmount || Infinity);
+            finalPrice = basePrice - actualDiscount;
+        }
+
         const body = {
             bookerFullName: fullName || '',
             bookerEmail: email || '',
@@ -265,7 +281,25 @@ export const BookingInfo1 = ({ data }) => {
         } finally {
             setLoadingBook(false);
         }
-    }, [adults, children, data.id, data.priceAdults, data.priceChildren, hotel.cost, transport.cost, fullName, email, phone, address, note, voucher, discount, maxDiscountAmount, bookingDetails]);
+    }, [
+        adults,
+        children,
+        data.id,
+        data.priceAdults,
+        data.priceChildren,
+        hotel.cost,
+        transport.cost,
+        fullName,
+        email,
+        phone,
+        address,
+        note,
+        voucherValid,
+        voucher,
+        discount,
+        maxDiscountAmount,
+        bookingDetails,
+    ]);
 
     const [form] = Form.useForm();
 
@@ -382,8 +416,7 @@ export const BookingInfo1 = ({ data }) => {
                                             }
                                             key={item.id}
                                         >
-                                            <div
-                                                className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 border bg-orange-50 rounded-lg shadow-lg">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 border bg-orange-50 rounded-lg shadow-lg">
                                                 <div className="flex flex-col mb-2">
                                                     <label className="font-bold">Họ và tên</label>
                                                     <Input
@@ -494,6 +527,7 @@ export const BookingInfo1 = ({ data }) => {
                                             setVoucherValid(false);
                                             setMaxDiscountAmount(0);
                                             setVoucherCode('');
+                                            setActualDiscountAmount(0);
                                         }
                                     }}
                                     onBlur={() => applyVoucher(voucher)}
@@ -501,13 +535,9 @@ export const BookingInfo1 = ({ data }) => {
                                 {voucherValid && (
                                     <>
                     <span className="text-green-500 text-sm font-semibold">
-                      Voucher hợp lệ! Giảm {discount}% cho tổng giá trị đơn hàng
+                      Voucher hợp lệ! Giảm {discount}% (tối đa {config.webConfig.getCurrency(maxDiscountAmount)}).
+                      Số tiền giảm: {config.webConfig.getCurrency(actualDiscountAmount)}
                     </span>
-                                        {maxDiscountAmount > 0 && (
-                                            <span className="text-blue-500 text-xs block">
-                        Tối đa: {config.webConfig.getCurrency(maxDiscountAmount)}
-                      </span>
-                                        )}
                                     </>
                                 )}
                                 {!voucherValid && voucher && (
@@ -537,7 +567,7 @@ export const BookingInfo1 = ({ data }) => {
                                     <>
                                         {config.webConfig.getCurrency(totalPrice)}{' '}
                                         <span className="text-xs text-green-500">
-                      (Giảm {discount}%)
+                      (Giảm {config.webConfig.getCurrency(actualDiscountAmount)})
                     </span>
                                     </>
                                 ) : (
@@ -589,6 +619,7 @@ export const BookingInfo1 = ({ data }) => {
                         discount={discount}
                         hotel={hotel}
                         transport={transport}
+                        actualDiscountAmount={actualDiscountAmount} // Truyền thêm prop
                     />
                 </div>
 
@@ -622,6 +653,7 @@ export const BookingInfo1 = ({ data }) => {
                         discount={discount}
                         hotel={hotel}
                         transport={transport}
+                        actualDiscountAmount={actualDiscountAmount} // Truyền thêm prop
                     />
                 </Drawer>
             </div>
