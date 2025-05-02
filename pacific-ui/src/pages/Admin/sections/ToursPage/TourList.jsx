@@ -374,13 +374,6 @@ const TourList = () => {
                             }}
                         />
                     </Tooltip>
-                    <Tooltip placement="top" title="Xóa chi tiết tour">
-                        <Button
-                            icon={<DeleteOutlined />}
-                            danger
-                            onClick={() => handleDeleteTourDetail(record.id)}
-                        />
-                    </Tooltip>
                 </Space>
             ),
         },

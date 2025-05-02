@@ -12,8 +12,6 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
         form.setFieldsValue({ priceChildren: value * 0.3 });
     };
 
-    console.log('tourDetail', tourDetail);
-
     useEffect(() => {
         if (tourDetail && tourDetail.id) {
             form.setFieldsValue({
@@ -83,8 +81,8 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
             form.setFieldsValue({
                 dateRange: [
                     date.hour(8).minute(0).second(0),
-                    endDate
-                ]
+                    endDate,
+                ],
             });
         }
     };
@@ -181,7 +179,7 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
                     </Form.Item>
                 </div>
 
-                <p className={"font-semibold text-black uppercase"}>
+                <p className={'font-semibold text-black uppercase'}>
                     Thời gian tour ({tourDetail.duration} ngày)
                 </p>
                 <div className="grid grid-cols-2 gap-4">
@@ -236,10 +234,16 @@ export const EditTourDetail = ({ visible, hotels, guides, transports, setVisible
 
                 <Form.Item
                     name="active"
-                    label="Trạng thái"
-                    valuePropName="checked"
-                >
-                    <Switch />
+                    label="Trạng thái">
+                    <Select
+                        showSearch
+                        options={[
+                            { id: true, name: 'Đang hoạt động' },
+                            { id: false, name: 'Ngừng hoạt động' },
+                        ]}
+                        optionFilterProp={'name'}
+                        fieldNames={{ value: 'id', label: 'name' }}
+                        placeholder={'Chọn trạng thái'} />
                 </Form.Item>
 
                 <Form.Item

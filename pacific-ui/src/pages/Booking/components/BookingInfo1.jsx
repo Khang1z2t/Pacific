@@ -45,6 +45,7 @@ export const BookingInfo1 = ({ data }) => {
 	const [open, setOpen] = useState(false);
 	const [voucher, setVoucher] = useState('');
 	const [voucherCode, setVoucherCode] = useState('');
+	const [maxDiscountAmount, setMaxDiscountAmount] = useState(0);
 	const [tour, setTour] = useState({});
 	const [bookingDetails, setBookingDetails] = useState([]);
 	const [hotel, setHotel] = useState({});
@@ -131,6 +132,7 @@ export const BookingInfo1 = ({ data }) => {
 			});
 			if (checkResponse.data.valid === true) {
 				setDiscount(checkResponse.data.discountValue);
+				setMaxDiscountAmount(checkResponse.data.maxDiscountAmount);
 				setVoucherCode(checkResponse.data.voucherCode);
 				setVoucherValid(true);
 			} else {
@@ -456,11 +458,18 @@ export const BookingInfo1 = ({ data }) => {
 									}}
 									onBlur={() => applyVoucher(voucher)}
 								/>
-								{voucherValid && (
-									<span className="text-green-500 text-sm font-semibold">
-                                        Voucher hợp lệ! Giảm {discount}% cho tổng giá trị đơn hàng
+                                {voucherValid && (
+                                  <>
+                                    <span className="text-green-500 text-sm font-semibold">
+                                      Voucher hợp lệ! Giảm {discount}% cho tổng giá trị đơn hàng
                                     </span>
-								)}
+                                    {maxDiscountAmount > 0 && (
+                                      <span className="text-blue-500 text-xs block">
+                                        Tối đa: {config.webConfig.getCurrency(maxDiscountAmount)}
+                                      </span>
+                                    )}
+                                  </>
+                                )}
 								{!voucherValid && voucher && (
 									<span className="text-red-500 text-sm font-semibold">
                                         Voucher không hợp lệ hoặc không đủ điều kiện!
