@@ -19,6 +19,41 @@ import TourServices from '~/services/TourServices';
 import BlogServices from '~/services/BlogServices';
 import config from '~/config';
 
+
+
+const processImageURLs = (htmlString) => {
+    // Hàm để lấy URL thực tế từ ID ảnh
+    const getImageURL = (imageId) => {
+        // Ví dụ: Google Drive URL
+        // return `https://drive.google.com/uc?export=view&id=${imageId}`;
+        // Hoặc sử dụng hàm từ config nếu có, ví dụ:
+        return config.imageConfig.getImage(imageId);
+    };
+
+    // Nếu không có nội dung, trả về chuỗi rỗng
+    if (!htmlString) return '';
+
+    // Tạo một DOMParser để phân tích HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, 'text/html');
+
+    // Tìm tất cả thẻ <img>
+    const images = doc.querySelectorAll('img');
+    images.forEach((img) => {
+        const src = img.getAttribute('src');
+        // Kiểm tra nếu src chứa biểu thức config.imageConfig.getImage
+        const regex = /config\.imageConfig\.getImage\(['"]?([^'"]+)['"]?\)/;
+        const match = src && src.match(regex);
+        if (match && match[1]) {
+            const imageId = match[1]; // Lấy ID ảnh
+            img.setAttribute('src', getImageURL(imageId)); // Thay bằng URL thực tế
+        }
+    });
+
+    // Chuyển lại thành chuỗi HTML, giữ nguyên cấu trúc HTML
+    return doc.body.innerHTML;
+};
+
 // Register Quill modules
 if (typeof window !== 'undefined') {
     const Quill = ReactQuill.Quill;
@@ -452,7 +487,7 @@ export const BlogForm = ({ blog, isEditing = false, onBack }) => {
                             formats={formats}
                             className="h-96 pb-12"
                             placeholder="Viết nội dung blog của bạn tại đây..."
-                            value={content}
+                            value={processImageURLs(content)}
                             onChange={(value) => {
                                 setContent(value);
                             }}
