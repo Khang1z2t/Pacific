@@ -46,10 +46,6 @@ export const AddEditVoucherModal = ({
             message.error('Thời gian bắt đầu không thể lớn hơn thời gian kết thúc!');
             return;
         }
-        if(values.minOrderValue > values.maxDiscountAmount) {
-            message.error('Giá trị đơn hàng tối thiểu không thể lớn hơn số tiền giảm tối đa!');
-            return;
-        }
 
         try {
             await onSubmit({
