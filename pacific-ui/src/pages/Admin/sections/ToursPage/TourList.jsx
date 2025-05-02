@@ -353,7 +353,7 @@ const TourList = () => {
                     {status === 'OPEN'
                         ? 'Đang mở'
                         : status === 'IN_PROGRESS'
-                            ? 'Đang xử lý'
+                            ? 'Đang diễn ra'
                             : status === 'CLOSED'
                                 ? 'Đã đóng'
                                 : 'Đã hủy'}
