@@ -26,11 +26,12 @@ import RatingServices from '~/services/RatingServices';
 import BookingServices from '~/services/BookingServices';
 import { FaTags } from 'react-icons/fa';
 import WalletServices from '~/services/WalletServices';
+import clsx from 'clsx';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
 
-export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher }) => {
+export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher, selectedBooking }) => {
 	const { currentUser } = useAuth();
 	const [timeLeft, setTimeLeft] = useState('');
 	const [form] = Form.useForm();
@@ -43,6 +44,7 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
 	const [visible, setVisible] = useState(false);
 	const [showModalCancel, setShowModalCancel] = useState(false);
 	const [isRefund, setIsRefund] = useState(false);
+	const isSelected = data.bookingNo === selectedBooking;
 	const showModal = () => setIsModalOpen(true);
 	const handleCancel = () => setIsModalOpen(false);
 
@@ -111,13 +113,11 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
 					setTimeLeft('Hết hạn');
 				}
 			};
-
 			calculateTimeLeft();
 			const timer = setInterval(calculateTimeLeft, 1000);
 			return () => clearInterval(timer);
 		}
 	}, [data.status, data.createdAt]);
-
 	if (!tour) {
 		return (
 			<Card className="w-private full rounded-lg shadow-lg border-2 p-3 sm:p-4">
@@ -286,7 +286,10 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
 	return (
 		<>
 			<Card
-				className="w-full rounded-xl shadow-lg hover:shadow-xl border border-gray-200 transition-all duration-300 overflow-hidden"
+				className={clsx(
+					'w-full rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200',
+					{ 'border-2 border-orange-600 bg-orange-50': isSelected },
+				)}
 				style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%)' }}
 				bodyStyle={{ padding: '12px sm:p-4 md:p-5' }}
 			>
@@ -852,8 +855,13 @@ export const BookedTourCard = React.memo(({ data, tour, onUpdateBooking, voucher
 							className="flex items-start space-x-2 bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
 							<ExclamationCircleOutlined className="text-yellow-500 text-lg mt-1" />
 							<Text className="text-yellow-700 text-sm sm:text-base">
-								<strong>Lưu ý:</strong> Bạn sẽ được hoàn lại <strong>80% số tiền gốc</strong> sau khi
-								yêu cầu được duyệt. Hãy kiểm tra kỹ trước khi gửi!
+								<strong>Lưu ý:</strong> Số tiền hoàn lại phụ thuộc vào thời điểm bạn yêu cầu hủy và ngày khởi hành tour.
+								<br />
+								- <strong>Hoàn 100%</strong> nếu hủy trong vòng 12 giờ sau thanh toán, hoặc trước 30 ngày khởi hành.
+								<br />
+								- Tỷ lệ hoàn giảm dần nếu gần ngày tour (từ 90% đến 60%).
+								<br />
+								Vui lòng kiểm tra kỹ trước khi gửi yêu cầu hủy!
 							</Text>
 						</div>
 

@@ -20,6 +20,7 @@ import { Error } from '~/pages/Booking/status/Error';
 import { OAuth2Redirect } from '~/pages/Account/components/OAuth2Redirect';
 import { Terms } from '~/pages/Terms/Terms';
 import { DetailNews } from '~/pages/News/DetailNews/DetailNews';
+import { BookingRedirect } from '~/pages/Account/components/BookingRedirect';
 
 export const RouterContent = [
 	{
@@ -109,5 +110,9 @@ export const RouterContent = [
 	{
 		path: config.routes.news,
 		element: <News />,
+	},
+	{
+		path: config.routes.redirectBooking + ':id',
+		element: <BookingRedirect />,
 	},
 ];

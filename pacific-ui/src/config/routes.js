@@ -27,7 +27,8 @@ const routes = {
 	checkOutSuccess: '/checkout/success/',
 	checkoutFail: '/checkout/fail/',
 	infoBlog: '/info-blog',
-	oauth2Redirect: '/oauth2/redirect',
+	oauth2Redirect: '/oauth2/redirect/',
+	redirectBooking: '/booking/',
 };
 
 export default routes;
