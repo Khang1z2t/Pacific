@@ -33,6 +33,10 @@
     "ind5": "Blog của chúng tôi",
     "ind6": "Những bài viết mới nhất"
   },
+  "voucher": {
+    "ti1": "Những sự kiện đang nổi",
+    "ti2": "Theo dõi trên fanpage hoặc thông báo nha!"
+  },
   "aboutUs": {
     "ab1": "Về chúng tôi",
     "ab2": "Hãy biến chuyến tham quan của bạn trở nên đáng nhớ và an toàn với Pacific Tour.",
@@ -283,5 +287,14 @@
   },
   "tourList": {
     "ti1": "Danh sách tour du lịch"
+  },
+  "tintuc": {
+    "ti1": "Lỗi tải dữ liệu",
+    "ti2": "Không thể tải bài viết hoặc danh mục.",
+    "ti3": "Lỗi đăng ký",
+    "ti4": "Vui lòng nhập email hợp lệ.",
+    "ti5": "Đăng ký thành công",
+    "ti6": "Cảm ơn bạn đã đăng ký nhận bản tin!",
+    "ti7": "Đăng ký thành công"
   }
 }

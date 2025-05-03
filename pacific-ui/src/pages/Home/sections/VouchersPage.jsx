@@ -6,9 +6,11 @@ import 'swiper/css'; // CSS cơ bản của Swiper
 import 'swiper/css/navigation'; // CSS cho navigation
 import 'swiper/css/pagination'; // CSS cho pagination
 import 'swiper/css/effect-coverflow';
-import config from '~/config'; // CSS cho hiệu ứng coverflow
+import config from '~/config';
+import { useTranslation } from 'react-i18next'; // CSS cho hiệu ứng coverflow
 
 export const VouchersPage = () => {
+    const { t } = useTranslation();
     // Dữ liệu mẫu cho các voucher/sự kiện
     const vouchers = [
         {
@@ -43,10 +45,10 @@ export const VouchersPage = () => {
             >
                 <div className="text-center">
                     <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-lime-500">
-                        Những sự kiện đang nổi
+                        {t('voucher.ti1')}
                     </h2>
                     <p className="text-sm sm:text-lg text-gray-600 mt-2">
-                        Theo dõi trên fanpage hoặc thông báo nha!
+                        {t('voucher.ti2')}
                     </p>
                 </div>
             </Divider>
