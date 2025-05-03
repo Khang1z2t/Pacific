@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import config from '~/config';
 
 const Footer = () => {
     const { t } = useTranslation();
@@ -8,7 +9,7 @@ const Footer = () => {
     return (
         <footer
             className="bg-cover bg-center text-black"
-            style={{ backgroundImage: 'url(\'/img/bg_3.jpg\')' }}
+            style={{ backgroundImage: `url(${config.imageConfig.getImage('1mBfO86XrrCLWz7HQwhHucdx-C70svPdl')})` }}
         >
             <div
                 className="max-w-7xl mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">

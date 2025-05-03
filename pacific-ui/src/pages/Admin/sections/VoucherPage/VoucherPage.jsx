@@ -1,46 +1,38 @@
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     Button,
-    DatePicker,
-    Form,
-    Input,
-    InputNumber,
-    message,
-    Modal,
-    Select,
-    Space,
-    Switch,
     Table,
-    Tooltip,
+    Space,
     Typography,
+    Tooltip,
+    Input,
+    message,
 } from 'antd';
 import {
     DeleteOutlined,
     EditOutlined,
-    ExclamationCircleOutlined,
     ReloadOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
-import React, { useCallback, useEffect, useState } from 'react';
 import VoucherServices from '~/services/VoucherServices';
 import CategoryServices from '~/services/CategoryServices';
-import config from '~/config';
-import moment from 'moment';
-import { FaCheckCircle } from 'react-icons/fa';
 import TourServices from '~/services/TourServices';
+import config from '~/config';
+import { FaCheckCircle } from 'react-icons/fa';
+import { AddEditVoucherModal } from '~/pages/Admin/sections/VoucherPage/Components/AddEditVoucherModal';
+import { DeleteVoucherModal } from '~/pages/Admin/sections/VoucherPage/Components/DeleteVoucherModal';
 
 const { Title } = Typography;
-const { Option } = Select;
 
 export const VoucherPage = () => {
-    const [form] = Form.useForm();
     const [vouchers, setVouchers] = useState([]);
     const [categories, setCategories] = useState([]);
     const [tours, setTours] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
+    const [openAddModal, setOpenAddModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [isDeleteMode, setIsDeleteMode] = useState(false);
 
     // Memoized function to fetch all data
     const fetchAllData = useCallback(async () => {
@@ -51,7 +43,7 @@ export const VoucherPage = () => {
                 CategoryServices.getCategories(),
                 TourServices.getAllTour({}),
             ]);
-            setVouchers(voucherResponse.data);
+            setVouchers(voucherResponse.data || []);
             setCategories(categoryResponse);
             setTours(tourResponse.data);
         } catch (err) {
@@ -67,29 +59,61 @@ export const VoucherPage = () => {
         fetchAllData();
     }, [fetchAllData]);
 
-    // Memoized function to handle edit
-    const handleEdit = useCallback(
-        (record) => {
-            setSelectedVoucher(record);
-            setIsEditMode(true);
-            form.setFieldsValue({
-                title: record.title,
-                codeVoucher: record.codeVoucher,
-                discountValue: record.discountValue,
-                quantity: record.quantity,
-                userLimit: record.userLimit,
-                minOrderValue: record.minOrderValue,
-                maxDiscountAmount: record.maxDiscountAmount,
-                firstTimeUserOnly: record.firstTimeUserOnly,
-                status: record.status,
-                startDate: moment(record.startDate),
-                endDate: moment(record.endDate),
-                applyTo: record.applyTo,
-                tourId: record.tourId,
-                categoryId: record.categoryId,
-            });
+    // Memoized function to handle add voucher
+    const handleAddVoucher = useCallback(
+        async (values) => {
+            try {
+                setLoading(true);
+                await VoucherServices.addVoucher(values);
+                message.success('Thêm voucher thành công!');
+                await fetchAllData();
+                setOpenAddModal(false);
+            } catch (error) {
+                console.error('Error adding voucher:', error);
+                message.error('Có lỗi xảy ra khi thêm voucher!');
+            } finally {
+                setLoading(false);
+            }
         },
-        [form],
+        [fetchAllData],
+    );
+
+    // Memoized function to handle edit voucher
+    const handleEditVoucher = useCallback(
+        async (values) => {
+            try {
+                setLoading(true);
+                await VoucherServices.updateVoucher(selectedVoucher.id, values);
+                message.success('Cập nhật voucher thành công!');
+                await fetchAllData();
+                setOpenEditModal(false);
+            } catch (error) {
+                console.error('Error updating voucher:', error);
+                message.error('Có lỗi xảy ra khi cập nhật voucher!');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchAllData, selectedVoucher?.id],
+    );
+
+    // Memoized function to handle delete voucher
+    const handleDeleteVoucher = useCallback(
+        async () => {
+            try {
+                setLoading(true);
+                await VoucherServices.deleteVoucherForce(selectedVoucher.id);
+                message.success('Xóa voucher thành công!');
+                await fetchAllData();
+                setOpenDeleteModal(false);
+            } catch (error) {
+                console.error('Error deleting voucher:', error);
+                message.error('Có lỗi xảy ra khi xóa voucher!');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchAllData, selectedVoucher?.id],
     );
 
     // Memoized function to handle active voucher
@@ -101,7 +125,7 @@ export const VoucherPage = () => {
                 message.success('Kích hoạt voucher thành công!');
                 await fetchAllData();
             } catch (error) {
-                console.error(error);
+                console.error('Error activating voucher:', error);
                 message.error('Có lỗi xảy ra khi kích hoạt voucher!');
             } finally {
                 setLoading(false);
@@ -110,108 +134,31 @@ export const VoucherPage = () => {
         [fetchAllData],
     );
 
-    // Memoized function to handle add voucher
-    const handleAddVoucher = useCallback(
-        async (values) => {
-            const {
-                title,
-                codeVoucher,
-                discountValue,
-                quantity,
-                userLimit,
-                minOrderValue,
-                maxDiscountAmount,
-                firstTimeUserOnly,
-                status,
-                startDate,
-                endDate,
-                applyTo,
-                tourId,
-                categoryId,
-            } = values;
-            try {
-                setLoading(true);
-                await VoucherServices.addVoucher({
-                    title: title || '',
-                    codeVoucher: codeVoucher || '',
-                    discountValue: discountValue || 0,
-                    quantity: quantity || 0,
-                    userLimit: userLimit || 0,
-                    minOrderValue: minOrderValue || 0,
-                    maxDiscountAmount: maxDiscountAmount || 0,
-                    firstTimeUserOnly: firstTimeUserOnly || true,
-                    status: status || 'ACTIVE',
-                    startDate: startDate ? startDate.format('YYYY-MM-DDTHH:mm:ss') : null,
-                    endDate: endDate ? endDate.format('YYYY-MM-DDTHH:mm:ss') : null,
-                    applyTo: applyTo || 'ALL',
-                    tourId: tourId || null,
-                    categoryId: categoryId || null,
-                });
-                message.success('Thêm voucher thành công!');
-                await fetchAllData();
-                setOpen(false);
-                form.resetFields();
-            } catch (error) {
-                console.error(error);
-                message.error('Có lỗi xảy ra khi thêm voucher!');
-            } finally {
-                setLoading(false);
-            }
-        },
-        [fetchAllData, form],
-    );
-
-    // Memoized function to handle edit voucher
-    const handleEditVoucher = useCallback(
-        async (values) => {
-            try {
-                setLoading(true);
-                await VoucherServices.updateVoucher(selectedVoucher.id, {
-                    title: values.title || '',
-                    codeVoucher: values.codeVoucher || '',
-                    discountValue: values.discountValue || 0,
-                    quantity: values.quantity || 0,
-                    userLimit: values.userLimit || 0,
-                    minOrderValue: values.minOrderValue || 0,
-                    maxDiscountAmount: values.maxDiscountAmount || 0,
-                    firstTimeUserOnly: values.firstTimeUserOnly || true,
-                    status: values.status || 'ACTIVE',
-                    startDate: values.startDate ? values.startDate.format('YYYY-MM-DDTHH:mm:ss') : null,
-                    endDate: values.endDate ? values.endDate.format('YYYY-MM-DDTHH:mm:ss') : null,
-                    applyTo: values.applyTo || 'ALL',
-                    tourId: values.tourId || null,
-                    categoryId: values.categoryId || null,
-                });
-                message.success('Cập nhật voucher thành công!');
-                await fetchAllData();
-                setIsEditMode(false);
-                form.resetFields();
-            } catch (error) {
-                console.error(error);
-                message.error('Có lỗi xảy ra khi cập nhật voucher!');
-            } finally {
-                setLoading(false);
-            }
-        },
-        [fetchAllData, form, selectedVoucher.id],
-    );
-
-    // Memoized function to handle delete voucher
-    const handleDeleteVoucher = useCallback(
+    // Memoized function to handle inactive voucher
+    const handleInactiveVoucher = useCallback(
         async (id) => {
             try {
                 setLoading(true);
-                await VoucherServices.deleteVoucher(id);
-                message.success('Xóa voucher thành công!');
+                await VoucherServices.updateVoucherStatus(id, 'INACTIVE');
+                message.success('Tắt voucher thành công!');
                 await fetchAllData();
             } catch (error) {
-                console.error(error);
-                message.error('Có lỗi xảy ra khi xóa voucher!');
+                console.error('Error deactivating voucher:', error);
+                message.error('Có lỗi xảy ra khi tắt voucher!');
             } finally {
                 setLoading(false);
             }
         },
         [fetchAllData],
+    );
+
+    // Memoized function to handle edit
+    const handleEdit = useCallback(
+        (record) => {
+            setSelectedVoucher(record);
+            setOpenEditModal(true);
+        },
+        [],
     );
 
     const columns = [
@@ -223,15 +170,20 @@ export const VoucherPage = () => {
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
                 <div style={{ padding: 8 }}>
                     <Input
-                        placeholder={`Tìm mã voucher`}
+                        placeholder="Tìm mã voucher"
                         value={selectedKeys[0]}
                         onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                         onPressEnter={confirm}
                         style={{ marginBottom: 8, display: 'block' }}
                     />
                     <Space>
-                        <Button type="primary" onClick={confirm} icon={<SearchOutlined />} size="small"
-                                style={{ width: 90 }}>
+                        <Button
+                            type="primary"
+                            onClick={confirm}
+                            icon={<SearchOutlined />}
+                            size="small"
+                            style={{ width: 90 }}
+                        >
                             Tìm
                         </Button>
                         <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
@@ -242,8 +194,11 @@ export const VoucherPage = () => {
             ),
             sorter: (a, b) => a.codeVoucher.localeCompare(b.codeVoucher),
             sortDirections: ['ascend', 'descend'],
-            filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-            onFilter: (value, record) => record.codeVoucher.toLowerCase().includes(value.toLowerCase()),
+            filterIcon: (filtered) => (
+                <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+            ),
+            onFilter: (value, record) =>
+                record.codeVoucher.toLowerCase().includes(value.toLowerCase()),
         },
         {
             title: 'Tên voucher',
@@ -253,15 +208,20 @@ export const VoucherPage = () => {
             filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
                 <div style={{ padding: 8 }}>
                     <Input
-                        placeholder={`Tìm tên voucher`}
+                        placeholder="Tìm tên voucher"
                         value={selectedKeys[0]}
                         onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                         onPressEnter={confirm}
                         style={{ marginBottom: 8, display: 'block' }}
                     />
                     <Space>
-                        <Button type="primary" onClick={confirm} icon={<SearchOutlined />} size="small"
-                                style={{ width: 90 }}>
+                        <Button
+                            type="primary"
+                            onClick={confirm}
+                            icon={<SearchOutlined />}
+                            size="small"
+                            style={{ width: 90 }}
+                        >
                             Tìm
                         </Button>
                         <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
@@ -272,15 +232,18 @@ export const VoucherPage = () => {
             ),
             sorter: (a, b) => a.title.localeCompare(b.title),
             sortDirections: ['ascend', 'descend'],
-            filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-            onFilter: (value, record) => record.title.toLowerCase().includes(value.toLowerCase()),
+            filterIcon: (filtered) => (
+                <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+            ),
+            onFilter: (value, record) =>
+                record.title.toLowerCase().includes(value.toLowerCase()),
         },
         {
             title: 'Giá trị',
             dataIndex: 'discountValue',
             key: 'discountValue',
             width: 100,
-            render: (text) => `${text} %`,
+            render: (text) => `${text}%`,
             sorter: (a, b) => a.discountValue - b.discountValue,
             sortDirections: ['ascend', 'descend'],
         },
@@ -289,7 +252,7 @@ export const VoucherPage = () => {
             dataIndex: 'startDate',
             key: 'startDate',
             width: 150,
-            render: (text) => `${config.webConfig.convertDateNoTime(text)}`,
+            render: (text) => config.webConfig.convertDateNoTime(text),
             sorter: (a, b) => new Date(a.startDate) - new Date(b.startDate),
         },
         {
@@ -297,7 +260,7 @@ export const VoucherPage = () => {
             dataIndex: 'endDate',
             key: 'endDate',
             width: 150,
-            render: (text) => `${config.webConfig.convertDateNoTime(text)}`,
+            render: (text) => config.webConfig.convertDateNoTime(text),
             sorter: (a, b) => new Date(a.endDate) - new Date(b.endDate),
         },
         {
@@ -306,8 +269,20 @@ export const VoucherPage = () => {
             key: 'status',
             width: 150,
             render: (text) => (
-                <span style={{ color: text === 'ACTIVE' ? 'green' : text === 'OUT_OF_STOCK' ? 'orange' : 'red' }}>
-                  {text === 'ACTIVE' ? 'Hoạt động' : text === 'OUT_OF_STOCK' ? 'Hết hàng' : 'Không hoạt động'}
+                <span
+                    className={`${
+                        text === 'ACTIVE'
+                            ? 'text-green-500 font-semibold bg-green-100 p-2 rounded-lg'
+                            : text === 'INACTIVE'
+                                ? 'text-yellow-500 font-semibold bg-yellow-100 p-2 rounded-lg'
+                                : 'text-red-500 font-semibold bg-red-100 p-2 rounded-lg'
+                    }`}
+                >
+                    {text === 'ACTIVE'
+                        ? 'Đang hoạt động'
+                        : text === 'INACTIVE'
+                            ? 'Không hoạt động'
+                            : 'Hết hạn'}
                 </span>
             ),
         },
@@ -317,25 +292,31 @@ export const VoucherPage = () => {
             width: 150,
             render: (text, record) => (
                 <Space>
-                    <Tooltip title="Xóa Voucher">
+                    <Tooltip title="Xóa voucher">
                         <Button
                             onClick={() => {
                                 setSelectedVoucher(record);
-                                setIsDeleteMode(true);
+                                setOpenDeleteModal(true);
                             }}
                             danger
                             icon={<DeleteOutlined />}
                         />
                     </Tooltip>
+                    <Tooltip title={record.status === 'ACTIVE' ? 'Tắt voucher' : 'Kích hoạt voucher'}>
+                        {record.status === 'ACTIVE' ? (
+                            <Button
+                                icon={<FaCheckCircle color="red" />}
+                                onClick={() => handleInactiveVoucher(record.id)}
+                            />
+                        ) : (
+                            <Button
+                                icon={<FaCheckCircle color="green" />}
+                                onClick={() => handleActiveVoucher(record.id)}
+                            />
+                        )}
+                    </Tooltip>
                     <Tooltip title="Chỉnh sửa voucher">
                         <Button onClick={() => handleEdit(record)} icon={<EditOutlined />} />
-                    </Tooltip>
-                    <Tooltip title={'Kích hoạt voucher'}>
-                        <Button
-                            icon={<FaCheckCircle color={'green'} />}
-                            disabled={record.status === 'ACTIVE'}
-                            onClick={() => handleActiveVoucher(record?.id)}
-                        />
                     </Tooltip>
                 </Space>
             ),
@@ -353,14 +334,26 @@ export const VoucherPage = () => {
                 }}
                 rowKey="id"
                 bordered
+                className="shadow-sm rounded-lg"
                 title={() => (
                     <div className="flex justify-between items-center">
-                        <Title level={4}>Danh sách voucher</Title>
+                        <Title level={4} className="text-gray-800">
+                            Danh sách voucher
+                        </Title>
                         <div className="flex gap-2">
-                            <Button onClick={() => setOpen(true)} type="primary">
+                            <Button
+                                onClick={() => setOpenAddModal(true)}
+                                type="primary"
+                                className="rounded-md"
+                            >
                                 Thêm voucher
                             </Button>
-                            <Button onClick={fetchAllData} icon={<ReloadOutlined />} type="default">
+                            <Button
+                                onClick={fetchAllData}
+                                icon={<ReloadOutlined />}
+                                type="default"
+                                className="rounded-md"
+                            >
                                 Làm mới
                             </Button>
                         </div>
@@ -368,434 +361,34 @@ export const VoucherPage = () => {
                 )}
                 loading={loading}
             />
-            {/* Add Voucher Modal */}
-            <Modal
-                open={open}
-                onCancel={() => {
-                    setOpen(false);
-                    form.resetFields();
-                }}
-                title={<span className="text-lg font-semibold text-gray-800">Thêm voucher mới</span>}
-                footer={null}
-                width={800}
-                className="rounded-lg shadow-lg"
-                bodyStyle={{ padding: '24px', background: 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)' }}
-            >
-                <Form form={form} onFinish={handleAddVoucher} layout="vertical">
-                    <div className="grid grid-cols-2 gap-4">
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Tên voucher</span>}
-                            name="title"
-                            rules={[{ required: true, message: 'Vui lòng nhập tên voucher!' }]}
-                            className="col-span-2"
-                        >
-                            <Input placeholder="Nhập tên voucher" className="rounded-md" />
-                        </Form.Item>
 
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Mã voucher</span>}
-                            name="codeVoucher"
-                            rules={[{ required: true, message: 'Vui lòng nhập mã voucher!' }]}
-                        >
-                            <Input placeholder="Nhập mã voucher" className="rounded-md" />
-                        </Form.Item>
+            <AddEditVoucherModal
+                open={openAddModal}
+                onCancel={() => setOpenAddModal(false)}
+                onSubmit={handleAddVoucher}
+                loading={loading}
+                categories={categories}
+                tours={tours}
+                isEditMode={false}
+            />
 
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Giá trị giảm giá (%)</span>}
-                            name="discountValue"
-                            rules={[{ required: true, message: 'Vui lòng nhập giá trị giảm giá!' }]}
-                        >
-                            <InputNumber min={0} max={100} className="w-full rounded-md"
-                                         placeholder="Nhập giá trị giảm giá" />
-                        </Form.Item>
+            <AddEditVoucherModal
+                open={openEditModal}
+                onCancel={() => setOpenEditModal(false)}
+                onSubmit={handleEditVoucher}
+                loading={loading}
+                categories={categories}
+                tours={tours}
+                initialValues={selectedVoucher}
+                isEditMode={true}
+            />
 
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Số lượng</span>}
-                            name="quantity"
-                            rules={[{ required: true, message: 'Vui lòng nhập số lượng!' }]}
-                        >
-                            <InputNumber min={0} className="w-full rounded-md" placeholder="Nhập số lượng" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Giới hạn sử dụng mỗi người</span>}
-                            name="userLimit"
-                            rules={[{ required: true, message: 'Vui lòng nhập giới hạn sử dụng!' }]}
-                        >
-                            <InputNumber min={0} className="w-full rounded-md" placeholder="Nhập giới hạn sử dụng" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Giá trị đơn hàng tối thiểu (VNĐ)</span>}
-                            name="minOrderValue"
-                            rules={[{ required: true, message: 'Vui lòng nhập giá trị đơn hàng tối thiểu!' }]}
-                        >
-                            <InputNumber
-                                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                min={0}
-                                className="w-full rounded-md"
-                                placeholder="Nhập giá trị đơn hàng tối thiểu"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Số tiền giảm tối đa (VNĐ)</span>}
-                            name="maxDiscountAmount"
-                            rules={[{ required: true, message: 'Vui lòng nhập số tiền giảm tối đa!' }]}
-                        >
-                            <InputNumber
-                                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                min={0}
-                                className="w-full rounded-md"
-                                placeholder="Nhập số tiền giảm tối đa"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Thời gian bắt đầu</span>}
-                            name="startDate"
-                            rules={[{ required: true, message: 'Vui lòng chọn thời gian bắt đầu!' }]}
-                        >
-                            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" className="w-full rounded-md" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Thời gian kết thúc</span>}
-                            name="endDate"
-                            rules={[{ required: true, message: 'Vui lòng chọn thời gian kết thúc!' }]}
-                        >
-                            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" className="w-full rounded-md" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span
-                                className="text-gray-700 font-medium">Chỉ áp dụng cho người dùng lần đầu</span>}
-                            name="firstTimeUserOnly"
-                            valuePropName="checked"
-                        >
-                            <Switch checkedChildren="Có" unCheckedChildren="Không" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Trạng thái</span>}
-                            name="status"
-                            rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
-                        >
-                            <Select placeholder="Chọn trạng thái" className="rounded-md">
-                                <Option value="ACTIVE">Hoạt động</Option>
-                                <Option value="INACTIVE">Không hoạt động</Option>
-                            </Select>
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Áp dụng cho</span>}
-                            name="applyTo"
-                            rules={[{ required: true, message: 'Vui lòng chọn đối tượng áp dụng!' }]}
-                        >
-                            <Select placeholder="Chọn đối tượng áp dụng" className="rounded-md">
-                                <Option value="ALL">Tất cả</Option>
-                                <Option value="TOUR">Tour cụ thể</Option>
-                                <Option value="CATEGORY">Danh mục cụ thể</Option>
-                            </Select>
-                        </Form.Item>
-
-                        <Form.Item
-                            noStyle
-                            shouldUpdate={(prevValues, currentValues) => prevValues.applyTo !== currentValues.applyTo}
-                        >
-                            {({ getFieldValue }) =>
-                                getFieldValue('applyTo') === 'TOUR' ? (
-                                    <Form.Item
-                                        label={<span className="text-gray-700 font-medium">ID Tour</span>}
-                                        name="tourId"
-                                        rules={[{ required: true, message: 'Vui lòng chọn ID tour!' }]}
-                                        className="col-span-2"
-                                    >
-                                        <Select
-                                            placeholder="Chọn ID tour"
-                                            loading={tours.length === 0}
-                                            className="rounded-md"
-                                            options={tours.map((tour) => ({
-                                                value: tour.id,
-                                                label: tour.title,
-                                            }))}
-                                            showSearch
-                                            filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
-                                        />
-                                    </Form.Item>
-                                ) : getFieldValue('applyTo') === 'CATEGORY' ? (
-                                    <Form.Item
-                                        label={<span className="text-gray-700 font-medium">Danh mục</span>}
-                                        name="categoryId"
-                                        rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}
-                                        className="col-span-2"
-                                    >
-                                        <Select placeholder="Chọn danh mục" loading={categories.length === 0}
-                                                className="rounded-md">
-                                            {categories.map((category) => (
-                                                <Option key={category.id} value={category.id}>
-                                                    {category.title}
-                                                </Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                ) : null
-                            }
-                        </Form.Item>
-                    </div>
-
-                    <Form.Item className="mt-6">
-                        <Space className="flex justify-end">
-                            <Button
-                                onClick={() => {
-                                    setOpen(false);
-                                    form.resetFields();
-                                }}
-                                className="rounded-md border-gray-300"
-                            >
-                                Hủy
-                            </Button>
-                            <Button type="primary" htmlType="submit" loading={loading} className="rounded-md">
-                                Thêm voucher
-                            </Button>
-                        </Space>
-                    </Form.Item>
-                </Form>
-            </Modal>
-
-            {/* Delete Voucher Modal */}
-            <Modal
-                open={isDeleteMode}
-                centered
-                onCancel={() => setIsDeleteMode(false)}
-                title={
-                    <div className="flex items-center gap-2">
-                        <ExclamationCircleOutlined className="text-red-500 text-xl" />
-                        <span className="text-lg font-semibold text-gray-800">Xác nhận xóa voucher</span>
-                    </div>
-                }
-                footer={null}
-                width={400}
-                className="rounded-lg shadow-lg"
-                bodyStyle={{ padding: '20px', background: 'linear-gradient(to bottom right, #fef2f2, #fee2e2)' }}
-            >
-                <div className="flex flex-col items-center gap-4">
-                    <p className="text-gray-700 text-center">
-                        Bạn có chắc chắn muốn xóa voucher <strong>{selectedVoucher?.title}</strong> không?
-                    </p>
-                    <Space>
-                        <Button onClick={() => setIsDeleteMode(false)} className="rounded-md border-gray-300">
-                            Hủy
-                        </Button>
-                        <Button
-                            type="primary"
-                            danger
-                            onClick={() => {
-                                handleDeleteVoucher(selectedVoucher.id);
-                                setIsDeleteMode(false);
-                            }}
-                            className="rounded-md"
-                        >
-                            Xóa
-                        </Button>
-                    </Space>
-                </div>
-            </Modal>
-
-            {/* Edit Voucher Modal */}
-            <Modal
-                open={isEditMode}
-                onCancel={() => {
-                    setIsEditMode(false);
-                    form.resetFields();
-                }}
-                title={<span className="text-lg font-semibold text-gray-800">Chỉnh sửa voucher</span>}
-                footer={null}
-                width={800}
-                className="rounded-lg shadow-lg"
-                bodyStyle={{ padding: '24px', background: 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)' }}
-            >
-                <Form form={form} onFinish={handleEditVoucher} layout="vertical">
-                    <div className="grid grid-cols-2 gap-4">
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Tên voucher</span>}
-                            name="title"
-                            rules={[{ required: true, message: 'Vui lòng nhập tên voucher!' }]}
-                            className="col-span-2"
-                        >
-                            <Input placeholder="Nhập tên voucher" className="rounded-md" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Mã voucher</span>}
-                            name="codeVoucher"
-                            rules={[{ required: true, message: 'Vui lòng nhập mã voucher!' }]}
-                        >
-                            <Input placeholder="Nhập mã voucher" className="rounded-md" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Giá trị giảm giá (%)</span>}
-                            name="discountValue"
-                            rules={[{ required: true, message: 'Vui lòng nhập giá trị giảm giá!' }]}
-                        >
-                            <InputNumber min={0} max={100} className="w-full rounded-md"
-                                         placeholder="Nhập giá trị giảm giá" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Số lượng</span>}
-                            name="quantity"
-                            rules={[{ required: true, message: 'Vui lòng nhập số lượng!' }]}
-                        >
-                            <InputNumber min={0} className="w-full rounded-md" placeholder="Nhập số lượng" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Giới hạn sử dụng mỗi người</span>}
-                            name="userLimit"
-                            rules={[{ required: true, message: 'Vui lòng nhập giới hạn sử dụng!' }]}
-                        >
-                            <InputNumber min={0} className="w-full rounded-md" placeholder="Nhập giới hạn sử dụng" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Giá trị đơn hàng tối thiểu (VNĐ)</span>}
-                            name="minOrderValue"
-                            rules={[{ required: true, message: 'Vui lòng nhập giá trị đơn hàng tối thiểu!' }]}
-                        >
-                            <InputNumber
-                                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                min={0}
-                                className="w-full rounded-md"
-                                placeholder="Nhập giá trị đơn hàng tối thiểu"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Số tiền giảm tối đa (VNĐ)</span>}
-                            name="maxDiscountAmount"
-                            rules={[{ required: true, message: 'Vui lòng nhập số tiền giảm tối đa!' }]}
-                        >
-                            <InputNumber
-                                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                min={0}
-                                className="w-full rounded-md"
-                                placeholder="Nhập số tiền giảm tối đa"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Thời gian bắt đầu</span>}
-                            name="startDate"
-                            rules={[{ required: true, message: 'Vui lòng chọn thời gian bắt đầu!' }]}
-                        >
-                            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" className="w-full rounded-md" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Thời gian kết thúc</span>}
-                            name="endDate"
-                            rules={[{ required: true, message: 'Vui lòng chọn thời gian kết thúc!' }]}
-                        >
-                            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" className="w-full rounded-md" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span
-                                className="text-gray-700 font-medium">Chỉ áp dụng cho người dùng lần đầu</span>}
-                            name="firstTimeUserOnly"
-                            valuePropName="checked"
-                        >
-                            <Switch checkedChildren="Có" unCheckedChildren="Không" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Trạng thái</span>}
-                            name="status"
-                            rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
-                        >
-                            <Select placeholder="Chọn trạng thái" className="rounded-md">
-                                <Option value="ACTIVE">Hoạt động</Option>
-                                <Option value="INACTIVE">Không hoạt động</Option>
-                            </Select>
-                        </Form.Item>
-
-                        <Form.Item
-                            label={<span className="text-gray-700 font-medium">Áp dụng cho</span>}
-                            name="applyTo"
-                            rules={[{ required: true, message: 'Vui lòng chọn đối tượng áp dụng!' }]}
-                        >
-                            <Select placeholder="Chọn đối tượng áp dụng" className="rounded-md">
-                                <Option value="ALL">Tất cả</Option>
-                                <Option value="TOUR">Tour cụ thể</Option>
-                                <Option value="CATEGORY">Danh mục cụ thể</Option>
-                            </Select>
-                        </Form.Item>
-
-                        <Form.Item
-                            noStyle
-                            shouldUpdate={(prevValues, currentValues) => prevValues.applyTo !== currentValues.applyTo}
-                        >
-                            {({ getFieldValue }) =>
-                                getFieldValue('applyTo') === 'TOUR' ? (
-                                    <Form.Item
-                                        label={<span className="text-gray-700 font-medium">ID Tour</span>}
-                                        name="tourId"
-                                        rules={[{ required: true, message: 'Vui lòng chọn ID tour!' }]}
-                                        className="col-span-2"
-                                    >
-                                        <Select
-                                            placeholder="Chọn ID tour"
-                                            loading={tours.length === 0}
-                                            className="rounded-md"
-                                            options={tours.map((tour) => ({
-                                                value: tour.id,
-                                                label: tour.title,
-                                            }))}
-                                            showSearch
-                                            filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
-                                        />
-                                    </Form.Item>
-                                ) : getFieldValue('applyTo') === 'CATEGORY' ? (
-                                    <Form.Item
-                                        label={<span className="text-gray-700 font-medium">Danh mục</span>}
-                                        name="categoryId"
-                                        rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}
-                                        className="col-span-2"
-                                    >
-                                        <Select placeholder="Chọn danh mục" loading={categories.length === 0}
-                                                className="rounded-md">
-                                            {categories.map((category) => (
-                                                <Option key={category.id} value={category.id}>
-                                                    {category.title}
-                                                </Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                ) : null
-                            }
-                        </Form.Item>
-                    </div>
-
-                    <Form.Item className="mt-6">
-                        <Space className="flex justify-end">
-                            <Button
-                                onClick={() => {
-                                    setIsEditMode(false);
-                                    form.resetFields();
-                                }}
-                                className="rounded-md border-gray-300"
-                            >
-                                Hủy
-                            </Button>
-                            <Button type="primary" htmlType="submit" loading={loading} className="rounded-md">
-                                Cập nhật voucher
-                            </Button>
-                        </Space>
-                    </Form.Item>
-                </Form>
-            </Modal>
+            <DeleteVoucherModal
+                open={openDeleteModal}
+                onCancel={() => setOpenDeleteModal(false)}
+                onConfirm={handleDeleteVoucher}
+                voucherTitle={selectedVoucher?.title}
+            />
         </>
     );
 };

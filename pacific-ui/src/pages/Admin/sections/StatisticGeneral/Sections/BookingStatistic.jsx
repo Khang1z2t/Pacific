@@ -14,10 +14,11 @@ export const BookingStatistic = () => {
     const [years, setYears] = useState({ years: 2023 });
     const [bookingStatusData, setBookingStatusData] = useState([]);
     const [revenueData, setRevenueData] = useState(null);
-    const [ratingData, setRatingData] = useState([]); // Dữ liệu cho PieChart Review
-    const [detailedRatingData, setDetailedRatingData] = useState([]); // Dữ liệu cho PieChart DetailReview
+    const [ratingData, setRatingData] = useState([]);
+    const [detailedRatingData, setDetailedRatingData] = useState([]);
     const [period, setPeriod] = useState('week');
     const [loading, setLoading] = useState(false);
+    const [loadingTopBooked, setLoadingTopBooked] = useState(false);
     const [monthlyData, setMonthlyData] = useState([]);
     const [topBookedTours, setTopBookedTours] = useState([]);
     const [selectedRatingType, setSelectedRatingType] = useState('Accommodation');
@@ -26,24 +27,22 @@ export const BookingStatistic = () => {
 
     useEffect(() => {
         fetchData();
-    }, [period,limit,dateRange]);
+    }, [period]);
+    useEffect(() => {
+        fetchTopBookedTours();
+    }, [dateRange, limit]);
+
 
     const fetchData = () => {
         setLoading(true);
-        const params = { period }; // Có thể thêm startDate và endDate nếu dùng khoảng thời gian tùy chỉnh
-        const dateParams = {
-            startDate: dateRange[0]?.format('YYYY-MM-DD'),
-            endDate: dateRange[1]?.format('YYYY-MM-DD'),
-            limit: limit,
-        };
+        const params = { period };
         Promise.all([
             AdminServices.getBookingStatusStats(),
             AdminServices.getRevenueStats({ period }),
-            AdminServices.getReviewStats(params), // Gọi API cho PieChart Review
-            AdminServices.getDetailReviewStats(params), // Gọi API cho PieChart DetailReview
-            AdminServices.getTopBookedTours(dateParams),
+            AdminServices.getReviewStats(params),
+            AdminServices.getDetailReviewStats(params),
         ])
-            .then(([statusRes, revenueRes, ratingRes, detailedRatingRes, topBookedRes]) => {
+            .then(([statusRes, revenueRes, ratingRes, detailedRatingRes]) => {
                 const statusData = statusRes.data.map((item) => ({
                     name: item.status,
                     value: item.count,
@@ -51,15 +50,41 @@ export const BookingStatistic = () => {
                 }));
                 setBookingStatusData(statusData);
                 setRevenueData(revenueRes.data);
-                setRatingData(ratingRes.data); // Lưu dữ liệu rating tổng quan
-                setDetailedRatingData(detailedRatingRes.data); // Lưu dữ liệu rating chi tiết
-                setTopBookedTours(topBookedRes.data);
+                setRatingData(ratingRes.data);
+                setDetailedRatingData(detailedRatingRes.data);
             })
             .catch((err) => {
                 console.error('Error fetching data:', err);
             })
             .finally(() => {
                 setLoading(false);
+            });
+    };
+
+    const fetchTopBookedTours = () => {
+        setLoadingTopBooked(true);
+        const dateParams = {
+            startDate: dateRange[0]?.format('YYYY-MM-DD'),
+            endDate: dateRange[1]?.format('YYYY-MM-DD'),
+            limit: limit,
+        };
+
+        if (!dateParams.startDate || !dateParams.endDate) {
+            setTopBookedTours([]);
+            setLoadingTopBooked(false);
+            return;
+        }
+
+        AdminServices.getTopBookedTours(dateParams)
+            .then((topBookedRes) => {
+                setTopBookedTours(topBookedRes.data);
+            })
+            .catch((err) => {
+                console.error('Error fetching top booked tours:', err);
+                setTopBookedTours([]);
+            })
+            .finally(() => {
+                setLoadingTopBooked(false);
             });
     };
 
@@ -74,6 +99,20 @@ export const BookingStatistic = () => {
             default:
                 return period === 'week' ? 'tuần trước' : period === 'month' ? 'tháng trước' : 'năm trước';
         }
+    };
+
+    const customTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload;
+            return (
+                <div className="bg-white p-2 border rounded shadow">
+                    <p>{data.name}</p>
+                    <p>Số lượt: {data.value}</p>
+                    <p>Tỷ lệ: {data.percentage}%</p>
+                </div>
+            );
+        }
+        return null;
     };
 
     return (
@@ -92,20 +131,14 @@ export const BookingStatistic = () => {
                         <Option value="month">Tháng</Option>
                         <Option value="year">Năm</Option>
                     </Select>
-                    <RangePicker
-                        format={'DD-MM-YYYY'}
-                        defaultValue={dateRange}
-                        onChange={(dates) => setDateRange(dates)}
-                    />
-                    <InputNumber
-                        min={1}
-                        onChange={(value) => setLimit(value)}
-                        />
-                    <Button type="primary" className="bg-indigo-600 hover:bg-indigo-700">
-                        Xuất báo cáo
-                    </Button>
-                    <Button onClick={fetchData} loading={loading}>
-                        Refresh
+                    <Button
+                        onClick={() => {
+                            fetchData();
+                            fetchTopBookedTours();
+                        }}
+                        loading={loading || loadingTopBooked}
+                    >
+                        Làm mới
                     </Button>
                 </div>
             </div>
@@ -258,68 +291,87 @@ export const BookingStatistic = () => {
                         title={<span className="text-lg font-semibold">Phân bố Đánh giá Tổng quan</span>}
                         className="shadow-md border-none"
                     >
-                        <PieChart width={300} height={300} className="mx-auto">
-                            <Pie
-                                data={ratingData.map(item => ({
-                                    name: `${item.ratingLevel} sao`,
-                                    value: item.count,
-                                }))}
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={100}
-                                fill="#8884d8"
-                                dataKey="value"
-                            >
-                                {ratingData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                            <Legend />
-                        </PieChart>
-                    </Card>
-                </Col>
-
-                {/* PieChart DetailReview (Chọn một loại rating chi tiết để hiển thị, ví dụ: Accommodation) */}
-                <Col xs={24} md={12} lg={8}>
-                    <Card
-                        title={<span className="text-lg font-semibold">Phân bố Đánh giá Chỗ ở</span>}
-                        className="shadow-md border-none"
-                    >
-                        <Select
-                            defaultValue="Accommodation"
-                            style={{ width: 200, marginBottom: 16 }}
-                            onChange={(value) => setSelectedRatingType(value)}
-                        >
-                            {detailedRatingData.map((item) => (
-                                <Option key={item.ratingType} value={item.ratingType}>
-                                    {item.ratingType}
-                                </Option>
-                            ))}
-                        </Select>
-                        {detailedRatingData ? (
+                        {loading ? (
+                            <div className="text-center py-8">Đang tải...</div>
+                        ) : ratingData.length === 0 ? (
                             <Empty
-                                image={'/img/a.gif'}
-                                imageStyle={{
-                                    height: 120,
-                                    width: 120,
-                                    alignSelf: 'center',
-                                    margin: '0 auto',
-                                }}
+                                image="/img/a.gif"
+                                imageStyle={{ height: 120, width: 120, margin: '0 auto' }}
                                 description="Không có dữ liệu"
-                                className="mx-auto"
-                                />
+                            />
                         ) : (
                             <PieChart width={300} height={300} className="mx-auto">
                                 <Pie
-                                    data={
-                                        detailedRatingData
-                                            .find(item => item.ratingType === selectedRatingType)
-                                            ?.levels.map(level => ({
+                                    data={ratingData.map(item => ({
+                                        name: `${item.ratingLevel} sao`,
+                                        value: item.count,
+                                    }))}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={100}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                >
+                                    {ratingData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
+                        )}
+                    </Card>
+                </Col>
+
+                {/* PieChart DetailReview (Phân bố đánh giá chi tiết) */}
+                <Col xs={24} md={12} lg={8}>
+                    <Card
+                        title={
+                            <span className="text-lg font-semibold">
+                                Phân bố Đánh giá{' '}
+                                {selectedRatingType === 'Accommodation' ? 'Chỗ ở' :
+                                    selectedRatingType === 'Facility' ? 'Cơ sở vật chất' :
+                                        selectedRatingType === 'Food' ? 'Ẩm thực' :
+                                            selectedRatingType === 'Price' ? 'Giá cả' :
+                                                selectedRatingType === 'Service' ? 'Dịch vụ' : selectedRatingType}
+                            </span>
+                        }
+                        className="shadow-md border-none"
+                    >
+                        <Select
+                            value={selectedRatingType}
+                            style={{ width: 200, marginBottom: 16 }}
+                            onChange={(value) => setSelectedRatingType(value)}
+                            loading={loading}
+                        >
+                            {detailedRatingData.map((item) => (
+                                <Option key={item.ratingType} value={item.ratingType}>
+                                    {item.ratingType === 'Accommodation' ? 'Chỗ ở' :
+                                        item.ratingType === 'Facility' ? 'Cơ sở vật chất' :
+                                            item.ratingType === 'Food' ? 'Ẩm thực' :
+                                                item.ratingType === 'Price' ? 'Giá cả' :
+                                                    item.ratingType === 'Service' ? 'Dịch vụ' : item.ratingType}
+                                </Option>
+                            ))}
+                        </Select>
+                        {loading ? (
+                            <div className="text-center py-8">Đang tải...</div>
+                        ) : !detailedRatingData.length || !detailedRatingData.find(item => item.ratingType === selectedRatingType) ? (
+                            <Empty
+                                image="/img/a.gif"
+                                imageStyle={{ height: 120, width: 120, margin: '0 auto' }}
+                                description="Không có dữ liệu"
+                            />
+                        ) : (
+                            <PieChart width={300} height={300} className="mx-auto">
+                                <Pie
+                                    data={detailedRatingData
+                                        .find(item => item.ratingType === selectedRatingType)
+                                        ?.levels.map(level => ({
                                             name: `${level.ratingLevel} sao`,
                                             value: level.count,
-                                        })) || []
-                                    }
+                                            percentage: level.percentage,
+                                        })) || []}
                                     cx="50%"
                                     cy="50%"
                                     outerRadius={100}
@@ -332,27 +384,54 @@ export const BookingStatistic = () => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                 </Pie>
-                                <Tooltip />
+                                <Tooltip content={customTooltip} />
                                 <Legend />
                             </PieChart>
                         )}
                     </Card>
-                </Col> </Row>
+                </Col>
+            </Row>
 
+            {/* Top Booked Tours */}
             <Row gutter={[16, 16]} className="mt-6">
                 <Col xs={24}>
                     <Card
                         title={<span className="text-lg font-semibold">Top Tour Được Booking Nhiều Nhất</span>}
                         className="shadow-md border-none"
                     >
-                        <BarChart width={1100} height={300} data={topBookedTours} className="mx-auto">
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="tourTitle" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="bookingCount" fill="#8b5cf6" barSize={30} />
-                        </BarChart>
+                        <div className="flex flex-wrap items-center mb-4 space-x-2">
+                            <RangePicker
+                                format={'DD-MM-YYYY'}
+                                defaultValue={dateRange}
+                                onChange={(dates) => setDateRange(dates)}
+                                style={{ width: 'auto' }}
+                            />
+                            <InputNumber
+                                placeholder={'Số lượng top tour'}
+                                min={1}
+                                value={limit}
+                                onChange={(value) => setLimit(value)}
+                                style={{ width: 150 }}
+                            />
+                        </div>
+                        {loadingTopBooked ? (
+                            <div className="text-center py-8">Đang tải...</div>
+                        ) : topBookedTours.length === 0 ? (
+                            <Empty
+                                image="/img/a.gif"
+                                imageStyle={{ height: 120, width: 120, margin: '0 auto' }}
+                                description="Không có dữ liệu"
+                            />
+                        ) : (
+                            <BarChart width={1100} height={300} data={topBookedTours} className="mx-auto">
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="tourTitle" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="bookingCount" fill="#8b5cf6" barSize={30} />
+                            </BarChart>
+                        )}
                     </Card>
                 </Col>
             </Row>
@@ -377,5 +456,3 @@ export const BookingStatistic = () => {
         </div>
     );
 };
-
-export default BookingStatistic;

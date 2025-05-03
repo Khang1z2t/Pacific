@@ -23,10 +23,12 @@ import BookingServices from '~/services/BookingServices';
 import config from '~/config';
 import { FaTags } from 'react-icons/fa';
 import { ExclamationCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { useLocation } from 'react-router-dom';
 
 export const BookedTour = () => {
 	const ITEM_PER_PAGE = 3;
 	const token = localStorage.getItem('accessToken');
+	const location = useLocation();
 	const [currentPage, setCurrentPage] = useState({
 		PENDING: 1,
 		PAID: 1,
@@ -38,6 +40,17 @@ export const BookedTour = () => {
 	});
 	const [tourInfo, setTourInfo] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [activeSubTab, setActiveSubTab] = useState(location.state?.subTab || 'PENDING');
+	const [bookingRedirect, setBookingRedirect] = useState(location.state?.bookingNo || null);
+
+	useEffect(() => {
+		if (location.state?.subTab) {
+			setActiveSubTab(location.state.subTab);
+		}
+		if (location.state?.bookingNo) {
+			setBookingRedirect(location.state.bookingNo);
+		}
+	}, [location.state]);
 
 	const fetchBookings = async () => {
 		try {
@@ -119,6 +132,7 @@ export const BookedTour = () => {
 								tour={item.tourDetail?.tour}
 								voucher={item.voucher}
 								onUpdateBooking={handleUpdateBooking}
+								selectedBooking={bookingRedirect}
 							/>
 						))
 					) : (
@@ -180,7 +194,9 @@ export const BookedTour = () => {
 		<div className="container mx-auto px-4">
 			<div className="flex justify-center">
 				<div className="w-full">
-					<Tabs defaultActiveKey="PENDING" items={tabItems} />
+					<Tabs activeKey={activeSubTab}
+								onChange={setActiveSubTab}
+								items={tabItems} />
 				</div>
 			</div>
 		</div>

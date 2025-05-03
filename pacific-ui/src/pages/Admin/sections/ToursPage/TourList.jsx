@@ -353,7 +353,7 @@ const TourList = () => {
                     {status === 'OPEN'
                         ? 'Đang mở'
                         : status === 'IN_PROGRESS'
-                            ? 'Đang xử lý'
+                            ? 'Đang diễn ra'
                             : status === 'CLOSED'
                                 ? 'Đã đóng'
                                 : 'Đã hủy'}
@@ -372,13 +372,6 @@ const TourList = () => {
                                 setSelectedTourDetail(record); // Cập nhật selectedTourDetail
                                 setEditTourDetailVisible(true); // Mở modal
                             }}
-                        />
-                    </Tooltip>
-                    <Tooltip placement="top" title="Xóa chi tiết tour">
-                        <Button
-                            icon={<DeleteOutlined />}
-                            danger
-                            onClick={() => handleDeleteTourDetail(record.id)}
                         />
                     </Tooltip>
                 </Space>

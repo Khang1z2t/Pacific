@@ -57,9 +57,21 @@ const VoucherServices = {
 		}
 	},
 
-	deleteVoucher: async (id) => {
+	deleteVoucher: async (id, active) => {
 		try {
-			const response = await axiosConfig.delete(config.api.adminVoucher + `/delete/${id}`);
+			const response = await axiosConfig.delete(config.api.adminVoucher + `/delete/${id}`, {
+				params: { active }, // Gửi active như một query parameter
+			});
+			return response.data;
+		} catch (error) {
+			console.error(`Lỗi khi xóa voucher ID ${id}:`, error);
+			return Promise.reject(error);
+		}
+	},
+
+	deleteVoucherForce: async (id) => {
+		try {
+			const response = await axiosConfig.delete(config.api.adminVoucher + `/delete-force/${id}`);
 			return response.data;
 		} catch (error) {
 			console.error(`Lỗi khi xóa voucher ID ${id}:`, error);
