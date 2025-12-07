@@ -50,8 +50,16 @@ const { Content } = Layout;
 const AdminHome = () => {
 	const { currentUser } = useAuth();
 	const [isDarkTheme, setIsDarkTheme] = useState(() => {
-		const savedTheme = localStorage.getItem('theme');
-		return savedTheme ? JSON.parse(savedTheme) : false;
+		try {
+        const savedTheme = localStorage.getItem('theme');
+        return savedTheme ? JSON.parse(savedTheme) : false;
+    } catch (error) {
+        console.warn("Dữ liệu theme trong LocalStorage bị lỗi, đang reset về mặc định.");
+        
+        localStorage.removeItem('theme');
+        
+        return false;
+    }
 	});
 	const [buttonState, setButtonState] = useState('idle'); // idle, loading, success
 	const [exportModalVisible, setExportModalVisible] = useState(false);

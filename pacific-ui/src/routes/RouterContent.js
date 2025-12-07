@@ -21,6 +21,7 @@ import { OAuth2Redirect } from '~/pages/Account/components/OAuth2Redirect';
 import { Terms } from '~/pages/Terms/Terms';
 import { DetailNews } from '~/pages/News/DetailNews/DetailNews';
 import { BookingRedirect } from '~/pages/Account/components/BookingRedirect';
+import { OAuth2Login } from '~/pages/Account/components/OAuth2Login';
 
 export const RouterContent = [
 	{
@@ -34,6 +35,10 @@ export const RouterContent = [
 	{
 		path: config.routes.login,
 		element: <Login />,
+	},
+	{
+		path: config.routes.oauth2 + ':provider',
+		element: <OAuth2Login />,
 	},
 	{
 		path: config.routes.oauth2Redirect,

@@ -76,75 +76,6 @@ const AuthService = {
 		}
 	},
 
-	loginGoogle: async () => {
-		return new Promise(async (resolve, reject) => {
-			try {
-				const redirectTo = window.location.origin;
-				// Gọi API để lấy URL đăng nhập Google
-				const response = await axiosConfig.get(config.api.auth + '/oauth2/google', {
-					params: {
-						redirectTo: redirectTo,
-					},
-				});
-				const googleAuthUrl = response.data.data;
-
-				if (!googleAuthUrl) {
-					return reject(new Error('Không thể lấy URL đăng nhập Google'));
-				}
-
-				// Mở popup để người dùng đăng nhập
-				const width = 600;
-				const height = 600;
-				const left = (window.screen.width - width) / 2;
-				const top = (window.screen.height - height) / 2;
-
-				const popup = window.open(
-					googleAuthUrl,
-					'Google Login',
-					`width=${width},height=${height},top=${top},left=${left}`,
-				);
-
-				if (!popup) {
-					return reject(new Error('Không thể mở popup. Vui lòng cho phép popup trong trình duyệt.'));
-				}
-
-				// Xử lý message từ popup
-				const handleMessage = (event) => {
-					// Kiểm tra origin để đảm bảo an toàn
-					const allowedOrigins = [window.location.origin, 'https://pacific-vn.vercel.app'];
-					if (!allowedOrigins.includes(event.origin)) {
-						return;
-					}
-
-					if (event.data.error) {
-						reject(new Error(event.data.error));
-					}
-
-					if (event.data.accessToken) {
-						// Lưu token vào localStorage
-						localStorage.setItem('accessToken', event.data.accessToken);
-						localStorage.setItem('refreshToken', event.data.refreshToken);
-						resolve({ accessToken: event.data.accessToken, refreshToken: event.data.refreshToken });
-					}
-
-					window.removeEventListener('message', handleMessage);
-				};
-
-				window.addEventListener('message', handleMessage);
-
-				// Timeout nếu người dùng không thao tác trong 120 giây
-				const timeout = setTimeout(() => {
-					if (!popup.closed) {
-						popup.close();
-					}
-					reject(new Error('Quá thời gian đăng nhập. Vui lòng thử lại.'));
-				}, 120000);
-			} catch (error) {
-				reject(error);
-			}
-		});
-	},
-
 	loginOAuth: async (provider) => {
 		return new Promise(async (resolve, reject) => {
 			try {
@@ -215,6 +146,32 @@ const AuthService = {
 				reject(error);
 			}
 		});
+	},
+
+	// OAuthCallback: async (provider, code) => {
+	// 	try {
+	// 		const redirectUrl = window.location.origin;
+	// 		const response = await axiosConfig.get(config.api.auth + `/oauth2/callback`, {
+	// 			params: {
+	// 				type: provider,
+	// 				code,
+	// 				redirectUrl,
+	// 			},
+	// 			raxConfig: {
+	// 				retry: 0,
+	// 			},
+	// 		});
+	// 		return response;
+	// 	} catch (error) {
+	// 		console.error('Error:', error);
+	// 		return Promise.reject(error);
+	// 	}
+	// },
+
+	getOAuthCallbackUrl: (provider, code) => {
+		const redirectUrl = window.location.origin;
+		const baseUrl = axiosConfig.defaults.baseURL;
+		return `${baseUrl}${config.api.auth}/oauth2/callback?type=${provider}&code=${code}&redirectUrl=${redirectUrl}`;
 	},
 
 	updateUsername: async (params) => {

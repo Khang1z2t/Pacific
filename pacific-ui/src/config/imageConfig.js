@@ -1,12 +1,14 @@
 import config from '~/config/index';
-import axiosConfig from '~/config/axiosConfig';
 
 const imageConfig = {
-    // getImage: (imageId) => {
-    //         return `http://localhost:8080/api/image/${imageId}`;
-    // },
     getImage: (imageId) => {
-        return `https://khangyuno.id.vn/api/image/${imageId}`;
+            if (!imageId) return "";
+
+    if (imageId.startsWith("http") || imageId.startsWith("https")) {
+        return imageId;
+    }
+
+    return `${config.api.base}/api/image?id=${encodeURIComponent(imageId)}`;
     },
     getAvatar: (imageId) => {
         return `https://lh3.googleusercontent.com/a/${imageId}`;

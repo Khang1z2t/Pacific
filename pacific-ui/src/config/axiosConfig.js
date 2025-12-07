@@ -1,9 +1,9 @@
 import axios from 'axios';
 import i18next from 'i18next';
+import config from './index';
 
 const axiosInstance = axios.create({
-	// baseURL: 'http://localhost:8080',
-	baseURL: 'https://khangyuno.id.vn',
+	baseURL: config.api.base,
 	timeout: 60000,
 	headers: {
 		'Content-Type': 'application/json',
