@@ -1,6 +1,6 @@
 const api = {
-	base: 'http://localhost:8080',
-	// base: 'https://khangyuno.id.vn',
+	// base: 'http://localhost:8080',
+	base: 'https://khangyuno.id.vn',
 	provinces: 'https://provinces.open-api.vn/api/?depth=3',
 	auth: '/api/auth',
 	tours: '/api/tours',
